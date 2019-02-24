@@ -10,6 +10,8 @@ $$.control.registerControl('breizbot.files', {
 
 	init: function(elt, srvFiles) {
 
+		const props = this.props
+
 		const ctrl = $$.viewController(elt, {
 			
 			data: {
@@ -150,6 +152,26 @@ $$.control.registerControl('breizbot.files', {
 							title: 'Error'
 						})
 					})						
+				},
+				onImportFile: function(ev) {
+
+					$$.util.openFileDialog(function(file) {
+						//console.log('fileSize', file.size / 1024)
+						if (file.size > props.maxUploadSize) {
+							$$.ui.showAlert({content: 'File too big', title: 'Import file'})
+							return
+						}
+						$$.util.readFileAsDataURL(file, function(dataURL) {
+							//console.log('dataURL', dataURL)
+							srvFiles.uploadFile(dataURL, file.name, ctrl.model.rootDir).then(function() {
+								loadData()
+							})
+							.catch(function(resp) {
+								console.log('resp', resp)
+								$$.ui.showAlert({content: resp.responseText, title: 'Error'})							
+							})
+						})					
+					})
 				}
 			}
 

@@ -3,7 +3,7 @@ console.log('config', config)
 
 const db = require('./lib/db')
 const apps = require('./lib/apps')
-
+const getBrainjsLib = require('./lib/brainjs')
 
 db.init().then(dbReady)
 .catch((e) => {
@@ -11,18 +11,6 @@ db.init().then(dbReady)
 	process.exit(1)	
 })
 
-function getBrainjsLib(libName, scripts, styles) {
-	if (libName.includes('map')) {
-		scripts.push('/brainjs/brainjs-map.js')
-		styles.push('/brainjs/map/brainjs-map.css')
-
-	}
-	if (libName.includes('tree')) {
-		scripts.push('/brainjs/brainjs-tree.js')
-		styles.push('/brainjs/tree/brainjs-tree.css')
-
-	}
-}
 
 function dbReady() {
 

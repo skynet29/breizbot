@@ -159,9 +159,31 @@ app.use('/api/files', require('./api/files'))
 app.use('/brainjs', express.static(config.BRAINJS_HOME))
 app.use(express.static(path.join(__dirname, '../front/dist')))
 
+if (config.USESSL) {
+	const Greenlock = require('greenlock');
+	const redir = require('redirect-https')();
+	const http = require('http')
+	const https = require('https')	
 
-app.listen(8080, function() {
-	console.log('Server listening on port 8080')
-})
+	var greenlock = Greenlock.create({
+	  agreeTos: true
+	, email: config.email
+	, approveDomains: [config.domain]
+	, communityMember: false
+	, version: 'draft-12'
+	, server: 'https://acme-v02.api.letsencrypt.org/directory'
+	, configDir: config.CERTIF_HOME
+	})
+
+
+	http.createServer(greenlock.middleware(redir)).listen(config.httpPort)
+	 
+	https.createServer(greenlock.tlsOptions, app).listen(config.httpsPort)	
+}
+else {
+	app.listen(config.httpPort, function() {
+		console.log('Server listening on port ' + config.httpPort)
+	})	
+}
 
 }

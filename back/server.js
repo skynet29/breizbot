@@ -11,6 +11,18 @@ db.init().then(dbReady)
 	process.exit(1)	
 })
 
+function getBrainjsLib(libName, scripts, styles) {
+	if (libName.includes('map')) {
+		scripts.push('/brainjs/brainjs-map.js')
+		styles.push('/brainjs/map/brainjs-map.css')
+
+	}
+	if (libName.includes('tree')) {
+		scripts.push('/brainjs/brainjs-tree.js')
+		styles.push('/brainjs/tree/brainjs-tree.css')
+
+	}
+}
 
 function dbReady() {
 
@@ -115,6 +127,10 @@ app.get('/apps/:app', function(req, res) {
 					return (fileName.startsWith('/')) ? fileName : path.join(appPath, fileName)
 				})	
 				let scripts = appInfo.scripts || []
+
+				const brainjs = appInfo.brainjs || []
+				getBrainjsLib(brainjs, scripts, styles)
+
 				res.render('app', {
 					appName: app,
 					 title: appInfo.title,

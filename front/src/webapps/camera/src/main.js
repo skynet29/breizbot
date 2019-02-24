@@ -6,16 +6,19 @@ $$.control.registerControl('breizbot.main', {
 
 	init: function(elt, srvFiles) {
 
+		const audio = new Audio('/webapps/camera/assets/camera_shutter.mp3')
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 			},
 			events: {
 				onTakePicture: function(ev) {
+					audio.play()
 					const url = ctrl.scope.camera.takePicture()
 					$$.ui.showConfirm({
 						okText: 'Save',
 						cancelText: 'Close',
-						content: `<img src="${url}" width="400">`
+						content: `<img src="${url}" width="400">`,
 						width: 'auto', 
 						title: 'Picture',
 						position: { my: 'left top', at: 'left top', of: $('.breizbot-main') }

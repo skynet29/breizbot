@@ -32,11 +32,19 @@ gulp.task('app.css', function() {
 		.pipe(gulp.dest(dest))
 })
 
-gulp.task('all', ['app.js', 'app.css'])
+gulp.task('assets', function() {
+	return gulp.src([
+		'./assets/*',
+		])
+		.pipe(gulp.dest(path.join(dest, 'assets')))
+})
+
+gulp.task('all', ['app.js', 'app.css', 'assets'])
 
 
 gulp.task('watch', ['all'], function() {
 	gulp.watch(['./src/**/*.js', './src/**/*.html'], ['app.js'])
 	gulp.watch(['./src/**/*.scss'], ['app.css'])
+	gulp.watch(['./assets/*'], ['assets'])
 
 })

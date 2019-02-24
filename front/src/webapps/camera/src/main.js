@@ -12,11 +12,10 @@ $$.control.registerControl('breizbot.main', {
 			events: {
 				onTakePicture: function(ev) {
 					const url = ctrl.scope.camera.takePicture()
-					const content = `<img src="${url}" width="400">`
 					$$.ui.showConfirm({
 						okText: 'Save',
 						cancelText: 'Close',
-						content, 
+						content: `<img src="${url}" width="400">`
 						width: 'auto', 
 						title: 'Picture',
 						position: { my: 'left top', at: 'left top', of: $('.breizbot-main') }

@@ -43,7 +43,8 @@
 	</div>
 
 
-	<div bn-each="f of files" class="container" bn-event="click.folder: onFolderClick, click.check: onCheckClick">
+	<div bn-each="f of files" class="container" 
+	bn-event="click.folder: onFolderClick, click.check: onCheckClick, click.file: onFileClick">
 		
 		<div class="thumbnail w3-btn" bn-data="name: f.name">	
 				<input type="checkbox" bn-show="canSelect" class="check w3-check">		
@@ -54,7 +55,7 @@
 					
 					<span bn-text="f.name"></span>
 				</div>
-				<div bn-show="!f.folder" bn-attr="title: getSize">
+				<div bn-show="!f.folder" bn-attr="title: getSize" class="file">
 					<div>
 						<i class="fa fa-4x fa-file w3-text-blue-grey"></i>
 					</div>

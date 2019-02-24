@@ -32,6 +32,11 @@ $$.control.registerControl('breizbot.files', {
 				}
 			},
 			events: {
+				onFileClick: function(ev) {
+					const fileName = $(this).closest('.thumbnail').data('name')
+					//console.log('onFileClick', fileName)
+					elt.trigger('fileclick', {fileName, rootDir: ctrl.model.rootDir})
+				},
 				onCheckClick: function(ev) {
 					console.log('onCheckClick')
 					ctrl.update('$hasSelection')

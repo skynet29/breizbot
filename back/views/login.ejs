@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login</title>
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" type="text/css" href="/brainjs/css/brainjs.css">
+</head>
+<body>
+
+<style type="text/css">
+
+* {
+	box-sizing: border-box;
+}
+
+html, body {
+	height: 100%;
+	margin: 0;
+}
+
+body {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.group {
+	display: flex;
+	margin-bottom: 10px;
+	justify-content: space-around;
+}
+
+.main {
+	padding: 20px;
+	border-radius: 10px;	
+}
+
+i {
+	
+	padding: 5px;
+	//color: white;
+}
+
+form {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+}
+
+input {
+	padding: 5px;
+	//border: none;
+}
+
+.message {
+	color: red;
+	margin-top: 10px; 
+}
+
+</style>	
+
+<div class="w3-light-grey w3-card-4 main">
+	<form  method="post">
+		<div class="group">
+			<i class="fa fa-user fa-2x w3-text-blue"></i>
+			<input type="text" name="user" placeholder="Username" required autofocus>				
+		</div>
+
+		<div class="group">
+			<i class="fa fa-lock fa-2x w3-text-blue"></i>
+			<input type="password" name="pwd" placeholder="Password" required>	
+		</div>
+	
+		<button type="submit" class="w3-btn w3-blue">Connect</button>
+		<span class="message"><%= message %></span>
+	</form>
+
+</div>
+
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+<div class="header w3-teal">
+	<div>
+		<a bn-show="showHome" class="w3-button" href="/" title="Go Home">
+			<i class="fa fa-home fa-lg"></i>
+		</a>		
+	</div>
+
+	<span bn-text="title"></span>
+	<div bn-control="brainjs.contextmenu" 
+		bn-data="items: items" 
+		data-trigger="left" 
+		class="w3-button" 
+		bn-event="contextmenuchange: onContextMenu">
+			<i class="fa fa-user fa-lg"></i>
+			<span bn-text="userName"></span>	    	
+	</div>
+	
+</div>

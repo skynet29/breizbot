@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Admin</title>
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" type="text/css" href="/brainjs/css/brainjs.css">
+	<link rel="stylesheet" type="text/css" href="/breizbot.css">
+	<script type="text/javascript" src="/brainjs/brainjs.js"></script>
+	<script type="text/javascript" src="/breizbot.js"></script>
+</head>
+
+<style type="text/css">
+
+html, body {
+	height: 100%;
+	margin: 0;
+}
+
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+	
+</style>
+
+<script type="text/javascript">
+	$(function() {
+		$$.viewController('body')
+	})
+
+</script>
+
+<body>
+	<div class="header w3-blue">
+		<span></span>
+		<span>Administration</span>
+		<a href="/logout" class="w3-button" title="logout"><i class="fa fa-power-off"></i></a>
+	</div>
+	<div bn-control="breizbot.users"></div>
+</body>
+
+</html>

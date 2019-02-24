@@ -1,0 +1,10 @@
+<div bn-each="app of apps" class="main" bn-event="click.tile: onTileClick">			
+	<div class="tile w3-btn" bn-attr="class: getClass" bn-data="item: app">
+		<div bn-show="hasIcon" style="margin-bottom: 5px;">
+			<i bn-attr="class: app.props.iconCls"></i>
+		</div>
+
+		<span bn-text="app.props.title"></span>
+	</div>
+
+</div>

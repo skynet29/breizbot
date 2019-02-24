@@ -1,0 +1,69 @@
+.breizbot-apps .tile {
+  width: 100px;
+  height: 100px;
+  margin: 10px;
+  border: 1px solid black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; }
+
+.breizbot-apps .main {
+  margin: 10px;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  align-content: start; }
+
+.breizbot-files .contentPanel {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  margin: 10px; }
+
+.breizbot-files .container {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  align-content: start; }
+
+.breizbot-files .thumbnail {
+  margin: 10px;
+  position: relative;
+  border: 1px solid black; }
+
+.breizbot-files .check {
+  position: absolute;
+  left: 5px;
+  top: 5px; }
+
+.breizbot-files .toolbar {
+  margin-bottom: 10px; }
+
+.breizbot-header .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; }
+
+.breizbot-users table {
+  border-collapse: collapse; }
+
+.breizbot-users td, .breizbot-users th {
+  border: 1px solid black;
+  padding: 5px; }
+
+.breizbot-users .main {
+  margin: 10px; }
+
+.breizbot-users .btnAddUser {
+  margin-bottom: 10px; }
+
+.breizbot-users.dlgAddUser {
+  display: flex;
+  flex-direction: column; }
+  .breizbot-users.dlgAddUser input {
+    margin-bottom: 5px;
+    padding: 5px; }

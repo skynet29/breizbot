@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Home</title>
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" type="text/css" href="/brainjs/css/brainjs.css">
+	<link rel="stylesheet" type="text/css" href="/breizbot.css">
+	<script src="/brainjs/brainjs.js"></script>
+	<script src="/breizbot.js"></script>
+</head>
+
+<style type="text/css">
+html, body {
+	height: 100%;
+	margin: 0;
+}
+	
+body {
+	display: flex;
+	flex-direction: column;
+}
+
+
+
+</style>
+
+<script>
+	$(function() {
+		$$.viewController('body')
+	})
+
+</script>
+
+<body>
+	<div bn-control="breizbot.header" 
+		data-user-name="<%= pseudo %>" 
+		data-title="Home"
+		data-show-home="false">	
+		</div>
+	<div bn-control="breizbot.home" style="flex: 1;"></div>
+</body>
+
+</html>

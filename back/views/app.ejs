@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title><%= appName %></title>
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" type="text/css" href="/brainjs/css/brainjs.css">
+	<link rel="stylesheet" type="text/css" href="/breizbot.css">
+	<script src="/brainjs/brainjs.js"></script>
+	<script src="/breizbot.js"></script>
+	<script src="/webapps/<%= appName %>/app.js"></script>
+
+    <% styles.forEach(function(style) {%>
+        <link rel="stylesheet" type="text/css" href="<%= style %>">
+    <%}) %>  	
+
+    <% scripts.forEach(function(script) {%>
+        <script src="<%= script %>"></script>
+    <%}) %>      
+</head>
+
+<style type="text/css">
+html, body {
+	height: 100%;
+	margin: 0;
+}
+	
+body {
+	display: flex;
+	flex-direction: column;
+}
+
+
+
+</style>
+
+<script>
+	$(function() {
+		$$.viewController('body')
+	})
+
+</script>
+
+<body>
+	<div bn-control="breizbot.header" data-user-name="<%= pseudo %>" data-title="<%= title %>"></div>
+	<div bn-control="breizbot.main" style="flex: 1;"></div>
+</body>
+
+</html>

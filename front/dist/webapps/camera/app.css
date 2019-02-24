@@ -1,0 +1,7 @@
+.breizbot-main {
+  display: flex;
+  flex-direction: column;
+  margin: 10px; }
+  .breizbot-main .brainjs-camera {
+    display: flex;
+    justify-content: center; }

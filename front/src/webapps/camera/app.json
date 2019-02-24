@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fa fa-camera fa-2x",
+	"colorCls": "w3-green",
+	"title": "Camera",
+	"styles": ["app.css"]
+}

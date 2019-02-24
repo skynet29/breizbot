@@ -1,0 +1,25 @@
+.breizbot-apps {
+
+	.tile {
+		width: 100px;
+		height: 100px;
+		margin: 10px;
+		border: 1px solid black;
+		display: flex;
+		flex-direction: column;
+		//align-items: center;
+		justify-content: center;
+	}
+
+	.main {
+		margin: 10px;
+		display: flex;
+		flex-direction: row;
+		//flex: 1;
+		height: 100%;
+		align-items: flex-start;
+		flex-wrap: wrap;
+		align-content: start;		
+	}
+
+}

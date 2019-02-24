@@ -1,0 +1,32 @@
+
+.breizbot-users {
+
+	table {
+		border-collapse:  collapse;
+		
+	}
+
+	td, th {
+		border: 1px solid black;
+		padding: 5px;
+	}
+
+	.main {
+		margin: 10px;
+	}
+
+	.btnAddUser {
+		margin-bottom: 10px;
+	}
+
+}
+
+.breizbot-users.dlgAddUser {
+	display: flex;
+	flex-direction: column;
+
+	input {
+		margin-bottom: 5px;
+		padding: 5px;
+	}
+} 

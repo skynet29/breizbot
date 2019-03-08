@@ -20,16 +20,29 @@ const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
 const path = require('path')
 
+const MongoDBStore = require('connect-mongodb-session')(session);
+
+const store = new MongoDBStore({
+  uri: config.dbUrl,
+  databaseName: config.dbName,
+  collection: 'sessions'
+})
+
+store.on('error', function(error) {
+  console.log(error);
+})
 
 const app = express()
 
 app.use(session({
 	secret: 'keyboard cat',
-	//store,
+	store,
 	resave: true,
 	saveUninitialized: true,
-	cookie: {maxAge: null}
-})) // maxAge infini :)
+	cookie: {
+		maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
+	}
+}))
 
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(bodyParser.json())

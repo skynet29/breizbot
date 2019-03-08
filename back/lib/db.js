@@ -1,21 +1,20 @@
-
 const MongoClient = require('mongodb').MongoClient
 
-var db = null
+const config = require('./config')
 
-const dbUrl = 'mongodb://localhost:27017';
-const dbName = 'breizbot'
+
+var db = null
 
 module.exports =  {
 	init: function() {
 		return new Promise((resolve, reject) => {
-			MongoClient.connect(dbUrl, (err, client) => {
+			MongoClient.connect(config.dbUrl, (err, client) => {
 				if (err) {
 					reject(err)
 					return
 				}
 
-				db = client.db(dbName)
+				db = client.db(config.dbName)
 				resolve(db)
 			})			
 		})

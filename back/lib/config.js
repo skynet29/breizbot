@@ -43,5 +43,7 @@ module.exports = {
 	httpPort: 8080,
 	httpsPort: 8443,
 	domain: 'com.breizbot.ovh',
-	email: 'marc.delomez@free.com'
+	email: 'marc.delomez@free.com',
+	dbUrl: 'mongodb://localhost:27017',
+	dbName: 'breizbot'
 }

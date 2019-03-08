@@ -2,6 +2,8 @@ const config = require('./lib/config')
 console.log('config', config)
 
 const db = require('./lib/db')
+const wss = require('./lib/wss')
+
 
 db.init().then(dbReady)
 .catch((e) => {
@@ -82,6 +84,8 @@ if (config.USESSL) {
 	http.createServer(greenlock.middleware(redir)).listen(config.httpPort)
 	 
 	https.createServer(greenlock.tlsOptions, app).listen(config.httpsPort)	
+
+	wss.init(greenlock.tlsOptions, store)
 }
 else {
 	app.listen(config.httpPort, function() {

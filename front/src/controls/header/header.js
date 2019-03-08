@@ -1,5 +1,7 @@
 $$.control.registerControl('breizbot.header', {
 
+	deps: ['breizbot.broker'],
+
 	props: {
 		userName: 'Unknown',
 		showHome: true,
@@ -8,7 +10,7 @@ $$.control.registerControl('breizbot.header', {
 
 	template: {gulp_inject: './header.html'},
 
-	init: function(elt) {
+	init: function(elt, broker) {
 
 		$$.viewController(elt, {
 			data: {
@@ -33,6 +35,10 @@ $$.control.registerControl('breizbot.header', {
 					}
 				}
 			}
+		})
+
+		broker.register('breizbot.notif', function(msg) {
+			console.log('msg', msg)
 		})
 	}
 });

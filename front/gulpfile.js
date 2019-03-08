@@ -14,6 +14,7 @@ var dest = './dist'
 
 gulp.task('breizbot.js', function() {
 	return gulp.src([
+		'./externals/eventemitter2.js',
 		'./src/controls/**/*.js',
 		'./src/services/**/*.js',
 		])

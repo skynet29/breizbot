@@ -11,6 +11,7 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "connect-mongodb-session": "^2.1.1",
+    "cookie": "^0.3.1",
     "ejs": "^2.6.1",
     "express": "^4.16.4",
     "express-fileupload": "^1.1.1-alpha.3",
@@ -18,6 +19,7 @@
     "fs-extra": "^7.0.1",
     "greenlock": "^2.6.7",
     "mongodb": "^3.1.13",
+    "nodejs-websocket": "^1.7.2",
     "redirect-https": "^1.3.0"
   },
   "devDependencies": {

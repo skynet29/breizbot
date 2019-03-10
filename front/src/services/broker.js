@@ -32,7 +32,7 @@
 
 			this.sock.addEventListener('message', (ev) => {
 				const msg = JSON.parse(ev.data)
-				console.log('[Broker] message', msg)
+				//console.log('[Broker] message', msg)
 				
 				if (msg.type == 'ready') {
 					this.topics.eventNames().forEach((topic) => {
@@ -67,7 +67,7 @@
 
 
 		sendMsg(msg) {
-			console.log('[Broker] sendMsg', this.isConnected, msg)
+			//console.log('[Broker] sendMsg', this.isConnected, msg)
 			msg.time = Date.now()
 			var text = JSON.stringify(msg)
 			if (this.isConnected) {

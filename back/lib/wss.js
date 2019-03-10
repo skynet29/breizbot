@@ -85,6 +85,11 @@ function onConnect(client, store) {
 	}
 }
 
+function sendMessage(userName, topic, data) {
+	getBroker(userName).sendMessage(topic, data)
+}
+
 module.exports = {
-	init
+	init,
+	sendMessage
 }

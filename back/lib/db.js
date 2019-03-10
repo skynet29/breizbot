@@ -1,4 +1,4 @@
-const MongoClient = require('mongodb').MongoClient
+const {MongoClient,  ObjectID} = require('mongodb')
 
 const config = require('./config')
 
@@ -78,7 +78,22 @@ module.exports =  {
 
 			return db.collection('users').updateOne({username}, update) 
 		})
-	}
+	},
+
+	addNotif: function(to, notif) {
+		console.log(`addNotif`, to, notif)
+		return db.collection('notifs').insertOne({to, notif})
+	},
+
+	getNotifs: function(to) {
+		console.log('getNotifs')
+		return db.collection('notifs').find({to}).toArray()
+	},
+
+	removeNotif: function(notifId) {
+		console.log(`removeNotif`, notifId)
+		return db.collection('notifs').deleteOne({_id: new ObjectID(notifId)})
+	},	
 
 }
 

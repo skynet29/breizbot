@@ -47,8 +47,7 @@ module.exports = function(app) {
 				req.session.connected = true
 				req.session.user = user
 				req.session.userInfo = data
-				res.redirect('/')
-
+				res.redirect('/')				
 			})
 			
 		}

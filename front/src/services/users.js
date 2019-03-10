@@ -24,9 +24,18 @@ $$.service.registerService('breizbot.users', ['brainjs.http'], function(config, 
 
 		activateApp: function(appName, activated) {
 			return http.post(`/api/users/activateApp`, {appName, activated})
-		}
+		},
 
+		sendNotif: function(to, notif) {
+			return http.post(`/api/users/sendNotif`, {to, notif})
+		},
 
-		
+		removeNotif: function(notif) {
+			return http.post(`/api/users/removeNotif`, notif)
+		},
+
+		getNotifs: function() {
+			return http.get(`/api/users/getNotifs`)
+		},
 	}
 });

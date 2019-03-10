@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const db = require('../lib/db')
+const wss = require('../lib/wss')
 
 
 router.get('/', function(req, res) {
@@ -48,5 +49,57 @@ router.post('/activateApp',function(req, res) {
 	})
 
 })
+
+router.post('/sendNotif', function(req, res) {
+	console.log('sendNotif', req.body)
+	const {to, notif} = req.body
+
+	db.addNotif(to, notif)
+	.then(() => {
+		return db.getNotifs(to)
+	})
+	.then((notifs) => {
+		console.log('notifs', notifs)
+		wss.sendMessage(to, 'breizbot.notif', notifs)
+		res.sendStatus(200)		
+	})	
+	.catch(() => {
+		res.sendStatus(400)
+	})
+
+})
+
+router.post('/removeNotif', function(req, res) {
+	console.log('removeNotif', req.body)
+	const {_id, to} = req.body
+
+	db.removeNotif(_id)
+	.then(() => {
+		return db.getNotifs(to)
+	})
+	.then((notifs) => {
+		console.log('notifs', notifs)
+		wss.sendMessage(to, 'breizbot.notif', notifs)
+		res.sendStatus(200)		
+	})	
+	.catch(() => {
+		res.sendStatus(400)
+	})
+
+})
+
+router.get('/getNotifs', function(req, res) {
+	console.log('getNotifs', req.session.user)
+
+	db.getNotifs(req.session.user)
+	.then((notifs) => {
+		res.json(notifs)		
+	})	
+	.catch(() => {
+		res.sendStatus(400)
+	})
+
+})
+
 
 module.exports = router

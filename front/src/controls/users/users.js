@@ -20,7 +20,8 @@ $$.control.registerControl('breizbot.users', {
 					{name: 'location', label: 'Location'},
 					{name: 'email', label: 'Email'},
 					{label: 'Actions', buttons: [
-						{cmd: 'delete', title: 'Delete', icon: 'fa fa-trash'}
+						{cmd: 'delete', title: 'Delete', icon: 'fa fa-trash'},
+						{cmd: 'notif', title: 'Send Notification', icon: 'fa fa-bell'},
 					]}
 				],
 				data: []
@@ -36,6 +37,11 @@ $$.control.registerControl('breizbot.users', {
 					if (cmd == 'delete') {
 						$$.ui.showConfirm({title: 'Delete User', content: 'Are you sure ?'}, function() {
 							users.remove(data.username).then(getUsers)
+						})
+					}
+					if (cmd == 'notif') {
+						$$.ui.showPrompt({title: 'Send Notification', label: 'Message'}, function(text) {
+							users.sendNotif(data.username, text)
 						})
 					}
 				}

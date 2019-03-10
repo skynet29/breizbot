@@ -6,6 +6,7 @@ class Broker {
 	constructor(userName) {
 		this.clients = []
 		this.userName = userName
+		this.history = {}
 
 	}
 
@@ -73,6 +74,9 @@ class Broker {
 			case 'register':
 				console.log(`client subscribes to topic '${topic}'`)
 				client.registeredTopics[topic] = 1
+				if (this.history[topic] != undefined) {
+					sendMsg(client, this.history[topic])
+				}
 			break
 
 			case 'notif':
@@ -101,7 +105,9 @@ class Broker {
 			topic,
 			data
 		}	
-		this.broadcastToSubscribers(msg)		
+		this.broadcastToSubscribers(msg)
+		msg.hist = true
+		this.history[topic]	= msg	
 	}
 
 

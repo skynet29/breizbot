@@ -4,12 +4,7 @@ $$.control.registerControl('breizbot.main', {
 
 	init: function(elt) {
 
-		$$.viewController(elt, {
-			data: {
-				center: {lat: 48.39, lng: -4.486}
-			}
-
-		})
+		$$.viewController(elt)
 	}
 });
 

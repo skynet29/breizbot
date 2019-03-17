@@ -20,17 +20,13 @@ $$.control.registerControl('breizbot.files', {
 				files: [],
 				selectedFiles: [],
 				operation: 'none',
-				getSize: function() {
-					return 'Size : ' + Math.floor(this.f.size/1024) + ' Ko'
+				hasSelection: false,
+				getSize: function(size) {
+					return 'Size : ' + Math.floor(size/1024) + ' Ko'
 				},
-				canSelect: function() {
-					return this.f.name != '..' && this.selectMode
-				},
-				$hasSelection: function() {				
-					return this.selectMode && elt.find('.check:checked').length > 0
-				},
-				$hasSelectedFiles: function() {
-					return this.selectedFiles.length > 0
+
+				hasSelectedFiles: function() {
+					return selectedFiles.length > 0
 				}
 			},
 			events: {
@@ -41,7 +37,8 @@ $$.control.registerControl('breizbot.files', {
 				},
 				onCheckClick: function(ev) {
 					console.log('onCheckClick')
-					ctrl.update('$hasSelection')
+
+					ctrl.setData({hasSelection: (elt.find('.check:checked').length > 0)})
 				},
 				onFolderClick: function(ev) {
 					const dirName = $(this).closest('.thumbnail').data('name')
@@ -79,8 +76,7 @@ $$.control.registerControl('breizbot.files', {
 				onToggleSelMode: function()	{
 					console.log('onToggleSelMode')
 
-					ctrl.setData({selectMode: !ctrl.model.selectMode})
-					ctrl.update('files')
+					setSelMode(!ctrl.model.selectMode)
 				},
 
 				onDeleteFiles: function(ev) {
@@ -117,20 +113,19 @@ $$.control.registerControl('breizbot.files', {
 					console.log('onCutFiles')
 					ctrl.setData({
 						selectedFiles: getSelFiles(),
-						selectMode: false,
 						operation: 'cut'
 					})
-					ctrl.update('files')
+					setSelMode(false)
 				},
 
 				onCopyFiles: function(ev) {
 					console.log('onCopyFiles')
 					ctrl.setData({
 						selectedFiles: getSelFiles(),
-						selectMode: false,
 						operation: 'copy'
 					})
-					ctrl.update('files')
+					
+					setSelMode(false)
 				},
 				onPasteFiles: function(ev) {
 					console.log('onPasteFiles')
@@ -146,7 +141,7 @@ $$.control.registerControl('breizbot.files', {
 					})
 					.catch(function(resp) {
 						console.log('resp', resp)
-						ctrl.setData({selectedFiles: [], operation: 'none'})
+						//ctrl.setData({selectedFiles: [], operation: 'none'})
 						$$.ui.showAlert({
 							content: resp.responseText,
 							title: 'Error'
@@ -177,6 +172,14 @@ $$.control.registerControl('breizbot.files', {
 
 		})
 
+		function setSelMode(selMode) {
+			if (selMode == false) {
+				ctrl.model.hasSelection = false
+			}
+			ctrl.model.selectMode = selMode
+			ctrl.forceUpdate('files')
+		}
+
 		function getSelFiles() {
 			const selFiles = []
 			elt.find('.check:checked').each(function() {
@@ -197,7 +200,8 @@ $$.control.registerControl('breizbot.files', {
 				if (rootDir != '/') {
 					files.unshift({name: '..', folder: true})
 				}
-				ctrl.setData({files, rootDir, selectMode: false})
+
+				ctrl.setData({files, rootDir, selectMode: false, hasSelection: false})
 
 			})		
 		}

@@ -56,11 +56,11 @@ router.post('/sendNotif', function(req, res) {
 
 	db.addNotif(to, notif)
 	.then(() => {
-		return db.getNotifs(to)
+		return db.getNotifCount(to)
 	})
-	.then((notifs) => {
-		console.log('notifs', notifs)
-		wss.sendMessage(to, 'breizbot.notif', notifs)
+	.then((notifCount) => {
+		console.log('notifCount', notifCount)
+		wss.sendMessage(to, 'breizbot.notifCount', notifCount)
 		res.sendStatus(200)		
 	})	
 	.catch(() => {
@@ -69,17 +69,18 @@ router.post('/sendNotif', function(req, res) {
 
 })
 
-router.post('/removeNotif', function(req, res) {
-	console.log('removeNotif', req.body)
-	const {_id, to} = req.body
+router.delete('/removeNotif/:id', function(req, res) {
+	console.log('removeNotif', req.params)
+	const {id} = req.params
+	const to = req.session.user
 
-	db.removeNotif(_id)
+	db.removeNotif(id)
 	.then(() => {
-		return db.getNotifs(to)
+		return db.getNotifCount(to)
 	})
-	.then((notifs) => {
-		console.log('notifs', notifs)
-		wss.sendMessage(to, 'breizbot.notif', notifs)
+	.then((notifCount) => {
+		console.log('notifCount', notifCount)
+		wss.sendMessage(to, 'breizbot.notifCount', notifCount)
 		res.sendStatus(200)		
 	})	
 	.catch(() => {
@@ -94,6 +95,19 @@ router.get('/getNotifs', function(req, res) {
 	db.getNotifs(req.session.user)
 	.then((notifs) => {
 		res.json(notifs)		
+	})	
+	.catch(() => {
+		res.sendStatus(400)
+	})
+
+})
+
+router.get('/getNotifCount', function(req, res) {
+	console.log('getNotifCount', req.session.user)
+
+	db.getNotifCount(req.session.user)
+	.then((notifCount) => {
+		res.json(notifCount)		
 	})	
 	.catch(() => {
 		res.sendStatus(400)

@@ -90,6 +90,11 @@ module.exports =  {
 		return db.collection('notifs').find({to}).toArray()
 	},
 
+	getNotifCount: function(to) {
+		console.log('getNotifCount')
+		return db.collection('notifs').countDocuments({to})
+	},
+
 	removeNotif: function(notifId) {
 		console.log(`removeNotif`, notifId)
 		return db.collection('notifs').deleteOne({_id: new ObjectID(notifId)})

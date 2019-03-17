@@ -3,6 +3,8 @@ const path = require('path')
 const getBrainjsLib = require('../lib/brainjs')
 const apps = require('../lib/apps')
 
+const sysApps = ['store', 'notif']
+
 module.exports = function(app) {
 	app.get('/apps/:app', function(req, res) {
 		console.log('requestedApp', req.params)
@@ -12,7 +14,7 @@ module.exports = function(app) {
 			const appPath = path.join('/webapps/', app)
 
 
-			if (app === 'store' || app in userInfo.apps) {
+			if (sysApps.includes(app) || app in userInfo.apps) {
 				apps.getAppInfo(app).then((appInfo) => {
 					let styles = appInfo.styles || []
 					styles = styles.map((fileName) => {

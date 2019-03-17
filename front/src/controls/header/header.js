@@ -11,23 +11,7 @@ $$.control.registerControl('breizbot.header', {
 	template: {gulp_inject: './header.html'},
 
 	init: function(elt, broker, users) {
-
-		const dlgCtrl = $$.dialogController({
-			title: 'Notifications',
-			template: {gulp_inject: './notifs.html'},
-			data: {notifs: []},
-			options: {
-				width: 'auto'
-			},
-			events: {
-				onDelete: function() {
-					var notif = $(this).closest('li').data('notif')
-					console.log('onDelete', notif)
-					users.removeNotif(notif)
-				}
-			}
-		})		
-
+	
 		const ctrl = $$.viewController(elt, {
 			data: {
 				items: {
@@ -57,25 +41,22 @@ $$.control.registerControl('breizbot.header', {
 						$$.ui.showAlert({content: 'no notifications', title: 'Notifications'})
 					}
 					else {
-						dlgCtrl.show()
+						location.href = '/apps/notif'
 					}					
 				}
 			}
 		})
 
-		function updateNotifs(notifs) {
-			ctrl.setData({nbNotif: notifs.length})
-			dlgCtrl.setData({notifs})
-			if (notifs.length == 0) {
-				dlgCtrl.hide()
-			}			
+		function updateNotifs(nbNotif) {
+			ctrl.setData({nbNotif})
+		
 		}
 
-		broker.register('breizbot.notif', function(msg) {
-			//console.log('msg', msg)
+		broker.register('breizbot.notifCount', function(msg) {
+			console.log('msg', msg)
 			updateNotifs(msg.data)
 		})
 
-		users.getNotifs().then(updateNotifs)
+		users.getNotifCount().then(updateNotifs)
 	}
 });

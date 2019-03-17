@@ -11,11 +11,11 @@
 	<div>
 		<button class="notification w3-button" title="Notification" bn-event="click: onNotification">
 			<i class="fa fa-lg fa-bell w3-text-white" ></i>
-			<span class="w3-badge w3-red w3-tiny" bn-text="nbNotif"></span>			
+			<span class="w3-badge w3-red w3-tiny" bn-text="nbNotif" bn-show="nbNotif > 0"></span>			
 		</button>
 
 		<div bn-control="brainjs.contextmenu" 
-			bn-data="items: items" 
+			bn-data="{items}" 
 			data-trigger="left" 
 			class="w3-button" 
 			bn-event="contextmenuchange: onContextMenu">

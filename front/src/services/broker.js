@@ -75,8 +75,8 @@
 			}
 		}
 
-		emit(topic, data) {
-			//console.log('publish', topic, data)
+		emitTopic(topic, data) {
+			console.log('[Broker] emitTopic', topic, data)
 			var msg = {
 				type: 'notif',
 				topic,

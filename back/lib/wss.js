@@ -1,5 +1,8 @@
 const ws = require("nodejs-websocket")
 const cookie = require('cookie')
+const auth = require('basic-auth')
+
+const db = require('./db')
 
 
 const config = require('./config')
@@ -36,21 +39,43 @@ function getBroker(userName) {
 	return broker	
 }
 
-function addClient(userName, client) {
-	//console.log('addClient', userName)
-	const broker = getBroker(userName)
-	
-	broker.addClient(client)
-}
-
 
 function onConnect(client, store) {
 
 	const {path, headers} = client
 	console.log('onConnect', path)
 
+	if (path.startsWith('/homebox/')) {
+		const authorization = headers.authorization
+		if (authorization == undefined) {
+			sendError(client, 'Missing authorization')
+			return
+		}		
 
-	if (path.startsWith('/hmi/')) {
+		const credentials = auth.parse(headers.authorization)
+		console.log('credentials', credentials)
+		const userName = credentials.name
+		db.getUserInfo(userName)
+		.then((userInfo) => {
+			const {pwd} = userInfo
+			if (pwd === credentials.pass) {
+					const broker = getBroker(userName)	
+					if (broker.homeboxClient != null) {
+						sendError(client, 'A homebox is already connected')
+					}
+					else {
+						broker.setHomeboxClient(client)
+					}
+			}
+			else {
+				sendError(client, 'Bad password')
+			}
+		})
+		.catch((e) => {			
+			sendError(client, e)
+		})
+	}
+	else if (path.startsWith('/hmi/')) {
 
 		if (headers.cookie == undefined) {
 			sendError(client, 'Missing cookie')
@@ -76,8 +101,9 @@ function onConnect(client, store) {
 				return
 			}
 			const userName = session.user
-			addClient(userName, client)
-
+			const broker = getBroker(userName)
+			
+			broker.addClient(client)
 		})
 	}
 	else {

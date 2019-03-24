@@ -185,6 +185,8 @@ class Broker {
 				client.sendText(text)
 			}
 		})
+    msg.hist = true
+    this.history[msg.topic] = msg     
 	}
 
 	sendMessage(topic, data) {
@@ -202,8 +204,7 @@ class Broker {
     else {              
       this.broadcastToSubscribers(msg)
     }		
-    msg.hist = true
-		this.history[topic]	= msg	
+
 	}
 
 

@@ -67,10 +67,10 @@
 
 
 		sendMsg(msg) {
-			//console.log('[Broker] sendMsg', this.isConnected, msg)
 			msg.time = Date.now()
 			var text = JSON.stringify(msg)
 			if (this.isConnected) {
+				console.log('[Broker] sendMsg', msg)
 				this.sock.send(text)
 			}
 		}
@@ -88,7 +88,7 @@
 
 
 		register(topic, callback) {
-
+			console.log('[Broker] register', topic)
 			this.topics.on(topic, callback)
 			this.sendMsg({type: 'register', topic})			
 		}

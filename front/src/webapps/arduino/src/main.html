@@ -1,0 +1,30 @@
+<div class="scrollPanel">
+    <table class="w3-table-all w3-centered">
+        <thead>
+            <tr class="w3-green">
+                <th>Alias</th>
+                <th>Type</th>
+                <th>Properties</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody bn-each="devices" bn-iter="dev" bn-event="click.action: onAction">
+            <tr bn-data="{item: dev}">
+                <td bn-text="dev.alias"></td>
+                <td bn-text="dev.type"></td>
+                <td bn-each="dev.props" bn-iter="prop">
+                    <div>
+                        <span bn-text="prop.label"></span>:
+                        <span bn-text="prop.value"></span>
+                    </div>
+                </td>
+                <td bn-each="dev.actions" bn-iter="a">
+                    <button class="action w3-btn w3-blue w3-margin-right" 
+                        bn-data="{action: a.cmd}" 
+                        bn-text="a.label"></button>
+                </td>
+            </tr>       
+
+        </tbody>
+    </table>
+</div>

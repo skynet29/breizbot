@@ -1,3 +1,5 @@
+const wildcard = require('wildcard')
+
 function sendMsg(client, msg) {
 	client.sendText(JSON.stringify(msg))
 }
@@ -128,8 +130,13 @@ class Broker {
     console.log(`client subscribes to topic '${topic}'`)
     client.registeredTopics[topic] = 1
 
-    if (this.history[topic] != undefined) {
-      sendMsg(client, this.history[topic])
+    // if (this.history[topic] != undefined) {
+    //   sendMsg(client, this.history[topic])
+    // }
+
+    const msgs = wildcard(msg.topic, this.history)
+    for(let i in msgs) {
+      sendMsg(client, msgs[i])
     }
 
     if (topic.startsWith('homebox.') && this.homeboxClient != null) {
@@ -181,9 +188,16 @@ class Broker {
 	broadcastToSubscribers(msg) {
 		const text = JSON.stringify(msg)
 		this.clients.forEach((client) => {
-			if (client.registeredTopics[msg.topic] == 1) {
-				client.sendText(text)
-			}
+			// if (client.registeredTopics[msg.topic] == 1) {
+			// 	client.sendText(text)
+			// }
+      Object.keys(client.registeredTopics).forEach((registeredTopic) => {
+        if (wildcard(registeredTopic, msg.topic)) {
+          client.sendText(text)
+          return
+        }
+
+      })      
 		})
     msg.hist = true
     this.history[msg.topic] = msg     

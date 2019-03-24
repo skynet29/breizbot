@@ -8,27 +8,24 @@ $$.control.registerControl('breizbot.main', {
 
 		const ctrl = $$.viewController(elt)
 
-		broker.register('homebox.map.updateShape', (msg) => {
-			if (msg.hist === true) {
+		broker.register('homebox.map.updateShape.*', (msg) => {
+
+			const shapeId = msg.topic.split('.').pop()
+			//console.log('shapeId', shapeId)
+
+			const shape = msg.data
+
+			if (shape == undefined) {
+				ctrl.scope.map.removeShape(shapeId)
 				return
 			}
-			//console.log('msg', msg)
-			const {id, shape} = msg.data
+
 			try {
-				ctrl.scope.map.updateShape(id, shape)
+				ctrl.scope.map.updateShape(shapeId, shape)
 			}
 			catch(e) {
-				ctrl.scope.map.addShape(id, shape)
+				ctrl.scope.map.addShape(shapeId, shape)
 			}
-		})
-
-		broker.register('homebox.map.removeShape', (msg) => {
-			if (msg.hist === true) {
-				return
-			}
-			//console.log('msg', msg)
-			const {id} = msg.data
-			ctrl.scope.map.removeShape(id)
 		})
 
 	}

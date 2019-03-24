@@ -15,10 +15,10 @@ $$.control.registerControl('breizbot.header', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				items: {
-					pwd: {name: 'Change password', icon: 'fa-lock'},
-					apps: {name: 'Applications', icon: 'fa-th'},
+					pwd: {name: 'Change password', icon: 'fas fa-lock'},
+					apps: {name: 'Applications', icon: 'fas fa-th'},
 					sep: '------',
-					logout: {name: 'Logout', icon: 'fa-power-off'}
+					logout: {name: 'Logout', icon: 'fas fa-power-off'}
 				},
 				userName: this.props.userName,
 				showHome: this.props.showHome,
@@ -53,7 +53,7 @@ $$.control.registerControl('breizbot.header', {
 		}
 
 		broker.register('breizbot.notifCount', function(msg) {
-			console.log('msg', msg)
+			//console.log('msg', msg)
 			updateNotifs(msg.data)
 		})
 

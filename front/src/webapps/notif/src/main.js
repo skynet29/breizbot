@@ -25,7 +25,7 @@ $$.control.registerControl('breizbot.main', {
 		}
 
 		broker.register('breizbot.notifCount', function(msg) {
-			console.log('msg', msg)
+			//console.log('msg', msg)
 			updateNotifs()
 		})
 

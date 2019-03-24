@@ -16,18 +16,6 @@
   flex-wrap: wrap;
   align-content: start; }
 
-.breizbot-header .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center; }
-
-.breizbot-header .notification {
-  position: relative; }
-
-.breizbot-header .notification .w3-badge {
-  position: relative;
-  left: -15px; }
-
 .breizbot-files .contentPanel {
   height: 100%;
   display: flex;
@@ -54,6 +42,18 @@
 
 .breizbot-files .toolbar {
   margin-bottom: 10px; }
+
+.breizbot-header .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; }
+
+.breizbot-header .notification {
+  position: relative; }
+
+.breizbot-header .notification .w3-badge {
+  position: relative;
+  left: -15px; }
 
 .breizbot-users table {
   border-collapse: collapse; }

@@ -1,47 +1,22 @@
 $$.control.registerControl('breizbot.main', {
 
-	deps: ['breizbot.files'],
-
 	template: {gulp_inject: './main.html'},
 
-	init: function(elt, srvFiles) {
-
-		const audio = new Audio('/webapps/camera/assets/camera_shutter.mp3')
+	init: function(elt) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-			},
-			events: {
-				onTakePicture: function(ev) {
-					audio.play()
-					const url = ctrl.scope.camera.takePicture()
-					$$.ui.showConfirm({
-						okText: 'Save',
-						cancelText: 'Close',
-						content: `<img src="${url}" width="400">`,
-						width: 'auto', 
-						title: 'Picture',
-						position: { my: 'left top', at: 'left top', of: $('.breizbot-main') }
-					}, function() {
-						const fileName = 'SNAP' + Date.now() + '.png'
-						console.log('fileName', fileName)
+				pages: [
 
-						srvFiles.uploadFile(url, fileName, '/images/camera').then(function(resp) {
-							console.log('resp', resp)
-						})	
-						.catch(function(resp) {
-							$$.ui.showAlert({
-								title: 'Error',
-								content: resp.responseText
-							})
-						})
-					})					
-				}
+					{name: 'first', control: 'firstPage'},
+					{name: 'snap', control: 'snapPage', title: 'Picture', buttons: [
+						{label: 'Save', name: 'save'}
+					]}
+				]
 			}
 		})
-
-		ctrl.scope.camera.start()
 	}
+
 });
 
 

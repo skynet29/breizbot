@@ -13,6 +13,7 @@ $$.control.registerControl('breizbot.home', {
 			events: {
 				onAppClick: function(ev, data) {
 					location.href = '/apps/' + data.appName
+					//window.open('/apps/' + data.appName)
 				}
 			}
 		})

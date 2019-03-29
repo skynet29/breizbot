@@ -75,7 +75,7 @@ $$.control.registerControl('breizbot.main', {
 					actions.push({label, cmd})
 				}
 
-				return {actions, props, actions, alias, deviceId, type}
+				return {actions, props, alias, deviceId, type}
 			})
 
 			console.log('devices', devices)

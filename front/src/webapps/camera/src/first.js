@@ -22,7 +22,13 @@ $$.control.registerControl('firstPage', {
 				onTakePicture: function(ev) {
 					audio.play()
 					const url = ctrl.scope.camera.takePicture()
-					$pager.pushPage('snap', 'Snapshot', {url})					
+					$pager.pushPage('snapPage', {
+						title: 'Snapshot', 
+						props: {url},
+						buttons: [
+							{label: 'Save', name: 'save'}
+						]
+					})					
 				}
 			}
 		})

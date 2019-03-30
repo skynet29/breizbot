@@ -4,17 +4,7 @@ $$.control.registerControl('breizbot.main', {
 
 	init: function(elt) {
 
-		const ctrl = $$.viewController(elt, {
-			data: {
-				pages: [
-
-					{name: 'first', control: 'firstPage'},
-					{name: 'snap', control: 'snapPage', title: 'Picture', buttons: [
-						{label: 'Save', name: 'save'}
-					]}
-				]
-			}
-		})
+		const ctrl = $$.viewController(elt)
 	}
 
 });

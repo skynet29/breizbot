@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fa fa-video fa-2x",
+	"colorCls": "w3-green",
+	"title": "Tchat",
+	"styles": ["app.css"]
+}

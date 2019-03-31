@@ -1,4 +1,4 @@
-$$.control.registerControl('breizbot.main', {
+$$.control.registerControl('rootPage', {
 
 	deps: ['breizbot.broker'],
 

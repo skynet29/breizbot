@@ -117,5 +117,6 @@ function sendMessage(userName, topic, data) {
 
 module.exports = {
 	init,
-	sendMessage
+	sendMessage,
+	getBroker
 }

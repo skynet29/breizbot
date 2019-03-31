@@ -221,6 +221,10 @@ class Broker {
 
 	}
 
+  hasClient() {
+    return this.clients.length > 0
+  }
+
 
 }
 

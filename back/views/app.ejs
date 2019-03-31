@@ -22,6 +22,7 @@
 html, body {
 	height: 100%;
 	margin: 0;
+	overflow: hidden;
 }
 	
 body {
@@ -35,14 +36,21 @@ body {
 
 <script>
 	$(function() {
-		$$.viewController('body')
+		const ctrl = $$.viewController('body', {
+			data: {
+				strParams: '<%- params %>',
+				getParams: function() {
+					return JSON.parse(strParams)
+				}
+			}
+		})
 	})
 
 </script>
 
 <body>
 	<div bn-control="breizbot.header" data-user-name="<%= pseudo %>" data-title="<%= title %>"></div>
-	<div bn-control="breizbot.main" style="flex: 1;"></div>
+	<div bn-control="brainjs.pager" data-root-page="rootPage"  style="flex: 1; overflow: hidden;" bn-data="{$params:getParams()}"></div>
 </body>
 
 </html>

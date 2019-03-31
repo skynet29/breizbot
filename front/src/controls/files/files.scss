@@ -9,11 +9,16 @@
 	.container {
 		display: flex;
 		flex-direction: row;
-		flex: 1;
+		//flex: 1;
 		//align-items: stretch;
 		align-items: flex-start;
 		flex-wrap: wrap;
 		align-content: start;
+	}
+
+	.scrollPanel {
+		flex: 1;
+		overflow: auto;
 	}
 
 	.thumbnail {

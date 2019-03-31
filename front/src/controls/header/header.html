@@ -3,10 +3,25 @@
 		<a bn-show="showHome" class="w3-button" href="/" title="Go Home">
 			<i class="fa fa-home fa-lg"></i>
 		</a>		
+		<div bn-show="hasIncomingCall" 
+			bn-control="brainjs.contextmenu"
+			bn-event="contextmenuchange: onCallResponse"
+			bn-data="{
+				trigger: 'left', 
+				items: {
+				accept: {name: 'Accept'},
+				deny: {name: 'Deny'},
+				}
+			}"
+			class="w3-button">
+			<i class="fa fa-phone fa-pulse"></i>
+			<span bn-text="caller"></span>
+			<i class="fa fa-angle-down fa-lg"></i>
+		</div>
 	</div>
 
 
-	<span bn-text="title"></span>
+	<strong bn-text="title"></strong>
 
 	<div>
 		<button class="notification w3-button" title="Notification" bn-event="click: onNotification">

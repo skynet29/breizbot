@@ -7,7 +7,7 @@ const sysApps = ['store', 'notif']
 
 module.exports = function(app) {
 	app.get('/apps/:app', function(req, res) {
-		console.log('requestedApp', req.params)
+		console.log('requestedApp', req.params, req.query)
 		if (req.session.connected) {
 			const {app} = req.params
 			const {userInfo} = req.session
@@ -30,7 +30,8 @@ module.exports = function(app) {
 						 title: appInfo.title,
 						 pseudo: userInfo.pseudo,
 						 styles,
-						 scripts
+						 scripts,
+						 params: JSON.stringify(req.query)
 					})			
 				})
 

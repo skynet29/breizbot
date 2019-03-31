@@ -208,6 +208,10 @@ $$.control.registerControl('breizbot.files', {
 
 		loadData()
 
+		this.update = function() {
+			console.log('[FileCtrl] update')
+			loadData()
+		}
 	}
 
 });

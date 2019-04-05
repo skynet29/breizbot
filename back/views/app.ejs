@@ -36,21 +36,16 @@ body {
 
 <script>
 	$(function() {
-		const ctrl = $$.viewController('body', {
-			data: {
-				strParams: '<%- params %>',
-				getParams: function() {
-					return JSON.parse(strParams)
-				}
-			}
-		})
+		$$.service.configureService('breizbot.params', '<%- params %>')
+		
+		$$.viewController('body')
 	})
 
 </script>
 
 <body>
 	<div bn-control="breizbot.header" data-user-name="<%= pseudo %>" data-title="<%= title %>"></div>
-	<div bn-control="brainjs.pager" data-root-page="rootPage"  style="flex: 1; overflow: hidden;" bn-data="{$params:getParams()}"></div>
+	<div bn-control="brainjs.pager" data-root-page="rootPage"  style="flex: 1; overflow: hidden;"></div>
 </body>
 
 </html>

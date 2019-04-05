@@ -111,7 +111,7 @@ class Broker {
     const {topic} = msg
 
     if (client.registeredTopics[topic] != undefined) {
-      console.log(`client unsubscribes to topic '${topic}'`)
+      //console.log(`client unsubscribes to topic '${topic}'`)
       delete client.registeredTopics[topic]
     }
 
@@ -127,7 +127,7 @@ class Broker {
 
   handleRegister(client, msg) {
     const {topic} = msg
-    console.log(`client subscribes to topic '${topic}'`)
+    //console.log(`client subscribes to topic '${topic}'`)
     client.registeredTopics[topic] = 1
 
     // if (this.history[topic] != undefined) {
@@ -152,7 +152,7 @@ class Broker {
 
 	handleClientMsg(client, msg) {
 
-		console.log('[Broker] msg', this.userName, client.path, msg)
+		//console.log('[Broker] msg', this.userName, client.path, msg)
 
 		const {type, topic} = msg
 

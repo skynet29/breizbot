@@ -1,9 +1,11 @@
 (function() {
 
 
-	class BrokerClient {
+	class BrokerClient extends EventEmitter2 {
 
 		constructor() {
+			super()
+			
 			this.sock = null
 			this.isConnected = false
 			this.tryReconnect = true
@@ -40,7 +42,9 @@
 					// })		
 					Object.keys(this.registeredTopics).forEach((topic) => {
 						this.sendMsg({type: 'register', topic})	
-					})								
+					})	
+
+					this.emit('ready')							
 				}
 
 				if (msg.type == 'notif') {
@@ -73,7 +77,7 @@
 			msg.time = Date.now()
 			var text = JSON.stringify(msg)
 			if (this.isConnected) {
-				console.log('[Broker] sendMsg', msg)
+				//console.log('[Broker] sendMsg', msg)
 				this.sock.send(text)
 			}
 		}

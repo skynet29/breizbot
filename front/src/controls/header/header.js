@@ -55,8 +55,7 @@ $$.control.registerControl('breizbot.header', {
 					console.log('onCallResponse', data)
 					ctrl.setData({hasIncomingCall: false})
 					audio.pause()
-					if (cmd == 'accept') {
-						rtc.accept(ctrl.model.caller)
+					if (cmd == 'accept') {						
 						location.href = `/apps/video?caller=${ctrl.model.caller}`
 					}
 					if (cmd == 'deny') {

@@ -59,7 +59,7 @@ class Broker {
 
 	addClient(client) {
 
-		console.log('[Broker] addClient', this.userName, client.path)
+		//console.log('[Broker] addClient', this.userName, client.path)
 
 		this.clients.push(client)
 
@@ -88,7 +88,7 @@ class Broker {
 	}
 
 	removeClient(client) {
-		console.log('[Broker] removeClient', this.userName, client.path)
+		//console.log('[Broker] removeClient', this.userName, client.path)
 
     Object.keys(client.registeredTopics).forEach((topic) => {
       if (topic.startsWith('homebox.') && this.homeboxClient != null) {

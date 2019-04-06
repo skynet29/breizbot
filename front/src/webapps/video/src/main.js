@@ -161,8 +161,8 @@ $$.control.registerControl('rootPage', {
 			pc.setRemoteDescription(new RTCSessionDescription(msg.data.data))
 			console.log('Sending answer to peer.')
 			pc.createAnswer().then((sessionDescription) => {
-				pc.setLocalDescription(sessionDescription);
-				rtc.answer(params.caller, sessionDescription);
+				pc.setLocalDescription(sessionDescription)
+				rtc.answer(params.caller, sessionDescription)
 
 			})
 

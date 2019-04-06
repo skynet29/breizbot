@@ -3,7 +3,7 @@ const path = require('path')
 const getBrainjsLib = require('../lib/brainjs')
 const apps = require('../lib/apps')
 
-const sysApps = ['store', 'notif']
+const sysApps = ['store', 'notif', 'video']
 
 module.exports = function(app) {
 	app.get('/apps/:app', function(req, res) {

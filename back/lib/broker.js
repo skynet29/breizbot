@@ -1,4 +1,5 @@
 const wildcard = require('wildcard')
+const uniqid = require('uniqid')
 
 function sendMsg(client, msg) {
 	client.sendText(JSON.stringify(msg))
@@ -59,7 +60,7 @@ class Broker {
 
 	addClient(client) {
 
-		//console.log('[Broker] addClient', this.userName, client.path)
+		console.log('[Broker] addClient', this.userName, client.path)
 
 		this.clients.push(client)
 
@@ -82,13 +83,16 @@ class Broker {
 			console.log('connection error')
 		})	
 
-		sendMsg(client, {type: 'ready'})
+    const clientId = uniqid()
+    console.log('clientId', clientId)
+    client.clientId = clientId
+		sendMsg(client, {type: 'ready', clientId})
 		
 
 	}
 
 	removeClient(client) {
-		//console.log('[Broker] removeClient', this.userName, client.path)
+		console.log('[Broker] removeClient', this.userName, client.path, client.clientId)
 
     Object.keys(client.registeredTopics).forEach((topic) => {
       if (topic.startsWith('homebox.') && this.homeboxClient != null) {
@@ -177,6 +181,9 @@ class Broker {
             sendMsg(this.homeboxClient, msg)
           }
         }
+        else {
+          this.broadcastToSubscribers(msg, client)
+        }
 			break
 
 			default:
@@ -185,9 +192,12 @@ class Broker {
 
 	}	
 
-	broadcastToSubscribers(msg) {
+	broadcastToSubscribers(msg, sourceClient) {
 		const text = JSON.stringify(msg)
 		this.clients.forEach((client) => {
+      if (client == sourceClient) {
+        return
+      }
 			// if (client.registeredTopics[msg.topic] == 1) {
 			// 	client.sendText(text)
 			// }

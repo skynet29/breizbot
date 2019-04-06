@@ -14,6 +14,8 @@ $$.control.registerControl('breizbot.header', {
 
 		const audio = new Audio('/assets/skype.mp3')
 		audio.loop = true
+
+		let clientId
 	
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -56,10 +58,10 @@ $$.control.registerControl('breizbot.header', {
 					ctrl.setData({hasIncomingCall: false})
 					audio.pause()
 					if (cmd == 'accept') {						
-						location.href = `/apps/video?caller=${ctrl.model.caller}`
+						location.href = `/apps/video?caller=${ctrl.model.caller}&clientId=${clientId}`
 					}
 					if (cmd == 'deny') {
-						rtc.deny(ctrl.model.caller)
+						rtc.deny(clientId)
 					}
 				}
 			}
@@ -76,19 +78,20 @@ $$.control.registerControl('breizbot.header', {
 		})
 
 		broker.register('breizbot.rtc.call', function(msg) {
-			console.log('msg', msg)
 			if (msg.hist === true) {
 				return
 			}
+			console.log('msg', msg)
 			ctrl.setData({hasIncomingCall: true, caller: msg.data.from})
+			clientId = msg.data.clientId
 			audio.play()
 		})
 
 		broker.register('breizbot.rtc.cancel', function(msg) {
-			console.log('msg', msg)
 			if (msg.hist === true) {
 				return
 			}
+			console.log('msg', msg)
 			ctrl.setData({hasIncomingCall: false})
 			audio.pause()
 		})

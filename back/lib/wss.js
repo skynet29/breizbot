@@ -8,12 +8,13 @@ const db = require('./db')
 const config = require('./config')
 const Broker = require('./broker')
 
-var brokers = {}
+const brokers = {}
+let wss
 
 function init(options, store) {
 	options.secure = true
 
-	const wss = ws.createServer(options, function(client) {
+	wss = ws.createServer(options, function(client) {
 		onConnect(client, store)
 	})
 
@@ -115,8 +116,25 @@ function sendMessage(userName, topic, data) {
 	getBroker(userName).sendMessage(topic, data)
 }
 
+function sendMsg(client, msg) {
+	client.sendText(JSON.stringify(msg))
+}
+
+function sendTo(clientId, topic, data) {
+	console.log('sendTo', clientId, topic)
+	const dest = wss.connections.find((client) => {
+		return client.clientId == clientId
+	})
+	if (dest != undefined) {
+		sendMsg(dest, {type: 'notif', topic, data})
+		return true
+	}
+	return false
+}
+
 module.exports = {
 	init,
 	sendMessage,
-	getBroker
+	getBroker,
+	sendTo
 }

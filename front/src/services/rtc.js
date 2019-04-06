@@ -2,36 +2,36 @@ $$.service.registerService('breizbot.rtc', ['brainjs.http'], function(config, ht
 
 
 	return {
-		call: function(to) {
-			return http.post(`/api/rtc/send`, {to, type: 'call'})
+		call: function(to, clientId) {
+			return http.post(`/api/rtc/sendToUser`, {to, type: 'call', data: {clientId}})
 		},
 
 		cancel: function(to) {
-			return http.post(`/api/rtc/send`, {to, type: 'cancel'})
+			return http.post(`/api/rtc/sendToUser`, {to, type: 'cancel'})
 		},
 
-		accept: function(to) {
-			return http.post(`/api/rtc/send`, {to, type: 'accept'})
+		accept: function(clientId, fromClientId) {
+			return http.post(`/api/rtc/sendToClient`, {clientId, type: 'accept', data: {fromClientId}})
 		},
 
-		deny: function(to) {
-			return http.post(`/api/rtc/send`, {to, type: 'deny'})
+		deny: function(clientId) {
+			return http.post(`/api/rtc/sendToClient`, {clientId, type: 'deny'})
 		},
 
-		bye: function(to) {
-			return http.post(`/api/rtc/send`, {to, type: 'bye'})
+		bye: function(clientId) {
+			return http.post(`/api/rtc/sendToClient`, {clientId, type: 'bye'})
 		},
 
-		candidate: function(to, data) {
-			return http.post(`/api/rtc/send`, {to, type: 'candidate', data})
+		candidate: function(clientId, data) {
+			return http.post(`/api/rtc/sendToClient`, {clientId, type: 'candidate', data})
 		},
 
-		offer: function(to, data) {
-			return http.post(`/api/rtc/send`, {to, type: 'offer', data})
+		offer: function(clientId, data) {
+			return http.post(`/api/rtc/sendToClient`, {clientId, type: 'offer', data})
 		},
 
-		answer: function(to, data) {
-			return http.post(`/api/rtc/send`, {to, type: 'answer', data})
+		answer: function(clientId, data) {
+			return http.post(`/api/rtc/sendToClient`, {clientId, type: 'answer', data})
 		}
 
 	}

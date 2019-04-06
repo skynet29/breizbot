@@ -5,7 +5,7 @@
 
 		constructor() {
 			super()
-			
+
 			this.sock = null
 			this.isConnected = false
 			this.tryReconnect = true
@@ -44,7 +44,7 @@
 						this.sendMsg({type: 'register', topic})	
 					})	
 
-					this.emit('ready')							
+					this.emit('ready', {clientId: msg.clientId})							
 				}
 
 				if (msg.type == 'notif') {
@@ -93,9 +93,12 @@
 			this.sendMsg(msg)
 		}
 
+		onTopic(topic, callback) {
+			this.topics.on(topic, callback)
+		}
 
 		register(topic, callback) {
-			console.log('[Broker] register', topic)
+			//console.log('[Broker] register', topic)
 			if (this.registeredTopics[topic] == undefined) {
 				this.registeredTopics[topic] = 1
 			}

@@ -6,8 +6,6 @@ $$.control.registerControl('rootPage', {
 
 	init: function(elt, rtc, broker, params) {
 
-		let remoteClientId
-
 		const data = {
 			status: 'ready',
 			distant: ''
@@ -16,7 +14,7 @@ $$.control.registerControl('rootPage', {
 		if (params.caller != undefined) {
 			data.status = 'connected'
 			data.distant = params.caller
-			remoteClientId = params.clientId
+			rtc.setRemoteClientId(params.clientId)
 		}
 
 
@@ -45,7 +43,7 @@ $$.control.registerControl('rootPage', {
 					})
 				},
 				onHangup: function(ev) {
-					rtc.bye(remoteClientId)
+					rtc.bye()
 					ctrl.setData({status: 'ready', distant: ''})
 					stop()
 				}
@@ -71,11 +69,7 @@ $$.control.registerControl('rootPage', {
 			  pc.onicecandidate = function(event) {
 			  	//console.log('onicecandidate', event)
 			  	if (event.candidate) {
-			  		rtc.candidate(remoteClientId, {
-			  			label: event.candidate.sdpMLineIndex,
-			  			id: event.candidate.sdpMid,
-			  			candidate: event.candidate.candidate		    			
-			  		})
+			  		rtc.candidate(event.candidate)
 			  	}
 			  }
 			  pc.onaddstream = function(event) {
@@ -109,15 +103,15 @@ $$.control.registerControl('rootPage', {
 			localStream = stream
 
 			if (params.caller != undefined) {
-				rtc.accept(remoteClientId)
+				rtc.accept()
 				createPeerConnection()	
 				pc.addStream(localStream)				
 			}
 		})
 		.catch(function(e) {
 			console.log('error', e)
-			if (remoteClientId != undefined) {
-				rtc.deny(remoteClientId)
+			if (params.caller != undefined) {
+				rtc.deny()
 			}
 			ctrl.setData({distant: '', status: 'failed'})
 		  	//alert('getUserMedia() error: ' + e.name);
@@ -130,7 +124,7 @@ $$.control.registerControl('rootPage', {
 			}
 			console.log('msg', msg)
 			rtc.cancel(ctrl.model.distant)
-			remoteClientId = msg.srcId
+			rtc.setRemoteClientId(msg.srcId)
 
 			ctrl.setData({status: 'connected'})
 			createPeerConnection()
@@ -138,7 +132,7 @@ $$.control.registerControl('rootPage', {
 			pc.createOffer().then((sessionDescription) => {
 				console.log('createOffer', sessionDescription)
 				pc.setLocalDescription(sessionDescription)
-				rtc.offer(remoteClientId, sessionDescription)
+				rtc.offer(sessionDescription)
 			})
 		})
 
@@ -157,13 +151,12 @@ $$.control.registerControl('rootPage', {
 				return
 			}
 			console.log('msg', msg)
-			const message = msg.data
+			const {label, candidate} = msg.data
 
-		    const candidate = new RTCIceCandidate({
-		      sdpMLineIndex: message.label,
-		      candidate: message.candidate
-		    })
-		    pc.addIceCandidate(candidate)		
+		    pc.addIceCandidate(new RTCIceCandidate({
+		      sdpMLineIndex: label,
+		      candidate
+		    }))		
 		})		
 
 		broker.onTopic('breizbot.rtc.offer', function(msg) {
@@ -175,7 +168,7 @@ $$.control.registerControl('rootPage', {
 			console.log('Sending answer to peer.')
 			pc.createAnswer().then((sessionDescription) => {
 				pc.setLocalDescription(sessionDescription)
-				rtc.answer(remoteClientId, sessionDescription)
+				rtc.answer(sessionDescription)
 
 			})
 
@@ -203,7 +196,7 @@ $$.control.registerControl('rootPage', {
 
 		window.onbeforeunload = function() {
 			if (pc != undefined) {
-		  		rtc.bye(remoteClientId)
+		  		rtc.bye()
 			}
 		};		
 	

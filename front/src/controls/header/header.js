@@ -14,8 +14,6 @@ $$.control.registerControl('breizbot.header', {
 
 		const audio = new Audio('/assets/skype.mp3')
 		audio.loop = true
-
-		let clientId
 	
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -58,10 +56,13 @@ $$.control.registerControl('breizbot.header', {
 					ctrl.setData({hasIncomingCall: false})
 					audio.pause()
 					if (cmd == 'accept') {						
-						scheduler.openApp('video', {caller: ctrl.model.caller, clientId})
+						scheduler.openApp('video', {
+							caller: ctrl.model.caller,
+							clientId: rtc.getRemoteClientId()
+						})
 					}
-					if (cmd == 'deny') {
-						rtc.deny(clientId)
+					if (cmd == 'deny') {						
+						rtc.deny()
 					}
 				}
 			}
@@ -83,7 +84,7 @@ $$.control.registerControl('breizbot.header', {
 			}
 			console.log('msg', msg)
 			ctrl.setData({hasIncomingCall: true, caller: msg.data.from})
-			clientId = msg.srcId
+			rtc.setRemoteClientId(msg.srcId)
 			audio.play()
 		})
 

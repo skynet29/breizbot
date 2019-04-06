@@ -113,20 +113,20 @@ function onConnect(client, store) {
 }
 
 function sendMessage(userName, topic, data) {
-	getBroker(userName).sendMessage(topic, data)
+	getBroker(userName).sendMessage(undefined, topic, data)
 }
 
 function sendMsg(client, msg) {
 	client.sendText(JSON.stringify(msg))
 }
 
-function sendTo(clientId, topic, data) {
-	console.log('sendTo', clientId, topic)
+function sendTo(srcId, destId, topic, data) {
+	console.log('sendTo', destId, topic)
 	const dest = wss.connections.find((client) => {
-		return client.clientId == clientId
+		return client.clientId == destId
 	})
 	if (dest != undefined) {
-		sendMsg(dest, {type: 'notif', topic, data})
+		sendMsg(dest, {type: 'notif', topic, data, srcId})
 		return true
 	}
 	return false

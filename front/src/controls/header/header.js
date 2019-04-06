@@ -1,6 +1,6 @@
 $$.control.registerControl('breizbot.header', {
 
-	deps: ['breizbot.broker', 'breizbot.users', 'breizbot.rtc'],
+	deps: ['breizbot.broker', 'breizbot.users', 'breizbot.rtc', 'breizbot.scheduler'],
 
 	props: {
 		userName: 'Unknown',
@@ -10,7 +10,7 @@ $$.control.registerControl('breizbot.header', {
 
 	template: {gulp_inject: './header.html'},
 
-	init: function(elt, broker, users, rtc) {
+	init: function(elt, broker, users, rtc, scheduler) {
 
 		const audio = new Audio('/assets/skype.mp3')
 		audio.loop = true
@@ -37,10 +37,10 @@ $$.control.registerControl('breizbot.header', {
 				onContextMenu: function(ev, data) {
 					console.log('onContextMenu', data)
 					if (data.cmd == 'logout') {
-						location.href = '/logout'
+						scheduler.logout()
 					}
 					if (data.cmd == 'apps') {
-						location.href = '/apps/store'
+						scheduler.openApp('store')
 					}
 				},
 				onNotification: function(ev) {
@@ -49,7 +49,7 @@ $$.control.registerControl('breizbot.header', {
 						$$.ui.showAlert({content: 'no notifications', title: 'Notifications'})
 					}
 					else {
-						location.href = '/apps/notif'
+						scheduler.openApp('notif')
 					}					
 				},
 				onCallResponse: function(ev, data) {
@@ -58,7 +58,7 @@ $$.control.registerControl('breizbot.header', {
 					ctrl.setData({hasIncomingCall: false})
 					audio.pause()
 					if (cmd == 'accept') {						
-						location.href = `/apps/video?caller=${ctrl.model.caller}&clientId=${clientId}`
+						scheduler.openApp('video', {caller: ctrl.model.caller, clientId})
 					}
 					if (cmd == 'deny') {
 						rtc.deny(clientId)
@@ -83,7 +83,7 @@ $$.control.registerControl('breizbot.header', {
 			}
 			console.log('msg', msg)
 			ctrl.setData({hasIncomingCall: true, caller: msg.data.from})
-			clientId = msg.data.clientId
+			clientId = msg.srcId
 			audio.play()
 		})
 

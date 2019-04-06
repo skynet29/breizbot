@@ -19,11 +19,10 @@ $$.control.registerControl('rootPage', {
 				onFileClick: function(ev, data) {
 					//console.log('onFileClick', data)
 					const {fileName, rootDir} = data
-					if ($$.util.isImage(fileName)) {
-						const url = srvFiles.fileUrl(rootDir + fileName)
+					if ($$.util.isImage(fileName)) {						
 						$pager.pushPage('imagePage', {
 							title: fileName,
-							props: {url, fileName: rootDir + fileName},
+							props: {fileName: rootDir + fileName},
 							buttons: [{name: 'del', label: 'Delete'}]
 						})
 					}

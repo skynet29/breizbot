@@ -6,7 +6,6 @@ $$.control.registerControl('rootPage', {
 
 	init: function(elt, rtc, broker, params) {
 
-		let localClientId
 		let remoteClientId
 
 		const data = {
@@ -27,7 +26,7 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onCall: function(ev) {
 					$$.ui.showPrompt({title: 'Call', content: 'User Name:'}, function(userName){
-						rtc.call(userName, localClientId)
+						rtc.call(userName)
 						.then(() => {
 							ctrl.setData({status: 'calling', distant: userName})
 						})
@@ -110,7 +109,7 @@ $$.control.registerControl('rootPage', {
 			localStream = stream
 
 			if (params.caller != undefined) {
-				rtc.accept(remoteClientId, localClientId)
+				rtc.accept(remoteClientId)
 				createPeerConnection()	
 				pc.addStream(localStream)				
 			}
@@ -131,7 +130,7 @@ $$.control.registerControl('rootPage', {
 			}
 			console.log('msg', msg)
 			rtc.cancel(ctrl.model.distant)
-			remoteClientId = msg.data.fromClientId
+			remoteClientId = msg.srcId
 
 			ctrl.setData({status: 'connected'})
 			createPeerConnection()
@@ -201,13 +200,11 @@ $$.control.registerControl('rootPage', {
 
 		})	
 
-		broker.on('ready', (data) => {
-			console.log('onready', data)
-			localClientId = data.clientId			
-		})
 
 		window.onbeforeunload = function() {
-		  rtc.bye(remoteClientId)
+			if (pc != undefined) {
+		  		rtc.bye(remoteClientId)
+			}
 		};		
 	
 	}

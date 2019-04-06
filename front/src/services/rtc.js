@@ -1,37 +1,40 @@
-$$.service.registerService('breizbot.rtc', ['brainjs.http'], function(config, http) {
+$$.service.registerService('breizbot.rtc', ['brainjs.http', 'breizbot.broker'], function(config, http, broker) {
 
+	let srcId
+
+	broker.on('ready', (msg) => { srcId = msg.clientId})
 
 	return {
-		call: function(to, clientId) {
-			return http.post(`/api/rtc/sendToUser`, {to, type: 'call', data: {clientId}})
+		call: function(to) {
+			return http.post(`/api/rtc/sendToUser/${srcId}`, {to, type: 'call'})
 		},
 
 		cancel: function(to) {
-			return http.post(`/api/rtc/sendToUser`, {to, type: 'cancel'})
+			return http.post(`/api/rtc/sendToUser/${srcId}`, {to, type: 'cancel'})
 		},
 
-		accept: function(clientId, fromClientId) {
-			return http.post(`/api/rtc/sendToClient`, {clientId, type: 'accept', data: {fromClientId}})
+		accept: function(destId) {
+			return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'accept'})
 		},
 
-		deny: function(clientId) {
-			return http.post(`/api/rtc/sendToClient`, {clientId, type: 'deny'})
+		deny: function(destId) {
+			return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'deny'})
 		},
 
-		bye: function(clientId) {
-			return http.post(`/api/rtc/sendToClient`, {clientId, type: 'bye'})
+		bye: function(destId) {
+			return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'bye'})
 		},
 
-		candidate: function(clientId, data) {
-			return http.post(`/api/rtc/sendToClient`, {clientId, type: 'candidate', data})
+		candidate: function(destId, data) {
+			return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'candidate', data})
 		},
 
-		offer: function(clientId, data) {
-			return http.post(`/api/rtc/sendToClient`, {clientId, type: 'offer', data})
+		offer: function(destId, data) {
+			return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'offer', data})
 		},
 
-		answer: function(clientId, data) {
-			return http.post(`/api/rtc/sendToClient`, {clientId, type: 'answer', data})
+		answer: function(destId, data) {
+			return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'answer', data})
 		}
 
 	}

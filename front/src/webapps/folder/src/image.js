@@ -6,17 +6,16 @@ $$.control.registerControl('imagePage', {
 
 	props: {
 		$pager: null,
-		url: null,
 		fileName: ''
 	},
 
 	init: function(elt, files) {
 
-		const {url, $pager, fileName} = this.props
+		const {$pager, fileName} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				url
+				url: files.fileUrl(fileName)
 			}
 		})
 		this.onAction = function(action) {

@@ -3,8 +3,10 @@ const wss = require('../lib/wss')
 
 
 
-router.post('/sendToUser', function(req, res) {
+router.post('/sendToUser/:srcId', function(req, res) {
+	//console.log('[RTC] sendToUser', req.params, req.body)
 	const from = req.session.user
+	const {srcId} =  req.params
 
 	let {to, data, type} = req.body
 
@@ -15,7 +17,7 @@ router.post('/sendToUser', function(req, res) {
 
 	const broker = wss.getBroker(to)
 	if (broker.hasClient()) {
-		broker.sendMessage('breizbot.rtc.' + type, data)
+		broker.sendMessage(srcId, 'breizbot.rtc.' + type, data)
 		res.sendStatus(200);
 	}
 	else {
@@ -23,17 +25,13 @@ router.post('/sendToUser', function(req, res) {
 	}
 })
 
-router.post('/sendToClient', function(req, res) {
-	const from = req.session.user
+router.post('/sendToClient/:srcId', function(req, res) {
+	//console.log('[RTC] sendToClient', req.params, req.body)
+	const {srcId} =  req.params
 
-	let {clientId, data, type} = req.body
+	const {destId, data, type} = req.body
 
-	if (data == undefined) {
-		data = {}
-	}
-	data.from = from
-
-	if (wss.sendTo(clientId, 'breizbot.rtc.' + type, data)) {
+	if (wss.sendTo(srcId, destId, 'breizbot.rtc.' + type, data)) {
 		res.sendStatus(200)
 	}
 	else {

@@ -132,9 +132,14 @@ function sendTo(srcId, destId, topic, data) {
 	return false
 }
 
+function getClients() {
+	return wss.connections
+}
+
 module.exports = {
 	init,
 	sendMessage,
 	getBroker,
-	sendTo
+	sendTo,
+	getClients
 }

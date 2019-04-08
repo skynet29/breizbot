@@ -61,6 +61,7 @@ app.use('/api/users', require('./api/users'))
 app.use('/api/apps', require('./api/apps'))
 app.use('/api/files', require('./api/files'))
 app.use('/api/rtc', require('./api/rtc'))
+app.use('/api/debug', require('./api/debug'))
 
 app.use('/brainjs', express.static(config.BRAINJS_HOME))
 app.use(express.static(path.join(__dirname, '../front/dist')))

@@ -19,6 +19,7 @@ class Broker {
     console.log('[Broker] setHomeboxClient', this.userName, client.path)
 
     this.homeboxClient = client
+    client.userName = this.userName
 
     client.registeredTopics = {}
 
@@ -63,6 +64,7 @@ class Broker {
 		console.log('[Broker] addClient', this.userName, client.path)
 
 		this.clients.push(client)
+    client.userName = this.userName
 
 		client.registeredTopics = {}
 
@@ -234,6 +236,10 @@ class Broker {
 
   hasClient() {
     return this.clients.length > 0
+  }
+
+  getClients() {
+    return this.clients
   }
 
 

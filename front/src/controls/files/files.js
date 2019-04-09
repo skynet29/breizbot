@@ -1,8 +1,9 @@
 $$.control.registerControl('breizbot.files', {
 	deps: ['breizbot.files'], 
 	props: {
-		toolbar: true,
+		showToolbar: true,
 		imageOnly: false,
+		filterExtension: undefined,
 		maxUploadSize: 2*1024*2014 // 2 Mo		
 	},
 
@@ -10,11 +11,12 @@ $$.control.registerControl('breizbot.files', {
 
 	init: function(elt, srvFiles) {
 
-		const props = this.props
+		const {showToolbar, maxUploadSize, filterExtension} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			
 			data: {
+				showToolbar,
 				rootDir: '/',
 				selectMode: false,
 				files: [],
@@ -152,13 +154,14 @@ $$.control.registerControl('breizbot.files', {
 
 					$$.util.openFileDialog(function(file) {
 						//console.log('fileSize', file.size / 1024)
-						if (file.size > props.maxUploadSize) {
+						if (file.size > maxUploadSize) {
 							$$.ui.showAlert({content: 'File too big', title: 'Import file'})
 							return
 						}
 						$$.util.readFileAsDataURL(file, function(dataURL) {
-							//console.log('dataURL', dataURL)
-							srvFiles.uploadFile(dataURL, file.name, ctrl.model.rootDir).then(function() {
+							console.log('dataURL', dataURL)
+							const blob = $$.util.dataURLtoBlob(dataURL)
+							srvFiles.uploadFile(blob, file.name, ctrl.model.rootDir).then(function() {
 								loadData()
 							})
 							.catch(function(resp) {
@@ -195,7 +198,7 @@ $$.control.registerControl('breizbot.files', {
 			if (rootDir == undefined) {
 				rootDir = ctrl.model.rootDir
 			}
-			srvFiles.list(rootDir).then(function(files) {
+			srvFiles.list(rootDir, {filterExtension}).then(function(files) {
 				//console.log('files', files)
 				if (rootDir != '/') {
 					files.unshift({name: '..', folder: true})

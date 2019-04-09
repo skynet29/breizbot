@@ -9,15 +9,16 @@ const router = require('express').Router()
 router.post('/list', function(req, res) {
 	console.log('list req', req.session.user)
 	console.log('params', req.body)
-	var user = req.session.user
-	var destPath = req.body.path
-	var rootPath = path.join(cloudPath, user, destPath)
+	const {options} = req.body
+	const user = req.session.user
+	const destPath = req.body.path
+	const rootPath = path.join(cloudPath, user, destPath)
 
 	fs.readdir(rootPath)
 	.then(function(files) {
 		//console.log('files', files)
-		var promises = files.map((file) => {
-			return fs.lstat(path.join(rootPath, file)).then((statInfo) => {
+		const promises = files.map((file) => {
+			return fs.lstat(path.join(rootPath, file)).then((statInfo) => {	
 				return {
 					name: file, 
 					folder: statInfo.isDirectory(),
@@ -27,13 +28,21 @@ router.post('/list', function(req, res) {
 		})
 		
 		return Promise.all(promises)
-
-
-		
+	
 	})
 	.then(function(values) {
 		//console.log('values', values)
-		res.json(values)
+		let ret = values
+
+		if (options != undefined && typeof options.filterExtension == 'string') {
+			ret = values.filter((info) => {
+				return info.folder === true || info.name.endsWith(options.filterExtension)
+			})
+		}
+
+		//console.log('ret', ret)
+
+		res.json(ret)
 	})		
 	.catch(function(err) {
 		console.log('err', err)

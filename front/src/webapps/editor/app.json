@@ -1,0 +1,6 @@
+{	
+	"title": "Editor",
+	"iconCls": "fa fa-file-word fa-2x",
+	"colorCls": "w3-yellow"	,
+	"styles": ["app.css"]
+}

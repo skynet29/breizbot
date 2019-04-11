@@ -13,3 +13,6 @@
     margin-top: 2px; }
   .rootPage .titlebar {
     text-align: center; }
+
+.openFile .breizbot-files {
+  height: 100%; }

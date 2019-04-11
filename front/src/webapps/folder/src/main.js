@@ -17,9 +17,9 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onFileClick: function(ev, data) {
-					//console.log('onFileClick', data)
-					const {fileName, rootDir} = data
-					if ($$.util.isImage(fileName)) {						
+					console.log('onFileClick', data)
+					const {fileName, rootDir, isImage} = data
+					if (isImage) {						
 						$pager.pushPage('imagePage', {
 							title: fileName,
 							props: {fileName: rootDir + fileName},

@@ -53,7 +53,8 @@ $$.control.registerControl('rootPage', {
 						title: 'Insert Image',
 						props: {
 							imageOnly: true,
-							cmd: 'insertImage'
+							cmd: 'insertImage',
+							showThumbnail: true
 						}
 					})					
 				}

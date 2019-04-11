@@ -4,6 +4,7 @@ $$.control.registerControl('breizbot.files', {
 		showToolbar: true,
 		imageOnly: false,
 		filterExtension: undefined,
+		showThumbnail: false,
 		maxUploadSize: 2*1024*2014 // 2 Mo		
 	},
 
@@ -11,11 +12,12 @@ $$.control.registerControl('breizbot.files', {
 
 	init: function(elt, srvFiles) {
 
-		const {showToolbar, maxUploadSize, filterExtension, imageOnly} = this.props
+		const {showToolbar, maxUploadSize, filterExtension, imageOnly, showThumbnail} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			
 			data: {
+				showThumbnail,
 				showToolbar,
 				rootDir: '/',
 				selectMode: false,
@@ -23,19 +25,27 @@ $$.control.registerControl('breizbot.files', {
 				selectedFiles: [],
 				operation: 'none',
 				hasSelection: false,
+				srvFiles,
 				getSize: function(size) {
 					return 'Size : ' + Math.floor(size/1024) + ' Ko'
 				},
 
 				hasSelectedFiles: function() {
 					return selectedFiles.length > 0
+				},
+				getThumbnailUrl: function(fileName) {
+					return srvFiles.fileThumbnailUrl(rootDir + fileName, '100x?')
 				}
 			},
 			events: {
 				onFileClick: function(ev) {
-					const fileName = $(this).closest('.thumbnail').data('name')
-					//console.log('onFileClick', fileName)
-					elt.trigger('fileclick', {fileName, rootDir: ctrl.model.rootDir})
+					const info = $(this).closest('.thumbnail').data('info')
+					//console.log('onFileClick', info)
+					elt.trigger('fileclick', {
+						fileName: info.name, 
+						rootDir: ctrl.model.rootDir,
+						isImage: info.isImage
+					})
 				},
 				onCheckClick: function(ev) {
 					console.log('onCheckClick')
@@ -43,8 +53,10 @@ $$.control.registerControl('breizbot.files', {
 					ctrl.setData({hasSelection: (elt.find('.check:checked').length > 0)})
 				},
 				onFolderClick: function(ev) {
-					const dirName = $(this).closest('.thumbnail').data('name')
-					console.log('onFolderClick', dirName)
+					const info = $(this).closest('.thumbnail').data('info')
+
+					const dirName = info.name
+					//console.log('onFolderClick', dirName)
 					if (dirName == '..') {
 						const split = ctrl.model.rootDir.split('/')						
 						split.pop()

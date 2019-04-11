@@ -11,6 +11,10 @@ $$.service.registerService('breizbot.files', ['brainjs.http'], function(config, 
 			return '/api/files/load?fileName=' + fileName
 		},
 
+		fileThumbnailUrl: function(fileName, size) {
+			return `/api/files/loadThumbnail?fileName=${fileName}&size=${size}`
+		},
+
 		uploadFile: function(blob, saveAsfileName, destPath) {
 			console.log('[FileService] uploadFile', saveAsfileName)
 			if (!(blob instanceof Blob)) {

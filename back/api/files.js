@@ -1,5 +1,7 @@
 const path = require('path')
 const fs = require('fs-extra')
+const ffmpeg = require('ffmpeg-static')
+const genThumbnail = require('simple-thumbnail')
 const config = require('../lib/config')
 
 const cloudPath = config.CLOUD_HOME
@@ -22,7 +24,9 @@ router.post('/list', function(req, res) {
 				return {
 					name: file, 
 					folder: statInfo.isDirectory(),
-					size: statInfo.size
+					size: statInfo.size,
+					isImage: isImage(file)
+
 				}
 			})
 		})
@@ -194,6 +198,21 @@ router.get('/load', function(req, res) {
 	res.sendFile(path.join(cloudPath, user, fileName))
 })
 
+router.get('/load', function(req, res) {
+	console.log('load req', req.query)
+	const fileName = req.query.fileName
+	const user = req.session.user
 
+	res.sendFile(path.join(cloudPath, user, fileName))
+})
+
+router.get('/loadThumbnail', function(req, res) {
+	console.log('load req', req.query)
+	const {fileName, size} = req.query
+	const user = req.session.user
+	genThumbnail(path.join(cloudPath, user, fileName), res, size, {
+		path: ffmpeg.path
+	})
+})
 
 module.exports = router

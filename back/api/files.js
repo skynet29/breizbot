@@ -9,7 +9,7 @@ const router = require('express').Router()
 router.post('/list', function(req, res) {
 	console.log('list req', req.session.user)
 	console.log('params', req.body)
-	const {options} = req.body
+	const options = req.body.options || {}
 	const user = req.session.user
 	const destPath = req.body.path
 	const rootPath = path.join(cloudPath, user, destPath)
@@ -34,13 +34,18 @@ router.post('/list', function(req, res) {
 		//console.log('values', values)
 		let ret = values
 
-		if (options != undefined && typeof options.filterExtension == 'string') {
+		if (typeof options.filterExtension == 'string') {
 			ret = values.filter((info) => {
 				return info.folder === true || info.name.endsWith(options.filterExtension)
 			})
 		}
 
-		//console.log('ret', ret)
+		if (options.imageOnly === true) {
+			ret = values.filter((info) => {
+				return info.folder === true || isImage(info.name)
+			})			
+		}
+		console.log('ret', ret)
 
 		res.json(ret)
 	})		

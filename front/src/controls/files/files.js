@@ -11,7 +11,7 @@ $$.control.registerControl('breizbot.files', {
 
 	init: function(elt, srvFiles) {
 
-		const {showToolbar, maxUploadSize, filterExtension} = this.props
+		const {showToolbar, maxUploadSize, filterExtension, imageOnly} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			
@@ -198,7 +198,7 @@ $$.control.registerControl('breizbot.files', {
 			if (rootDir == undefined) {
 				rootDir = ctrl.model.rootDir
 			}
-			srvFiles.list(rootDir, {filterExtension}).then(function(files) {
+			srvFiles.list(rootDir, {filterExtension, imageOnly}).then(function(files) {
 				//console.log('files', files)
 				if (rootDir != '/') {
 					files.unshift({name: '..', folder: true})

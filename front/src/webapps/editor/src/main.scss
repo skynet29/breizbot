@@ -3,11 +3,8 @@
 	flex-direction: column;
 
 	.brainjs-htmleditor {
-		height: 100%;
-	}
-
-	.brainjs-htmleditor {
-		height: 100%;
+		flex: 1;
+		overflow: hidden;
 
 		.scrollPanel {
 			margin: 10px;
@@ -20,5 +17,9 @@
 		margin-left: 10px;
 		margin-bottom: 2px;
 		margin-top: 2px;
+	}
+
+	.titlebar {
+		text-align: center;
 	}
 }

@@ -11,6 +11,11 @@
 		justify-content: center;
 	}
 
+	.scrollPanel {
+		height: 100%;
+		overflow-y: auto;
+	}
+
 	.main {
 		margin: 10px;
 		display: flex;

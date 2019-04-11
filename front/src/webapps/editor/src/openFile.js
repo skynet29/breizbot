@@ -3,21 +3,26 @@ $$.control.registerControl('openFile', {
 	template: {gulp_inject: './openFile.html'},
 
 	props: {
-		$pager: null
+		$pager: null,
+		imageOnly: false,
+		filterExtension: '',
+		cmd: ''
 	},
 
 	init: function(elt) {
 
-		const {$pager} = this.props
+		const {$pager, imageOnly, filterExtension, cmd} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				imageOnly,
+				filterExtension
 			},
 			events: {
 				onFileClick: function(ev, data) {
+					data.cmd = cmd
 					console.log('onFileClick', data)
-					const {fileName, rootDir} = data
-					$pager.popPage(rootDir + fileName)
+					$pager.popPage(data)
 				}
 			}
 		})

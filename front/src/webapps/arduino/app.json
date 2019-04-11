@@ -1,5 +1,7 @@
 {	
 	"iconCls": "fa fa-infinity fa-2x",
 	"colorCls": "w3-blue",
-	"title": "Arduino"	
+	"title": "Arduino",
+	"styles": ["app.css"]
+	
 }

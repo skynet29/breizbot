@@ -7,6 +7,10 @@
   flex-direction: column;
   justify-content: center; }
 
+.breizbot-apps .scrollPanel {
+  height: 100%;
+  overflow-y: auto; }
+
 .breizbot-apps .main {
   margin: 10px;
   display: flex;

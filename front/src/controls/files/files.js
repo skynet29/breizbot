@@ -1,8 +1,10 @@
 $$.control.registerControl('breizbot.files', {
 	deps: ['breizbot.files'], 
 	props: {
-		toolbar: true,
+		showToolbar: true,
 		imageOnly: false,
+		filterExtension: undefined,
+		showThumbnail: false,
 		maxUploadSize: 2*1024*2014 // 2 Mo		
 	},
 
@@ -10,42 +12,51 @@ $$.control.registerControl('breizbot.files', {
 
 	init: function(elt, srvFiles) {
 
-		const props = this.props
+		const {showToolbar, maxUploadSize, filterExtension, imageOnly, showThumbnail} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			
 			data: {
+				showThumbnail,
+				showToolbar,
 				rootDir: '/',
 				selectMode: false,
 				files: [],
 				selectedFiles: [],
 				operation: 'none',
-				getSize: function() {
-					return 'Size : ' + Math.floor(this.f.size/1024) + ' Ko'
+				hasSelection: false,
+				srvFiles,
+				getSize: function(size) {
+					return 'Size : ' + Math.floor(size/1024) + ' Ko'
 				},
-				canSelect: function() {
-					return this.f.name != '..' && this.selectMode
+
+				hasSelectedFiles: function() {
+					return selectedFiles.length > 0
 				},
-				$hasSelection: function() {				
-					return this.selectMode && elt.find('.check:checked').length > 0
-				},
-				$hasSelectedFiles: function() {
-					return this.selectedFiles.length > 0
+				getThumbnailUrl: function(fileName) {
+					return srvFiles.fileThumbnailUrl(rootDir + fileName, '100x?')
 				}
 			},
 			events: {
 				onFileClick: function(ev) {
-					const fileName = $(this).closest('.thumbnail').data('name')
-					//console.log('onFileClick', fileName)
-					elt.trigger('fileclick', {fileName, rootDir: ctrl.model.rootDir})
+					const info = $(this).closest('.thumbnail').data('info')
+					//console.log('onFileClick', info)
+					elt.trigger('fileclick', {
+						fileName: info.name, 
+						rootDir: ctrl.model.rootDir,
+						isImage: info.isImage
+					})
 				},
 				onCheckClick: function(ev) {
 					console.log('onCheckClick')
-					ctrl.update('$hasSelection')
+
+					ctrl.setData({hasSelection: (elt.find('.check:checked').length > 0)})
 				},
 				onFolderClick: function(ev) {
-					const dirName = $(this).closest('.thumbnail').data('name')
-					console.log('onFolderClick', dirName)
+					const info = $(this).closest('.thumbnail').data('info')
+
+					const dirName = info.name
+					//console.log('onFolderClick', dirName)
 					if (dirName == '..') {
 						const split = ctrl.model.rootDir.split('/')						
 						split.pop()
@@ -79,8 +90,7 @@ $$.control.registerControl('breizbot.files', {
 				onToggleSelMode: function()	{
 					console.log('onToggleSelMode')
 
-					ctrl.setData({selectMode: !ctrl.model.selectMode})
-					ctrl.update('files')
+					setSelMode(!ctrl.model.selectMode)
 				},
 
 				onDeleteFiles: function(ev) {
@@ -117,20 +127,19 @@ $$.control.registerControl('breizbot.files', {
 					console.log('onCutFiles')
 					ctrl.setData({
 						selectedFiles: getSelFiles(),
-						selectMode: false,
 						operation: 'cut'
 					})
-					ctrl.update('files')
+					setSelMode(false)
 				},
 
 				onCopyFiles: function(ev) {
 					console.log('onCopyFiles')
 					ctrl.setData({
 						selectedFiles: getSelFiles(),
-						selectMode: false,
 						operation: 'copy'
 					})
-					ctrl.update('files')
+					
+					setSelMode(false)
 				},
 				onPasteFiles: function(ev) {
 					console.log('onPasteFiles')
@@ -146,7 +155,7 @@ $$.control.registerControl('breizbot.files', {
 					})
 					.catch(function(resp) {
 						console.log('resp', resp)
-						ctrl.setData({selectedFiles: [], operation: 'none'})
+						//ctrl.setData({selectedFiles: [], operation: 'none'})
 						$$.ui.showAlert({
 							content: resp.responseText,
 							title: 'Error'
@@ -157,13 +166,14 @@ $$.control.registerControl('breizbot.files', {
 
 					$$.util.openFileDialog(function(file) {
 						//console.log('fileSize', file.size / 1024)
-						if (file.size > props.maxUploadSize) {
+						if (file.size > maxUploadSize) {
 							$$.ui.showAlert({content: 'File too big', title: 'Import file'})
 							return
 						}
 						$$.util.readFileAsDataURL(file, function(dataURL) {
-							//console.log('dataURL', dataURL)
-							srvFiles.uploadFile(dataURL, file.name, ctrl.model.rootDir).then(function() {
+							console.log('dataURL', dataURL)
+							const blob = $$.util.dataURLtoBlob(dataURL)
+							srvFiles.uploadFile(blob, file.name, ctrl.model.rootDir).then(function() {
 								loadData()
 							})
 							.catch(function(resp) {
@@ -176,6 +186,14 @@ $$.control.registerControl('breizbot.files', {
 			}
 
 		})
+
+		function setSelMode(selMode) {
+			if (selMode == false) {
+				ctrl.model.hasSelection = false
+			}
+			ctrl.model.selectMode = selMode
+			ctrl.forceUpdate('files')
+		}
 
 		function getSelFiles() {
 			const selFiles = []
@@ -192,18 +210,23 @@ $$.control.registerControl('breizbot.files', {
 			if (rootDir == undefined) {
 				rootDir = ctrl.model.rootDir
 			}
-			srvFiles.list(rootDir).then(function(files) {
+			srvFiles.list(rootDir, {filterExtension, imageOnly}).then(function(files) {
 				//console.log('files', files)
 				if (rootDir != '/') {
 					files.unshift({name: '..', folder: true})
 				}
-				ctrl.setData({files, rootDir, selectMode: false})
+
+				ctrl.setData({files, rootDir, selectMode: false, hasSelection: false})
 
 			})		
 		}
 
 		loadData()
 
+		this.update = function() {
+			console.log('[FileCtrl] update')
+			loadData()
+		}
 	}
 
 });

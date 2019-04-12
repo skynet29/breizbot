@@ -34,11 +34,19 @@ gulp.task('breizbot.css', function() {
 		.pipe(gulp.dest(dest))
 })
 
-gulp.task('all', ['breizbot.js', 'breizbot.css'])
+gulp.task('assets', function() {
+	return gulp.src([
+		'./src/assets/*',
+		])
+		.pipe(gulp.dest(path.join(dest, 'assets')))
+})
+
+gulp.task('all', ['breizbot.js', 'breizbot.css', 'assets'])
 
 
 gulp.task('watch', ['all'], function() {
 	gulp.watch(['./src/controls/**/*.js', './src/controls/**/*.html', './src/services/**/*.js'], ['breizbot.js'])
 	gulp.watch(['./src/controls/**/*.scss'], ['breizbot.css'])
+	gulp.watch(['./assets/*'], ['assets'])
 
 })

@@ -1,6 +1,6 @@
 <div class="contentPanel">
 
-	<div class="toolbar">
+	<div class="toolbar" bn-show="showToolbar">
 		<div bn-control="brainjs.controlgroup">
 			<button 
 				title="New folder"
@@ -21,21 +21,21 @@
 		<div bn-control="brainjs.controlgroup">
 			<button title="Delete"
 				bn-event="click: onDeleteFiles"
-				bn-prop="disabled: !$hasSelection"
+				bn-prop="{disabled: !hasSelection}"
 			><i class="fa fa-trash"></i></button>
 
 			<button title="Cut"
-				bn-prop="disabled: !$hasSelection"
+				bn-prop="{disabled: !hasSelection}"
 				bn-event="click: onCutFiles"
 			><i class="fa fa-cut"></i></button>	
 
 			<button title="Copy"
-				bn-prop="disabled: !$hasSelection"
+				bn-prop="{disabled: !hasSelection}"
 				bn-event="click: onCopyFiles"
 				><i class="fa fa-copy"></i></button>
 
 			<button title="Paste"
-				bn-prop="disabled: !$hasSelectedFiles"
+				bn-prop="{disabled: !hasSelectedFiles()}"
 				bn-event="click: onPasteFiles"
 			><i class="fa fa-paste"></i></button>		
 		</div>
@@ -45,27 +45,41 @@
 		Path:&nbsp;<span bn-text="rootDir"></span>
 	</div>
 
+	<div class="scrollPanel">
 
-	<div bn-each="f of files" class="container" 
-	bn-event="click.folder: onFolderClick, click.check: onCheckClick, click.file: onFileClick">
-		
-		<div class="thumbnail w3-btn" bn-data="name: f.name">	
-				<input type="checkbox" bn-show="canSelect" class="check w3-check">		
-				<div bn-show="f.folder" class="folder">
-					<div>
-						<i class="fa fa-4x fa-folder-open w3-text-blue-grey"></i>
-					</div>
-					
-					<span bn-text="f.name"></span>
-				</div>
-				<div bn-show="!f.folder" bn-attr="title: getSize" class="file">
-					<div>
-						<i class="fa fa-4x fa-file w3-text-blue-grey"></i>
-					</div>
-					
-					<span bn-text="f.name"></span>
-				</div>			
+		<div bn-each="files" 
+			bn-iter="f" 
+			class="container"
+			bn-bind="files" 
+			bn-event="click.folder: onFolderClick, click.check: onCheckClick, click.file: onFileClick">
 			
+			<div class="thumbnail w3-btn" bn-data="{info: f}">	
+					<input type="checkbox" bn-show="selectMode && f.name != '..'" class="check w3-check">		
+					<div bn-if="f.folder" class="folder">
+						<div>
+							<i class="fa fa-4x fa-folder-open w3-text-blue-grey"></i>
+						</div>
+						
+						<span bn-text="f.name"></span>
+					</div>
+					<div bn-if="!f.folder && (!f.isImage || !showThumbnail)" bn-attr="{title: getSize(f.size)}" class="file">
+						<div>
+							<i class="fa fa-4x fa-file w3-text-blue-grey"></i>
+						</div>
+						
+						<span bn-text="f.name"></span>
+					</div>			
+
+					<div bn-if="!f.folder && f.isImage && showThumbnail" bn-attr="{title: getSize(f.size)}" class="file">
+						<div>
+							<img bn-attr="{src: getThumbnailUrl(f.name)}">
+						</div>
+						
+						<span bn-text="f.name"></span>
+					</div>			
+
+				
+			</div>
 		</div>
 	</div>
 </div>

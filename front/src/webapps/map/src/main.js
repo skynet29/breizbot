@@ -1,15 +1,33 @@
-$$.control.registerControl('breizbot.main', {
+$$.control.registerControl('rootPage', {
+
+	deps: ['breizbot.broker'],
 
 	template: {gulp_inject: './main.html'},
 
-	init: function(elt) {
+	init: function(elt, broker) {
 
-		$$.viewController(elt, {
-			data: {
-				center: {lat: 48.39, lng: -4.486}
+		const ctrl = $$.viewController(elt)
+
+		broker.register('homebox.map.updateShape.*', (msg) => {
+
+			const shapeId = msg.topic.split('.').pop()
+			//console.log('shapeId', shapeId)
+
+			const shape = msg.data
+
+			if (shape == undefined) {
+				ctrl.scope.map.removeShape(shapeId)
+				return
 			}
 
+			try {
+				ctrl.scope.map.updateShape(shapeId, shape)
+			}
+			catch(e) {
+				ctrl.scope.map.addShape(shapeId, shape)
+			}
 		})
+
 	}
 });
 

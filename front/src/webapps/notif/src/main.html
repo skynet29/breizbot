@@ -1,7 +1,7 @@
 <ul class="w3-ul w3-border w3-white" 
-	bn-each="n of notifs" 
+	bn-each="notifs" bn-iter="n"
 	bn-event="click.delete: onDelete">
-	<li class="w3-bar" bn-data="notif: n">
+	<li class="w3-bar" bn-data="{notifId: n._id}">
 		<span class="w3-button w3-right delete" title="Delete"><i class="fa fa-times"></i></span>
 
 		<div class="w3-bar-item" bn-html="n.notif" ></div>

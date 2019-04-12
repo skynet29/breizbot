@@ -1,0 +1,28 @@
+<div style="margin: 10px;">
+	
+	<div>
+	  <video bn-bind="localVideo" autoplay muted playsinline></video>
+	  <video bn-bind="remoteVideo" autoplay playsinline></video>
+	</div>
+
+	<div>
+		<button 
+			bn-event="click: onCall"
+			bn-show="['ready', 'disconnected', 'refused', 'canceled'].includes(status)"
+			class="w3-btn w3-blue">Call</button>
+
+		<button 
+			bn-event="click: onCancel"
+			bn-show="status == 'calling'"
+			class="w3-btn w3-blue">Cancel</button>
+
+		<button 
+			bn-event="click: onHangup"
+			bn-show="status == 'connected'"
+			class="w3-btn w3-blue">Hangup</button>
+
+	</div>
+	<p>status: <span bn-text="status"></span></p>
+	<p>Distant: <span bn-text="distant"></span></p>
+
+</div>

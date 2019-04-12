@@ -1,31 +1,41 @@
-$$.control.registerControl('breizbot.main', {
+$$.control.registerControl('rootPage', {
 
 	deps: ['breizbot.files'],
 
 	template: {gulp_inject: './main.html'},
 
+	props: {
+		$pager: null
+	},
+
 	init: function(elt, srvFiles) {
 
-		$$.viewController(elt, {
+		const {$pager} = this.props
+
+		const ctrl = $$.viewController(elt, {
 			data: {
 			},
 			events: {
 				onFileClick: function(ev, data) {
-					//console.log('onFileClick', data)
-					const {fileName, rootDir} = data
-					if ($$.util.isImage(fileName)) {
-						const url = srvFiles.fileUrl(rootDir + fileName)
-						$$.ui.showAlert({
-							okText: 'Close',
-							width: 'auto',
+					console.log('onFileClick', data)
+					const {fileName, rootDir, isImage} = data
+					if (isImage) {						
+						$pager.pushPage('imagePage', {
 							title: fileName,
-							content: `<img src="${url}" width="400">`
-						})						
+							props: {fileName: rootDir + fileName},
+							buttons: [{name: 'del', label: 'Delete'}]
+						})
 					}
 
 				}
 			}
 		})
+		this.onReturn = function(data) {
+			console.log('onReturn', data)
+			if (data === 'reload') {
+				ctrl.scope.files.update()
+			}
+		}
 	}
 });
 

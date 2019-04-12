@@ -1,5 +1,7 @@
 const path = require('path')
 const fs = require('fs-extra')
+const ffmpeg = require('ffmpeg-static')
+const genThumbnail = require('simple-thumbnail')
 const config = require('../lib/config')
 
 const cloudPath = config.CLOUD_HOME
@@ -9,31 +11,47 @@ const router = require('express').Router()
 router.post('/list', function(req, res) {
 	console.log('list req', req.session.user)
 	console.log('params', req.body)
-	var user = req.session.user
-	var destPath = req.body.path
-	var rootPath = path.join(cloudPath, user, destPath)
+	const options = req.body.options || {}
+	const user = req.session.user
+	const destPath = req.body.path
+	const rootPath = path.join(cloudPath, user, destPath)
 
 	fs.readdir(rootPath)
 	.then(function(files) {
 		//console.log('files', files)
-		var promises = files.map((file) => {
-			return fs.lstat(path.join(rootPath, file)).then((statInfo) => {
+		const promises = files.map((file) => {
+			return fs.lstat(path.join(rootPath, file)).then((statInfo) => {	
 				return {
 					name: file, 
 					folder: statInfo.isDirectory(),
-					size: statInfo.size
+					size: statInfo.size,
+					isImage: isImage(file)
+
 				}
 			})
 		})
 		
 		return Promise.all(promises)
-
-
-		
+	
 	})
 	.then(function(values) {
 		//console.log('values', values)
-		res.json(values)
+		let ret = values
+
+		if (typeof options.filterExtension == 'string') {
+			ret = values.filter((info) => {
+				return info.folder === true || info.name.endsWith(options.filterExtension)
+			})
+		}
+
+		if (options.imageOnly === true) {
+			ret = values.filter((info) => {
+				return info.folder === true || isImage(info.name)
+			})			
+		}
+		console.log('ret', ret)
+
+		res.json(ret)
 	})		
 	.catch(function(err) {
 		console.log('err', err)
@@ -180,6 +198,21 @@ router.get('/load', function(req, res) {
 	res.sendFile(path.join(cloudPath, user, fileName))
 })
 
+router.get('/load', function(req, res) {
+	console.log('load req', req.query)
+	const fileName = req.query.fileName
+	const user = req.session.user
 
+	res.sendFile(path.join(cloudPath, user, fileName))
+})
+
+router.get('/loadThumbnail', function(req, res) {
+	console.log('load req', req.query)
+	const {fileName, size} = req.query
+	const user = req.session.user
+	genThumbnail(path.join(cloudPath, user, fileName), res, size, {
+		path: ffmpeg.path
+	})
+})
 
 module.exports = router

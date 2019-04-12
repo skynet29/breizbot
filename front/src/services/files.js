@@ -1,20 +1,23 @@
 $$.service.registerService('breizbot.files', ['brainjs.http'], function(config, http) {
 
 	return {
-		list: function(path, imageOnly, folderOnly) {
+		list: function(path, options) {
 			console.log('[FileService] list', path)
 
-			return http.post('/api/files/list', {path, imageOnly, folderOnly})
+			return http.post('/api/files/list', {path, options})
 		},
 
 		fileUrl: function(fileName) {
 			return '/api/files/load?fileName=' + fileName
 		},
 
-		uploadFile: function(dataUrl, saveAsfileName, destPath) {
+		fileThumbnailUrl: function(fileName, size) {
+			return `/api/files/loadThumbnail?fileName=${fileName}&size=${size}`
+		},
+
+		uploadFile: function(blob, saveAsfileName, destPath) {
 			console.log('[FileService] uploadFile', saveAsfileName)
-			var blob = $$.util.dataURLtoBlob(dataUrl)
-			if (blob == undefined) {
+			if (!(blob instanceof Blob)) {
 				return Promise.reject('File format not supported')
 			}
 			//console.log('blob', blob)

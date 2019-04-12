@@ -1,3 +1,6 @@
+const wildcard = require('wildcard')
+const uniqid = require('uniqid')
+
 function sendMsg(client, msg) {
 	client.sendText(JSON.stringify(msg))
 }
@@ -7,15 +10,61 @@ class Broker {
 		this.clients = []
 		this.userName = userName
 		this.history = {}
+    this.homeboxClient = null
 
 	}
 
+  setHomeboxClient(client) {
+
+    console.log('[Broker] setHomeboxClient', this.userName, client.path)
+
+    this.homeboxClient = client
+    client.userName = this.userName
+
+    client.registeredTopics = {}
+
+    client.on('text', (text) => {
+
+      const msg = JSON.parse(text)
+      if (msg.type == 'notif') {
+        this.broadcastToSubscribers(msg)
+      }
+
+    })
+
+    client.on('close', (code)  => {
+      console.log(`homebox client disconnected`)
+      this.homeboxClient = null      
+    })    
+
+    client.on('error', (err) => {
+      console.log('connection error')
+    })  
+
+    this.clients.forEach((hmiClient) => {
+      Object.keys(hmiClient.registeredTopics).forEach((topic) => {
+        if (topic.startsWith('homebox.')) {
+          if (this.homeboxClient.registeredTopics[topic] == undefined) {
+            this.homeboxClient.registeredTopics[topic] = 1
+            sendMsg(this.homeboxClient, {type: 'register', topic, time: Date.now()})
+          }
+          else {
+            this.homeboxClient.registeredTopics[topic]++
+          }
+        }           
+      })       
+    })
+  
+
+    
+  }
 
 	addClient(client) {
 
 		console.log('[Broker] addClient', this.userName, client.path)
 
 		this.clients.push(client)
+    client.userName = this.userName
 
 		client.registeredTopics = {}
 
@@ -36,13 +85,27 @@ class Broker {
 			console.log('connection error')
 		})	
 
-		sendMsg(client, {type: 'ready'})
+    const clientId = uniqid()
+    console.log('clientId', clientId)
+    client.clientId = clientId
+		sendMsg(client, {type: 'ready', clientId})
 		
 
 	}
 
 	removeClient(client) {
-		console.log('[Broker] removeClient', this.userName, client.path)
+		console.log('[Broker] removeClient', this.userName, client.path, client.clientId)
+
+    Object.keys(client.registeredTopics).forEach((topic) => {
+      if (topic.startsWith('homebox.') && this.homeboxClient != null) {
+        if (this.homeboxClient.registeredTopics[topic] != undefined) {
+          if (--this.homeboxClient.registeredTopics[topic] == 0) {
+            delete this.homeboxClient.registeredTopics[topic]
+            sendMsg(this.homeboxClient, {type: 'unregister', topic, time: Date.now()})
+          }
+        }
+      }           
+    })
 
 		const idx = this.clients.indexOf(client)
 		if (idx >= 0) {
@@ -50,10 +113,52 @@ class Broker {
 		}
 	}
 
+  handleUnregister(client, msg) {
+    const {topic} = msg
+
+    if (client.registeredTopics[topic] != undefined) {
+      //console.log(`client unsubscribes to topic '${topic}'`)
+      delete client.registeredTopics[topic]
+    }
+
+    if (topic.startsWith('homebox.') && this.homeboxClient != null) {
+      if (this.homeboxClient.registeredTopics[topic] != undefined) {
+        if (--this.homeboxClient.registeredTopics[topic] == 0) {
+          delete this.homeboxClient.registeredTopics[topic]
+          sendMsg(this.homeboxClient, msg)
+        }
+      }
+    }     
+  }
+
+  handleRegister(client, msg) {
+    const {topic} = msg
+    //console.log(`client subscribes to topic '${topic}'`)
+    client.registeredTopics[topic] = 1
+
+    // if (this.history[topic] != undefined) {
+    //   sendMsg(client, this.history[topic])
+    // }
+
+    const msgs = wildcard(msg.topic, this.history)
+    for(let i in msgs) {
+      sendMsg(client, msgs[i])
+    }
+
+    if (topic.startsWith('homebox.') && this.homeboxClient != null) {
+      if (this.homeboxClient.registeredTopics[topic] == undefined) {
+        this.homeboxClient.registeredTopics[topic] = 1
+        sendMsg(this.homeboxClient, msg)
+      }
+      else {
+        this.homeboxClient.registeredTopics[topic]++
+      }
+    }    
+  }
 
 	handleClientMsg(client, msg) {
 
-		console.log('[Broker] msg', this.userName, client.path, msg)
+		//console.log('[Broker] msg', this.userName, client.path, msg)
 
 		const {type, topic} = msg
 
@@ -65,22 +170,22 @@ class Broker {
 		switch(msg.type) {
 
 			case 'unregister':
-				if (client.registeredTopics[topic] != undefined) {
-					console.log(`client unsubscribes to topic '${topic}'`)
-					delete client.registeredTopics[topic]
-				}
+        this.handleUnregister(client, msg)       
 			break
 
 			case 'register':
-				console.log(`client subscribes to topic '${topic}'`)
-				client.registeredTopics[topic] = 1
-				if (this.history[topic] != undefined) {
-					sendMsg(client, this.history[topic])
-				}
-			break
+        this.handleRegister(client, msg)			
+      break
 
 			case 'notif':
-				this.broadcastToSubscribers(msg)
+        if (topic.startsWith('homebox.')) {
+          if (this.homeboxClient != null) {
+            sendMsg(this.homeboxClient, msg)
+          }
+        }
+        else {
+          this.broadcastToSubscribers(msg, client)
+        }
 			break
 
 			default:
@@ -89,26 +194,53 @@ class Broker {
 
 	}	
 
-	broadcastToSubscribers(msg) {
+	broadcastToSubscribers(msg, sourceClient) {
 		const text = JSON.stringify(msg)
 		this.clients.forEach((client) => {
-			if (client.registeredTopics[msg.topic] == 1) {
-				client.sendText(text)
-			}
+      if (client == sourceClient) {
+        return
+      }
+			// if (client.registeredTopics[msg.topic] == 1) {
+			// 	client.sendText(text)
+			// }
+      Object.keys(client.registeredTopics).forEach((registeredTopic) => {
+        if (wildcard(registeredTopic, msg.topic)) {
+          client.sendText(text)
+          return
+        }
+
+      })      
 		})
+    msg.hist = true
+    this.history[msg.topic] = msg     
 	}
 
-	sendMessage(topic, data) {
+	sendMessage(srcId, topic, data) {
 		const msg = {
+      srcId,
 			time: Date.now(),
 			type: 'notif',
 			topic,
 			data
 		}	
-		this.broadcastToSubscribers(msg)
-		msg.hist = true
-		this.history[topic]	= msg	
+    if (topic.startsWith('homebox.')) {
+       if (this.homeboxClient != null) {
+          sendMsg(this.homeboxClient, msg)
+       }
+    }
+    else {              
+      this.broadcastToSubscribers(msg)
+    }		
+
 	}
+
+  hasClient() {
+    return this.clients.length > 0
+  }
+
+  getClients() {
+    return this.clients
+  }
 
 
 }

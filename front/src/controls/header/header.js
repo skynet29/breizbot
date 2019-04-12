@@ -1,6 +1,6 @@
 $$.control.registerControl('breizbot.header', {
 
-	deps: ['breizbot.broker', 'breizbot.users'],
+	deps: ['breizbot.broker', 'breizbot.users', 'breizbot.rtc', 'breizbot.scheduler'],
 
 	props: {
 		userName: 'Unknown',
@@ -10,45 +10,35 @@ $$.control.registerControl('breizbot.header', {
 
 	template: {gulp_inject: './header.html'},
 
-	init: function(elt, broker, users) {
+	init: function(elt, broker, users, rtc, scheduler) {
 
-		const dlgCtrl = $$.dialogController({
-			title: 'Notifications',
-			template: {gulp_inject: './notifs.html'},
-			data: {notifs: []},
-			options: {
-				width: 'auto'
-			},
-			events: {
-				onDelete: function() {
-					var notif = $(this).closest('li').data('notif')
-					console.log('onDelete', notif)
-					users.removeNotif(notif)
-				}
-			}
-		})		
-
+		const audio = new Audio('/assets/skype.mp3')
+		audio.loop = true
+	
 		const ctrl = $$.viewController(elt, {
 			data: {
 				items: {
-					pwd: {name: 'Change password', icon: 'fa-lock'},
-					apps: {name: 'Applications', icon: 'fa-th'},
+					pwd: {name: 'Change password', icon: 'fas fa-lock'},
+					apps: {name: 'Applications', icon: 'fas fa-th'},
 					sep: '------',
-					logout: {name: 'Logout', icon: 'fa-power-off'}
+					logout: {name: 'Logout', icon: 'fas fa-power-off'}
 				},
 				userName: this.props.userName,
 				showHome: this.props.showHome,
 				title: this.props.title,
-				nbNotif: 0
+				nbNotif: 0,
+				hasIncomingCall: false,
+				caller: ''
+
 			},
 			events: {
 				onContextMenu: function(ev, data) {
 					console.log('onContextMenu', data)
 					if (data.cmd == 'logout') {
-						location.href = '/logout'
+						scheduler.logout()
 					}
 					if (data.cmd == 'apps') {
-						location.href = '/apps/store'
+						scheduler.openApp('store')
 					}
 				},
 				onNotification: function(ev) {
@@ -57,25 +47,57 @@ $$.control.registerControl('breizbot.header', {
 						$$.ui.showAlert({content: 'no notifications', title: 'Notifications'})
 					}
 					else {
-						dlgCtrl.show()
+						scheduler.openApp('notif')
 					}					
+				},
+				onCallResponse: function(ev, data) {
+					const {cmd} = data
+					console.log('onCallResponse', data)
+					ctrl.setData({hasIncomingCall: false})
+					audio.pause()
+					if (cmd == 'accept') {						
+						scheduler.openApp('video', {
+							caller: ctrl.model.caller,
+							clientId: rtc.getRemoteClientId()
+						})
+					}
+					if (cmd == 'deny') {						
+						rtc.deny()
+					}
 				}
 			}
 		})
 
-		function updateNotifs(notifs) {
-			ctrl.setData({nbNotif: notifs.length})
-			dlgCtrl.setData({notifs})
-			if (notifs.length == 0) {
-				dlgCtrl.hide()
-			}			
+		function updateNotifs(nbNotif) {
+			ctrl.setData({nbNotif})
+		
 		}
 
-		broker.register('breizbot.notif', function(msg) {
+		broker.register('breizbot.notifCount', function(msg) {
 			//console.log('msg', msg)
 			updateNotifs(msg.data)
 		})
 
-		users.getNotifs().then(updateNotifs)
+		broker.register('breizbot.rtc.call', function(msg) {
+			if (msg.hist === true) {
+				return
+			}
+			console.log('msg', msg)
+			ctrl.setData({hasIncomingCall: true, caller: msg.data.from})
+			rtc.setRemoteClientId(msg.srcId)
+			audio.play()
+		})
+
+		broker.register('breizbot.rtc.cancel', function(msg) {
+			if (msg.hist === true) {
+				return
+			}
+			console.log('msg', msg)
+			ctrl.setData({hasIncomingCall: false})
+			audio.pause()
+		})
+
+
+		users.getNotifCount().then(updateNotifs)
 	}
 });

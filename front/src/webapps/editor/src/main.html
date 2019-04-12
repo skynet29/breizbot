@@ -1,0 +1,16 @@
+<div class="titlebar"><strong bn-text="fileName"></strong></div>
+<div class="toolbar">
+	<div bn-control="brainjs.controlgroup">
+		<button title="New File" bn-event="click: onNewFile">
+			<i class="fa fa-file"></i></button>
+		<button title="Save File" bn-event="click: onSaveFile">
+			<i class="fa fa-save"></i></button>
+		<button title="Open File" bn-event="click: onOpenFile">
+			<i class="fa fa-folder-open"></i></button>
+	</div>
+	<div bn-control="brainjs.controlgroup">
+		<button title="Insert image" bn-event="click: onInsertImage">
+			<i class="fa fa-image"></i></button>
+	</div>
+</div>
+<div bn-control="brainjs.htmleditor" bn-iface="editor"></div>

@@ -10,15 +10,8 @@ $$.control.registerControl('breizbot.apps', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				apps: this.props.apps,
-				getClass: function() {
-					const classes = ['tile', 'w3-btn']
-					classes.push(this.app.props.colorCls)
-					return classes.join(' ')
-				},
-				hasIcon: function() {
-					return typeof this.app.props.iconCls == 'string'
-				}
+				apps: this.props.apps
+
 			},
 			events: {
 				onTileClick: function(ev) {
@@ -28,8 +21,8 @@ $$.control.registerControl('breizbot.apps', {
 			}
 		})
 
-		this.setApps = function(apps) {
-			ctrl.setData({apps})
+		this.update = function(data) {
+			ctrl.setData(data)
 		}
 	}
 });

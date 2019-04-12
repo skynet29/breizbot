@@ -1,10 +1,10 @@
 $$.control.registerControl('breizbot.home', {
 
-	deps: ['breizbot.apps'],
+	deps: ['breizbot.apps', 'breizbot.scheduler'],
 
 	template: {gulp_inject: './home.html'},
 
-	init: function(elt, srvApps) {
+	init: function(elt, srvApps, scheduler) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -12,7 +12,7 @@ $$.control.registerControl('breizbot.home', {
 			},
 			events: {
 				onAppClick: function(ev, data) {
-					location.href = '/apps/' + data.appName
+					scheduler.openApp(data.appName)
 				}
 			}
 		})

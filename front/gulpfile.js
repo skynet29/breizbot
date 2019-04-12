@@ -41,12 +41,36 @@ gulp.task('assets', function() {
 		.pipe(gulp.dest(path.join(dest, 'assets')))
 })
 
-gulp.task('all', ['breizbot.js', 'breizbot.css', 'assets'])
+gulp.task('doc.js', function() {
+	return gulp.src([
+		'./doc/*.js',
+		])
+		.pipe(injectHTML())
+		.pipe(sourcemaps.init())
+		.pipe(concat('doc.js'))
+		.pipe(sourcemaps.write())
+		.pipe(gulp.dest(dest))
+})
+
+gulp.task('doc.html', function() {
+	return gulp.src([
+		'./doc/index.html',
+		])
+		.pipe(concat('doc.html'))
+		.pipe(gulp.dest(dest))
+})
+
+gulp.task('doc', ['doc.js', 'doc.html'])
+
+
+gulp.task('all', ['breizbot.js', 'breizbot.css', 'assets', 'doc'])
 
 
 gulp.task('watch', ['all'], function() {
 	gulp.watch(['./src/controls/**/*.js', './src/controls/**/*.html', './src/services/**/*.js'], ['breizbot.js'])
 	gulp.watch(['./src/controls/**/*.scss'], ['breizbot.css'])
 	gulp.watch(['./assets/*'], ['assets'])
+	gulp.watch(['./doc/*.html', './doc/*.js'], ['doc'])
+	
 
 })

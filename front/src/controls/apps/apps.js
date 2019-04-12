@@ -4,6 +4,8 @@ $$.control.registerControl('breizbot.apps', {
 		apps: []
 	},
 
+	$iface: 'setData(data)',
+
 	template: {gulp_inject: './apps.html'},
 
 	init: function(elt) {
@@ -21,7 +23,7 @@ $$.control.registerControl('breizbot.apps', {
 			}
 		})
 
-		this.update = function(data) {
+		this.setData = function(data) {
 			ctrl.setData(data)
 		}
 	}

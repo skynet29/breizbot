@@ -236,6 +236,8 @@ $$.control.registerControl('breizbot.files', {
 			console.log('[FileCtrl] update')
 			loadData()
 		}
-	}
+	},
+
+	$iface: 'update()'
 
 });

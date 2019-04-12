@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Breizbot Documentation</title>
+
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/gh/skynet29/brainjs@master/dist/brainjs.js"></script>
+	
+	<script src="breizbot.js"></script>
+
+	<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/skynet29/brainjs@master/dist/css/brainjs.css">
+	<link rel="stylesheet" type="text/css" href="breizbot.css">
+</head>
+<body>
+	<style type="text/css">
+		body {
+			padding: 10px;
+		}
+	</style>
+
+	<h1>Breizbot Documentation</h1>
+
+	<div id=main>
+		<div class="menu" bn-control="brainjs.navbar">
+			<a href="#/controls">Controls</a>
+			<a href="#/services">Services</a>
+		</div>
+		<div bn-control="brainjs.router" bn-data="{routes}" class="content"></div>
+	</div>
+
+	<script src="doc.js"></script>
+
+
+</body>
+</html>

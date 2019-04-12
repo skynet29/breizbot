@@ -5,6 +5,7 @@ $$.control.registerControl('breizbot.files', {
 		imageOnly: false,
 		filterExtension: undefined,
 		showThumbnail: false,
+		thumbnailSize: '?x100',
 		maxUploadSize: 2*1024*2014 // 2 Mo		
 	},
 
@@ -12,12 +13,20 @@ $$.control.registerControl('breizbot.files', {
 
 	init: function(elt, srvFiles) {
 
-		const {showToolbar, maxUploadSize, filterExtension, imageOnly, showThumbnail} = this.props
+		const {
+			showToolbar,
+			 maxUploadSize,
+			 filterExtension,
+			 imageOnly,
+			 thumbnailSize,
+			 showThumbnail
+			} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			
 			data: {
 				showThumbnail,
+				thumbnailSize,
 				showToolbar,
 				rootDir: '/',
 				selectMode: false,
@@ -34,7 +43,7 @@ $$.control.registerControl('breizbot.files', {
 					return selectedFiles.length > 0
 				},
 				getThumbnailUrl: function(fileName) {
-					return srvFiles.fileThumbnailUrl(rootDir + fileName, '100x?')
+					return srvFiles.fileThumbnailUrl(rootDir + fileName, thumbnailSize)
 				}
 			},
 			events: {

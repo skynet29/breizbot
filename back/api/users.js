@@ -4,7 +4,9 @@ const wss = require('../lib/wss')
 
 
 router.get('/', function(req, res) {
-	db.getUserList().then((data) => {
+	const {match} = req.query
+
+	db.getUserList(match).then((data) => {
 		res.json(data)
 	})
 })
@@ -50,6 +52,8 @@ router.post('/activateApp',function(req, res) {
 
 })
 
+
+
 router.post('/sendNotif', function(req, res) {
 	console.log('sendNotif', req.body)
 	const {to, notif} = req.body
@@ -68,6 +72,29 @@ router.post('/sendNotif', function(req, res) {
 	})
 
 })
+
+router.post('/sendInvitation', function(req, res) {
+	console.log('sendInvitation', req.body)
+	const {to} = req.body
+
+	db.addNotif(to, {
+		from: req.session.user,
+		type: 'invit'
+	})
+	.then(() => {
+		return db.getNotifCount(to)
+	})
+	.then((notifCount) => {
+		console.log('notifCount', notifCount)
+		wss.sendMessage(to, 'breizbot.notifCount', notifCount)
+		res.sendStatus(200)		
+	})	
+	.catch(() => {
+		res.sendStatus(400)
+	})
+
+})
+
 
 router.delete('/removeNotif/:id', function(req, res) {
 	console.log('removeNotif', req.params)
@@ -115,5 +142,36 @@ router.get('/getNotifCount', function(req, res) {
 
 })
 
+router.get('/getFriends', function(req, res) {
+	console.log('getFriends', req.session.user)
+
+	const userName = req.session.user
+	db.getFriends(userName)
+	.then((friends) => {
+		res.json(friends.map((friend) => {
+			return (friend.user1 == userName) ? friend.user2 : friend.user1
+		}))		
+	})	
+	.catch(() => {
+		res.sendStatus(400)
+	})
+
+})
+
+router.post('/addFriend', function(req, res) {
+	console.log('addFriend', req.session.user)
+
+	const userName = req.session.user
+	const {friendUserName} = req.body
+
+	db.addFriend(userName, friendUserName)
+	.then(() => {
+		res.sendStatus(200)	
+	})	
+	.catch(() => {
+		res.sendStatus(400)
+	})
+
+})
 
 module.exports = router

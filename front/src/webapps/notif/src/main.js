@@ -10,10 +10,23 @@ $$.control.registerControl('rootPage', {
 			data: {notifs: []},
 			events: {
 				onDelete: function() {
-					var notifId = $(this).closest('li').data('notifId')
-					console.log('onDelete', notifId)
-					users.removeNotif(notifId)
-				}
+					const item = $(this).closest('li').data('item')
+					console.log('onDelete', item)
+					users.removeNotif(item._id)
+				},
+				onAccept: function() {
+					const item = $(this).closest('li').data('item')
+					console.log('onAccept', item)
+
+					const friendUserName = item.notif.from
+					users.addFriend(friendUserName).then(() => {
+						return users.removeNotif(item._id)
+					})
+				},
+				onDecline: function() {
+					const item = $(this).closest('li').data('item')
+					console.log('onDecline', item)
+					users.removeNotif(item._id)				}
 			}
 		})	
 

@@ -1,0 +1,16 @@
+.addFriend {
+  margin: 10px; }
+  .addFriend .searchPanel {
+    display: flex;
+    margin-bottom: 10px; }
+    .addFriend .searchPanel input {
+      flex: 1;
+      padding: 5px;
+      margin-right: 10px; }
+
+.rootPage {
+  margin: 10px; }
+  .rootPage .addFriend {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: flex-end; }

@@ -22,10 +22,19 @@ module.exports =  {
 
 	},
 
-	getUserList: function() {
+	getUserList: function(matchedUser) {
+
+		console.log('getUserList', matchedUser)
+
+		let filter = {}
+		if (matchedUser != undefined) {
+			filter = {
+				username: {$regex: `\w*${matchedUser}\w*`}
+			}
+		}
 
 		console.log('getUserList')
-		return db.collection('users').find({}, {
+		return db.collection('users').find(filter, {
 			projection: {pwd:0,_id:0}
 		}).toArray()
 	},
@@ -99,6 +108,19 @@ module.exports =  {
 		console.log(`removeNotif`, notifId)
 		return db.collection('notifs').deleteOne({_id: new ObjectID(notifId)})
 	},	
+
+	getFriends: function(userName) {
+		console.log(`getFriends`, userName)
+		return db.collection('friends').find({
+			$or: [{user1: userName}, {user2: userName}]
+		}).toArray()
+	},
+
+	addFriend: function(userName, friendUserName) {
+		console.log(`addFriend`, userName, friendUserName)
+		return db.collection('friends').insertOne({user1: userName, user2: friendUserName})
+	}
+
 
 }
 

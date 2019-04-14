@@ -1,0 +1,14 @@
+.addFriend {
+	margin: 10px;
+
+	.searchPanel {
+		display: flex;
+		margin-bottom: 10px;
+
+		input {
+			flex: 1;
+			padding: 5px;
+			margin-right: 10px;
+		}
+	}
+}

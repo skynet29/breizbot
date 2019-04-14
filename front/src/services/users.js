@@ -9,6 +9,10 @@ $$.service.registerService('breizbot.users', {
 				return http.get('/api/users')
 			},
 
+			match: function(matchUser) {
+				return http.get(`/api/users?match=${matchUser}`)
+			},
+
 			add: function(data) {
 				return http.post('/api/users', data)
 			},
@@ -33,6 +37,11 @@ $$.service.registerService('breizbot.users', {
 				return http.post(`/api/users/sendNotif`, {to, notif})
 			},
 
+			sendInvitation: function(to) {
+				return http.post(`/api/users/sendInvitation`, {to})
+
+			},
+
 			removeNotif: function(notifId) {
 				return http.delete(`/api/users/removeNotif/${notifId}`)
 			},
@@ -44,6 +53,15 @@ $$.service.registerService('breizbot.users', {
 			getNotifCount: function() {
 				return http.get(`/api/users/getNotifCount`)
 			},
+
+			getFriends: function() {
+				return http.get(`/api/users/getFriends`)
+			},
+
+			addFriend: function(friendUserName) {
+				return http.post(`/api/users/addFriend`, {friendUserName})
+			},
+
 		}
 	},
 	$iface: `
@@ -56,6 +74,7 @@ $$.service.registerService('breizbot.users', {
 		sendNotif(to, notif):Promise;
 		removeNotif(notifId):Promise;
 		getNotifs():Promise;
-		getNotifCount():Promise
+		getNotifCount():Promise;
+		getFriends():Promise
 	`
 });

@@ -3,14 +3,13 @@ $$.control.registerControl('breizbot.users', {
 
 	template: {gulp_inject: './users.html'},
 
+	props: {
+		$pager: null
+	},
+
 	init: function(elt, users) {
 
-
-
-		const dlgAddUser = $$.formDialogController({
-			title: 'Add User',
-			template: {gulp_inject: './addUser.html'}
-		})
+		const {$pager} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -28,8 +27,9 @@ $$.control.registerControl('breizbot.users', {
 			},
 			events: {
 				onAddUser: function(ev) {
-					dlgAddUser.show(function(data) {
-						users.add(data).then(getUsers)
+					$pager.pushPage('breizbot.addUser', {
+						title: 'Add User',
+						buttons: [{label: 'Create', name: 'create'}]
 					})
 				},
 				onTableCmd: function(ev, evdata) {
@@ -57,5 +57,14 @@ $$.control.registerControl('breizbot.users', {
 
 		getUsers()
 
-	}
+		this.onReturn = function(data) {
+			//console.log('onReturn', data)
+			users.add(data).then(getUsers)
+		}
+
+	},
+
+	$iface: `
+		onReturn(formData)
+	`
 });

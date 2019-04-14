@@ -1,6 +1,20 @@
-<div class="breizbot-users dlgAddUser">
-	<input type="text" placeholder="username" name="username" required>
-	<input type="text" placeholder="pseudo" name="pseudo" required>
-	<input type="text" placeholder="location" name="location" required>
-	<input type="email" placeholder="email" name="email" required>	
-</div>
+<form bn-event="submit: onSubmit">
+	<div bn-control="brainjs.inputgroup">
+		<label>UserName</label>
+		<input type="text" placeholder="username" name="username" required="">
+	</div>
+	<div bn-control="brainjs.inputgroup">
+		<label>Pseudo</label>
+		<input type="text" placeholder="pseudo" name="pseudo" required>
+	</div>
+	<div bn-control="brainjs.inputgroup">
+		<label>Location</label>
+		<input type="text" placeholder="location" name="location" required>
+	</div>
+	<div bn-control="brainjs.inputgroup">
+		<label>Email</label>
+		<input type="email" placeholder="email" name="email" required>	
+	</div>
+	
+	<input type="submit" hidden="" bn-bind="submit">
+</form>

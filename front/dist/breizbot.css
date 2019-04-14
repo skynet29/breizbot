@@ -63,6 +63,14 @@
   position: relative;
   left: -15px; }
 
+.breizbot-addUser {
+  margin: 10px; }
+  .breizbot-addUser label {
+    display: inline-block;
+    min-width: 100px; }
+  .breizbot-addUser .brainjs-inputgroup {
+    margin-bottom: 5px; }
+
 .breizbot-users table {
   border-collapse: collapse; }
 
@@ -75,10 +83,3 @@
 
 .breizbot-users .btnAddUser {
   margin-bottom: 10px; }
-
-.breizbot-users.dlgAddUser {
-  display: flex;
-  flex-direction: column; }
-  .breizbot-users.dlgAddUser input {
-    margin-bottom: 5px;
-    padding: 5px; }

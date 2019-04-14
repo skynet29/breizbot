@@ -1,58 +1,74 @@
-$$.service.registerService('breizbot.rtc', ['brainjs.http', 'breizbot.broker'], function(config, http, broker) {
+$$.service.registerService('breizbot.rtc', {
 
-	let srcId
-	let destId
+	deps: ['brainjs.http', 'breizbot.broker'],
 
-	broker.on('ready', (msg) => { srcId = msg.clientId})
+	init: function(config, http, broker) {
 
-	return {
-		getRemoteClientId: function() {
-			return destId
-		},
+		let srcId
+		let destId
 
-		setRemoteClientId: function(clientId) {
-			destId = clientId
-		},
+		broker.on('ready', (msg) => { srcId = msg.clientId})
 
-		call: function(to) {
-			return http.post(`/api/rtc/sendToUser/${srcId}`, {to, type: 'call'})
-		},
+		return {
+			getRemoteClientId: function() {
+				return destId
+			},
 
-		cancel: function(to) {
-			return http.post(`/api/rtc/sendToUser/${srcId}`, {to, type: 'cancel'})
-		},
+			setRemoteClientId: function(clientId) {
+				destId = clientId
+			},
 
-		accept: function() {
-			return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'accept'})
-		},
+			call: function(to) {
+				return http.post(`/api/rtc/sendToUser/${srcId}`, {to, type: 'call'})
+			},
 
-		deny: function() {
-			return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'deny'})
-		},
+			cancel: function(to) {
+				return http.post(`/api/rtc/sendToUser/${srcId}`, {to, type: 'cancel'})
+			},
 
-		bye: function() {
-			return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'bye'})
-		},
+			accept: function() {
+				return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'accept'})
+			},
 
-		candidate: function(info) {
-			return http.post(`/api/rtc/sendToClient/${srcId}`, {
-				destId, 
-				type: 'candidate', 
-				data: {
-					label: info.sdpMLineIndex,
-					id: info.sdpMid,
-					candidate: info.candidate	
-				}
-			})
-		},
+			deny: function() {
+				return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'deny'})
+			},
 
-		offer: function(data) {
-			return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'offer', data})
-		},
+			bye: function() {
+				return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'bye'})
+			},
 
-		answer: function(data) {
-			return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'answer', data})
+			candidate: function(info) {
+				return http.post(`/api/rtc/sendToClient/${srcId}`, {
+					destId, 
+					type: 'candidate', 
+					data: {
+						label: info.sdpMLineIndex,
+						id: info.sdpMid,
+						candidate: info.candidate	
+					}
+				})
+			},
+
+			offer: function(data) {
+				return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'offer', data})
+			},
+
+			answer: function(data) {
+				return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'answer', data})
+			}
+
 		}
-
-	}
+	},
+	$iface: `
+		getRemoteClientId():string;
+		setRemoteClientId(clientId);
+		call(to):Promise;
+		cancel(to):Promise;
+		deny():Promise;
+		bye():Promise;
+		candidate(info):Promise;
+		offer(data):Promise;
+		answer(data):Promise
+	`
 });

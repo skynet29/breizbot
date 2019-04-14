@@ -130,12 +130,23 @@
 
 
 
-	$$.service.registerService('breizbot.broker', function(config) {
+	$$.service.registerService('breizbot.broker', {
 
-		const client = new BrokerClient()
-		client.connect()
+		init: function(config) {
 
-		return client;
+			const client = new BrokerClient()
+			client.connect()
+
+			return client
+		},
+
+		$iface: `
+			emitTopic(topicName, data);
+			register(topicName, callback);
+			unregister(topicName, callback);
+			onTopic(topicName, callback)
+
+		`
 	})
 
 

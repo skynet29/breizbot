@@ -1,51 +1,66 @@
-$$.service.registerService('breizbot.files', ['brainjs.http'], function(config, http) {
+$$.service.registerService('breizbot.files', {
 
-	return {
-		list: function(path, options) {
-			console.log('[FileService] list', path)
+	deps: ['brainjs.http'],
 
-			return http.post('/api/files/list', {path, options})
-		},
+	init: function(config, http) {
+		return {
+			list: function(path, options) {
+				console.log('[FileService] list', path)
 
-		fileUrl: function(fileName) {
-			return '/api/files/load?fileName=' + fileName
-		},
+				return http.post('/api/files/list', {path, options})
+			},
 
-		fileThumbnailUrl: function(fileName, size) {
-			return `/api/files/loadThumbnail?fileName=${fileName}&size=${size}`
-		},
+			fileUrl: function(fileName) {
+				return '/api/files/load?fileName=' + fileName
+			},
 
-		uploadFile: function(blob, saveAsfileName, destPath) {
-			console.log('[FileService] uploadFile', saveAsfileName)
-			if (!(blob instanceof Blob)) {
-				return Promise.reject('File format not supported')
-			}
-			//console.log('blob', blob)
-			var fd = new FormData()
-			fd.append('file', blob, saveAsfileName)
-			fd.append('destPath', destPath)
-			return http.postFormData('/api/files/save', fd)
-		},
+			fileThumbnailUrl: function(fileName, size) {
+				return `/api/files/loadThumbnail?fileName=${fileName}&size=${size}`
+			},
 
-		removeFiles: function(fileNames) {
-			console.log('[FileService] removeFiles', fileNames)
-			return http.post('/api/files/delete', fileNames)
-		},
+			uploadFile: function(blob, saveAsfileName, destPath) {
+				console.log('[FileService] uploadFile', saveAsfileName)
+				if (!(blob instanceof Blob)) {
+					return Promise.reject('File format not supported')
+				}
+				//console.log('blob', blob)
+				var fd = new FormData()
+				fd.append('file', blob, saveAsfileName)
+				fd.append('destPath', destPath)
+				return http.postFormData('/api/files/save', fd)
+			},
 
-		mkdir: function(fileName) {
-			console.log('[FileService] mkdir', fileName)
-			return http.post('/api/files/mkdir', {fileName})
-		},
+			removeFiles: function(fileNames) {
+				console.log('[FileService] removeFiles', fileNames)
+				return http.post('/api/files/delete', fileNames)
+			},
 
-		moveFiles: function(fileNames, destPath) {
-			console.log('[FileService] moveFiles', fileNames, destPath)
-			return http.post('/api/files/move', {fileNames, destPath})
-		},
+			mkdir: function(fileName) {
+				console.log('[FileService] mkdir', fileName)
+				return http.post('/api/files/mkdir', {fileName})
+			},
 
-		copyFiles: function(fileNames, destPath) {
-			console.log('[FileService] copyFiles', fileNames, destPath)
-			return http.post('/api/files/copy', {fileNames, destPath})
-		}	
-	}
+			moveFiles: function(fileNames, destPath) {
+				console.log('[FileService] moveFiles', fileNames, destPath)
+				return http.post('/api/files/move', {fileNames, destPath})
+			},
+
+			copyFiles: function(fileNames, destPath) {
+				console.log('[FileService] copyFiles', fileNames, destPath)
+				return http.post('/api/files/copy', {fileNames, destPath})
+			}	
+		}
+	},
+
+	$iface: `
+		list(path, options):Promise;
+		fileUrl(fileName):string;
+		fileThumbnailUrl(fileName, size):string;
+		uploadFile(blob, saveAsfileName, destPath):Promise;
+		removeFiles(fileNames):Promise;
+		mkdir(fileName):Promise;
+		moveFiles(fileNames, destPath):Promise;
+		copyFiles(fileNames, destPath):Promise			
+	`
 
 });

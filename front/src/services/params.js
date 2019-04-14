@@ -1,5 +1,7 @@
-$$.service.registerService('breizbot.params', function(config) {
+$$.service.registerService('breizbot.params', {
 
+	init: function(config) {
 
-	return JSON.parse(config)
+		return JSON.parse(config)
+	}
 });

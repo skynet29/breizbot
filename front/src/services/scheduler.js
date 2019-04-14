@@ -1,24 +1,30 @@
-$$.service.registerService('breizbot.scheduler', function(config) {
+$$.service.registerService('breizbot.scheduler', {
 
+	init: function(config) {
 
-	return {
-		openApp: function(appName, params) {
-			if (typeof params == 'object') {
-				const keys = []
-				for(let i in params) {
-					keys.push(i + '=' + params[i])
-				}
-	
-				location.href = `/apps/${appName}?` + keys.join('&')
-			}
-			else {
-				location.href = `/apps/${appName}`
-			}
-		},
-
-		logout: function() {
-			location.href = '/logout'
-		}
+		return {
+			openApp: function(appName, params) {
+				if (typeof params == 'object') {
+					const keys = []
+					for(let i in params) {
+						keys.push(i + '=' + params[i])
+					}
 		
-	}
+					location.href = `/apps/${appName}?` + keys.join('&')
+				}
+				else {
+					location.href = `/apps/${appName}`
+				}
+			},
+
+			logout: function() {
+				location.href = '/logout'
+			}
+			
+		}
+	},
+	$iface: `
+		openApp(appName, params);
+		logout()
+	`
 });

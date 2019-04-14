@@ -1,45 +1,61 @@
-$$.service.registerService('breizbot.users', ['brainjs.http'], function(config, http) {
+$$.service.registerService('breizbot.users', {
 
+	deps: ['brainjs.http'],
 
-	return {
-		list: function() {
-			return http.get('/api/users')
-		},
+	init: function(config, http) {
 
-		add: function(data) {
-			return http.post('/api/users', data)
-		},
+		return {
+			list: function() {
+				return http.get('/api/users')
+			},
 
-		remove: function(user) {
-			return http.delete(`/api/users/${user}`)
-		},
+			add: function(data) {
+				return http.post('/api/users', data)
+			},
 
-		update: function(user, data) {
-			return http.put(`/api/users/${user}`, data)
-		},
+			remove: function(user) {
+				return http.delete(`/api/users/${user}`)
+			},
 
-		get: function(user) {
-			return http.get(`/api/users/${user}`)
-		},
+			update: function(user, data) {
+				return http.put(`/api/users/${user}`, data)
+			},
 
-		activateApp: function(appName, activated) {
-			return http.post(`/api/users/activateApp`, {appName, activated})
-		},
+			get: function(user) {
+				return http.get(`/api/users/${user}`)
+			},
 
-		sendNotif: function(to, notif) {
-			return http.post(`/api/users/sendNotif`, {to, notif})
-		},
+			activateApp: function(appName, activated) {
+				return http.post(`/api/users/activateApp`, {appName, activated})
+			},
 
-		removeNotif: function(notifId) {
-			return http.delete(`/api/users/removeNotif/${notifId}`)
-		},
+			sendNotif: function(to, notif) {
+				return http.post(`/api/users/sendNotif`, {to, notif})
+			},
 
-		getNotifs: function() {
-			return http.get(`/api/users/getNotifs`)
-		},
-		
-		getNotifCount: function() {
-			return http.get(`/api/users/getNotifCount`)
-		},
-	}
+			removeNotif: function(notifId) {
+				return http.delete(`/api/users/removeNotif/${notifId}`)
+			},
+
+			getNotifs: function() {
+				return http.get(`/api/users/getNotifs`)
+			},
+			
+			getNotifCount: function() {
+				return http.get(`/api/users/getNotifCount`)
+			},
+		}
+	},
+	$iface: `
+		list():Promise;
+		add(data):Promise;
+		remove(user):Promise;
+		update(user, data):Promise;
+		get(user):Promise;
+		activateApp(appName, activated):Promise;
+		sendNotif(to, notif):Promise;
+		removeNotif(notifId):Promise;
+		getNotifs():Promise;
+		getNotifCount():Promise
+	`
 });

@@ -1,14 +1,23 @@
-$$.service.registerService('breizbot.apps', ['brainjs.http'], function(config, http) {
+$$.service.registerService('breizbot.apps', {
 
+	deps: ['brainjs.http'],
 
-	return {
-		listAll: function() {
-			return http.get('/api/apps/all')
-		},
+	init: function(config, http) {
 
-		listMyApp: function() {
-			return http.get('/api/apps/myapp')
+		return {
+			listAll: function() {
+				return http.get('/api/apps/all')
+			},
+
+			listMyApp: function() {
+				return http.get('/api/apps/myapp')
+			}
+			
 		}
-		
-	}
+	},
+
+	$iface: `
+		listAll():Promise;
+		listMyApp():Promise 
+		`
 });

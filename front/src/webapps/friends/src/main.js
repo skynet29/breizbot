@@ -1,20 +1,17 @@
 $$.control.registerControl('rootPage', {
 
-	deps: ['breizbot.users'],
-
 	template: {gulp_inject: './main.html'},
 
 	props: {
 		$pager: null
 	},
 
-	init: function(elt, users) {
+	init: function(elt) {
 
 		const {$pager} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				friends: []
 			},
 			events: {
 				onAddFriend: function(ev) {
@@ -30,16 +27,6 @@ $$.control.registerControl('rootPage', {
 				// }
 			}
 		})	
-
-		function updateFriends() {
-			users.getFriends().then((friends) => {
-				console.log('friends', friends)
-				ctrl.setData({friends})
-			})				
-		}
-
-
-		updateFriends()
 
 	}
 });

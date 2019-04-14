@@ -1,10 +1,10 @@
 $$.control.registerControl('addFriend', {
 
-	deps: ['breizbot.users'],
+	deps: ['breizbot.users', 'breizbot.params'],
 
 	template: {gulp_inject: './addFriend.html'},
 
-	init: function(elt, users) {
+	init: function(elt, users, params) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -25,7 +25,9 @@ $$.control.registerControl('addFriend', {
 					const friendUserName = $(this).data('username')
 
 					console.log('onInvit', friendUserName)
-					users.sendInvitation(friendUserName)
+					users.sendNotif(friendUserName, {
+						type: 'invit',
+					})
 				}
 			}
 		})	

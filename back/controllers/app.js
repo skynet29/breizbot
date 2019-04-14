@@ -12,6 +12,7 @@ module.exports = function(app) {
 			const {app} = req.params
 			const {userInfo} = req.session
 			const appPath = path.join('/webapps/', app)
+			req.query.$userName = req.session.user
 
 
 			if (sysApps.includes(app) || app in userInfo.apps) {

@@ -1,10 +1,12 @@
 $$.control.registerControl('rootPage', {
 
-	deps: ['breizbot.users', 'breizbot.broker'],
+	deps: ['breizbot.users', 'breizbot.broker', 'breizbot.params'],
 
 	template: {gulp_inject: './main.html'},
 
-	init: function(elt, users, broker) {
+	init: function(elt, users, broker, params) {
+
+		console.log('params', params)
 
 		const ctrl = $$.viewController(elt, {
 			data: {notifs: []},
@@ -18,15 +20,22 @@ $$.control.registerControl('rootPage', {
 					const item = $(this).closest('li').data('item')
 					console.log('onAccept', item)
 
-					const friendUserName = item.notif.from
+					const friendUserName = item.from
 					users.addFriend(friendUserName).then(() => {
-						return users.removeNotif(item._id)
+						return users.removeNotif(item._id).then(() => {
+							return users.sendNotif(friendUserName, `User <strong>${params.$userName}</strong> has accepted your invitation`)
+						})
 					})
 				},
 				onDecline: function() {
 					const item = $(this).closest('li').data('item')
 					console.log('onDecline', item)
-					users.removeNotif(item._id)				}
+					const friendUserName = item.from
+
+					users.removeNotif(item._id).then(() => {
+						return users.sendNotif(friendUserName, `User <strong>${params.$userName}</strong> has declined your invitation`)
+					})				
+				}
 			}
 		})	
 

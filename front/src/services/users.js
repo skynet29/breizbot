@@ -37,11 +37,6 @@ $$.service.registerService('breizbot.users', {
 				return http.post(`/api/users/sendNotif`, {to, notif})
 			},
 
-			sendInvitation: function(to) {
-				return http.post(`/api/users/sendInvitation`, {to})
-
-			},
-
 			removeNotif: function(notifId) {
 				return http.delete(`/api/users/removeNotif/${notifId}`)
 			},

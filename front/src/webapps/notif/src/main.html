@@ -5,15 +5,15 @@
 	<li class="w3-bar" bn-data="{item: n}" bn-show="typeof n.notif === 'string'">
 		<span class="w3-button w3-right delete" title="Delete"><i class="fa fa-times"></i></span>
 
-		<div class="w3-bar-item" bn-text="n.notif" ></div>
+		<div class="w3-bar-item" bn-html="n.notif" ></div>
 	</li>
 
 	<li class="w3-bar" bn-data="{item: n}" bn-show="n.notif.type === 'invit'">
-		<span class="w3-button w3-right w3-green accept">Accept</i></span>
-		<span class="w3-button w3-right w3-red decline">Decline</i></span>
+		<span class="w3-button w3-right w3-green accept"><i class="fa fa-user-check"></i></span>
+		<span class="w3-button w3-right w3-red decline"><i class="fa fa-user-slash"></i></span>
 
 		<div class="w3-bar-item">
-			<strong bn-text="n.notif.from"></strong>&nbsp;want to be your friend
+			User&nbsp;<strong bn-text="n.from"></strong>&nbsp;want to be your friend
 		</div>
 	</li>			
 </ul>	

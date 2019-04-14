@@ -57,30 +57,9 @@ router.post('/activateApp',function(req, res) {
 router.post('/sendNotif', function(req, res) {
 	console.log('sendNotif', req.body)
 	const {to, notif} = req.body
+	const from = req.session.user
 
-	db.addNotif(to, notif)
-	.then(() => {
-		return db.getNotifCount(to)
-	})
-	.then((notifCount) => {
-		console.log('notifCount', notifCount)
-		wss.sendMessage(to, 'breizbot.notifCount', notifCount)
-		res.sendStatus(200)		
-	})	
-	.catch(() => {
-		res.sendStatus(400)
-	})
-
-})
-
-router.post('/sendInvitation', function(req, res) {
-	console.log('sendInvitation', req.body)
-	const {to} = req.body
-
-	db.addNotif(to, {
-		from: req.session.user,
-		type: 'invit'
-	})
+	db.addNotif(to, from, notif)
 	.then(() => {
 		return db.getNotifCount(to)
 	})

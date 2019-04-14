@@ -89,9 +89,9 @@ module.exports =  {
 		})
 	},
 
-	addNotif: function(to, notif) {
-		console.log(`addNotif`, to, notif)
-		return db.collection('notifs').insertOne({to, notif})
+	addNotif: function(to, from, notif) {
+		console.log(`addNotif`, to, from, notif)
+		return db.collection('notifs').insertOne({to, from, notif})
 	},
 
 	getNotifs: function(to) {

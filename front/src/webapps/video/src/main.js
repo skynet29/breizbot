@@ -1,14 +1,21 @@
 $$.control.registerControl('rootPage', {
 
+	props: {
+		$pager: null
+	},
+
 	deps: ['breizbot.rtc', 'breizbot.broker', 'breizbot.params'],
 
 	template: {gulp_inject: './main.html'},
 
 	init: function(elt, rtc, broker, params) {
 
+		const {$pager} = this.props
+
 		const data = {
 			status: 'ready',
-			distant: ''
+			distant: '',
+			videoSize: ''
 		}
 
 		if (params.caller != undefined) {
@@ -23,15 +30,21 @@ $$.control.registerControl('rootPage', {
 			data,
 			events: {
 				onCall: function(ev) {
-					$$.ui.showPrompt({title: 'Call', content: 'User Name:'}, function(userName){
-						rtc.call(userName)
-						.then(() => {
-							ctrl.setData({status: 'calling', distant: userName})
-						})
-						.catch((e) => {
-							$$.ui.showAlert({title: 'Error', content: e.responseText})
-						})
+					console.log('onCall')
+					// $$.ui.showPrompt({title: 'Call', content: 'User Name:'}, function(userName){
+					// 	rtc.call(userName)
+					// 	.then(() => {
+					// 		ctrl.setData({status: 'calling', distant: userName})
+					// 	})
+					// 	.catch((e) => {
+					// 		$$.ui.showAlert({title: 'Error', content: e.responseText})
+					// 	})
+					// })
+					$pager.pushPage('friendsPage', {
+						title: 'Select a friend',
+						buttons: [{name: 'call', label: 'Call'}]
 					})
+
 				},
 				onCancel: function(ev) {
 					rtc.cancel(ctrl.model.distant)
@@ -50,12 +63,28 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
+		this.onReturn = function(userName) {
+			//console.log('onReturn', userName)
+			rtc.call(userName)
+			.then(() => {
+				ctrl.setData({status: 'calling', distant: userName})
+			})
+			.catch((e) => {
+				$$.ui.showAlert({title: 'Error', content: e.responseText})
+			})
+		}
+
 		const pcConfig = {
 		  'iceServers': [{
 		    'urls': 'stun:stun.l.google.com:19302'
 		  }]
 		}
-		const localVideo = ctrl.scope.localVideo.get(0)
+
+		const localVideo = ctrl.scope.localVideo.on('canplay', function(){
+			console.log('canplay', this.videoHeight, this.videoWidth)
+			ctrl.setData({videoSize: this.videoWidth + 'x' + this.videoHeight})
+		}).get(0)
+
 		const remoteVideo = ctrl.scope.remoteVideo.get(0)
 		let pc
 		let localStream
@@ -90,15 +119,19 @@ $$.control.registerControl('rootPage', {
 		  pc = null		  
 		}	
 			
+		console.log('height', elt.find('.video').height())
 
 		navigator.mediaDevices.getUserMedia({
 		  audio: true,
 		  video: {
-		  	width: {max: elt.width()/ 2}
+		  	// width: {max: elt.width()/ 2},
+		  	height: {max: elt.find('.video').height()/ 2}
+		  	//height: {max: 120}
 		  }
 		})
 		.then(function(stream) {
 			console.log('localStream ready')
+			
 			localVideo.srcObject = stream
 			localStream = stream
 

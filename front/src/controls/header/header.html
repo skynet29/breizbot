@@ -8,15 +8,16 @@
 			bn-event="contextmenuchange: onCallResponse"
 			bn-data="{
 				trigger: 'left', 
+				title: caller,
 				items: {
-				accept: {name: 'Accept'},
-				deny: {name: 'Deny'},
+					accept: {name: 'Accept'},
+					deny: {name: 'Decline', icon: 'fas fa-phone-slash'},
 				}
 			}"
 			class="w3-button">
 			<i class="fa fa-phone fa-pulse"></i>
-			<span bn-text="caller"></span>
-			<i class="fa fa-angle-down fa-lg"></i>
+<!-- 			<span bn-text="caller"></span>
+ -->			<i class="fa fa-angle-down fa-lg"></i>
 		</div>
 	</div>
 
@@ -29,14 +30,24 @@
 			<span class="w3-badge w3-red w3-tiny" bn-text="nbNotif" bn-show="nbNotif > 0"></span>			
 		</button>
 
+
+
 		<div bn-control="brainjs.contextmenu" 
-			bn-data="{items}" 
+			bn-data="{
+				items: {
+					pwd: {name: 'Change password', icon: 'fas fa-lock'},
+					apps: {name: 'Applications', icon: 'fas fa-th'},
+					sep: '------',
+					logout: {name: 'Logout', icon: 'fas fa-power-off'}
+				},
+				title: userName
+			}" 
 			data-trigger="left" 
 			class="w3-button" 
 			bn-event="contextmenuchange: onContextMenu">
 				<i class="fa fa-user fa-lg"></i>
-				<span bn-text="userName"></span>	
-				<i class="fa fa-angle-down fa-lg"></i>
+<!-- 				<span bn-text="userName"></span>	
+ -->				<i class="fa fa-angle-down fa-lg"></i>
     	
 		</div>
 		

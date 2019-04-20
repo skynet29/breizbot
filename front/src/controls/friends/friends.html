@@ -1,6 +1,6 @@
 <ul class="w3-ul w3-border w3-white w3-hoverable" 
-	bn-each="friends" bn-show="friends.length > 0">
-	<li class="w3-bar">
+	bn-each="friends" bn-show="friends.length > 0" bn-event="click.w3-bar: onItemClick">
+	<li class="w3-bar" bn-data="{item: $i}">
 <!-- 		<span class="w3-button w3-right delete" title="Delete"><i class="fa fa-times"></i></span>
  -->
 		<div class="w3-bar-item" bn-text="$i" ></div>

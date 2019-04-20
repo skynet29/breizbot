@@ -64,6 +64,10 @@ $$.control.registerControl('breizbot.header', {
 					if (cmd == 'deny') {						
 						rtc.deny()
 					}
+				},
+				onDropDown: function() {
+					console.log('onDropDown')
+					ctrl.scope.userMenu.toggle('w3-show')
 				}
 			}
 		})

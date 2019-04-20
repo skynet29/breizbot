@@ -1,3 +1,33 @@
 .rootPage {
+	display: flex;
+	flex-direction: column;
+
+	.toolbar {
+		display: flex;
+		justify-content: space-between;
+		margin: 10px;
+		align-items: center;
+
+		p {
+			margin: 0px;
+		}
+	}
+
+
+	.video {
+		text-align: center;
+
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+
+		.reduced {
+			height: 120px;
+		}
+	}
+
+
+
 
 }

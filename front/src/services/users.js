@@ -57,6 +57,10 @@ $$.service.registerService('breizbot.users', {
 				return http.post(`/api/users/addFriend`, {friendUserName})
 			},
 
+			changePwd: function(newPwd) {
+				return http.post(`/api/users/changePwd`, {newPwd})
+			}
+
 		}
 	},
 	$iface: `

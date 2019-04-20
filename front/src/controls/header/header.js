@@ -40,6 +40,17 @@ $$.control.registerControl('breizbot.header', {
 					if (data.cmd == 'apps') {
 						scheduler.openApp('store')
 					}
+					if (data.cmd == 'pwd') {
+						$$.ui.showPrompt({title: 'Change Password', content: 'New Password'}, function(newPwd) {
+							users.changePwd(newPwd).then(() => {
+								$$.ui.showAlert({title: 'Change Password', content: 'Password has been changed'})
+							})
+							.catch((e) => {
+								$$.ui.showAlert({title: 'Error', content: e.responseText})
+							})
+						})
+					}					
+
 				},
 				onNotification: function(ev) {
 					console.log('onNotification')

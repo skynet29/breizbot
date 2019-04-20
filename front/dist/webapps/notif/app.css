@@ -1,2 +1,6 @@
+.rootPage .scrollPanel {
+  height: 100%;
+  overflow-y: auto; }
+
 .rootPage .decline {
   margin-right: 10px; }

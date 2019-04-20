@@ -46,10 +46,10 @@ module.exports =  {
 	},
 
 
-	updateUserInfo: function(username, data) {
+	changePassword: function(username, newPwd) {
 
-		console.log(`updateUserInfo`, userName, data)
-		var update = {'$set': {allowedApps: data.allowedApps, pwd: data.pwd}}
+		console.log(`changePassword`, username, newPwd)
+		var update = {'$set': {pwd: newPwd}}
 
 		return db.collection('users').updateOne({username}, update)
 

@@ -9,13 +9,32 @@ router.get('/', function(req, res) {
 	db.getUserList(match).then((data) => {
 		res.json(data)
 	})
+	.catch(() => {
+		res.sendStatus(400)
+	})	
 })
 
 router.post('/', function(req, res) {
 	db.createUser(req.body).then((data) => {
 		res.json(data)
 	})
+	.catch(() => {
+		res.sendStatus(400)
+	})	
 })
+
+router.post('/changePwd', function(req, res) {
+	const {newPwd} = req.body
+	const userName = req.session.user
+
+	db.changePassword(userName, newPwd).then(() => {
+		res.sendStatus(200)
+	})
+	.catch(() => {
+		res.sendStatus(400)
+	})	
+})
+
 
 router.delete('/:userName',function(req, res) {
 

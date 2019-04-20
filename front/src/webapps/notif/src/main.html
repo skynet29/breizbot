@@ -1,19 +1,21 @@
-<ul class="w3-ul w3-border w3-white" 
-	bn-each="notifs" bn-iter="n"
-	bn-event="click.delete: onDelete, click.accept: onAccept, click.decline: onDecline"
-	>
-	<li class="w3-bar" bn-data="{item: n}" bn-show="typeof n.notif === 'string'">
-		<span class="w3-button w3-right delete" title="Delete"><i class="fa fa-times"></i></span>
+<div class="scrollPanel">
+	<ul class="w3-ul w3-border w3-white" 
+		bn-each="notifs" bn-iter="n"
+		bn-event="click.delete: onDelete, click.accept: onAccept, click.decline: onDecline"
+		>
+		<li class="w3-bar" bn-data="{item: n}" bn-show="typeof n.notif === 'string'">
+			<span class="w3-button w3-right delete" title="Delete"><i class="fa fa-times"></i></span>
 
-		<div class="w3-bar-item" bn-html="n.notif" ></div>
-	</li>
+			<div class="w3-bar-item" bn-html="n.notif" ></div>
+		</li>
 
-	<li class="w3-bar" bn-data="{item: n}" bn-show="n.notif.type === 'invit'">
-		<span class="w3-button w3-right w3-green accept"><i class="fa fa-user-check"></i></span>
-		<span class="w3-button w3-right w3-red decline"><i class="fa fa-user-slash"></i></span>
+		<li class="w3-bar" bn-data="{item: n}" bn-show="n.notif.type === 'invit'">
+			<span class="w3-button w3-right w3-green accept"><i class="fa fa-user-check"></i></span>
+			<span class="w3-button w3-right w3-red decline"><i class="fa fa-user-slash"></i></span>
 
-		<div class="w3-bar-item">
-			User&nbsp;<strong bn-text="n.from"></strong>&nbsp;want to be your friend
-		</div>
-	</li>			
-</ul>	
+			<div class="w3-bar-item">
+				User&nbsp;<strong bn-text="n.from"></strong>&nbsp;want to be your friend
+			</div>
+		</li>			
+	</ul>	
+</div>

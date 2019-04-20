@@ -39,6 +39,8 @@ $$.control.registerControl('addFriendPage', {
 
 					users.sendNotif(friendUserName, {
 						type: 'invit',
+					}).then(() => {
+						$$.ui.showAlert({title: 'Add Friend', content: `An invitation was sent to user <strong>${friendUserName}</strong>`})
 					})
 				}
 			}

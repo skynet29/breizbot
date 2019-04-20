@@ -207,8 +207,9 @@ $$.control.registerControl('breizbot.files', {
 		function getSelFiles() {
 			const selFiles = []
 			elt.find('.check:checked').each(function() {
-				const fileName = $(this).closest('.thumbnail').data('name')
-				selFiles.push(ctrl.model.rootDir + fileName)
+				const info = $(this).closest('.thumbnail').data('info')
+				
+				selFiles.push(ctrl.model.rootDir + info.name)
 			})
 			console.log('selFiles', selFiles)	
 			return selFiles		

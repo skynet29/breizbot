@@ -41,7 +41,7 @@ $$.control.registerControl('breizbot.header', {
 						scheduler.openApp('store')
 					}
 					if (data.cmd == 'pwd') {
-						$$.ui.showPrompt({title: 'Change Password', content: 'New Password'}, function(newPwd) {
+						$$.ui.showPrompt({title: 'Change Password', label: 'New Password:'}, function(newPwd) {
 							users.changePwd(newPwd).then(() => {
 								$$.ui.showAlert({title: 'Change Password', content: 'Password has been changed'})
 							})

@@ -19,7 +19,7 @@ $$.control.registerControl('breizbot.friends', {
 			events: {
 				onItemClick: function() {
 					const userName =  $(this).data('item')
-					console.log('onItemClick', userName)
+					//console.log('onItemClick', userName)
 					if (showSelection) {
 						$(this).siblings('.w3-blue').removeClass('w3-blue')
 						$(this).addClass('w3-blue')						
@@ -33,6 +33,10 @@ $$.control.registerControl('breizbot.friends', {
 			return elt.find('li.w3-blue').data('item')
 		}
 
+		this.getFriends = function() {
+			return ctrl.model.friends
+		}
+
 		function updateFriends() {
 			users.getFriends().then((friends) => {
 				console.log('friends', friends)
@@ -43,7 +47,14 @@ $$.control.registerControl('breizbot.friends', {
 
 		updateFriends()
 
-	}
+	},
+
+	$iface: `
+		getSelection():string;
+		getFriends():[string]
+	`,
+
+	$events: 'friendclick'
 });
 
 

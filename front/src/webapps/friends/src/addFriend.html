@@ -1,15 +1,23 @@
 <form class="searchPanel" bn-event="submit: onSearch">
-	<input type="text" name="search" autofocus="" required="" minlength="3" placeholder="Search username">
+	<input type="text" name="search" autofocus="" required="" minlength="3" placeholder="Search username" autocomplete="off">
 	<button class="w3-btn w3-blue" title="Search" type="submit"><i class="fa fa-search"></i></button>
 </form>
-<ul class="w3-ul w3-border w3-white" 
-	bn-event="click.invit: onInvit"
-	bn-each="friends"
-	bn-show="friends.length > 0"
-	>
-	<li class="w3-bar">
-		<span class="w3-button w3-right invit" title="Invit" bn-data="{username: $i.username}"><i class="fa fa-plus"></i></span>
+<div class="scrollPanel">
+	<p bn-show="friends.length == 0">No results</p>
+	<ul class="w3-ul w3-border w3-white" 
+		bn-event="click.invit: onInvit"
+		bn-each="friends"
+		bn-show="friends.length > 0"
+		>
+		<li class="w3-bar">
+			<span class="w3-button w3-right invit" title="Invit" bn-data="{username: $i.username}"><i class="fa fa-plus"></i></span>
 
-		<div class="w3-bar-item" bn-text="$i.username" ></div>
-	</li>
-</ul>	
+			<div class="w3-bar-item">
+				<i class="fa fa-user w3-text-blue"></i>
+				<span bn-text="$i.username"></span><br>
+				<i class="fa fa-map-marker-alt w3-text-blue"></i>
+				<span bn-text="$i.location"></span>
+			</div>
+		</li>
+	</ul>		
+</div>

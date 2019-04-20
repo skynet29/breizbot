@@ -26,6 +26,9 @@ $$.control.registerControl('breizbot.apps', {
 		this.setData = function(data) {
 			ctrl.setData(data)
 		}
-	}
+	},
+
+	$iface: `setData(data)`,
+	$events: 'appclick'
 });
 

@@ -1,5 +1,7 @@
-.addFriend {
+.addFriendPage {
 	margin: 10px;
+	display: flex;
+	flex-direction: column;
 
 	.searchPanel {
 		display: flex;
@@ -10,5 +12,10 @@
 			padding: 5px;
 			margin-right: 10px;
 		}
+	}
+
+	.scrollPanel {
+		flex: 1;
+		overflow-y: auto;
 	}
 }

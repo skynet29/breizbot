@@ -16,8 +16,11 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onAddFriend: function(ev) {
 					console.log('onAddFriend')
-					$pager.pushPage('addFriend', {
-						title: 'Add Friend'
+					$pager.pushPage('addFriendPage', {
+						title: 'Add Friend',
+						props: {
+							friends: ctrl.scope.friends.getFriends()
+						}
 					})
 				}
 				// onDelete: function() {

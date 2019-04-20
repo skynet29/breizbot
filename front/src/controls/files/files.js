@@ -238,6 +238,7 @@ $$.control.registerControl('breizbot.files', {
 		}
 	},
 
-	$iface: 'update()'
+	$iface: 'update()',
+	$events: 'fileclick'
 
 });

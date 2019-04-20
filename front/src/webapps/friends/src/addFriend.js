@@ -1,10 +1,16 @@
-$$.control.registerControl('addFriend', {
+$$.control.registerControl('addFriendPage', {
 
 	deps: ['breizbot.users', 'breizbot.params'],
 
 	template: {gulp_inject: './addFriend.html'},
 
+	props: {
+		friends: []
+	},
+
 	init: function(elt, users, params) {
+
+		const currentFriends = this.props.friends
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -18,13 +24,19 @@ $$.control.registerControl('addFriend', {
 					$(this).resetForm()
 					console.log('search', search)
 					users.match(search).then((friends) => {
-						ctrl.setData({friends})
+						ctrl.setData({friends: friends.filter((friend) => friend.username != params.$userName)})
 					})
 				},
 				onInvit: function(ev) {
 					const friendUserName = $(this).data('username')
-
 					console.log('onInvit', friendUserName)
+					if (currentFriends.includes(friendUserName)) {
+						$$.ui.showAlert({title: 'Warning', content: `
+							User <strong>${friendUserName}</strong> is already your friend
+							`})
+						return
+					}
+
 					users.sendNotif(friendUserName, {
 						type: 'invit',
 					})

@@ -1,12 +1,17 @@
-.addFriend {
-  margin: 10px; }
-  .addFriend .searchPanel {
+.addFriendPage {
+  margin: 10px;
+  display: flex;
+  flex-direction: column; }
+  .addFriendPage .searchPanel {
     display: flex;
     margin-bottom: 10px; }
-    .addFriend .searchPanel input {
+    .addFriendPage .searchPanel input {
       flex: 1;
       padding: 5px;
       margin-right: 10px; }
+  .addFriendPage .scrollPanel {
+    flex: 1;
+    overflow-y: auto; }
 
 .rootPage {
   margin: 10px; }

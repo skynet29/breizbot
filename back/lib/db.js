@@ -60,6 +60,8 @@ module.exports =  {
 		console.log(`createUser`, data)
 		data.pwd = 'welcome'
 		data.apps = {}
+		data.createDate = Date.now()
+		data.lastLoginDate = 0
 
 		return db.collection('users').insertOne(data)
 	},

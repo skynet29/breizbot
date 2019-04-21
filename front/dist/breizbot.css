@@ -64,22 +64,24 @@
   left: -15px; }
 
 .breizbot-addUser {
-  margin: 10px; }
+  margin: 10px;
+  display: flex;
+  justify-content: center; }
   .breizbot-addUser label {
     display: inline-block;
     min-width: 100px; }
   .breizbot-addUser .brainjs-inputgroup {
     margin-bottom: 5px; }
 
-.breizbot-users table {
-  border-collapse: collapse; }
-
-.breizbot-users td, .breizbot-users th {
-  border: 1px solid black;
-  padding: 5px; }
-
-.breizbot-users .main {
-  margin: 10px; }
-
-.breizbot-users .btnAddUser {
-  margin-bottom: 10px; }
+.breizbot-users {
+  margin: 10px;
+  display: flex;
+  flex-direction: column; }
+  .breizbot-users .toolbar {
+    display: flex;
+    justify-content: flex-end; }
+  .breizbot-users .scrollPanel {
+    flex: 1;
+    overflow: auto; }
+  .breizbot-users .btnAddUser {
+    margin-bottom: 10px; }

@@ -1,18 +1,19 @@
 
 .breizbot-users {
 
-	table {
-		border-collapse:  collapse;
-		
+	margin:10px;
+
+	display: flex;
+	flex-direction: column;
+
+	.toolbar {
+		display: flex;
+		justify-content: flex-end;
 	}
 
-	td, th {
-		border: 1px solid black;
-		padding: 5px;
-	}
-
-	.main {
-		margin: 10px;
+	.scrollPanel {
+		flex: 1;
+		overflow: auto;
 	}
 
 	.btnAddUser {

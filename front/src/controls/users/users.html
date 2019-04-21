@@ -1,6 +1,38 @@
-<div class="main">
-	<button bn-event="click: onAddUser" class="w3-btn w3-blue btnAddUser">Add User</button>
-	<div bn-control="brainjs.table"
-		bn-event="tablecmd: onTableCmd"
-		bn-data="{columns, data}"></div>	
+<div class="toolbar">
+	<button bn-event="click: onAddUser" class="w3-btn w3-blue btnAddUser" title="Add User">
+		<i class="fa fa-user-plus"></i>
+	</button>	
+</div>
+
+<div class="scrollPanel">
+    <table class="w3-table-all w3-small">
+        <thead>
+            <tr class="w3-green">
+                <th>User Name</th>
+                <th>Pseudo</th>
+                <th>Location</th>
+                <th>Email</th>
+                <th>Create Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody bn-each="data" bn-event="click.delete: onDelete, click.notif: onNotif">
+  			<tr bn-data="{item: $i}">
+				<td bn-text="$i.username"></td>
+				<td bn-text="$i.pseudo"></td>
+				<td bn-text="$i.location"></td>
+				<td bn-text="$i.email"></td>
+				<td bn-text="new Date($i.createDate).toLocaleDateString('fr-FR')"></td>
+				<td>
+					<button class="delete w3-btn w3-blue" title="Delete User">
+						<i class="fa fa-trash"></i>
+					</button>
+					<button class="notif w3-btn w3-blue" title="Send Notification">
+						<i class="fa fa-bell"></i>
+					</button>
+				</td>
+			</tr>      	
+
+        </tbody>
+    </table>
 </div>

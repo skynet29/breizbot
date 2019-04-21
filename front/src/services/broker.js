@@ -47,6 +47,10 @@
 					this.emit('ready', {clientId: msg.clientId})							
 				}
 
+				if (msg.type == 'ping') {
+					this.sendMsg({type: 'pong'})
+				}
+
 				if (msg.type == 'notif') {
 					this.topics.emit(msg.topic, msg)
 				}

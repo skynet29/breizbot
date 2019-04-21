@@ -1,7 +1,10 @@
 const wildcard = require('wildcard')
 const uniqid = require('uniqid')
 
+const pingInterval = 60000 // 1 min
+
 function sendMsg(client, msg) {
+  //console.log('[Broker] sendMsg', msg)
 	client.sendText(JSON.stringify(msg))
 }
 
@@ -11,6 +14,19 @@ class Broker {
 		this.userName = userName
 		this.history = {}
     this.homeboxClient = null
+    setInterval(() => {
+      //console.log('[Broker] check connection')
+      const disconnnectedClients = this.clients.filter((client) => {return !client.pingOk})
+      disconnnectedClients.forEach((client) => {
+        console.log('[Broker] connection timeout', this.userName, client.path, client.clientId)
+        client.close()
+      })
+
+      this.clients.forEach((client) => {
+        client.pingOk = false
+        sendMsg(client, {type: 'ping'})
+      })
+    }, pingInterval)
 
 	}
 
@@ -67,6 +83,7 @@ class Broker {
     client.userName = this.userName
 
 		client.registeredTopics = {}
+    client.pingOk = true
 
 		client.on('text', (text) => {
 
@@ -168,6 +185,9 @@ class Broker {
 		}	
 
 		switch(msg.type) {
+      case 'pong':
+        client.pingOk = true
+      break
 
 			case 'unregister':
         this.handleUnregister(client, msg)       

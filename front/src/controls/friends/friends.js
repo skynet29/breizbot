@@ -34,10 +34,10 @@ $$.control.registerControl('breizbot.friends', {
 		}
 
 		this.getFriends = function() {
-			return ctrl.model.friends
+			return ctrl.model.friends.map((friend) => friend.friendUserName)
 		}
 
-		function updateFriends() {
+		this.update = function() {
 			users.getFriends().then((friends) => {
 				console.log('friends', friends)
 				ctrl.setData({friends})
@@ -45,7 +45,7 @@ $$.control.registerControl('breizbot.friends', {
 		}
 
 
-		updateFriends()
+		this.update()
 
 	},
 

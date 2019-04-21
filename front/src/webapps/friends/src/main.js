@@ -22,12 +22,11 @@ $$.control.registerControl('rootPage', {
 							friends: ctrl.scope.friends.getFriends()
 						}
 					})
+				},
+				onUpdate: function() {
+					ctrl.scope.friends.update()
 				}
-				// onDelete: function() {
-				// 	var notifId = $(this).closest('li').data('notifId')
-				// 	console.log('onDelete', notifId)
-				// 	users.removeNotif(notifId)
-				// }
+
 			}
 		})	
 

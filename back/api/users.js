@@ -147,7 +147,11 @@ router.get('/getFriends', function(req, res) {
 	db.getFriends(userName)
 	.then((friends) => {
 		res.json(friends.map((friend) => {
-			return (friend.user1 == userName) ? friend.user2 : friend.user1
+			const friendUserName = (friend.user1 == userName) ? friend.user2 : friend.user1
+			return {
+				friendUserName, 
+				isConnected: wss.getBroker(friendUserName).hasClient()
+			}
 		}))		
 	})	
 	.catch(() => {
@@ -155,7 +159,7 @@ router.get('/getFriends', function(req, res) {
 	})
 
 })
-
+11
 router.post('/addFriend', function(req, res) {
 	console.log('addFriend', req.session.user)
 

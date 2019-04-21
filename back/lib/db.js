@@ -93,7 +93,7 @@ module.exports =  {
 
 	addNotif: function(to, from, notif) {
 		console.log(`addNotif`, to, from, notif)
-		return db.collection('notifs').insertOne({to, from, notif})
+		return db.collection('notifs').insertOne({to, from, notif, date: Date.now()})
 	},
 
 	getNotifs: function(to) {

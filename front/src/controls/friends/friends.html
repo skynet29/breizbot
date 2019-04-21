@@ -3,7 +3,13 @@
 	<li class="w3-bar" bn-data="{item: $i}">
 <!-- 		<span class="w3-button w3-right delete" title="Delete"><i class="fa fa-times"></i></span>
  -->
-		<div class="w3-bar-item" bn-text="$i" ></div>
+		<div class="w3-bar-item">
+			<i class="fa fa-user" bn-class="{
+				'w3-text-green': $i.isConnected,
+				'w3-text-red': !$i.isConnected
+			}"></i>
+			<span bn-text="$i.friendUserName"></span>
+		</div>
 	</li>
 </ul>	
 <p bn-show="friends.length == 0">You have no friends</p>

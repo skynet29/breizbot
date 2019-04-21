@@ -15,7 +15,9 @@
 
 .rootPage {
   margin: 10px; }
-  .rootPage .addFriend {
+  .rootPage .toolbar {
     margin-bottom: 10px;
     display: flex;
     justify-content: flex-end; }
+    .rootPage .toolbar button {
+      margin-left: 5px; }

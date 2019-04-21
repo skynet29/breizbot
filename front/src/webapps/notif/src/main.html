@@ -6,7 +6,13 @@
 		<li class="w3-bar" bn-data="{item: n}" bn-show="typeof n.notif === 'string'">
 			<span class="w3-button w3-right delete" title="Delete"><i class="fa fa-times"></i></span>
 
-			<div class="w3-bar-item" bn-html="n.notif" ></div>
+			<div class="w3-bar-item">
+				From: <span bn-text="n.from"></span><br>
+				Date: <span bn-text="new Date(n.date).toLocaleDateString()"></span>
+				at <span bn-text="new Date(n.date).toLocaleTimeString()"></span>
+				<br>
+				Message: <span bn-html="n.notif"></span>
+			</div>
 		</li>
 
 		<li class="w3-bar" bn-data="{item: n}" bn-show="n.notif.type === 'invit'">
@@ -14,7 +20,11 @@
 			<span class="w3-button w3-right w3-red decline"><i class="fa fa-user-slash"></i></span>
 
 			<div class="w3-bar-item">
-				User&nbsp;<strong bn-text="n.from"></strong>&nbsp;want to be your friend
+				From: <span bn-text="n.from"></span><br>
+				Date: <span bn-text="new Date(n.date).toLocaleDateString()"></span>
+				at <span bn-text="new Date(n.date).toLocaleTimeString()"></span>
+				<br>
+				Message: <strong>I want to be your friend</strong>
 			</div>
 		</li>			
 	</ul>	

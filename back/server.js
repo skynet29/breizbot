@@ -53,6 +53,16 @@ app.use(fileUpload())
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))	
 
+// forbid acces to REST API when no user connected
+app.all('/api/*' , function(req, res, next) {
+	if (!req.session.connected) {
+		res.sendStatus('401')
+	}
+	else { 
+		next()
+	}
+})
+
 require('./controllers/login')(app)
 require('./controllers/app')(app)
 

@@ -103,6 +103,7 @@ function onConnect(client, store) {
 			}
 			const userName = session.user
 			const broker = getBroker(userName)
+			client.sessionId = sid
 			
 			broker.addClient(client)
 		})

@@ -1,4 +1,7 @@
 <div class="toolbar">
+	<button bn-event="click: onUpdate" class="w3-btn w3-blue" title="Update">
+		<i class="fa fa-redo"></i>
+	</button>	
 	<button bn-event="click: onAddUser" class="w3-btn w3-blue btnAddUser" title="Add User">
 		<i class="fa fa-user-plus"></i>
 	</button>	
@@ -13,6 +16,7 @@
                 <th>Location</th>
                 <th>Email</th>
                 <th>Create Date</th>
+                <th>Last Login Date</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -22,7 +26,17 @@
 				<td bn-text="$i.pseudo"></td>
 				<td bn-text="$i.location"></td>
 				<td bn-text="$i.email"></td>
-				<td bn-text="new Date($i.createDate).toLocaleDateString('fr-FR')"></td>
+				<td >
+					<span bn-text="new Date($i.createDate).toLocaleDateString('fr-FR')" bn-show="$i.createDate != undefined"></span>
+				</td>
+				<td>
+					<span bn-show="$i.lastLoginDate != undefined && $i.lastLoginDate != 0">
+
+						<span bn-text="new Date($i.lastLoginDate).toLocaleDateString('fr-FR')"></span><br>
+						at 
+						<span bn-text="new Date($i.lastLoginDate).toLocaleTimeString('fr-FR')"></span>
+					</span>
+				</td>
 				<td>
 					<button class="delete w3-btn w3-blue" title="Delete User">
 						<i class="fa fa-trash"></i>

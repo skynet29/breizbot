@@ -44,6 +44,7 @@ module.exports = function(app) {
 					res.render('login', {message: 'Bad password'})
 					return
 				}
+				db.updateLastLoginDate(user)
 				req.session.connected = true
 				req.session.user = user
 				req.session.userInfo = data

@@ -21,7 +21,7 @@ $$.control.registerControl('rootPage', {
 					const friendUserName = item.from
 					users.addFriend(friendUserName).then(() => {
 						return users.removeNotif(item._id).then(() => {
-							return users.sendNotif(friendUserName, `User has accepted your invitation`)
+							return users.sendNotif(friendUserName, {text: 'User has accepted your invitation'})
 						})
 					})
 				},
@@ -31,7 +31,17 @@ $$.control.registerControl('rootPage', {
 					const friendUserName = item.from
 
 					users.removeNotif(item._id).then(() => {
-						return users.sendNotif(friendUserName, `User has declined your invitation`)
+						return users.sendNotif(friendUserName, {text: `User has declined your invitation`})
+					})				
+				},
+				onReply: function(ev) {
+					const item = $(this).closest('li').data('item')
+					console.log('onReply', item)
+					const friendUserName = item.from	
+					$$.ui.showPrompt({title: 'Reply', label: 'Message:'}, function(text) {
+						users.removeNotif(item._id).then(() => {
+							return users.sendNotif(friendUserName, {text, reply:true})
+						})
 					})				
 				}
 			}

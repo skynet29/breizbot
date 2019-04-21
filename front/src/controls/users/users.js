@@ -32,8 +32,11 @@ $$.control.registerControl('breizbot.users', {
 					const data = $(this).closest('tr').data('item')
 					console.log('onNotif', data)
 					$$.ui.showPrompt({title: 'Send Notification', label: 'Message'}, function(text) {
-						users.sendNotif(data.username, text)
+						users.sendNotif(data.username, {text})
 					})
+				},
+				onUpdate: function() {
+					getUsers()
 				}
 
 			}

@@ -9,6 +9,11 @@
 	.toolbar {
 		display: flex;
 		justify-content: flex-end;
+		margin-bottom: 10px;
+
+		button {
+			margin-left: 5px;
+		}
 	}
 
 	.scrollPanel {
@@ -16,9 +21,7 @@
 		overflow: auto;
 	}
 
-	.btnAddUser {
-		margin-bottom: 10px;
-	}
+
 
 }
 

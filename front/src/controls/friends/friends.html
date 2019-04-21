@@ -1,8 +1,8 @@
-<ul class="w3-ul w3-border w3-white w3-hoverable" 
-	bn-each="friends" bn-show="friends.length > 0" bn-event="click.w3-bar: onItemClick">
-	<li class="w3-bar" bn-data="{item: $i}">
-<!-- 		<span class="w3-button w3-right delete" title="Delete"><i class="fa fa-times"></i></span>
- -->
+<ul class="w3-ul w3-border w3-white" 
+	bn-each="friends" bn-show="friends.length > 0" bn-event="click.w3-bar: onItemClick, click.notif: onSendMessage">
+	<li class="w3-bar" bn-data="{item: $i.friendUserName}">
+		<span class="w3-button w3-right notif w3-blue" title="Send Message" bn-show="showSendMessage"><i class="fa fa-envelope"></i></span>
+
 		<div class="w3-bar-item">
 			<i class="fa fa-user" bn-class="{
 				'w3-text-green': $i.isConnected,

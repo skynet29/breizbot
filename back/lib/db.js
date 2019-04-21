@@ -55,6 +55,16 @@ module.exports =  {
 
 	},
 
+	updateLastLoginDate: function(username) {
+
+		console.log(`updateLastLoginDate`, username)
+		var update = {'$set': {lastLoginDate: Date.now()}}
+
+		return db.collection('users').updateOne({username}, update)
+
+	},
+
+
 	createUser: function(data) {
 
 		console.log(`createUser`, data)

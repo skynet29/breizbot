@@ -79,9 +79,10 @@
   flex-direction: column; }
   .breizbot-users .toolbar {
     display: flex;
-    justify-content: flex-end; }
+    justify-content: flex-end;
+    margin-bottom: 10px; }
+    .breizbot-users .toolbar button {
+      margin-left: 5px; }
   .breizbot-users .scrollPanel {
     flex: 1;
     overflow: auto; }
-  .breizbot-users .btnAddUser {
-    margin-bottom: 10px; }

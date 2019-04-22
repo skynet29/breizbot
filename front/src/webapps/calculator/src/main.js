@@ -9,7 +9,7 @@ $$.control.registerControl('rootPage', {
 		elt.find('button.equals').removeClass('w3-blue').addClass('w3-green')
 		elt.find('button.clear').removeClass('w3-blue').addClass('w3-red')
 
-		$(document).on('keypress', (ev)=> {
+		$(document).on('keydown', (ev)=> {
 			//console.log('keypress', ev.key)
 			handleInput(ev.key)
 		})

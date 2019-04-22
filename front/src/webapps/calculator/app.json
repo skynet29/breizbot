@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fa fa-calculator fa-2x",
+	"colorCls": "w3-purple",
+	"title": "Calculator",
+	"styles": ["app.css"]
+}

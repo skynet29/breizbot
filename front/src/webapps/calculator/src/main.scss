@@ -1,0 +1,18 @@
+.rootPage {
+
+	display: flex;
+	justify-content: center;
+
+	table {
+		max-width: 600px;
+	}
+	.result {
+		width: 100%;
+		text-align: right;
+		border: 1px solid black;
+		height: 50px;
+		padding: 10px;
+		font-size: 2em;
+
+	}
+}

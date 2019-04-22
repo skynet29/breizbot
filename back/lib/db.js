@@ -125,7 +125,13 @@ module.exports =  {
 		console.log(`getFriends`, userName)
 		return db.collection('friends').find({
 			$or: [{user1: userName}, {user2: userName}]
-		}).toArray()
+		}).toArray().then((friends) => {
+			return friends.map((friend) => {
+				return (friend.user1 == userName) ? friend.user2 : friend.user1
+			})
+		})
+
+	
 	},
 
 	addFriend: function(userName, friendUserName) {

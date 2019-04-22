@@ -5,11 +5,11 @@ $$.control.registerControl('breizbot.friends', {
 		showSendMessage: false
 	},
 
-	deps: ['breizbot.users'],
+	deps: ['breizbot.users', 'breizbot.broker'],
 
 	template: {gulp_inject: './friends.html'},
 
-	init: function(elt, users) {
+	init: function(elt, users, broker) {
 
 		const {showSelection, showSendMessage} = this.props
 
@@ -20,7 +20,7 @@ $$.control.registerControl('breizbot.friends', {
 			},
 			events: {
 				onItemClick: function() {
-					const userName =  $(this).data('item')
+					const userName =  $(this).data('item').friendUserName
 					console.log('onItemClick', userName)
 					if (showSelection) {
 						$(this).siblings('.w3-blue').removeClass('w3-blue')
@@ -30,7 +30,7 @@ $$.control.registerControl('breizbot.friends', {
 				},
 				onSendMessage: function(ev) {
 					ev.stopPropagation()
-					const userName =  $(this).closest('li').data('item')
+					const userName =  $(this).closest('li').data('item').friendUserName
 					console.log('onSendMessage', userName)
 					$$.ui.showPrompt({title: 'Send Message', label: 'Message:'}, function(text) {
 						users.sendNotif(userName, {text, reply: true})
@@ -38,6 +38,19 @@ $$.control.registerControl('breizbot.friends', {
 				}
 			}
 		})	
+
+		function onUpdate(msg) {
+			//console.log('msg', msg)
+			if (msg.hist === true) {
+				return
+			}
+			const {isConnected, userName} = msg.data
+			const info = ctrl.model.friends.find((friend) => {return friend.friendUserName == userName})
+			info.isConnected = isConnected
+			ctrl.update()
+
+		}
+		broker.register('breizbot.friends', onUpdate)
 
 		this.getSelection = function() {
 			return elt.find('li.w3-blue').data('item')
@@ -52,6 +65,11 @@ $$.control.registerControl('breizbot.friends', {
 				console.log('friends', friends)
 				ctrl.setData({friends})
 			})				
+		}
+
+		this.dispose = function() {
+			console.log('[friends] dispose')
+			broker.unregister('breizbot.friends', onUpdate)
 		}
 
 

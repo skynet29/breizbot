@@ -147,10 +147,9 @@ router.get('/getFriends', function(req, res) {
 	db.getFriends(userName)
 	.then((friends) => {
 		res.json(friends.map((friend) => {
-			const friendUserName = (friend.user1 == userName) ? friend.user2 : friend.user1
 			return {
-				friendUserName, 
-				isConnected: wss.getBroker(friendUserName).hasClient()
+				friendUserName: friend, 
+				isConnected: wss.isUserConnected(friend)
 			}
 		}))		
 	})	

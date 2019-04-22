@@ -1,6 +1,6 @@
 <ul class="w3-ul w3-border w3-white" 
 	bn-each="friends" bn-show="friends.length > 0" bn-event="click.w3-bar: onItemClick, click.notif: onSendMessage">
-	<li class="w3-bar" bn-data="{item: $i.friendUserName}">
+	<li class="w3-bar" bn-data="{item: $i}">
 		<span class="w3-button w3-right notif w3-blue" title="Send Message" bn-show="showSendMessage"><i class="fa fa-envelope"></i></span>
 
 		<div class="w3-bar-item">

@@ -20,9 +20,17 @@ $$.control.registerControl('friendsPage', {
 
 		this.onAction = function(cmd) {
 			console.log('onAction', cmd)
-			const userName = ctrl.scope.friends.getSelection()
-			console.log('userName', userName)
-			$pager.popPage(userName)
+			const {friendUserName, isConnected} = ctrl.scope.friends.getSelection()
+			console.log('userName', friendUserName)
+			if (!isConnected) {
+				$$.ui.showAlert({
+					title: 'Error', 
+					content: `User <strong>${friendUserName}</strong> is not connected`
+				})
+			}
+			else {
+				$pager.popPage(friendUserName)
+			}
 		}
 	}
 

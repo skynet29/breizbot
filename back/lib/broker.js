@@ -1,5 +1,6 @@
 const wildcard = require('wildcard')
 const uniqid = require('uniqid')
+const EventEmitter = require('events')
 
 const pingInterval = 60000 // 1 min
 
@@ -8,8 +9,10 @@ function sendMsg(client, msg) {
 	client.sendText(JSON.stringify(msg))
 }
 
-class Broker {
+class Broker extends EventEmitter {
 	constructor(userName) {
+    super()
+
 		this.clients = []
 		this.userName = userName
 		this.history = {}
@@ -78,6 +81,9 @@ class Broker {
 	addClient(client) {
 
 		console.log('[Broker] addClient', this.userName, client.path)
+    if (this.clients.length == 0) {
+      this.emit('connect', true)
+    }
 
 		this.clients.push(client)
     client.userName = this.userName
@@ -128,6 +134,10 @@ class Broker {
 		if (idx >= 0) {
 			this.clients.splice(idx, 1)
 		}
+
+    if (this.clients.length == 0) {
+      this.emit('connect', false)
+    }
 	}
 
   handleUnregister(client, msg) {

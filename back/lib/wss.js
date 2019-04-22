@@ -1,6 +1,7 @@
 const ws = require("nodejs-websocket")
 const cookie = require('cookie')
 const auth = require('basic-auth')
+require('colors')
 
 const db = require('./db')
 
@@ -36,6 +37,20 @@ function getBroker(userName) {
 	let broker = brokers[userName]
 	if (broker == undefined) {
 		broker = brokers[userName] = new Broker(userName)
+		broker.on('connect', (isConnected) => {
+			if (isConnected)
+				console.log(`client '${userName}' is connected`.green)
+			else
+				console.log(`client '${userName}' is disconnected`.red)
+
+			db.getFriends(userName).then((friends) => {
+				friends.forEach((friend) => {
+					if (isUserConnected(friend)) {
+						sendMessage(friend, 'breizbot.friends', {isConnected, userName})
+					}
+				})
+			})
+		})
 	}
 	return broker	
 }
@@ -114,6 +129,7 @@ function onConnect(client, store) {
 }
 
 function sendMessage(userName, topic, data) {
+	console.log('[WSS] sendMessage', userName, topic, data)
 	getBroker(userName).sendMessage(undefined, topic, data)
 }
 
@@ -137,10 +153,15 @@ function getClients() {
 	return wss.connections
 }
 
+function isUserConnected(userName) {
+	return getBroker(userName).hasClient()
+}
+
 module.exports = {
 	init,
 	sendMessage,
 	getBroker,
 	sendTo,
-	getClients
+	getClients,
+	isUserConnected
 }

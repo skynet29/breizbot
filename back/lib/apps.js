@@ -22,7 +22,7 @@ function getAppInfo(appName) {
 		})
 }
 
-const sysApps = ['store', 'notif']
+const sysApps = ['store', 'notif', 'template']
 
 function getPropFiles(folders) {
 	//console.log('folders', folders)

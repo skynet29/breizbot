@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width">
 	<link rel="stylesheet" type="text/css" href="/brainjs/css/brainjs.css">
 </head>
-<body>
+<body class="w3-light-blue">
 
 <style type="text/css">
 
@@ -21,7 +21,7 @@ html, body {
 body {
 	display: flex;
 	justify-content: center;
-	align-items: center;
+	align-items: center;	
 }
 
 .group {
@@ -32,7 +32,8 @@ body {
 
 .main {
 	padding: 20px;
-	border-radius: 10px;	
+	//border-radius: 10px;	
+	z-index: 1000;
 }
 
 i {
@@ -58,7 +59,7 @@ input {
 }
 
 .brand {
-	position: absolute;
+	position: fixed;
 	left: 0;
 	top: 0;
 	width: 100%;
@@ -79,27 +80,44 @@ input {
 	font-weight: bold;
 }
 
+.footer {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	padding: 5px;
+}
+
+.footer h2 {
+	margin: 0px;
+	font-size: 0.8em;
+	font-weight: bold;
+}
+
 </style>
 <div class="brand w3-indigo">
 <h1><span class="w3-text-white">Net</span><span class="w3-text-red">OS</span></h1>
 <h2>The web operating system</h2>
 
+<div class="footer w3-indigo">
+	<h2>Copyright &copy; 2019 Marc DELOMEZ</h2>
+</div>
 	
 </div>	
 
 <div class="w3-light-grey w3-card-4 main">
 	<form  method="post">
 		<div class="group">
-			<i class="fa fa-user fa-2x w3-text-blue"></i>
+			<i class="fa fa-user fa-2x w3-text-indigo"></i>
 			<input type="text" name="user" placeholder="Username" required autofocus>				
 		</div>
 
 		<div class="group">
-			<i class="fa fa-lock fa-2x w3-text-blue"></i>
+			<i class="fa fa-lock fa-2x w3-text-indigo"></i>
 			<input type="password" name="pwd" placeholder="Password" required>	
 		</div>
 	
-		<button type="submit" class="w3-btn w3-blue">Connect</button>
+		<button type="submit" class="w3-btn w3-indigo"><strong>Connect</strong></button>
 		<span class="message"><%= message %></span>
 	</form>
 

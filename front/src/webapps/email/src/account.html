@@ -1,0 +1,27 @@
+<div class="main">
+	<form bn-event="submit: onSubmit">
+
+		<div bn-control="brainjs.inputgroup">
+			<label>Account Name</label>
+			<input type="text" name="name" required="" autofocus="">			
+		</div>
+
+		<div bn-control="brainjs.inputgroup">
+			<label>User</label>
+			<input type="text" name="user" required="">			
+		</div>
+
+		<div bn-control="brainjs.inputgroup">
+			<label>Password</label>
+			<input type="password" name="pwd" required="">			
+		</div>
+
+		<div bn-control="brainjs.inputgroup">
+			<label>Imap Server</label>
+			<input type="text" name="imapHost" required="">			
+		</div>		
+
+		<input type="submit" hidden="" bn-bind="submit">
+	</form>
+
+</div>

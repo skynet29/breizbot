@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fa fa-question fa-2x",
+	"colorCls": "w3-green",
+	"title": "Template",
+	"styles": ["app.css"]
+}

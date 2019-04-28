@@ -42,7 +42,7 @@ $$.control.registerControl('breizbot.files', {
 				hasSelectedFiles: function() {
 					return selectedFiles.length > 0
 				},
-				getThumbnailUrl: function(fileName) {
+				getThumbnailUrl: function(fileName, srvFiles, thumbnailSize) {
 					return srvFiles.fileThumbnailUrl(rootDir + fileName, thumbnailSize)
 				}
 			},

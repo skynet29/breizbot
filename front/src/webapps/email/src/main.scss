@@ -1,0 +1,54 @@
+.rootPage {
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-bottom: 10px;
+	display: flex;
+	flex-direction: column;
+
+	.toolbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		.info {
+			display: flex;
+			align-items: center;
+
+			.nbMsg {
+				margin-left: 20px;
+			}
+		}
+	}
+
+	.content {
+		flex: 1;
+		overflow: hidden;
+		display: flex;
+		flex-direction: row;
+
+		.scrollPanelTree {
+			overflow-y: auto;
+			height: 100%;
+			width: 200px;
+			border: 1px solid black;
+
+			.tree {
+				height: 100%;
+				ul {
+					height: 100%;
+					border: none;
+				}
+			}			
+		}
+
+		.scrollPanelTable {
+			overflow: auto;
+			flex: 1;
+			border: 1px solid black;
+
+		}
+
+
+
+	}
+}

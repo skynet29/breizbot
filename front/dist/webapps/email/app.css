@@ -1,0 +1,44 @@
+.accountPage {
+  margin: 10px;
+  display: flex;
+  justify-content: center; }
+  .accountPage label {
+    display: inline-block;
+    min-width: 120px; }
+  .accountPage .brainjs-inputgroup {
+    margin-bottom: 5px; }
+
+.rootPage {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  flex-direction: column; }
+  .rootPage .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
+    .rootPage .toolbar .info {
+      display: flex;
+      align-items: center; }
+      .rootPage .toolbar .info .nbMsg {
+        margin-left: 20px; }
+  .rootPage .content {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    flex-direction: row; }
+    .rootPage .content .scrollPanelTree {
+      overflow-y: auto;
+      height: 100%;
+      width: 200px;
+      border: 1px solid black; }
+      .rootPage .content .scrollPanelTree .tree {
+        height: 100%; }
+        .rootPage .content .scrollPanelTree .tree ul {
+          height: 100%;
+          border: none; }
+    .rootPage .content .scrollPanelTable {
+      overflow: auto;
+      flex: 1;
+      border: 1px solid black; }

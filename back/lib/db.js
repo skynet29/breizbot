@@ -137,9 +137,27 @@ module.exports =  {
 	addFriend: function(userName, friendUserName) {
 		console.log(`addFriend`, userName, friendUserName)
 		return db.collection('friends').insertOne({user1: userName, user2: friendUserName})
+	},
+
+
+	getMailAccounts: function(userName) {
+		console.log(`getMailAccounts`, userName)
+		return db.collection('mailAccounts').find({userName}).toArray()
+	},
+
+	getMailAccount: function(userName, name) {
+		console.log(`getMailAccount`, userName, name)
+		return db.collection('mailAccounts').findOne({userName, name})
+	},	
+
+	createMailAccount: function(userName, data) {
+
+		console.log(`createMaiAccount`, userName, data)
+		data.createDate = Date.now()
+		data.userName = userName
+
+		return db.collection('mailAccounts').insertOne(data)
 	}
-
-
 }
 
 

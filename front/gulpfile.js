@@ -1,64 +1,46 @@
 var gulp = require('gulp')
-var path = require('path')
 
-var concat = require('gulp-concat')
-var sourcemaps = require('gulp-sourcemaps')
-var injectHTML = require('gulp-inject-stringified-html')
-var sass = require('gulp-sass')
-
-sass.compiler = require('node-sass')
+const task = require('./task')('./dist')
 
 
-var dest = './dist'
-
-
-gulp.task('breizbot.js', function() {
-	return gulp.src([
+task('breizbot.js', 
+	[
 		'./externals/eventemitter2.js',
 		'./src/controls/**/*.js',
 		'./src/services/**/*.js',
-		])
-		.pipe(injectHTML())
-		.pipe(sourcemaps.init())
-		.pipe(concat('breizbot.js'))
-		.pipe(sourcemaps.write())
-		.pipe(gulp.dest(dest))
-})
+	],
+	{isCode: true, concat: 'breizbot.js'}
 
-gulp.task('breizbot.css', function() {
-	return gulp.src([
+)
+
+task('breizbot.css',
+	[
 		'./src/controls/**/*.scss',
-		])
-		.pipe(sass().on('error', sass.logError))	
-		.pipe(concat('breizbot.css'))
-		.pipe(gulp.dest(dest))
-})
+	],
+	{concat: 'breizbot.css', isSass:true}
+)
 
-gulp.task('assets', function() {
-	return gulp.src([
+task('assets',
+	[
 		'./src/assets/*',
-		])
-		.pipe(gulp.dest(path.join(dest, 'assets')))
-})
+	],
+	{dest: 'assets'}
+)
 
-gulp.task('doc.js', function() {
-	return gulp.src([
+task('doc.js', 
+	[
 		'./doc/*.js',
-		])
-		.pipe(injectHTML())
-		.pipe(sourcemaps.init())
-		.pipe(concat('doc.js'))
-		.pipe(sourcemaps.write())
-		.pipe(gulp.dest(dest))
-})
+	],
+	{isCode: true, concat: 'doc.js'}
 
-gulp.task('doc.html', function() {
-	return gulp.src([
+)
+
+task('doc.html', 
+	[
 		'./doc/index.html',
-		])
-		.pipe(concat('doc.html'))
-		.pipe(gulp.dest(dest))
-})
+	]
+)
+
 
 gulp.task('doc', ['doc.js', 'doc.html'])
 

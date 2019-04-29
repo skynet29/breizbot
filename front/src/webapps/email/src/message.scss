@@ -1,0 +1,24 @@
+.messagePage {
+
+	display: flex;
+	flex-direction: column;
+
+	.header {
+		padding: 10px;
+	}
+
+	.main {
+		flex: 1;
+		padding: 10px;
+		overflow: auto;
+
+
+		pre {
+			margin: 0;
+			height: 100%;
+			width: 100%;
+		}
+
+
+	}
+}

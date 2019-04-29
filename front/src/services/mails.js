@@ -19,13 +19,19 @@ $$.service.registerService('breizbot.mails', {
 
 			openMailbox: function(name, mailboxName) {
 				return http.post(`/api/mails/openMailbox`, {name, mailboxName})
-			}
-			
+			},
+
+			openMessage(name, mailboxName, seqNo, info)	{
+				return http.post(`/api/mails/openMessage`, {name, mailboxName, seqNo, info})
+			}		
 		}
 	},
 
 	$iface: `
 		getMailAccount():Promise;
-		createMaiAccount(data):Promise
+		createMaiAccount(data):Promise;
+		getMailboxes(name):Promise;
+		openMailbox(name, mailboxName):Promise;
+		openMessage(name, mailboxName, seqNo, info):Promise
 		`
 });

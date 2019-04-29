@@ -42,8 +42,7 @@ $$.control.registerControl('rootPage', {
 
 				onTreeActivate: function() {
 					console.log('onTreeActivate')
-					const node =  $(this).iface().getActiveNode()
-					const mailboxName = $(this).iface().getNodePath(node)
+					const mailboxName = getMailboxName()
 					console.log('mailboxName', mailboxName)
 					const {currentAccount} = ctrl.model
 					srvMail.openMailbox(currentAccount, mailboxName).then((data) => {
@@ -56,11 +55,30 @@ $$.control.registerControl('rootPage', {
 					})
 				},
 				onItemClick: function(ev) {
-					$(this).closest('tbody').find('tr').removeClass('w3-blue')
-					$(this).addClass('w3-blue')
+					// $(this).closest('tbody').find('tr').removeClass('w3-blue')
+					// $(this).addClass('w3-blue')
+					const mailboxName = getMailboxName()
+
+					const item = $(this).data('item')
+					$pager.pushPage('messagePage', {
+						title: `Message #${item.seqno}`,
+						props: {
+							name: ctrl.model.currentAccount,
+							mailboxName,
+							item							
+						}
+
+					})
 				}
 			}
 		})
+
+		function getMailboxName() {
+			const {tree} = ctrl.scope
+
+			const node =  tree.getActiveNode()
+			return tree.getNodePath(node)
+		}
 
 		function loadAccount() {
 			console.log('loadAccount')

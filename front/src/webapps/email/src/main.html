@@ -42,7 +42,7 @@
 					</tr>
 				</thead>
 				<tbody bn-each="messages" bn-event="click.item: onItemClick">
-					<tr class="item">
+					<tr class="item" bn-data="{item: $i}">
 						<td bn-text="$i.from.name" bn-attr="{title: $i.from.email}"></td>
 						<td bn-text="$i.subject"></td>
 						<td bn-text="getDate($i.date)"></td>

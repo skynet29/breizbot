@@ -42,3 +42,17 @@
       overflow: auto;
       flex: 1;
       border: 1px solid black; }
+
+.messagePage {
+  display: flex;
+  flex-direction: column; }
+  .messagePage .header {
+    padding: 10px; }
+  .messagePage .main {
+    flex: 1;
+    padding: 10px;
+    overflow: auto; }
+    .messagePage .main pre {
+      margin: 0;
+      height: 100%;
+      width: 100%; }

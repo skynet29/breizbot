@@ -2,19 +2,20 @@ $$.control.registerControl('imagePage', {
 
 	template: {gulp_inject: './image.html'},
 
-	deps: ['breizbot.mails'],
+	deps: ['breizbot.mails', 'breizbot.files'],
 
 	props: {
 		$pager: null,
 		info: '',
 		name: '',
 		mailboxName: '',
-		seqno: ''
+		seqno: '',
+		fileName: ''
 	},
 
-	init: function(elt, srvMail) {
+	init: function(elt, srvMail, files) {
 
-		const {$pager, info, name, mailboxName, seqno} = this.props
+		const {$pager, info, name, mailboxName, seqno, fileName} = this.props
 		const {partID, type, subtype} = info
 
 		const ctrl = $$.viewController(elt, {
@@ -33,7 +34,25 @@ $$.control.registerControl('imagePage', {
 
 		})
 
-
+		this.onAction = function(action) {
+			//console.log('onAction', action)
+			const {url} = ctrl.model
+			if (url == '') {
+				$$.ui.showAlert({title: 'Error', content: 'Image not loaded, please wait'})
+				return
+			}
+			const blob = $$.util.dataURLtoBlob(url)
+			files.uploadFile(blob, fileName, '/images/email').then(function(resp) {
+				console.log('resp', resp)
+				$pager.popPage()
+			})	
+			.catch(function(resp) {
+				$$.ui.showAlert({
+					title: 'Error',
+					content: resp.responseText
+				})
+			})			
+		}
 	}
 
 

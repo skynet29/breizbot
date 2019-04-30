@@ -37,11 +37,13 @@ $$.control.registerControl('messagePage', {
 					$pager.pushPage('imagePage', {
 						title: info.name,
 						props: {
+							fileName: info.name,
 							info,
 							name,
 							mailboxName,
 							seqno: item.seqno
-						}
+						},
+						buttons: [{name: 'save', label: 'Save'}]
 					})
 				}
 			}

@@ -1,6 +1,18 @@
 <div class="header w3-blue">
-	<div>From: <strong bn-text="item.from.name"></strong></div>
-	<div>Subject: <strong bn-text="item.subject"></strong></div>
+	<div><strong>From: </strong><span bn-text="item.from.name"></span></div>
+	<div><strong>Subject: </strong><span bn-text="item.subject"></span></div>
+	<div class="attachments" bn-show="attachments.length > 0">
+		<strong>Attachments: </strong>
+		<ul  bn-each="attachments" bn-event="click.item: onItemClick">
+			<li bn-show="canOpen($i)">
+				<a href="#" bn-text="$i.name" class="item" bn-data="{item: $i}"></a>
+				<span bn-text="getSize($i.size)"></span></li>
+			<li bn-show="!canOpen($i)">
+				<span bn-text="$i.name"></span>
+				<span bn-text="getSize($i.size)"></span></li>				
+			</li>
+		</ul>
+	</div>
 	
 </div>
 <div class="main">

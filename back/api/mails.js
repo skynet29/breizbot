@@ -52,9 +52,23 @@ router.post('/openMailbox', function(req, res) {
 
 router.post('/openMessage', function(req, res) {
 	const userName = req.session.user
-	const {name, mailboxName, seqNo, info} = req.body
+	const {name, mailboxName, seqNo, partID} = req.body
 
-	mails.openMessage(userName, name, mailboxName, seqNo, info).then((data) => {
+	mails.openMessage(userName, name, mailboxName, seqNo, partID).then((data) => {
+		res.json(data)
+	})
+	.catch((err) => {
+		console.log('err', err)
+		res.sendStatus(400)
+	})	
+})
+
+
+router.post('/openAttachment', function(req, res) {
+	const userName = req.session.user
+	const {name, mailboxName, seqNo, partID} = req.body
+
+	mails.openAttachment(userName, name, mailboxName, seqNo, partID).then((data) => {
 		res.json(data)
 	})
 	.catch((err) => {

@@ -13,29 +13,46 @@ $$.control.registerControl('messagePage', {
 
 	init: function(elt, srvMail) {
 
-		const {$pager, name, mailboxName, item} = this.props
+		const {$pager, name, mailboxName, partID, item} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				text: '',
-				item
+				item,
+				attachments: [],
+				canOpen: function(info) {
+					return info.type == 'image' && info.encoding == 'BASE64'
+				},
+				getSize: function(size) {
+					console.log('getSize', size)
+					size /= 1024
+					return ` (${size.toFixed(1)} Ko)`
+				}
 			},
 			events: {
+				onItemClick: function(ev) {
+					ev.preventDefault()
+					const info = $(this).data('item')
+					console.log('onItemClick', info)
+					$pager.pushPage('imagePage', {
+						title: info.name,
+						props: {
+							info,
+							name,
+							mailboxName,
+							seqno: item.seqno
+						}
+					})
+				}
 			}
 		})
 
-		srvMail.openMessage(name, mailboxName, item.seqno, item.info).then((message) => {
+		srvMail.openMessage(name, mailboxName, item.seqno, item.partID).then((message) => {
 			console.log('message', message)
 
-			let text = message.text
+			//const {text, attachments} = message
 
-			// text = text.split('\n').filter((line) => {
-			// 	let ret = line.toUpperCase().includes('CONTENT-TYPE:')
-			// 	ret |= line.toUpperCase().includes('CONTENT-TRANSFER-ENCODING:')
-			// 	return !ret
-			// }).join('\n')
-
-			ctrl.setData({text})
+			ctrl.setData(message)
 		})
 
 

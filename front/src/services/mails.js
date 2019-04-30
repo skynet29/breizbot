@@ -21,9 +21,14 @@ $$.service.registerService('breizbot.mails', {
 				return http.post(`/api/mails/openMailbox`, {name, mailboxName})
 			},
 
-			openMessage(name, mailboxName, seqNo, info)	{
-				return http.post(`/api/mails/openMessage`, {name, mailboxName, seqNo, info})
-			}		
+			openMessage(name, mailboxName, seqNo, partID)	{
+				return http.post(`/api/mails/openMessage`, {name, mailboxName, seqNo, partID})
+			},
+
+			openAttachment(name, mailboxName, seqNo, partID)	{
+				return http.post(`/api/mails/openAttachment`, {name, mailboxName, seqNo, partID})
+			}
+					
 		}
 	},
 
@@ -33,5 +38,6 @@ $$.service.registerService('breizbot.mails', {
 		getMailboxes(name):Promise;
 		openMailbox(name, mailboxName):Promise;
 		openMessage(name, mailboxName, seqNo, info):Promise
+		openAttachment(name, mailboxName, seqNo, info):Promise
 		`
 });

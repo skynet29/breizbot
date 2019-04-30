@@ -48,6 +48,8 @@
   flex-direction: column; }
   .messagePage .header {
     padding: 10px; }
+    .messagePage .header .attachments ul {
+      margin: 0; }
   .messagePage .main {
     flex: 1;
     padding: 10px;

@@ -89,13 +89,11 @@ function getMailboxes(userName, name) {
    
 }
 
-function decodeHeaders(buffer, seqno, info) {
+function decodeHeaders(buffer) {
   console.log('decodeHeaders', buffer)
   const headers = Imap.parseHeader(buffer)
   console.log('headers', headers)
   return {
-    info,
-    seqno,
     from: {
       name: getFromName(headers.from[0]),
       email: getFromEmail(headers.from[0])
@@ -108,82 +106,67 @@ function decodeHeaders(buffer, seqno, info) {
 
 function decodeBody(body, info) {
   console.log('decodeBody', info)
-   const {encoding, charset} = info
+   const {encoding, params} = info
 
    console.log('body.length', body.length)
 
    if (encoding === 'BASE64') {
-     return 'base64 encoding not supported'
+    const buff = new Buffer(body, 'base64')
+     //return 'base64 encoding not supported'
+     body = buff.toString('utf8')
    }
 
    if (encoding === 'QUOTED-PRINTABLE') {
      body = quotedPrintable.decode(body)
 
-     body = iconv.decode(body, charset)
+     body = iconv.decode(body, params.charset)
 
    }
 
   return body
 }
 
-function findInfo(struct, type, subtype) {
-  console.log('findInfo', struct)
+function parseStruct(struct, parts) {
+  //console.log('getInfo', struct)
 
   const info = struct.shift()
-  console.log('type', info.type)
-  console.log('subtype', info.subtype)
-  const {partID, encoding, params} = info
-  const {charset} = params
-  console.log('partID', partID)
 
-  if (info.type == type && info.subtype == subtype) {
-    return {partID, encoding, charset}
+
+  if (info.partID != undefined) {
+    parts.push(info)
   }
 
-  let found = null
-
-
-  for(let i = 0; i < struct.length && found === null; i++) {
-    found = findInfo(struct[i], type, subtype)
-
-  }
-
-  return found
-}
-
-function decodeMessage(buffer, struct, message){
-  console.log('decodeMessage', struct, buffer.substr(0, 50).blue)
-
-  const info = struct.shift()
-  const {type, subtype, params} = info
-  console.log('type', type)
-  console.log('subtype', subtype)
-
-  if (type == 'text' && subtype == 'plain') {
-    message.text = decodeBody(buffer, info)
-  }
-  const {boundary} = params
-  console.log('boundary', boundary)
-
-  const bodies = buffer.split(boundary)
-  bodies.forEach((b, i) => {
-    console.log(`bodies[${i}]`, b.substr(0, 100).green
-      )
+  struct.forEach((s) => {
+    parseStruct(s, parts)
   })
 
-
-  struct.forEach((s, i) => {
-
-    decodeMessage(bodies[i+1], s, message)
-    // const text = decodeBody(bodies[i+1], s[0])
-    // if (text !== false) {
-    //   message.text = text
-    // }
-
-  })
-
-  return message
 }
+
+function getPartIDByTYpe(parts, type, subtype) {
+  const info = parts.find((p) => p.type == type && p.subtype == subtype && p.id == null)
+  return (info != undefined) ? info.partID : false
+}
+
+function getPartInfo(parts, partID) {
+  return parts.find((p) => p.partID == partID)
+}
+
+function getAttachments(parts) {
+  //console.log('getAttachments', parts)
+  const ret = []
+  parts.forEach((p) => {
+    const {params, type, subtype, size, partID, encoding, id} = p
+    if (params == null || id != null) {
+      return
+    }
+    const {name} = params
+    if (name != undefined) {
+      ret.push({name, type, subtype, size, partID, encoding})
+    }
+  })
+  return ret
+}
+
 
 function openMailbox(userName, name, mailboxName) {
   console.log('openMailbox', userName, name, mailboxName)
@@ -232,7 +215,7 @@ function openMailbox(userName, name, mailboxName) {
 
           f.on('message', function(msg, seqno) {
             console.log('message #', seqno)
-            let info
+            let partID
             let buffer = ''
 
             msg.on('body', function(stream, info) {
@@ -253,12 +236,16 @@ function openMailbox(userName, name, mailboxName) {
             msg.once('attributes', function(attrs) {
               const {struct} = attrs
 
-              info = findInfo(struct, 'text', 'plain')
+              const parts = []
+              parseStruct(struct, parts)
+              partID = getPartIDByTYpe(parts, 'text', 'plain')
             }) 
 
             msg.once('end', function() {
-              console.log('info', info)
-               messages.push(decodeHeaders(buffer, seqno, info))
+              const header = decodeHeaders(buffer)
+              header.seqno = seqno
+              header.partID = partID
+              messages.push(header)
               console.log('finished !')
 
             })
@@ -289,11 +276,11 @@ function openMailbox(userName, name, mailboxName) {
    
 }
 
-function openMessage(userName, name, mailboxName, seqNo, info) {
+function openMessage(userName, name, mailboxName, seqNo, partID) {
 
-  console.log('openMessage', userName, name, mailboxName, seqNo, info)
+  console.log('openMessage', userName, name, mailboxName, seqNo, partID)
 
-  if (info == null) {
+  if (partID == false) {
     return Promise.resolve({text: 'plain text not available'})
   }
 
@@ -332,8 +319,8 @@ function openMessage(userName, name, mailboxName, seqNo, info) {
           console.log('query', query)
 
           const f = imap.seq.fetch(query, {
-            bodies: [`${info.partID}`],
-            struct: false
+            bodies: [`${partID}`],
+            struct: true
           })
 
           f.on('message', function(msg) {                  
@@ -348,7 +335,111 @@ function openMessage(userName, name, mailboxName, seqNo, info) {
 
               stream.once('end', function() {
                 console.log('end body', buffer.length)
-                resolve({text: decodeBody(buffer, info)})
+                
+              })
+            })
+
+            msg.once('attributes', function(attrs) {
+              const {struct} = attrs
+              const parts = []
+              parseStruct(struct, parts)
+              const info = getPartInfo(parts, partID)
+              const text = decodeBody(buffer, info)
+              const attachments = getAttachments(parts)
+
+              resolve({text, attachments})
+            }) 
+
+            msg.once('end', function() {
+              console.log('finished !')
+
+            })
+
+
+          })
+
+          f.once('end', function() {
+            console.log('Done !')
+            
+            imap.end()
+          })
+
+        })
+      }) 
+
+      imap.once("error", function(err) {
+        console.log('error', err)
+        reject(err)
+      })
+
+      imap.connect()       
+
+    })
+
+
+  })
+   
+}
+
+
+function openAttachment(userName, name, mailboxName, seqNo, partID) {
+
+  console.log('openAttachment', userName, name, mailboxName, seqNo, partID)
+
+
+  return db.getMailAccount(userName, name).then((account) => {
+
+    return new Promise((resolve, reject) => {
+
+      const imap = new Imap({
+        user: account.user,
+        password: account.pwd,
+        host: account.imapHost,
+        port: 993,
+        tls: true
+      }) 
+
+     let buffer = ''
+
+      imap.once('ready', function() {
+        imap.openBox(mailboxName, true, function(err, mailbox) {
+          if (err) {
+            console.log('err', err)
+            imap.end()
+            reject(err)
+            return
+          }
+          //console.log('openBox', err, mailbox)
+          const nbMsg = mailbox.messages.total
+
+          if (seqNo > nbMsg) {
+            imap.end()
+            reject('seqNo out of range')
+            return
+          }
+
+          const query = `${seqNo}:${seqNo}`
+          console.log('query', query)
+
+          const f = imap.seq.fetch(query, {
+            bodies: [`${partID}`],
+            struct: true
+          })
+
+          f.on('message', function(msg) {                  
+
+            msg.on('body', function(stream) {
+              console.log('body')
+             
+              stream.on('data', function(chunk) {
+                console.log('data', chunk.length)
+                buffer += chunk.toString('utf8')
+              })
+
+              stream.once('end', function() {
+                console.log('end body', buffer.length)
+                resolve({data: buffer})
+                
               })
             })
 
@@ -387,5 +478,6 @@ function openMessage(userName, name, mailboxName, seqNo, info) {
 module.exports = {
   getMailboxes,
   openMailbox,
-  openMessage
+  openMessage,
+  openAttachment
 }

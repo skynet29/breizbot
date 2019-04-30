@@ -6,14 +6,14 @@ $$.control.registerControl('messagePage', {
 
 	props: {
 		$pager: null,
-		name: '',
+		currentAccount: '',
 		mailboxName: '',
 		item: null
 	},
 
 	init: function(elt, srvMail) {
 
-		const {$pager, name, mailboxName, partID, item} = this.props
+		const {$pager, currentAccount, mailboxName, partID, item} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -24,7 +24,7 @@ $$.control.registerControl('messagePage', {
 					return info.type == 'image' && info.encoding.toUpperCase() == 'BASE64'
 				},
 				getSize: function(size) {
-					console.log('getSize', size)
+					//console.log('getSize', size)
 					size /= 1024
 					return ` (${size.toFixed(1)} Ko)`
 				}
@@ -39,7 +39,7 @@ $$.control.registerControl('messagePage', {
 						props: {
 							fileName: info.name,
 							info,
-							name,
+							currentAccount,
 							mailboxName,
 							seqno: item.seqno
 						},
@@ -49,7 +49,7 @@ $$.control.registerControl('messagePage', {
 			}
 		})
 
-		srvMail.openMessage(name, mailboxName, item.seqno, item.partID).then((message) => {
+		srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID).then((message) => {
 			console.log('message', message)
 
 			//const {text, attachments} = message

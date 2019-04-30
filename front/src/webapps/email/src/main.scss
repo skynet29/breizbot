@@ -20,39 +20,19 @@
 		}
 	}
 
-	.content {
+	.scrollPanelTree {
 		flex: 1;
-		overflow: hidden;
-		display: flex;
-		flex-direction: row;
+		overflow-y: auto;
+		border: 1px solid black;
 
-		.scrollPanelTree {
-			overflow-y: auto;
+		.tree {
 			height: 100%;
-			width: 200px;
-			border: 1px solid black;
-
-			.tree {
+			ul {
 				height: 100%;
-				ul {
-					height: 100%;
-					border: none;
-				}
-			}			
-		}
-
-		.scrollPanelTable {
-			overflow: auto;
-			flex: 1;
-			border: 1px solid black;
-
-			tr.unseen {
-				font-weight: bold;
+				border: none;
 			}
-
-		}
-
-
-
+		}			
 	}
+
+
 }

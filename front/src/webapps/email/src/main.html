@@ -1,57 +1,33 @@
-	<div class="toolbar">
-		<div class="info">
-			<p bn-show="accounts.length == 0">You have no email account</p>
-			<p bn-show="accounts.length > 0">Main Account: 
-				<select bn-control="brainjs.selectmenu" bn-each="accounts" bn-val="currentAccount"
-					bn-event="selectmenuchange: onAccountChange">
-					<option bn-text="$i"></option>
-				</select>
-			</p>
-			<p class="nbMsg">nbMsg: <strong bn-text="nbMsg"></strong></p>
-			
-		</div>
-		<div>
-			<button 
-				class="w3-btn w3-blue" 
-				title="Create account"
-				bn-event="click: onCreateAccount"
-			><i class="fa fa-plus"></i></button>
-			
-		</div>
+<div class="toolbar">
+	<div class="info">
+		<p bn-show="accounts.length == 0">You have no email account</p>
+		<p bn-show="accounts.length > 0">Main Account: 
+			<select bn-control="brainjs.selectmenu" bn-each="accounts" bn-val="currentAccount"
+				bn-event="selectmenuchange: onAccountChange">
+				<option bn-text="$i"></option>
+			</select>
+		</p>
 		
 	</div>
-
-	<div class="content" bn-show="accounts.length > 0">
-		<div class="scrollPanelTree">
-			<div 
-				class="tree" 
-				bn-control="brainjs.tree"
-				bn-data="{source: mailboxes}"
-				bn-event="treeactivate: onTreeActivate"
-				bn-iface="tree"
-			></div>
-		</div>
-
-		<div class="scrollPanelTable">
-			<table class="w3-table-all w3-hoverable w3-small">
-				<thead>
-					<tr class="w3-green">
-						<th>From</th>
-						<th>Subject</th>
-						<th title="nb Attachments"><i class="fa fa-paperclip"></i></th>
-						<th>Date</th>
-					</tr>
-				</thead>
-				<tbody bn-each="messages" bn-event="click.item: onItemClick">
-					<tr class="item" bn-data="{item: $i}" bn-class="{unseen: !isSeen($i.flags)}">
-						<td bn-text="$i.from.name" bn-attr="{title: $i.from.email}"></td>
-						<td bn-text="$i.subject"></td>
-						<td bn-text="$i.nbAttachments"></td>
-						<td bn-text="getDate($i.date)"></td>
-					</tr>
-				</tbody>
-			</table>
-		</div>
-
+	<div>
+		<button 
+			class="w3-btn w3-blue" 
+			title="Create account"
+			bn-event="click: onCreateAccount"
+		><i class="fa fa-plus"></i></button>
+		
 	</div>
+	
+</div>
+
+<div class="scrollPanelTree">
+	<div 
+		class="tree" 
+		bn-control="brainjs.tree"
+		bn-data="{source: mailboxes}"
+		bn-event="treeactivate: onTreeActivate"
+		bn-iface="tree"
+	></div>
+</div>
+
 

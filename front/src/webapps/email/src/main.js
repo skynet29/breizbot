@@ -17,20 +17,6 @@ $$.control.registerControl('rootPage', {
 				accounts: [],
 				currentAccount: '',
 				mailboxes: [],
-				messages: [],
-				nbMsg: 0,
-
-				getDate: function(date) {
-					//console.log('getDate', date)
-					const d = new Date(date)
-					//console.log('d', d)
-					return d.toLocaleDateString('fr-FR')
-				},
-
-				isSeen: function(flags) {
-					return flags.includes('\\Seen')
-				}
-
 			},
 			events: {
 				onCreateAccount: function() {
@@ -49,29 +35,12 @@ $$.control.registerControl('rootPage', {
 					const mailboxName = getMailboxName()
 					console.log('mailboxName', mailboxName)
 					const {currentAccount} = ctrl.model
-					srvMail.openMailbox(currentAccount, mailboxName).then((data) => {
-						console.log('data', data)
-						const {messages, nbMsg} = data
-						ctrl.setData({
-							nbMsg,
-							messages: messages.reverse()
-						})
-					})
-				},
-				onItemClick: function(ev) {
-					// $(this).closest('tbody').find('tr').removeClass('w3-blue')
-					// $(this).addClass('w3-blue')
-					const mailboxName = getMailboxName()
-
-					const item = $(this).data('item')
-					$pager.pushPage('messagePage', {
-						title: `Message #${item.seqno}`,
+					$pager.pushPage('mailboxPage', {
+						title: mailboxName,
 						props: {
-							name: ctrl.model.currentAccount,
-							mailboxName,
-							item							
+							currentAccount,
+							mailboxName
 						}
-
 					})
 				}
 			}

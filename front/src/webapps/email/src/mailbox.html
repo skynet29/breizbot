@@ -1,0 +1,28 @@
+<div class="toolbar">
+	<p class="nbMsg">nbMsg: <strong bn-text="nbMsg"></strong></p>		
+</div>
+
+<div class="scrollPanelTable">
+	<table class="w3-table-all w3-hoverable w3-small">
+		<thead>
+			<tr class="w3-green">
+				<th><input type="checkbox" bn-event="click: onMainCheckBoxClick"></th>
+				<th>From</th>
+				<th>Subject</th>
+				<th title="nb Attachments"><i class="fa fa-paperclip"></i></th>
+				<th>Date</th>
+			</tr>
+		</thead>
+		<tbody bn-each="messages" bn-event="click.item: onItemClick">
+			<tr bn-data="{item: $i}" bn-class="{unseen: !isSeen($i.flags)}">
+				<th><input type="checkbox" class="check" ></th>
+				<td bn-text="$i.from.name" bn-attr="{title: $i.from.email}"></td>
+				<td bn-text="$i.subject" class="item" ></td>
+				<td bn-text="$i.nbAttachments"></td>
+				<td bn-text="getDate($i.date)"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+

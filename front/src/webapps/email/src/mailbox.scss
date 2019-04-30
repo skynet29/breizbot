@@ -1,0 +1,26 @@
+.mailboxPage {
+	display: flex;
+	flex-direction: column;
+	padding-left: 10px;
+	padding-right: 10px;
+
+	.toolbar {
+
+	}
+
+	.scrollPanelTable {
+		flex: 1;
+		overflow-y: auto;
+		border: 1px solid black;
+
+		table {
+			height: 100%;
+
+			.item {
+				cursor: pointer;
+			}
+		}			
+	}
+
+
+}

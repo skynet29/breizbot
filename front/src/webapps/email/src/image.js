@@ -7,7 +7,7 @@ $$.control.registerControl('imagePage', {
 	props: {
 		$pager: null,
 		info: '',
-		name: '',
+		currentAccount: '',
 		mailboxName: '',
 		seqno: '',
 		fileName: ''
@@ -15,7 +15,7 @@ $$.control.registerControl('imagePage', {
 
 	init: function(elt, srvMail, files) {
 
-		const {$pager, info, name, mailboxName, seqno, fileName} = this.props
+		const {$pager, info, currentAccount, mailboxName, seqno, fileName} = this.props
 		const {partID, type, subtype} = info
 
 		const ctrl = $$.viewController(elt, {
@@ -27,7 +27,7 @@ $$.control.registerControl('imagePage', {
 			}
 		})
 
-		srvMail.openAttachment(name, mailboxName, seqno, partID).then((message) => {
+		srvMail.openAttachment(currentAccount, mailboxName, seqno, partID).then((message) => {
 			//console.log('message', message)
 			const url = `data:${type}/${subtype};base64,` + message.data
 			ctrl.setData({url, wait:false})

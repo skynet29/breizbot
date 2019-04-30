@@ -8,6 +8,20 @@
   .accountPage .brainjs-inputgroup {
     margin-bottom: 5px; }
 
+.mailboxPage {
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+  padding-right: 10px; }
+  .mailboxPage .scrollPanelTable {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid black; }
+    .mailboxPage .scrollPanelTable table {
+      height: 100%; }
+      .mailboxPage .scrollPanelTable table .item {
+        cursor: pointer; }
+
 .rootPage {
   padding-left: 10px;
   padding-right: 10px;
@@ -23,27 +37,15 @@
       align-items: center; }
       .rootPage .toolbar .info .nbMsg {
         margin-left: 20px; }
-  .rootPage .content {
+  .rootPage .scrollPanelTree {
     flex: 1;
-    overflow: hidden;
-    display: flex;
-    flex-direction: row; }
-    .rootPage .content .scrollPanelTree {
-      overflow-y: auto;
-      height: 100%;
-      width: 200px;
-      border: 1px solid black; }
-      .rootPage .content .scrollPanelTree .tree {
-        height: 100%; }
-        .rootPage .content .scrollPanelTree .tree ul {
-          height: 100%;
-          border: none; }
-    .rootPage .content .scrollPanelTable {
-      overflow: auto;
-      flex: 1;
-      border: 1px solid black; }
-      .rootPage .content .scrollPanelTable tr.unseen {
-        font-weight: bold; }
+    overflow-y: auto;
+    border: 1px solid black; }
+    .rootPage .scrollPanelTree .tree {
+      height: 100%; }
+      .rootPage .scrollPanelTree .tree ul {
+        height: 100%;
+        border: none; }
 
 .messagePage {
   display: flex;

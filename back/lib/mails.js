@@ -110,13 +110,13 @@ function decodeBody(body, info) {
 
    console.log('body.length', body.length)
 
-   if (encoding === 'BASE64') {
-    const buff = new Buffer(body, 'base64')
+   if (encoding.toUpperCase() === 'BASE64') {
+      const buff = new Buffer(body, 'base64')
      //return 'base64 encoding not supported'
      body = buff.toString('utf8')
    }
 
-   if (encoding === 'QUOTED-PRINTABLE') {
+   if (encoding.toUpperCase() === 'QUOTED-PRINTABLE') {
      body = quotedPrintable.decode(body)
 
      body = iconv.decode(body, params.charset)

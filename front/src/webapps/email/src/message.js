@@ -21,7 +21,7 @@ $$.control.registerControl('messagePage', {
 				item,
 				attachments: [],
 				canOpen: function(info) {
-					return info.type == 'image' && info.encoding == 'BASE64'
+					return info.type == 'image' && info.encoding.toUpperCase() == 'BASE64'
 				},
 				getSize: function(size) {
 					console.log('getSize', size)

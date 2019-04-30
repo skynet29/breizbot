@@ -249,6 +249,7 @@ function openMailbox(userName, name, mailboxName) {
               const header = decodeHeaders(buffer)
               header.seqno = seqno
               header.partID = partID
+              header.flags = attrs.flags
               header.nbAttachments = getAttachments(parts).length
               messages.push(header)
 
@@ -349,6 +350,8 @@ function openMessage(userName, name, mailboxName, seqNo, partID) {
             })
 
             msg.once('attributes', function(attrs) {
+              console.log('flags', attrs.flags)
+
               const {struct} = attrs
               const parts = []
               parseStruct(struct, parts)

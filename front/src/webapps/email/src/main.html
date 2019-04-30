@@ -43,7 +43,7 @@
 					</tr>
 				</thead>
 				<tbody bn-each="messages" bn-event="click.item: onItemClick">
-					<tr class="item" bn-data="{item: $i}">
+					<tr class="item" bn-data="{item: $i}" bn-class="{unseen: !isSeen($i.flags)}">
 						<td bn-text="$i.from.name" bn-attr="{title: $i.from.email}"></td>
 						<td bn-text="$i.subject"></td>
 						<td bn-text="$i.nbAttachments"></td>

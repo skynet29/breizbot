@@ -46,6 +46,10 @@
 			flex: 1;
 			border: 1px solid black;
 
+			tr.unseen {
+				font-weight: bold;
+			}
+
 		}
 
 

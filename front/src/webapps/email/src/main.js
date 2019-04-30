@@ -25,6 +25,10 @@ $$.control.registerControl('rootPage', {
 					const d = new Date(date)
 					//console.log('d', d)
 					return d.toLocaleDateString('fr-FR')
+				},
+
+				isSeen: function(flags) {
+					return flags.includes('\\Seen')
 				}
 
 			},

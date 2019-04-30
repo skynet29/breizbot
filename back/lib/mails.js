@@ -155,11 +155,13 @@ function getAttachments(parts) {
   console.log('getAttachments', parts)
   const ret = []
   parts.forEach((p) => {
-    const {params, type, subtype, size, partID, encoding, id} = p
-    if (params == null || id != null) {
+    const {disposition, type, subtype, size, partID, encoding, id} = p
+    if (disposition == null || disposition.type != 'attachment') {
       return
     }
-    let {name} = params
+
+    let name = disposition.params.filename
+
     if (name != undefined) {
 
       if (name.startsWith('=?utf-8?B?')) {

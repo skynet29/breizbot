@@ -38,6 +38,7 @@
 					<tr class="w3-green">
 						<th>From</th>
 						<th>Subject</th>
+						<th title="nb Attachments"><i class="fa fa-paperclip"></i></th>
 						<th>Date</th>
 					</tr>
 				</thead>
@@ -45,6 +46,7 @@
 					<tr class="item" bn-data="{item: $i}">
 						<td bn-text="$i.from.name" bn-attr="{title: $i.from.email}"></td>
 						<td bn-text="$i.subject"></td>
+						<td bn-text="$i.nbAttachments"></td>
 						<td bn-text="getDate($i.date)"></td>
 					</tr>
 				</tbody>

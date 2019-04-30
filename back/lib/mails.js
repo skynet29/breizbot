@@ -152,15 +152,23 @@ function getPartInfo(parts, partID) {
 }
 
 function getAttachments(parts) {
-  //console.log('getAttachments', parts)
+  console.log('getAttachments', parts)
   const ret = []
   parts.forEach((p) => {
     const {params, type, subtype, size, partID, encoding, id} = p
     if (params == null || id != null) {
       return
     }
-    const {name} = params
+    let {name} = params
     if (name != undefined) {
+
+      if (name.startsWith('=?utf-8?B?')) {
+        const t = name.split('?')
+        console.log('t', t)
+        const buff = new Buffer(t[3], 'base64')
+        //return 'base64 encoding not supported'
+        name = buff.toString('utf8')
+      }
       ret.push({name, type, subtype, size, partID, encoding})
     }
   })
@@ -215,7 +223,6 @@ function openMailbox(userName, name, mailboxName) {
 
           f.on('message', function(msg, seqno) {
             console.log('message #', seqno)
-            let partID
             let buffer = ''
 
             msg.on('body', function(stream, info) {
@@ -238,14 +245,16 @@ function openMailbox(userName, name, mailboxName) {
 
               const parts = []
               parseStruct(struct, parts)
-              partID = getPartIDByTYpe(parts, 'text', 'plain')
-            }) 
-
-            msg.once('end', function() {
+              const partID = getPartIDByTYpe(parts, 'text', 'plain')
               const header = decodeHeaders(buffer)
               header.seqno = seqno
               header.partID = partID
+              header.nbAttachments = getAttachments(parts).length
               messages.push(header)
+
+            }) 
+
+            msg.once('end', function() {
               console.log('finished !')
 
             })

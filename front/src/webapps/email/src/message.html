@@ -2,7 +2,8 @@
 	<div><strong>From: </strong><span bn-text="item.from.name"></span></div>
 	<div><strong>Subject: </strong><span bn-text="item.subject"></span></div>
 	<div class="attachments" bn-show="attachments.length > 0">
-		<strong>Attachments: </strong>
+		<strong bn-event="click: onAttachClick"><i class="fa fa-caret-down"></i>
+		Attachments</strong>
 		<ul  bn-each="attachments" bn-event="click.item: onItemClick">
 			<li bn-show="canOpen($i)">
 				<a href="#" bn-text="$i.name" class="item" bn-data="{item: $i}"></a>

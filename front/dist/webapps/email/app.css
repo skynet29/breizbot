@@ -13,6 +13,10 @@
   flex-direction: column;
   padding-left: 10px;
   padding-right: 10px; }
+  .mailboxPage .toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end; }
   .mailboxPage .scrollPanelTable {
     flex: 1;
     overflow-y: auto;
@@ -54,6 +58,8 @@
     padding: 10px; }
     .messagePage .header .attachments ul {
       margin: 0; }
+    .messagePage .header .attachments strong {
+      cursor: pointer; }
   .messagePage .main {
     flex: 1;
     padding: 10px;

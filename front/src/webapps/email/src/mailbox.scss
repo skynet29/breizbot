@@ -5,6 +5,9 @@
 	padding-right: 10px;
 
 	.toolbar {
+		display: flex;
+		flex-direction: row;
+		justify-content: flex-end;
 
 	}
 
@@ -19,6 +22,7 @@
 			.item {
 				cursor: pointer;
 			}
+
 		}			
 	}
 

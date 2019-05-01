@@ -26,7 +26,13 @@ $$.control.registerControl('messagePage', {
 				getSize: function(size) {
 					//console.log('getSize', size)
 					size /= 1024
-					return ` (${size.toFixed(1)} Ko)`
+					let unit = 'Ko'
+					if (size > 1024) {
+						size /= 1024
+						unit = 'Mo'
+					}
+
+					return ` (${size.toFixed(1)} ${unit})`
 				}
 			},
 			events: {
@@ -45,6 +51,19 @@ $$.control.registerControl('messagePage', {
 						},
 						buttons: [{name: 'save', label: 'Save'}]
 					})
+				},
+				onAttachClick: function(ev) {
+					console.log('onAttachClick')
+					const $i = $(this).find('i')
+					const $ul = $(this).siblings('ul')
+					if ($i.hasClass('fa-caret-right')) {
+						$i.removeClass('fa-caret-right').addClass('fa-caret-down')
+						$ul.slideDown()
+					}
+					else {
+						$i.removeClass('fa-caret-down').addClass('fa-caret-right')						
+						$ul.slideUp()
+					}
 				}
 			}
 		})
@@ -55,6 +74,7 @@ $$.control.registerControl('messagePage', {
 			//const {text, attachments} = message
 
 			ctrl.setData(message)
+
 		})
 
 

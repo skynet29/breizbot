@@ -6,9 +6,17 @@
 	.header {
 		padding: 10px;
 
-		.attachments ul {
-			margin: 0;
+		.attachments {
+			ul {
+				margin: 0;
+			}
+
+			strong {
+				cursor: pointer;
+			}			
 		}
+
+
 	}
 
 	.main {

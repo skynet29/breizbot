@@ -31,9 +31,7 @@ function getFromEmail(from) {
   }
 }
 
-function getMailboxes(userName, name) {
-  console.log('getMailboxes', userName, name)
-
+function imapConnect(userName, name, readyCallback) {
   return db.getMailAccount(userName, name).then((account) => {
 
     console.log('account', account)
@@ -49,30 +47,7 @@ function getMailboxes(userName, name) {
       }) 
 
       imap.once('ready', function() {
-        imap.getBoxes(function(err, mailbox) {
-          imap.end()
-          if (err) {
-            reject(err)
-          }
-          //console.log('getBoxes', mailbox)
-
-          const ret = []
-          for(let k in mailbox) {
-            const {children} = mailbox[k]
-            const data = {title: k}
-            if (children != null) {
-              data.children = Object.keys(children).map((i) => {
-                return {title: i}
-              })
-              data.folder = true
-            }
-            ret.push(data)
-          }
-
-          //console.log('ret', ret)
-
-          resolve(ret)
-        })
+        readyCallback(imap, resolve, reject)
       }) 
 
       imap.once("error", function(err) {
@@ -85,9 +60,10 @@ function getMailboxes(userName, name) {
     })
 
 
-  })
-   
+  })  
 }
+
+
 
 function decodeHeaders(buffer) {
   console.log('decodeHeaders', buffer)
@@ -142,7 +118,7 @@ function parseStruct(struct, parts) {
 
 }
 
-function getPartIDByTYpe(parts, type, subtype) {
+function getPartIDByType(parts, type, subtype) {
   const info = parts.find((p) => p.type == type && p.subtype == subtype && p.id == null)
   return (info != undefined) ? info.partID : false
 }
@@ -155,7 +131,7 @@ function getAttachments(parts) {
   console.log('getAttachments', parts)
   const ret = []
   parts.forEach((p) => {
-    const {disposition, type, subtype, size, partID, encoding, id} = p
+    const {disposition, type, subtype, size, partID, encoding} = p
     if (disposition == null || disposition.type != 'attachment') {
       return
     }
@@ -178,221 +154,228 @@ function getAttachments(parts) {
 }
 
 
-function openMailbox(userName, name, mailboxName) {
-  console.log('openMailbox', userName, name, mailboxName)
+function imapFetch(imap, query, bodies, callback) {
+  const f = imap.seq.fetch(query, {
+    bodies,
+    struct: true
+  })
 
-  return db.getMailAccount(userName, name).then((account) => {
+ const ret = []
 
-    //console.log('account', account)
+  f.on('message', function(msg, seqno) {
+    console.log('message #', seqno)
+    let buffer = ''
 
-    return new Promise((resolve, reject) => {
+    msg.on('body', function(stream, info) {
+      console.log('body', info)
+      
 
-      const imap = new Imap({
-        user: account.user,
-        password: account.pwd,
-        host: account.imapHost,
-        port: 993,
-        tls: true
-      }) 
-
-      imap.once('ready', function() {
-        imap.openBox(mailboxName, true, function(err, mailbox) {
-          if (err) {
-            console.log('err', err)
-            imap.end()
-            reject(err)
-            return
-          }
-          console.log('openBox', err, mailbox)
-          const nbMsg = mailbox.messages.total
-          console.log('nbMsg', nbMsg)
-          if (nbMsg == 0) {
-            imap.end()
-            resolve({nbMsg, messages:[]})
-          }
-
-          const firstMsg = nbMsg
-          const lastMsg = Math.max(1, nbMsg - 20)
-          const query = `${firstMsg}:${lastMsg}`
-          console.log('query', query)
-
-          const messages = []
-
-          const f = imap.seq.fetch(query, {
-            bodies: ['HEADER.FIELDS (FROM SUBJECT DATE)'],
-            struct: true
-          })
-
-          f.on('message', function(msg, seqno) {
-            console.log('message #', seqno)
-            let buffer = ''
-
-            msg.on('body', function(stream, info) {
-              console.log('body', info)
-              
-
-              stream.on('data', function(chunk) {
-                buffer += chunk.toString('utf8')
-              })
-
-              stream.once('end', function() {
-                
-               
-              })
-
-            })
-
-            msg.once('attributes', function(attrs) {
-              const {struct} = attrs
-
-              const parts = []
-              parseStruct(struct, parts)
-              const partID = getPartIDByTYpe(parts, 'text', 'plain')
-              const header = decodeHeaders(buffer)
-              header.seqno = seqno
-              header.partID = partID
-              header.flags = attrs.flags
-              header.nbAttachments = getAttachments(parts).length
-              messages.push(header)
-
-            }) 
-
-            msg.once('end', function() {
-              console.log('finished !')
-
-            })
-
-
-          })
-
-          f.once('end', function() {
-            console.log('Done !')
-            imap.end()
-            resolve({messages, nbMsg})
-          })
-
-        })
-      }) 
-
-      imap.once("error", function(err) {
-        console.log('error', err)
-        reject(err)
+      stream.on('data', function(chunk) {
+        buffer += chunk.toString('utf8')
       })
 
-      imap.connect()       
+      stream.once('end', function() {
+        
+       
+      })
+
+    })
+
+    msg.once('attributes', function(attrs) {
+
+      const parts = []
+      parseStruct(attrs.struct, parts)
+
+      ret.push({parts, buffer, attrs, seqno})
+
+    }) 
+
+    msg.once('end', function() {
+      console.log('finished !')
 
     })
 
 
   })
+
+  f.once('end', function() {
+    console.log('Done !')
+    imap.end()
+    callback(ret)
+  })  
+}
+
+function getMailboxesCb(imap, resolve, reject) {
+  imap.getBoxes(function(err, mailbox) {
+    imap.end()
+    if (err) {
+      reject(err)
+    }
+    //console.log('getBoxes', mailbox)
+
+    const ret = []
+    for(let k in mailbox) {
+      const {children} = mailbox[k]
+      const data = {title: k}
+      if (children != null) {
+        data.children = Object.keys(children).map((i) => {
+          return {title: i}
+        })
+        data.folder = true
+      }
+      ret.push(data)
+    }
+
+    //console.log('ret', ret)
+
+    resolve(ret)
+  })  
+}
+
+
+function getMailboxes(userName, name) {
+  console.log('getMailboxes', userName, name)
+
+  return imapConnect(userName, name, getMailboxesCb)
    
+}
+
+
+function openMailboxCb(mailboxName) {
+
+  return function(imap, resolve, reject) {
+     imap.openBox(mailboxName, true, function(err, mailbox) {  
+      if (err) {
+        console.log('err', err)
+        imap.end()
+        reject(err)
+        return
+      }
+      console.log('openBox', err, mailbox)
+      const nbMsg = mailbox.messages.total
+      console.log('nbMsg', nbMsg)
+      if (nbMsg == 0) {
+        imap.end()
+        resolve({nbMsg, messages:[]})
+      }
+
+      const firstMsg = nbMsg
+      const lastMsg = Math.max(1, nbMsg - 20)
+      const query = `${firstMsg}:${lastMsg}`
+      console.log('query', query)
+      imapFetch(imap, query, ['HEADER.FIELDS (FROM SUBJECT DATE)'], function(data) {
+
+        const messages = []
+
+        data.forEach((d) => {
+          const {attrs, seqno, parts, buffer} = d
+          const partID = getPartIDByType(parts, 'text', 'plain')
+          const header = decodeHeaders(buffer)
+          header.seqno = seqno
+          header.partID = partID
+          header.flags = attrs.flags
+          header.nbAttachments = getAttachments(parts).length
+          messages.push(header)
+
+        })
+        resolve({nbMsg, messages})        
+      })
+
+     })
+  }
+
+ 
+}
+
+function openMailbox(userName, name, mailboxName) {
+  console.log('openMailbox', userName, name, mailboxName)
+
+  return imapConnect(userName, name, openMailboxCb(mailboxName))
+
+}
+
+function openMessageCb(mailboxName, seqNo, partID) {
+
+  return function(imap, resolve, reject) {
+
+    if (partID == false) {
+      return Promise.resolve({text: 'plain text not available'})
+    }
+
+     imap.openBox(mailboxName, true, function(err, mailbox) {  
+      if (err) {
+        console.log('err', err)
+        imap.end()
+        reject(err)
+        return
+      }
+      console.log('openBox', err, mailbox)
+      const nbMsg = mailbox.messages.total
+      console.log('nbMsg', nbMsg)
+
+      if (seqNo > nbMsg) {
+        imap.end()
+        reject('seqNo out of range')
+        return
+      }
+
+      imapFetch(imap, seqNo, [partID], function(data) {
+
+        const {parts, buffer} = data[0]
+
+        const info = getPartInfo(parts, partID)
+        const text = decodeBody(buffer, info)
+        const attachments = getAttachments(parts)
+
+        resolve({text, attachments})        
+
+      })
+     
+    })
+  }
+
+ 
 }
 
 function openMessage(userName, name, mailboxName, seqNo, partID) {
 
   console.log('openMessage', userName, name, mailboxName, seqNo, partID)
 
-  if (partID == false) {
-    return Promise.resolve({text: 'plain text not available'})
-  }
+  return imapConnect(userName, name, openMessageCb(mailboxName, seqNo, partID))
 
-  return db.getMailAccount(userName, name).then((account) => {
+}
 
-    return new Promise((resolve, reject) => {
+function openAttachmentCb(mailboxName, seqNo, partID) {
 
-      const imap = new Imap({
-        user: account.user,
-        password: account.pwd,
-        host: account.imapHost,
-        port: 993,
-        tls: true
-      }) 
+  return function(imap, resolve, reject) {
 
-     let buffer = ''
-
-      imap.once('ready', function() {
-        imap.openBox(mailboxName, true, function(err, mailbox) {
-          if (err) {
-            console.log('err', err)
-            imap.end()
-            reject(err)
-            return
-          }
-          //console.log('openBox', err, mailbox)
-          const nbMsg = mailbox.messages.total
-
-          if (seqNo > nbMsg) {
-            imap.end()
-            reject('seqNo out of range')
-            return
-          }
-
-          const query = `${seqNo}:${seqNo}`
-          console.log('query', query)
-
-          const f = imap.seq.fetch(query, {
-            bodies: [`${partID}`],
-            struct: true
-          })
-
-          f.on('message', function(msg) {                  
-
-            msg.on('body', function(stream) {
-              console.log('body')
-             
-              stream.on('data', function(chunk) {
-                console.log('data', chunk.length)
-                buffer += chunk.toString('utf8')
-              })
-
-              stream.once('end', function() {
-                console.log('end body', buffer.length)
-                
-              })
-            })
-
-            msg.once('attributes', function(attrs) {
-              console.log('flags', attrs.flags)
-
-              const {struct} = attrs
-              const parts = []
-              parseStruct(struct, parts)
-              const info = getPartInfo(parts, partID)
-              const text = decodeBody(buffer, info)
-              const attachments = getAttachments(parts)
-
-              resolve({text, attachments})
-            }) 
-
-            msg.once('end', function() {
-              console.log('finished !')
-
-            })
-
-
-          })
-
-          f.once('end', function() {
-            console.log('Done !')
-            
-            imap.end()
-          })
-
-        })
-      }) 
-
-      imap.once("error", function(err) {
-        console.log('error', err)
+     imap.openBox(mailboxName, true, function(err, mailbox) {  
+      if (err) {
+        console.log('err', err)
+        imap.end()
         reject(err)
+        return
+      }
+      console.log('openBox', err, mailbox)
+      const nbMsg = mailbox.messages.total
+      console.log('nbMsg', nbMsg)
+
+      if (seqNo > nbMsg) {
+        imap.end()
+        reject('seqNo out of range')
+        return
+      }
+
+      imapFetch(imap, seqNo, [partID], function(data) {
+
+        resolve({data: data[0].buffer})        
+
       })
 
-      imap.connect()       
-
     })
+  }
 
-
-  })
-   
+ 
 }
 
 
@@ -400,93 +383,11 @@ function openAttachment(userName, name, mailboxName, seqNo, partID) {
 
   console.log('openAttachment', userName, name, mailboxName, seqNo, partID)
 
+  return imapConnect(userName, name, openAttachmentCb(mailboxName, seqNo, partID))
 
-  return db.getMailAccount(userName, name).then((account) => {
-
-    return new Promise((resolve, reject) => {
-
-      const imap = new Imap({
-        user: account.user,
-        password: account.pwd,
-        host: account.imapHost,
-        port: 993,
-        tls: true
-      }) 
-
-     let buffer = ''
-
-      imap.once('ready', function() {
-        imap.openBox(mailboxName, true, function(err, mailbox) {
-          if (err) {
-            console.log('err', err)
-            imap.end()
-            reject(err)
-            return
-          }
-          //console.log('openBox', err, mailbox)
-          const nbMsg = mailbox.messages.total
-
-          if (seqNo > nbMsg) {
-            imap.end()
-            reject('seqNo out of range')
-            return
-          }
-
-          const query = `${seqNo}:${seqNo}`
-          console.log('query', query)
-
-          const f = imap.seq.fetch(query, {
-            bodies: [`${partID}`],
-            struct: true
-          })
-
-          f.on('message', function(msg) {                  
-
-            msg.on('body', function(stream) {
-              console.log('body')
-             
-              stream.on('data', function(chunk) {
-                console.log('data', chunk.length)
-                buffer += chunk.toString('utf8')
-              })
-
-              stream.once('end', function() {
-                console.log('end body', buffer.length)
-                resolve({data: buffer})
-                
-              })
-            })
-
-            msg.once('end', function() {
-              console.log('finished !')
-
-            })
-
-
-          })
-
-          f.once('end', function() {
-            console.log('Done !')
-            
-            imap.end()
-          })
-
-        })
-      }) 
-
-      imap.once("error", function(err) {
-        console.log('error', err)
-        reject(err)
-      })
-
-      imap.connect()       
-
-    })
-
-
-  })
-   
 }
+
+
 
 
 module.exports = {

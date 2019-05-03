@@ -80,9 +80,17 @@ $$.control.registerControl('rootPage', {
 
 		loadAccount()
 
-		this.onReturn = function() {
-			console.log('onReturn')
-			loadAccount()
+		this.onReturn = function(data) {
+			console.log('onReturn', data)
+			if (data == 'update') {
+				loadAccount()
+			}
+			if (data == undefined) {
+				const activeNode = ctrl.scope.tree.getActiveNode()
+				if (activeNode != null) {
+					activeNode.setActive(false)
+				}
+			}
 		}
 	}
 

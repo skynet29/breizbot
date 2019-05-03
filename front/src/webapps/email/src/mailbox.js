@@ -18,6 +18,8 @@ $$.control.registerControl('mailboxPage', {
 			data: {
 				messages: [],
 				nbMsg: 0,
+				pageNo: 0,
+				nbPage: 0,
 
 				getDate: function(date) {
 					//console.log('getDate', date)
@@ -52,16 +54,35 @@ $$.control.registerControl('mailboxPage', {
 			}
 		})
 
-		srvMail.openMailbox(currentAccount, mailboxName).then((data) => {
-			console.log('data', data)
-			const {messages, nbMsg} = data
-			ctrl.setData({
-				nbMsg,
-				messages: messages.reverse()
-			})
-		})
+		function load(pageNo) {
+
+			srvMail.openMailbox(currentAccount, mailboxName, pageNo).then((data) => {
+				console.log('data', data)
+				const {messages, nbMsg} = data
+				ctrl.setData({
+					pageNo,
+					nbPage: Math.ceil(nbMsg / 20),
+					nbMsg,
+					messages: messages.reverse()
+				})
+			})			
+		}
+
+		load(1)
 
 
+		this.onAction = function(action) {
+			console.log('onAction', action)
+			const {nbPage, pageNo} = ctrl.model
+
+			if (action == 'next' && pageNo < nbPage) {
+				load(pageNo + 1)
+			}
+			if (action == 'prev' && pageNo > 1) {
+				load(pageNo - 1)
+			}
+
+		}
 	}
 
 

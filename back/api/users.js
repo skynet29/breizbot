@@ -158,7 +158,7 @@ router.get('/getFriends', function(req, res) {
 	})
 
 })
-11
+
 router.post('/addFriend', function(req, res) {
 	console.log('addFriend', req.session.user)
 

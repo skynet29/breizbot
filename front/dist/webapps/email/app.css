@@ -16,15 +16,13 @@
   .mailboxPage .toolbar {
     display: flex;
     flex-direction: row;
-    justify-content: flex-end; }
+    justify-content: space-between; }
   .mailboxPage .scrollPanelTable {
     flex: 1;
     overflow-y: auto;
     border: 1px solid black; }
-    .mailboxPage .scrollPanelTable table {
-      height: 100%; }
-      .mailboxPage .scrollPanelTable table .item {
-        cursor: pointer; }
+    .mailboxPage .scrollPanelTable table .item {
+      cursor: pointer; }
 
 .rootPage {
   padding-left: 10px;

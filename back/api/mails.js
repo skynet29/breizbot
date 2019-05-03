@@ -39,9 +39,9 @@ router.post('/getMailboxes', function(req, res) {
 
 router.post('/openMailbox', function(req, res) {
 	const userName = req.session.user
-	const {name, mailboxName} = req.body
+	const {name, mailboxName, pageNo} = req.body
 
-	mails.openMailbox(userName, name, mailboxName).then((messages) => {
+	mails.openMailbox(userName, name, mailboxName, pageNo).then((messages) => {
 		res.json(messages)
 	})
 	.catch((err) => {

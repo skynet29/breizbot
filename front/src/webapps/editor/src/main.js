@@ -78,6 +78,9 @@ $$.control.registerControl('rootPage', {
 
 		this.onReturn = function(data) {
 			console.log('onReturn', data)
+			if (data == undefined) {
+				return
+			}
 			const {fileName, rootDir, cmd} = data
 			if (cmd == 'openFile') {
 				ctrl.setData({fileName, rootDir})

@@ -3,5 +3,5 @@
 	"colorCls": "w3-teal",
 	"title": "Email",
 	"styles": ["app.css"],
-	"brainjs": ["tree"]
+	"brainjs": ["tree", "map"]
 }

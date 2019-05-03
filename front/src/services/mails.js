@@ -17,8 +17,8 @@ $$.service.registerService('breizbot.mails', {
 				return http.post(`/api/mails/getMailboxes`, {name})
 			},
 
-			openMailbox: function(name, mailboxName) {
-				return http.post(`/api/mails/openMailbox`, {name, mailboxName})
+			openMailbox: function(name, mailboxName, pageNo) {
+				return http.post(`/api/mails/openMailbox`, {name, mailboxName, pageNo})
 			},
 
 			openMessage(name, mailboxName, seqNo, partID)	{
@@ -36,8 +36,8 @@ $$.service.registerService('breizbot.mails', {
 		getMailAccount():Promise;
 		createMaiAccount(data):Promise;
 		getMailboxes(name):Promise;
-		openMailbox(name, mailboxName):Promise;
-		openMessage(name, mailboxName, seqNo, info):Promise
-		openAttachment(name, mailboxName, seqNo, info):Promise
+		openMailbox(name, mailboxName, pageNo):Promise;
+		openMessage(name, mailboxName, seqNo, partID):Promise
+		openAttachment(name, mailboxName, seqNo, partID):Promise
 		`
 });

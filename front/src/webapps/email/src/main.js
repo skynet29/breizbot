@@ -40,7 +40,11 @@ $$.control.registerControl('rootPage', {
 						props: {
 							currentAccount,
 							mailboxName
-						}
+						},
+						buttons: [
+							{name: 'prev', icon: 'fa fa-angle-left'},
+							{name: 'next', icon: 'fa fa-angle-right'}
+						]
 					})
 				}
 			}

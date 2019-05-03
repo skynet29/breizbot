@@ -32,7 +32,7 @@ $$.control.registerControl('rootPage', {
 						title: 'Snapshot', 
 						props: {url},
 						buttons: [
-							{label: 'Save', name: 'save'}
+							{label: 'Save', icon: 'fa fa-save'}
 						]
 					})					
 				}

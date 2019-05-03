@@ -23,7 +23,10 @@ $$.control.registerControl('rootPage', {
 						$pager.pushPage('imagePage', {
 							title: fileName,
 							props: {fileName: rootDir + fileName},
-							buttons: [{name: 'del', label: 'Delete'}]
+							buttons: [
+								{name: 'del', icon: 'fa fa-trash'},
+								{name: 'fit', icon: 'fa fa-expand'}
+							]
 						})
 					}
 

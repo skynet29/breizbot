@@ -49,7 +49,10 @@ $$.control.registerControl('messagePage', {
 							mailboxName,
 							seqno: item.seqno
 						},
-						buttons: [{name: 'save', label: 'Save'}]
+						buttons: [
+							{name: 'save', icon: 'fa fa-save'},
+							{name: 'fit', icon: 'fa fa-expand'}
+						]
 					})
 				},
 				onAttachClick: function(ev) {

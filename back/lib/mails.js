@@ -13,7 +13,7 @@ const db = require('./db')
 
 function getFromName(from) {
   const names = from.trim().split(/\s+/)
-  console.log('names', names)
+  //console.log('names', names)
   if (names.length > 1) {
     names.pop()
     const name = names.join(" ").replace(/"/g, "")
@@ -34,7 +34,7 @@ function getFromEmail(from) {
 function imapConnect(userName, name, readyCallback) {
   return db.getMailAccount(userName, name).then((account) => {
 
-    console.log('account', account)
+    //console.log('account', account)
 
     return new Promise((resolve, reject) => {
 
@@ -66,9 +66,9 @@ function imapConnect(userName, name, readyCallback) {
 
 
 function decodeHeaders(buffer) {
-  console.log('decodeHeaders', buffer)
+  //console.log('decodeHeaders', buffer)
   const headers = Imap.parseHeader(buffer)
-  console.log('headers', headers)
+  //console.log('headers', headers)
   return {
     from: {
       name: getFromName(headers.from[0]),
@@ -81,7 +81,7 @@ function decodeHeaders(buffer) {
 
 
 function decodeBody(body, info) {
-  console.log('decodeBody', info)
+  //console.log('decodeBody', info)
    const {encoding, params} = info
 
    console.log('body.length', body.length)
@@ -128,7 +128,7 @@ function getPartInfo(parts, partID) {
 }
 
 function getAttachments(parts) {
-  console.log('getAttachments', parts)
+  //console.log('getAttachments', parts)
   const ret = []
   parts.forEach((p) => {
     const {disposition, type, subtype, size, partID, encoding} = p
@@ -142,7 +142,7 @@ function getAttachments(parts) {
 
       if (name.startsWith('=?utf-8?B?')) {
         const t = name.split('?')
-        console.log('t', t)
+        //console.log('t', t)
         const buff = new Buffer(t[3], 'base64')
         //return 'base64 encoding not supported'
         name = buff.toString('utf8')
@@ -163,11 +163,11 @@ function imapFetch(imap, query, bodies, callback) {
  const ret = []
 
   f.on('message', function(msg, seqno) {
-    console.log('message #', seqno)
+    //console.log('message #', seqno)
     let buffer = ''
 
     msg.on('body', function(stream, info) {
-      console.log('body', info)
+      //console.log('body', info)
       
 
       stream.on('data', function(chunk) {
@@ -191,7 +191,7 @@ function imapFetch(imap, query, bodies, callback) {
     }) 
 
     msg.once('end', function() {
-      console.log('finished !')
+      //console.log('finished !')
 
     })
 
@@ -240,8 +240,9 @@ function getMailboxes(userName, name) {
    
 }
 
+const nbMsgPerPage = 20
 
-function openMailboxCb(mailboxName) {
+function openMailboxCb(mailboxName, pageNo) {
 
   return function(imap, resolve, reject) {
      imap.openBox(mailboxName, true, function(err, mailbox) {  
@@ -251,7 +252,7 @@ function openMailboxCb(mailboxName) {
         reject(err)
         return
       }
-      console.log('openBox', err, mailbox)
+      //console.log('openBox', err, mailbox)
       const nbMsg = mailbox.messages.total
       console.log('nbMsg', nbMsg)
       if (nbMsg == 0) {
@@ -259,8 +260,9 @@ function openMailboxCb(mailboxName) {
         resolve({nbMsg, messages:[]})
       }
 
-      const firstMsg = nbMsg
-      const lastMsg = Math.max(1, nbMsg - 20)
+      const firstMsg = nbMsg - (pageNo -1)*nbMsgPerPage
+
+      const lastMsg = Math.max(1, firstMsg - nbMsgPerPage)
       const query = `${firstMsg}:${lastMsg}`
       console.log('query', query)
       imapFetch(imap, query, ['HEADER.FIELDS (FROM SUBJECT DATE)'], function(data) {
@@ -287,10 +289,10 @@ function openMailboxCb(mailboxName) {
  
 }
 
-function openMailbox(userName, name, mailboxName) {
-  console.log('openMailbox', userName, name, mailboxName)
+function openMailbox(userName, name, mailboxName, pageNo) {
+  console.log('openMailbox', userName, name, mailboxName, pageNo)
 
-  return imapConnect(userName, name, openMailboxCb(mailboxName))
+  return imapConnect(userName, name, openMailboxCb(mailboxName, pageNo))
 
 }
 
@@ -309,7 +311,7 @@ function openMessageCb(mailboxName, seqNo, partID) {
         reject(err)
         return
       }
-      console.log('openBox', err, mailbox)
+      //console.log('openBox', err, mailbox)
       const nbMsg = mailbox.messages.total
       console.log('nbMsg', nbMsg)
 
@@ -356,7 +358,7 @@ function openAttachmentCb(mailboxName, seqNo, partID) {
         reject(err)
         return
       }
-      console.log('openBox', err, mailbox)
+      //console.log('openBox', err, mailbox)
       const nbMsg = mailbox.messages.total
       console.log('nbMsg', nbMsg)
 

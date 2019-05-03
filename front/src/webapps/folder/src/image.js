@@ -18,7 +18,8 @@ $$.control.registerControl('imagePage', {
 				url: files.fileUrl(fileName)
 			}
 		})
-		this.onAction = function(action) {
+
+		function remove() {
 			$$.ui.showConfirm({title: 'Remove file', content: 'Are you sure ?'}, function() {
 				files.removeFiles([fileName])
 				.then(function(resp) {
@@ -32,7 +33,16 @@ $$.control.registerControl('imagePage', {
 						title: 'Error'
 					})
 				})
-			})
+			})			
+		}
+
+		this.onAction = function(action) {
+			if (action == 'del') {
+				remove()
+			}
+			if (action == 'fit') {
+				ctrl.scope.image.fitImage()
+			}
 		}
 
 	}

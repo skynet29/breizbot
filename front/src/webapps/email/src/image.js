@@ -34,8 +34,7 @@ $$.control.registerControl('imagePage', {
 
 		})
 
-		this.onAction = function(action) {
-			//console.log('onAction', action)
+		function save() {
 			const {url} = ctrl.model
 			if (url == '') {
 				$$.ui.showAlert({title: 'Error', content: 'Image not loaded, please wait'})
@@ -51,7 +50,17 @@ $$.control.registerControl('imagePage', {
 					title: 'Error',
 					content: resp.responseText
 				})
-			})			
+			})				
+		}
+
+		this.onAction = function(action) {
+			//console.log('onAction', action)
+			if (action == 'save') {
+				save()
+			}
+			if (action == 'fit') {
+				ctrl.scope.image.fitImage()
+			}
 		}
 	}
 

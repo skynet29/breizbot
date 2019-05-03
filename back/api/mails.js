@@ -77,4 +77,18 @@ router.post('/openAttachment', function(req, res) {
 	})	
 })
 
+router.post('/deleteMessage', function(req, res) {
+	const userName = req.session.user
+	const {name, mailboxName, seqNos} = req.body
+
+	mails.deleteMessage(userName, name, mailboxName, seqNos).then(() => {
+		res.sendStatus(200)
+	})
+	.catch((err) => {
+		console.log('err', err)
+		res.sendStatus(400)
+	})	
+})
+
+
 module.exports = router

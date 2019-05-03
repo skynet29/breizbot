@@ -154,11 +154,11 @@ function getAttachments(parts) {
 }
 
 
-function imapFetch(imap, query, bodies, callback) {
-  const f = imap.seq.fetch(query, {
-    bodies,
-    struct: true
-  })
+function imapFetch(imap, query, options, callback) {
+
+  options.struct = true
+
+  const f = imap.seq.fetch(query, options)
 
  const ret = []
 
@@ -211,7 +211,7 @@ function getMailboxesCb(imap, resolve, reject) {
     if (err) {
       reject(err)
     }
-    //console.log('getBoxes', mailbox)
+    //onsole.log('getBoxes', mailbox)
 
     const ret = []
     for(let k in mailbox) {
@@ -265,7 +265,7 @@ function openMailboxCb(mailboxName, pageNo) {
       const lastMsg = Math.max(1, firstMsg - nbMsgPerPage)
       const query = `${firstMsg}:${lastMsg}`
       console.log('query', query)
-      imapFetch(imap, query, ['HEADER.FIELDS (FROM SUBJECT DATE)'], function(data) {
+      imapFetch(imap, query, {bodies: ['HEADER.FIELDS (FROM SUBJECT DATE)']}, function(data) {
 
         const messages = []
 
@@ -301,10 +301,11 @@ function openMessageCb(mailboxName, seqNo, partID) {
   return function(imap, resolve, reject) {
 
     if (partID == false) {
-      return Promise.resolve({text: 'plain text not available'})
+      resolve({text: 'plain text not available'})
+      return
     }
 
-     imap.openBox(mailboxName, true, function(err, mailbox) {  
+     imap.openBox(mailboxName, false, function(err, mailbox) {  
       if (err) {
         console.log('err', err)
         imap.end()
@@ -321,7 +322,7 @@ function openMessageCb(mailboxName, seqNo, partID) {
         return
       }
 
-      imapFetch(imap, seqNo, [partID], function(data) {
+      imapFetch(imap, seqNo, {bodies: [partID], markSeen: true}, function(data) {
 
         const {parts, buffer} = data[0]
 
@@ -368,7 +369,7 @@ function openAttachmentCb(mailboxName, seqNo, partID) {
         return
       }
 
-      imapFetch(imap, seqNo, [partID], function(data) {
+      imapFetch(imap, seqNo, {bodies: [partID]}, function(data) {
 
         resolve({data: data[0].buffer})        
 
@@ -390,11 +391,47 @@ function openAttachment(userName, name, mailboxName, seqNo, partID) {
 }
 
 
+function deleteMessageCb(mailboxName, seqNos) {
+
+  return function(imap, resolve, reject) {
+
+     imap.openBox(mailboxName, false, function(err, mailbox) {  
+      if (err) {
+        console.log('err', err)
+        imap.end()
+        reject(err)
+        return
+      }
+
+      imap.seq.addFlags(seqNos, '\\Deleted', function(err) {
+        if (err) {
+          reject(err)
+        }
+        else {
+          imap.closeBox(true, function() {
+            resolve()
+          })
+        }
+      })     
+    })
+  }
+
+ 
+}
+
+function deleteMessage(userName, name, mailboxName, seqNos) {
+
+  console.log('deleteMessage', userName, name, mailboxName, seqNos)
+
+  return imapConnect(userName, name, deleteMessageCb(mailboxName, seqNos))
+
+}
 
 
 module.exports = {
   getMailboxes,
   openMailbox,
   openMessage,
-  openAttachment
+  openAttachment,
+  deleteMessage
 }

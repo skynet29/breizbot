@@ -1,6 +1,6 @@
 <div class="toolbar">
 	<div>
-		Page: <span bn-text="`${pageNo} / ${nbPage}`"></span>
+		<span bn-show="nbMsg > 0">Page: <span bn-text="`${pageNo} / ${nbPage}`"></span></span>
 	</div>
 	<div class="nbMsg"><strong bn-text="nbMsg"></strong>&nbsp;Messages</div>		
 </div>

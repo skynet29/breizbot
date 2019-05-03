@@ -23,6 +23,8 @@
     border: 1px solid black; }
     .mailboxPage .scrollPanelTable table .item {
       cursor: pointer; }
+    .mailboxPage .scrollPanelTable table tr.unseen {
+      font-weight: bold; }
 
 .rootPage {
   padding-left: 10px;

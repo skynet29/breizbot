@@ -17,9 +17,12 @@
 		border: 1px solid black;
 
 		table {
-
 			.item {
 				cursor: pointer;
+			}
+
+			tr.unseen {
+				font-weight: bold;
 			}
 
 		}			

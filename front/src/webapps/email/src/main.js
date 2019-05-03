@@ -42,6 +42,7 @@ $$.control.registerControl('rootPage', {
 							mailboxName
 						},
 						buttons: [
+							{name: 'delete', icon: 'fa fa-trash'},
 							{name: 'prev', icon: 'fa fa-angle-left'},
 							{name: 'next', icon: 'fa fa-angle-right'}
 						]

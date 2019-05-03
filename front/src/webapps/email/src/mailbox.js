@@ -49,12 +49,15 @@ $$.control.registerControl('mailboxPage', {
 					})
 				},
 				onMainCheckBoxClick: function(ev) {
-					elt.bnFind('.check').prop('checked', $(this).prop('checked'))
+					elt.find('.check').prop('checked', $(this).prop('checked'))
 				}
 			}
 		})
 
 		function load(pageNo) {
+			if (pageNo == undefined) {
+				pageNo = ctrl.model.pageNo
+			}
 
 			srvMail.openMailbox(currentAccount, mailboxName, pageNo).then((data) => {
 				console.log('data', data)
@@ -66,6 +69,21 @@ $$.control.registerControl('mailboxPage', {
 					messages: messages.reverse()
 				})
 			})			
+		}
+
+		function deleteMessage() {
+			const items = elt.find('.check:checked')
+			console.log('deleteMessage', items.length)
+			const seqNos = []
+			items.each(function() {
+				const data = $(this).closest('tr').data('item')
+				seqNos.push(data.seqno)
+			})
+			console.log('seqNos', seqNos)
+			srvMail.deleteMessage(currentAccount, mailboxName, seqNos).then(() => {
+				console.log('Messages deleted')
+				load()
+			})
 		}
 
 		load(1)
@@ -81,7 +99,15 @@ $$.control.registerControl('mailboxPage', {
 			if (action == 'prev' && pageNo > 1) {
 				load(pageNo - 1)
 			}
+			if (action == 'delete') {
+				deleteMessage()
+			}
+		}
 
+
+		this.onReturn = function() {
+			console.log('onReturn')
+			load()
 		}
 	}
 

@@ -91,6 +91,10 @@ $$.control.registerControl('mailboxPage', {
 		function deleteMessage() {
 			const items = elt.find('.check:checked')
 			console.log('deleteMessage', items.length)
+			if (items.length == 0) {
+				$$.ui.showAlert({title: 'Delete Message', content: 'Please select one or severall messages !'})
+				return
+			}
 			const seqNos = []
 			items.each(function() {
 				const data = $(this).closest('tr').data('item')
@@ -108,7 +112,10 @@ $$.control.registerControl('mailboxPage', {
 
 		this.onAction = function(action) {
 			console.log('onAction', action)
-			
+			if (action == 'reload') {
+				load(1)
+			}
+
 			if (action == 'delete') {
 				deleteMessage()
 			}

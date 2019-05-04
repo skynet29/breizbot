@@ -9,8 +9,6 @@ require('colors')
 const db = require('./db')
 
 
-//const MailParser = require("mailparser").MailParser
-
 function getFromName(from) {
   const names = from.trim().split(/\s+/)
   //console.log('names', names)

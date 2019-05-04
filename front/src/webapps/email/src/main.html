@@ -1,7 +1,7 @@
 <div class="toolbar">
 	<div class="info">
 		<p bn-show="accounts.length == 0">You have no email account</p>
-		<p bn-show="accounts.length > 0">Main Account: 
+		<p bn-show="accounts.length > 0">Account: 
 			<select bn-control="brainjs.selectmenu" bn-each="accounts" bn-val="currentAccount"
 				bn-event="selectmenuchange: onAccountChange">
 				<option bn-text="$i"></option>
@@ -14,7 +14,18 @@
 			class="w3-btn w3-blue" 
 			title="Create account"
 			bn-event="click: onCreateAccount"
-		><i class="fa fa-plus"></i></button>
+		>
+			<i class="fa fa-plus"></i>
+		</button>
+
+		<button 
+			class="w3-btn w3-blue" 
+			title="New email"
+			bn-event="click: onNewEmail"
+			bn-show="accounts.length > 0"
+		>
+			<i class="fa fa-envelope"></i>
+		</button>
 		
 	</div>
 	

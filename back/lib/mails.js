@@ -2,6 +2,7 @@ const Imap = require('imap')
 const inspect = require('util').inspect
 const  quotedPrintable = require('quoted-printable')
 const iconv  = require('iconv-lite')
+const nodemailer = require("nodemailer")
 
 require('colors')
 
@@ -461,11 +462,35 @@ function moveMessage(userName, name, mailboxName, targetName, seqNos) {
 
 }
 
+function sendMail(userName, accountName, data) {
+  console.log('sendMail', userName, accountName, data)
+  return db.getMailAccount(userName, accountName).then((account) => {
+
+    //console.log('account', account)
+    const transporter = nodemailer.createTransport({
+      host: account.smtpHost,
+      port: 587,
+      secure: false,
+      auth: {
+        user: account.user,
+        pass: account.pwd
+      }
+    })
+
+    data.from = account.email
+
+    return transporter.sendMail(data)
+
+  })
+
+}
+
 module.exports = {
   getMailboxes,
   openMailbox,
   openMessage,
   openAttachment,
   deleteMessage,
-  moveMessage
+  moveMessage,
+  sendMail
 }

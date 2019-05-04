@@ -80,6 +80,27 @@ $$.control.registerControl('messagePage', {
 
 		})
 
+		this.onAction = function(action) {
+			console.log('onAction', action)
+			if (action == 'reply') {
+
+				$pager.pushPage('writeMailPage', {
+					title: 'Reply message',
+					props: {
+						accountName: currentAccount,
+						data: {
+							to: item.from.name,
+							subject: 'Re: ' + item.subject,
+							text: '\n\n----- Original mail -----\n' + ctrl.model.text
+						}
+					},
+					buttons: [
+						{name: 'send', icon: 'fa fa-paper-plane'}
+					]
+				})
+			}
+		}
+
 
 	}
 

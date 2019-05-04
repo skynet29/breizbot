@@ -103,4 +103,17 @@ router.post('/moveMessage', function(req, res) {
 	})	
 })
 
+router.post('/sendMail', function(req, res) {
+	const userName = req.session.user
+	const {accountName, data} = req.body
+
+	mails.sendMail(userName, accountName, data).then(() => {
+		res.sendStatus(200)
+	})
+	.catch((err) => {
+		console.log('err', err)
+		res.sendStatus(400)
+	})	
+})
+
 module.exports = router

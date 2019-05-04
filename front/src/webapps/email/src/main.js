@@ -23,7 +23,7 @@ $$.control.registerControl('rootPage', {
 					console.log('onCreateAccount')
 					$pager.pushPage('accountPage', {
 						title: 'Create Mail Account',
-						buttons: [{name: 'create', label: 'Create'}]
+						buttons: [{name: 'create', icon: 'fa fa-check'}]
 					})
 				},
 				onAccountChange: function() {
@@ -50,6 +50,19 @@ $$.control.registerControl('rootPage', {
 							{name: 'move', icon: 'fa fa-file-export'},
 							{name: 'delete', icon: 'fa fa-trash'}
 						
+						]
+					})
+				},
+
+				onNewEmail: function(ev) {
+					console.log('onNewEmail')
+					$pager.pushPage('writeMailPage', {
+						title: 'New message',
+						props: {
+							accountName: ctrl.model.currentAccount
+						},
+						buttons: [
+							{name: 'send', icon: 'fa fa-paper-plane'}
 						]
 					})
 				}

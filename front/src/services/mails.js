@@ -21,22 +21,26 @@ $$.service.registerService('breizbot.mails', {
 				return http.post(`/api/mails/openMailbox`, {name, mailboxName, pageNo})
 			},
 
-			openMessage(name, mailboxName, seqNo, partID)	{
+			openMessage: function(name, mailboxName, seqNo, partID)	{
 				return http.post(`/api/mails/openMessage`, {name, mailboxName, seqNo, partID})
 			},
 
-			openAttachment(name, mailboxName, seqNo, partID)	{
+			openAttachment: function(name, mailboxName, seqNo, partID)	{
 				return http.post(`/api/mails/openAttachment`, {name, mailboxName, seqNo, partID})
 			},
 
-			deleteMessage(name, mailboxName, seqNos)	{
+			deleteMessage: function(name, mailboxName, seqNos)	{
 				return http.post(`/api/mails/deleteMessage`, {name, mailboxName, seqNos})
 			},	
 
-			moveMessage(name, mailboxName, targetName, seqNos)	{
+			moveMessage: function(name, mailboxName, targetName, seqNos)	{
 				return http.post(`/api/mails/moveMessage`, {name, mailboxName, targetName, seqNos})
-			}						
+			},						
 					
+
+			sendMail: function(accountName, data) {
+				return http.post(`/api/mails/sendMail`, {accountName, data})
+			}
 		}
 	},
 

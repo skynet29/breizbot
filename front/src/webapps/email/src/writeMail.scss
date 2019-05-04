@@ -1,0 +1,33 @@
+.writeMailPage {
+
+
+	form {
+		display: flex;
+		flex-direction: column;
+		padding: 5px;	
+		height: 100%;	
+	}
+
+	.header {
+		label {
+			min-width: 80px;
+			display: inline-block;
+		}
+
+		.brainjs-inputgroup {
+			margin-bottom: 5px;
+			display: flex;
+			flex-direction: row;
+
+			input {
+				flex: 1;
+			}
+		}
+	}
+
+	textarea {
+		flex: 1;
+		resize: none;
+		padding: 5px;
+	}
+}

@@ -44,7 +44,10 @@ $$.control.registerControl('mailboxPage', {
 							currentAccount,
 							mailboxName,
 							item							
-						}
+						},
+						buttons: [
+							{name: 'reply', icon: 'fa fa-reply'}
+						]
 
 					})
 				},

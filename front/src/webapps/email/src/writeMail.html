@@ -1,0 +1,15 @@
+<form bn-event="submit: onSend" bn-form="data">
+	<div class="header">
+		<div bn-control="brainjs.inputgroup">
+			<label>To:</label>
+			<input type="email" name="to" bn-prop="{autofocus: data.text == undefined}" required="">		
+		</div>
+
+		<div bn-control="brainjs.inputgroup">
+			<label>Subject:</label>
+			<input type="text" name="subject" required="">		
+		</div>	
+	</div>
+	<textarea name="text" bn-bind="content"></textarea>	
+	<input type="submit" hidden="" bn-bind="submit">
+</form>

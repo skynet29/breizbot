@@ -3,32 +3,13 @@ const inspect = require('util').inspect
 const  quotedPrintable = require('quoted-printable')
 const iconv  = require('iconv-lite')
 const nodemailer = require("nodemailer")
+const addrs = require("email-addresses")
 
 require('colors')
 
 
 const db = require('./db')
 
-
-function getFromName(from) {
-  const names = from.trim().split(/\s+/)
-  //console.log('names', names)
-  if (names.length > 1) {
-    names.pop()
-    const name = names.join(" ").replace(/"/g, "")
-    if (name != '') {
-      return name
-    }
-  }
-  return getFromEmail(from)
-}
-
-function getFromEmail(from) {
-  const emails = from.match(/[^@<\s]+@[^@\s]+/g)
-  if( emails) {
-    return emails[0].replace(/"/g, "")
-  }
-}
 
 function imapConnect(userName, name, readyCallback) {
   return db.getMailAccount(userName, name).then((account) => {
@@ -68,10 +49,12 @@ function decodeHeaders(buffer) {
   //console.log('decodeHeaders', buffer)
   const headers = Imap.parseHeader(buffer)
   //console.log('headers', headers)
+  const addr = addrs.parseOneAddress(headers.from[0])
+
   return {
     from: {
-      name: getFromName(headers.from[0]),
-      email: getFromEmail(headers.from[0])
+      name: addr.name || addr.address,
+      email: addr.address
     },
     subject: headers.subject[0],
     date: headers.date[0]

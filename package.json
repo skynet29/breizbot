@@ -15,6 +15,7 @@
     "connect-mongodb-session": "^2.1.1",
     "cookie": "^0.3.1",
     "ejs": "^2.6.1",
+    "email-addresses": "^3.0.3",
     "express": "^4.16.4",
     "express-fileupload": "^1.1.1-alpha.3",
     "express-session": "^1.15.6",

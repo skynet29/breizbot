@@ -8,6 +8,20 @@
   .accountPage .brainjs-inputgroup {
     margin-bottom: 5px; }
 
+.boxesPage {
+  padding: 10px;
+  display: flex;
+  flex-direction: column; }
+  .boxesPage .scrollPanelTree {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid black; }
+    .boxesPage .scrollPanelTree .tree {
+      height: 100%; }
+      .boxesPage .scrollPanelTree .tree ul {
+        height: 100%;
+        border: none; }
+
 .mailboxPage {
   display: flex;
   flex-direction: column;

@@ -31,7 +31,11 @@ $$.service.registerService('breizbot.mails', {
 
 			deleteMessage(name, mailboxName, seqNos)	{
 				return http.post(`/api/mails/deleteMessage`, {name, mailboxName, seqNos})
-			}			
+			},	
+
+			moveMessage(name, mailboxName, targetName, seqNos)	{
+				return http.post(`/api/mails/moveMessage`, {name, mailboxName, targetName, seqNos})
+			}						
 					
 		}
 	},
@@ -43,6 +47,7 @@ $$.service.registerService('breizbot.mails', {
 		openMailbox(name, mailboxName, pageNo):Promise;
 		openMessage(name, mailboxName, seqNo, partID):Promise;
 		openAttachment(name, mailboxName, seqNo, partID):Promise;
-		deleteMessage(name, mailboxName, seqNos):Promise
+		deleteMessage(name, mailboxName, seqNos):Promise;
+		moveMessage(name, mailboxName, targetName, seqNos):Promise
 		`
 });

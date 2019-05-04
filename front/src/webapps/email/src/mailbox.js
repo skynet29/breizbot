@@ -107,6 +107,36 @@ $$.control.registerControl('mailboxPage', {
 			})
 		}
 
+		function moveMessage() {
+			const items = elt.find('.check:checked')
+			console.log('deleteMessage', items.length)
+			if (items.length == 0) {
+				$$.ui.showAlert({title: 'Move Message', content: 'Please select one or severall messages !'})
+				return
+			}
+			const seqNos = []
+			items.each(function() {
+				const data = $(this).closest('tr').data('item')
+				seqNos.push(data.seqno)
+			})
+			console.log('seqNos', seqNos)
+			$pager.pushPage('boxesPage', {
+				title: 'Select target mailbox',
+				props: {
+					currentAccount,
+					mailboxName,
+					seqNos
+				},
+				buttons: [
+					{name: 'apply', icon: 'fa fa-check'}
+				]
+			})
+			// srvMail.deleteMessage(currentAccount, mailboxName, seqNos).then(() => {
+			// 	console.log('Messages deleted')
+			// 	load()
+			// })
+		}		
+
 		load(1)
 
 
@@ -119,11 +149,15 @@ $$.control.registerControl('mailboxPage', {
 			if (action == 'delete') {
 				deleteMessage()
 			}
+
+			if (action == 'move') {
+				moveMessage()
+			}			
 		}
 
 
-		this.onReturn = function() {
-			console.log('onReturn')
+		this.onReturn = function(data) {
+			console.log('onReturn', data)
 			load()
 		}
 	}

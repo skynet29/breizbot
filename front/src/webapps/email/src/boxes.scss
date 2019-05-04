@@ -1,0 +1,21 @@
+.boxesPage {
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+
+	.scrollPanelTree {
+		flex: 1;
+		overflow-y: auto;
+		border: 1px solid black;
+
+		.tree {
+			height: 100%;
+			ul {
+				height: 100%;
+				border: none;
+			}
+		}			
+	}
+
+
+}

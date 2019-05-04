@@ -90,5 +90,17 @@ router.post('/deleteMessage', function(req, res) {
 	})	
 })
 
+router.post('/moveMessage', function(req, res) {
+	const userName = req.session.user
+	const {name, mailboxName, seqNos, targetName} = req.body
+
+	mails.moveMessage(userName, name, mailboxName, targetName, seqNos).then(() => {
+		res.sendStatus(200)
+	})
+	.catch((err) => {
+		console.log('err', err)
+		res.sendStatus(400)
+	})	
+})
 
 module.exports = router

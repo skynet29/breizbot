@@ -405,10 +405,12 @@ function deleteMessageCb(mailboxName, seqNos) {
 
       imap.seq.addFlags(seqNos, '\\Deleted', function(err) {
         if (err) {
+          imap.end()
           reject(err)
         }
         else {
           imap.closeBox(true, function() {
+            imap.end()
             resolve()
           })
         }
@@ -428,10 +430,44 @@ function deleteMessage(userName, name, mailboxName, seqNos) {
 }
 
 
+function moveMessageCb(mailboxName, targetName, seqNos) {
+
+  return function(imap, resolve, reject) {
+
+     imap.openBox(mailboxName, false, function(err, mailbox) {  
+      if (err) {
+        console.log('err', err)
+        imap.end()
+        reject(err)
+        return
+      }
+
+      imap.seq.move(seqNos, targetName, function(err) {
+        imap.end()
+        if (err) {
+          reject(err)
+        }
+        resolve()
+      })     
+    })
+  }
+
+ 
+}
+
+function moveMessage(userName, name, mailboxName, targetName, seqNos) {
+
+  console.log('moveMessage', userName, name, mailboxName, targetName, seqNos)
+
+  return imapConnect(userName, name, moveMessageCb(mailboxName, targetName, seqNos))
+
+}
+
 module.exports = {
   getMailboxes,
   openMailbox,
   openMessage,
   openAttachment,
-  deleteMessage
+  deleteMessage,
+  moveMessage
 }

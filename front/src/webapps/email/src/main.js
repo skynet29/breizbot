@@ -47,6 +47,7 @@ $$.control.registerControl('rootPage', {
 						},
 						buttons: [
 							{name: 'reload', icon: 'fa fa-redo'},
+							{name: 'move', icon: 'fa fa-file-export'},
 							{name: 'delete', icon: 'fa fa-trash'}
 						
 						]

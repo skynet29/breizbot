@@ -89,7 +89,7 @@ $$.control.registerControl('messagePage', {
 					props: {
 						accountName: currentAccount,
 						data: {
-							to: item.from.name,
+							to: item.from.email,
 							subject: 'Re: ' + item.subject,
 							text: '\n\n----- Original mail -----\n' + ctrl.model.text
 						}

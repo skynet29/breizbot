@@ -26,14 +26,14 @@ function source(dest, srcs, options) {
 
 
 	if (typeof options.concat == 'string') {
-		stream = stream.pipe(sourcemaps.init())
+		//stream = stream.pipe(sourcemaps.init())
 		stream = stream.pipe(concat(options.concat))
-		stream = stream.pipe(sourcemaps.write())
+		//stream = stream.pipe(sourcemaps.write())
 	}
 
-	// if (options.isCode === true) {
-	// 	stream = stream.pipe(uglify())
-	// }
+	if (options.isCode === true) {
+		stream = stream.pipe(uglify())
+	}
 
 
 	if (options.dest != undefined) {

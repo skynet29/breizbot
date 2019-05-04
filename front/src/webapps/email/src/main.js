@@ -32,31 +32,27 @@ $$.control.registerControl('rootPage', {
 
 				onTreeActivate: function() {
 					console.log('onTreeActivate')
-					const mailboxName = getMailboxName()
+					const tree = $(this).iface()
+
+					const node =  tree.getActiveNode()
+
+					const mailboxName = tree.getNodePath(node)					
 					console.log('mailboxName', mailboxName)
 					const {currentAccount} = ctrl.model
 					$pager.pushPage('mailboxPage', {
-						title: mailboxName,
+						title: node.title,
 						props: {
 							currentAccount,
 							mailboxName
 						},
 						buttons: [
-							{name: 'delete', icon: 'fa fa-trash'},
-							{name: 'prev', icon: 'fa fa-angle-left'},
-							{name: 'next', icon: 'fa fa-angle-right'}
+							{name: 'delete', icon: 'fa fa-trash'}
 						]
 					})
 				}
 			}
 		})
 
-		function getMailboxName() {
-			const {tree} = ctrl.scope
-
-			const node =  tree.getActiveNode()
-			return tree.getNodePath(node)
-		}
 
 		function loadAccount() {
 			console.log('loadAccount')

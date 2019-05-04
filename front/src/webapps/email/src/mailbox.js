@@ -48,9 +48,26 @@ $$.control.registerControl('mailboxPage', {
 
 					})
 				},
+
 				onMainCheckBoxClick: function(ev) {
 					elt.find('.check').prop('checked', $(this).prop('checked'))
-				}
+				},
+
+				onPrevPage: function(ev) {
+					const {nbPage, pageNo} = ctrl.model
+
+					if (pageNo > 1) {
+						load(pageNo - 1)
+					}					
+				},
+
+				onNextPage: function(ev) {
+					const {nbPage, pageNo} = ctrl.model
+
+					if (pageNo < nbPage) {
+						load(pageNo + 1)
+					}				
+				}				
 			}
 		})
 
@@ -91,14 +108,7 @@ $$.control.registerControl('mailboxPage', {
 
 		this.onAction = function(action) {
 			console.log('onAction', action)
-			const {nbPage, pageNo} = ctrl.model
-
-			if (action == 'next' && pageNo < nbPage) {
-				load(pageNo + 1)
-			}
-			if (action == 'prev' && pageNo > 1) {
-				load(pageNo - 1)
-			}
+			
 			if (action == 'delete') {
 				deleteMessage()
 			}

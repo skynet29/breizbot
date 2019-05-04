@@ -1,6 +1,14 @@
 <div class="toolbar">
 	<div>
-		<span bn-show="nbMsg > 0">Page: <span bn-text="`${pageNo} / ${nbPage}`"></span></span>
+		<div bn-show="nbMsg > 0">
+			<span >Page: <span bn-text="`${pageNo} / ${nbPage}`"></span></span>
+			<button class="w3-button" title="previous page" bn-event="click: onPrevPage">
+				<i class="fa fa-angle-left"></i>
+			</button>			
+			<button class="w3-button" title="next page" bn-event="click: onNextPage">
+				<i class="fa fa-angle-right"></i>
+			</button>			
+		</div>
 	</div>
 	<div class="nbMsg"><strong bn-text="nbMsg"></strong>&nbsp;Messages</div>		
 </div>

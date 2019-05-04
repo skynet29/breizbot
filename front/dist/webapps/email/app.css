@@ -16,7 +16,8 @@
   .mailboxPage .toolbar {
     display: flex;
     flex-direction: row;
-    justify-content: space-between; }
+    justify-content: space-between;
+    align-items: center; }
   .mailboxPage .scrollPanelTable {
     flex: 1;
     overflow-y: auto;

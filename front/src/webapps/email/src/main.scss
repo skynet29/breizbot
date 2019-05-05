@@ -31,6 +31,16 @@
 				height: 100%;
 				border: none;
 			}
+
+			ul:focus {
+				outline: none;
+			}
+
+
+
+			span.fa {
+				color: #607d8b;
+			}
 		}			
 	}
 

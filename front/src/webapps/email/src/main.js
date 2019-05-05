@@ -89,6 +89,7 @@ $$.control.registerControl('rootPage', {
 			const {currentAccount} = ctrl.model
 			srvMail.getMailboxes(currentAccount).then((mailboxes) => {
 				console.log('mailboxes', mailboxes)
+
 				ctrl.setData({
 					mailboxes
 				})

@@ -43,17 +43,36 @@ function imapConnect(userName, name, readyCallback) {
   })  
 }
 
+function decodeString(name) {
+  name = name.trim()
+  //console.log('decodeString', name)
+
+  if (name.startsWith('=?utf-8?B?') || name.startsWith('=?UTF-8?B?')) {
+    const t = name.split('?')
+    //console.log('t', t)
+    const buff = new Buffer(t[3], 'base64')
+    name =  buff.toString('utf8')
+    //console.log('decoded string', name)
+  }  
+
+  return name
+}
 
 
 function decodeHeaders(buffer) {
+  console.log('decodeHeaders', buffer)
   const headers = Imap.parseHeader(buffer)
+  console.log('headers', headers)
   let addr = {
     name: 'unknown',
     address: ''
   }
 
-  if (headers.from != undefined) {
+  if (headers.from != undefined && headers.from[0] != undefined) {
     addr = addrs.parseOneAddress(headers.from[0])
+    if (addr == null) {
+      addr = {name: 'decoded error', address: ''}
+    }
   }
 
   return {
@@ -127,13 +146,8 @@ function getAttachments(parts) {
 
     if (name != undefined) {
 
-      if (name.startsWith('=?utf-8?B?')) {
-        const t = name.split('?')
-        //console.log('t', t)
-        const buff = new Buffer(t[3], 'base64')
-        //return 'base64 encoding not supported'
-        name = buff.toString('utf8')
-      }
+      name = decodeString(name)
+
       ret.push({name, type, subtype, size, partID, encoding})
     }
   })
@@ -203,10 +217,16 @@ function getMailboxesCb(imap, resolve, reject) {
     const ret = []
     for(let k in mailbox) {
       const {children} = mailbox[k]
-      const data = {title: k}
+      const data = {title: k, icon: 'fa fa-folder'}
+      if (k.toUpperCase() == 'INBOX') {
+        data.icon = 'fa fa-inbox'
+      }
+      else if (k.toUpperCase() == 'TRASH') {
+        data.icon = 'fa fa-trash'
+      }      
       if (children != null) {
         data.children = Object.keys(children).map((i) => {
-          return {title: i}
+          return {title: i, icon: 'fa fa-folder'}
         })
         data.folder = true
       }

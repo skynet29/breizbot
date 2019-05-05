@@ -65,6 +65,10 @@
       .rootPage .scrollPanelTree .tree ul {
         height: 100%;
         border: none; }
+      .rootPage .scrollPanelTree .tree ul:focus {
+        outline: none; }
+      .rootPage .scrollPanelTree .tree span.fa {
+        color: #607d8b; }
 
 .messagePage {
   display: flex;

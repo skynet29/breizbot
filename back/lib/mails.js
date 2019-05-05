@@ -46,10 +46,15 @@ function imapConnect(userName, name, readyCallback) {
 
 
 function decodeHeaders(buffer) {
-  //console.log('decodeHeaders', buffer)
   const headers = Imap.parseHeader(buffer)
-  //console.log('headers', headers)
-  const addr = addrs.parseOneAddress(headers.from[0])
+  let addr = {
+    name: 'unknown',
+    address: ''
+  }
+
+  if (headers.from != undefined) {
+    addr = addrs.parseOneAddress(headers.from[0])
+  }
 
   return {
     from: {
@@ -207,6 +212,16 @@ function getMailboxesCb(imap, resolve, reject) {
       }
       ret.push(data)
     }
+
+    ret.sort((a, b) => {
+      if (a.title.toUpperCase() == 'INBOX') {
+        return -1
+      }
+      if (b.title.toUpperCase() == 'INBOX') {
+        return 1
+      }
+      return a.title > b.title
+    })
 
     //console.log('ret', ret)
 

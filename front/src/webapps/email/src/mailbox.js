@@ -20,6 +20,7 @@ $$.control.registerControl('mailboxPage', {
 				nbMsg: 0,
 				pageNo: 0,
 				nbPage: 0,
+				check: false,
 
 				getDate: function(date) {
 					//console.log('getDate', date)
@@ -83,6 +84,7 @@ $$.control.registerControl('mailboxPage', {
 				console.log('data', data)
 				const {messages, nbMsg} = data
 				ctrl.setData({
+					check: false,
 					pageNo,
 					nbPage: Math.ceil(nbMsg / 20),
 					nbMsg,

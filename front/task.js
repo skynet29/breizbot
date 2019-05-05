@@ -7,6 +7,7 @@ var injectHTML = require('gulp-inject-stringified-html')
 var sass = require('gulp-sass')
 var uglify = require('gulp-uglify-es').default
 var rename = require("gulp-rename")
+const eslint = require('gulp-eslint')
 
 sass.compiler = require('node-sass')
 
@@ -18,6 +19,15 @@ function source(dest, srcs, options) {
 
 	if (options.isCode === true) {
 		stream = stream.pipe(injectHTML())
+		stream = stream.pipe(eslint({
+			useEslintrc: false,		
+			parserOptions: {
+				ecmaVersion: 6				
+			}
+
+		}))
+		stream = stream.pipe(eslint.format())
+
 	}
 
 	if (options.isSass === true) {

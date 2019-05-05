@@ -21,6 +21,8 @@ $$.control.registerControl('mailboxPage', {
 				pageNo: 0,
 				nbPage: 0,
 				check: false,
+				loading: false,
+
 
 				getDate: function(date) {
 					//console.log('getDate', date)
@@ -80,10 +82,13 @@ $$.control.registerControl('mailboxPage', {
 				pageNo = ctrl.model.pageNo
 			}
 
+			ctrl.setData({loading: true})
+
 			srvMail.openMailbox(currentAccount, mailboxName, pageNo).then((data) => {
 				console.log('data', data)
 				const {messages, nbMsg} = data
 				ctrl.setData({
+					loading: false,
 					check: false,
 					pageNo,
 					nbPage: Math.ceil(nbMsg / 20),

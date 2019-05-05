@@ -17,6 +17,7 @@ $$.control.registerControl('messagePage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				loading: true,
 				text: '',
 				item,
 				attachments: [],
@@ -74,9 +75,9 @@ $$.control.registerControl('messagePage', {
 		srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID).then((message) => {
 			console.log('message', message)
 
-			//const {text, attachments} = message
+			const {text, attachments} = message
 
-			ctrl.setData(message)
+			ctrl.setData({text, attachments, loading:false})
 
 		})
 

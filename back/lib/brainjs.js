@@ -27,4 +27,8 @@ module.exports = function(libName, scripts, styles) {
 		scripts.push('/brainjs/brainjs-flightpanel.js')
 	}
 
+	if (libName.includes('pdf')) {
+		scripts.push('/brainjs/brainjs-pdf.js')
+	}
+
 }

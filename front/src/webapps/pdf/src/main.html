@@ -1,0 +1,25 @@
+<div class="toolbar">
+	<button class="w3-button w3-blue" bn-event="click: onOpenFile"><i class="fa fa-folder-open"></i></button>
+	<div bn-text="title"></div>
+	<div class="pages" bn-show="title != ''">
+		<div>
+			<button class="w3-button" title="previous page" bn-event="click: onPrevPage">
+				<i class="fa fa-angle-left"></i>
+			</button>			
+			<button class="w3-button" title="next page" bn-event="click: onNextPage">
+				<i class="fa fa-angle-right"></i>
+			</button>			
+		</div>
+		<div>
+			Pages: <span bn-text="currentPage"></span> / <span bn-text="numPages"></span>		
+		</div>
+	</div>
+</div>
+	
+<div class="content">
+	<div bn-control="brainjs.pdf" 
+		bn-data="{worker: '/brainjs/pdf/worker.js'}"
+		bn-iface="pdf"
+		 
+	></div>		
+</div>

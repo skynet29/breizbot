@@ -180,7 +180,7 @@ $$.control.registerControl('breizbot.files', {
 							return
 						}
 						$$.util.readFileAsDataURL(file, function(dataURL) {
-							console.log('dataURL', dataURL)
+							//console.log('dataURL', dataURL)
 							const blob = $$.util.dataURLtoBlob(dataURL)
 							srvFiles.uploadFile(blob, file.name, ctrl.model.rootDir).then(function() {
 								loadData()

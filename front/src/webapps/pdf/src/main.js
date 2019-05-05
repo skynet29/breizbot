@@ -17,7 +17,8 @@ $$.control.registerControl('rootPage', {
 			data: {
 				numPages: 0,
 				title: '',
-				currentPage: 1
+				currentPage: 1,
+				zoomLevel: 1
 			},
 			events: {
 				onOpenFile: function(ev) {
@@ -29,15 +30,32 @@ $$.control.registerControl('rootPage', {
 
 				onNextPage: function(ev) {
 					console.log('onNextPage')
-					ctrl.scope.pdf.nextPage()
+					let {currentPage, numPages} = ctrl.model
+					if (currentPage < numPages) {
+						currentPage++
+						render().then(() => {
+							ctrl.setData({currentPage})
+						})
+					}
 				},
 
 				onPrevPage: function(ev) {
 					console.log('onPrevPage')
-					ctrl.scope.pdf.prevPage()
+					let {currentPage, numPages} = ctrl.model
+					if (currentPage > 1) {
+						currentPage--
+						render(currentPage).then(() => {
+							ctrl.setData({currentPage})
+						})
+					}
 				}
 			}
 		})
+
+		function render() {
+			const {zoomLevel, currentPage} = ctrl.model
+			return ctrl.scope.pdf.renderPage(currentPage, zoomLevel)
+		}
 
 		this.onReturn = function(data) {
 			if (data == undefined) {
@@ -49,9 +67,12 @@ $$.control.registerControl('rootPage', {
 
 			pdf.openFile(url).then(() => {
 				console.log('file loaded')
-				ctrl.setData({
-					title: data.fileName,
-					 numPages: pdf.getNumPages()
+				render().then(() => {
+					ctrl.setData({
+						title: data.fileName,
+						 numPages: pdf.getNumPages()
+					})
+
 				})
 			})
 		}

@@ -64,7 +64,7 @@
 					</div>
 					<div bn-if="!f.folder && (!f.isImage || !showThumbnail)" bn-attr="{title: getSize(f.size)}" class="file">
 						<div>
-							<i class="fa fa-4x fa-file w3-text-blue-grey"></i>
+							<i bn-attr="{class: `fa fa-4x w3-text-blue-grey ${getIconClass(f.name)}`}"></i>
 						</div>
 						
 						<span bn-text="f.name"></span>
@@ -72,7 +72,7 @@
 
 					<div bn-if="!f.folder && f.isImage && showThumbnail" bn-attr="{title: getSize(f.size)}" class="file">
 						<div>
-							<img bn-attr="{src: getThumbnailUrl(f.name, srvFiles, thumbnailSize)}">
+							<img bn-attr="{src: f.url}">
 						</div>
 						
 						<span bn-text="f.name"></span>

@@ -38,7 +38,6 @@ $$.control.registerControl('breizbot.files', {
 				selectedFiles: [],
 				operation: 'none',
 				hasSelection: false,
-				srvFiles,
 				getSize: function(size) {
 					return 'Size : ' + Math.floor(size/1024) + ' Ko'
 				},
@@ -46,8 +45,15 @@ $$.control.registerControl('breizbot.files', {
 				hasSelectedFiles: function() {
 					return selectedFiles.length > 0
 				},
-				getThumbnailUrl: function(fileName, srvFiles, thumbnailSize) {
-					return srvFiles.fileThumbnailUrl(rootDir + fileName, thumbnailSize)
+
+				getIconClass: function(name) {
+					if (name.endsWith('.pdf')) {
+						return 'fa-file-pdf'
+					}
+					if (name.endsWith('.doc')) {
+						return 'fa-file-word'
+					}
+					return 'fa-file'
 				}
 			},
 			events: {
@@ -233,7 +239,13 @@ $$.control.registerControl('breizbot.files', {
 				rootDir = ctrl.model.rootDir
 			}
 			srvFiles.list(rootDir, {filterExtension, imageOnly}).then(function(files) {
-				//console.log('files', files)
+				console.log('files', files)
+				files.forEach((f) => {
+					if (f.isImage) {
+						f.url = srvFiles.fileThumbnailUrl(rootDir + f.name, thumbnailSize)
+					}
+				})
+
 				if (rootDir != '/') {
 					files.unshift({name: '..', folder: true})
 				}

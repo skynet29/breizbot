@@ -1,8 +1,8 @@
-$$.control.registerControl('imagePage', {
+$$.control.registerControl('pdfPage', {
 
 	deps: ['breizbot.files'],
 
-	template: {gulp_inject: './image.html'},
+	template: {gulp_inject: './pdf.html'},
 
 	props: {
 		$pager: null,
@@ -40,9 +40,6 @@ $$.control.registerControl('imagePage', {
 		this.onAction = function(action) {
 			if (action == 'del') {
 				remove()
-			}
-			if (action == 'fit') {
-				ctrl.scope.image.fitImage()
 			}
 		}
 

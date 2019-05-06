@@ -3,7 +3,6 @@ $$.control.registerControl('breizbot.pdf', {
 	template: {gulp_inject: './main.html'},
 
 	props: {
-		showToolbar: false,
 		url: ''
 	},
 
@@ -11,23 +10,15 @@ $$.control.registerControl('breizbot.pdf', {
 
 	init: function(elt, files) {
 
-		const {showToolbar} = this.props
-
-		let zoomLevel = 1
+		const {url} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				numPages: 0,
 				title: '',
-				currentPage: 1,
-				showToolbar
+				currentPage: 1
 			},
 			events: {
-				onOpenFile: function(ev) {
-					//console.log('onOpenFile')
-					elt.trigger('pdfopenfile')
-				},
-
 				onNextPage: function(ev) {
 					//console.log('onNextPage')
 
@@ -44,20 +35,10 @@ $$.control.registerControl('breizbot.pdf', {
 					})
 				},
 
-				onZoomIn: function(ev) {
-					//console.log('onZoomIn')
-					zoomLevel += 0.5
-					ctrl.scope.pdf.setZoomLevel(zoomLevel)
-
-				},
-
-				onZoomOut: function(ev) {
-					//console.log('onZoomOut')
-					if (zoomLevel > 1) {
-						zoomLevel -= 0.5
-						ctrl.scope.pdf.setZoomLevel(zoomLevel)						
-					}
+				onFit: function(ev) {
+					ctrl.scope.pdf.fit()
 				}
+
 			}
 		})
 
@@ -72,7 +53,9 @@ $$.control.registerControl('breizbot.pdf', {
 			})			
 		}
 
-		this.openFile = openFile
+		if (url != '') {
+			openFile(url)
+		}
 
 		this.setData = function(data) {
 			console.log('setData', data)
@@ -84,7 +67,7 @@ $$.control.registerControl('breizbot.pdf', {
 	},
 
 	$iface: `
-		openFile(url, title)
+		setData({url})
 	`
 
 

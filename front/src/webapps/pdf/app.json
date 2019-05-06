@@ -1,7 +1,0 @@
-{	
-	"iconCls": "fa fa-file-pdf fa-2x",
-	"colorCls": "w3-red",
-	"title": "PDF",
-	"styles": ["app.css"],
-	"brainjs": ["pdf"]
-}

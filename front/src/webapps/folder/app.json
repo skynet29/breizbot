@@ -2,5 +2,5 @@
 	"iconCls": "fa fa-file fa-2x",
 	"colorCls": "w3-yellow",
 	"title": "Folder",
-	"brainjs": ["map"]
+	"brainjs": ["map", "pdf"]
 }

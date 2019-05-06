@@ -18,17 +18,26 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onFileClick: function(ev, data) {
 					console.log('onFileClick', data)
-					const {fileName, rootDir, isImage} = data
+					const {fileName, url, isImage, fullName} = data
 					if (isImage) {						
 						$pager.pushPage('imagePage', {
 							title: fileName,
-							props: {fileName: rootDir + fileName},
+							props: {url, fullName},
 							buttons: [
 								{name: 'del', icon: 'fa fa-trash'},
 								{name: 'fit', icon: 'fa fa-expand'}
 							]
 						})
 					}
+					if (fileName.endsWith('.pdf')) {
+						$pager.pushPage('pdfPage', {
+							title: fileName,
+							props: {url, fullName},
+							buttons: [
+								{name: 'del', icon: 'fa fa-trash'}
+							]
+						})						
+					}					
 
 				}
 			}

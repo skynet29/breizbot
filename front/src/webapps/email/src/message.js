@@ -22,7 +22,7 @@ $$.control.registerControl('messagePage', {
 				item,
 				attachments: [],
 				canOpen: function(info) {
-					return info.type == 'image' && info.encoding.toUpperCase() == 'BASE64'
+					return (info.type == 'image' || info.subtype == 'pdf') && info.encoding.toUpperCase() == 'BASE64'
 				},
 				getSize: function(size) {
 					//console.log('getSize', size)
@@ -41,20 +41,32 @@ $$.control.registerControl('messagePage', {
 					ev.preventDefault()
 					const info = $(this).data('item')
 					console.log('onItemClick', info)
-					$pager.pushPage('imagePage', {
-						title: info.name,
-						props: {
-							fileName: info.name,
-							info,
-							currentAccount,
-							mailboxName,
-							seqno: item.seqno
-						},
-						buttons: [
-							{name: 'save', icon: 'fa fa-save'},
-							{name: 'fit', icon: 'fa fa-expand'}
-						]
-					})
+					const props = {
+						info,
+						currentAccount,
+						mailboxName,
+						seqno: item.seqno
+					}
+					if (info.type == 'image') {
+						$pager.pushPage('imagePage', {
+							title: info.name,
+							props,
+							buttons: [
+								{name: 'save', icon: 'fa fa-save'},
+								{name: 'fit', icon: 'fa fa-expand'}
+							]
+						})						
+					}
+					if (info.subtype == 'pdf') {
+						$pager.pushPage('pdfPage', {
+							title: info.name,
+							props,
+							buttons: [
+								{name: 'save', icon: 'fa fa-save'}
+							]
+						})						
+					}
+
 				},
 				onAttachClick: function(ev) {
 					console.log('onAttachClick')

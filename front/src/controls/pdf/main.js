@@ -3,7 +3,8 @@ $$.control.registerControl('breizbot.pdf', {
 	template: {gulp_inject: './main.html'},
 
 	props: {
-		showToolbar: false
+		showToolbar: false,
+		url: ''
 	},
 
 	deps: ['breizbot.files'],	
@@ -60,7 +61,7 @@ $$.control.registerControl('breizbot.pdf', {
 			}
 		})
 
-		this.openFile = function(url, title) {
+		function openFile(url, title) {
 
 			ctrl.scope.pdf.openFile(url).then((numPages) => {
 				console.log('file loaded')
@@ -71,7 +72,20 @@ $$.control.registerControl('breizbot.pdf', {
 			})			
 		}
 
-	}
+		this.openFile = openFile
+
+		this.setData = function(data) {
+			console.log('setData', data)
+			if (data.url != undefined) {
+				openFile(data.url)
+			}
+		}
+
+	},
+
+	$iface: `
+		openFile(url, title)
+	`
 
 
 });

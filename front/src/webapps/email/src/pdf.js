@@ -1,6 +1,6 @@
-$$.control.registerControl('imagePage', {
+$$.control.registerControl('pdfPage', {
 
-	template: {gulp_inject: './image.html'},
+	template: {gulp_inject: './pdf.html'},
 
 	deps: ['breizbot.mails', 'breizbot.files'],
 
@@ -29,18 +29,18 @@ $$.control.registerControl('imagePage', {
 		srvMail.openAttachment(currentAccount, mailboxName, seqno, partID).then((message) => {
 			//console.log('message', message)
 			const url = `data:${type}/${subtype};base64,` + message.data
-			ctrl.setData({url, wait:false})
+			ctrl.setData({wait:false, url})
 
 		})
 
 		function save() {
 			const {url} = ctrl.model
 			if (url == '') {
-				$$.ui.showAlert({title: 'Error', content: 'Image not loaded, please wait'})
+				$$.ui.showAlert({title: 'Error', content: 'File not loaded, please wait'})
 				return
 			}
 			const blob = $$.util.dataURLtoBlob(url)
-			files.uploadFile(blob, info.name, '/images/email').then(function(resp) {
+			files.uploadFile(blob, info.name, '/documents/email').then(function(resp) {
 				console.log('resp', resp)
 				$pager.popPage()
 			})	
@@ -53,12 +53,9 @@ $$.control.registerControl('imagePage', {
 		}
 
 		this.onAction = function(action) {
-			//console.log('onAction', action)
+			console.log('onAction', action)
 			if (action == 'save') {
 				save()
-			}
-			if (action == 'fit') {
-				ctrl.scope.image.fitImage()
 			}
 		}
 	}

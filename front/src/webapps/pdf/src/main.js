@@ -13,51 +13,61 @@ $$.control.registerControl('rootPage', {
 
 		const {$pager} = this.props
 
+		let zoomLevel = 1
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				numPages: 0,
 				title: '',
-				currentPage: 1,
-				zoomLevel: 1
+				currentPage: 1
 			},
 			events: {
 				onOpenFile: function(ev) {
 					console.log('onOpenFile')
-					$pager.pushPage('openFilePage', {
-						title: 'Open File'
+					$pager.pushPage('breizbot.files', {
+						title: 'Open File',
+						props: {
+							filterExtension: '.pdf'
+						}
 					})
 				},
 
 				onNextPage: function(ev) {
 					console.log('onNextPage')
-					let {currentPage, numPages} = ctrl.model
-					if (currentPage < numPages) {
-						currentPage++
-						render().then(() => {
-							ctrl.setData({currentPage})
-						})
-					}
+
+					ctrl.scope.pdf.nextPage().then((currentPage) => {
+						ctrl.setData({currentPage})
+					})
+					
 				},
 
 				onPrevPage: function(ev) {
 					console.log('onPrevPage')
-					let {currentPage, numPages} = ctrl.model
-					if (currentPage > 1) {
-						currentPage--
-						render(currentPage).then(() => {
-							ctrl.setData({currentPage})
-						})
+					ctrl.scope.pdf.prevPage().then((currentPage) => {
+						ctrl.setData({currentPage})
+					})
+				},
+
+				onZoomIn: function(ev) {
+					console.log('onZoomIn')
+					zoomLevel += 0.5
+					ctrl.scope.pdf.setZoomLevel(zoomLevel)
+
+				},
+
+				onZoomOut: function(ev) {
+					console.log('onZoomOut')
+					if (zoomLevel > 1) {
+						zoomLevel -= 0.5
+						ctrl.scope.pdf.setZoomLevel(zoomLevel)						
 					}
 				}
 			}
 		})
 
-		function render() {
-			const {zoomLevel, currentPage} = ctrl.model
-			return ctrl.scope.pdf.renderPage(currentPage, zoomLevel)
-		}
 
 		this.onReturn = function(data) {
+			console.log('onReturn', data)
 			if (data == undefined) {
 				return
 			}
@@ -65,14 +75,11 @@ $$.control.registerControl('rootPage', {
 			const url = files.fileUrl(fileName)
 			const {pdf} = ctrl.scope
 
-			pdf.openFile(url).then(() => {
+			pdf.openFile(url).then((numPages) => {
 				console.log('file loaded')
-				render().then(() => {
-					ctrl.setData({
-						title: data.fileName,
-						 numPages: pdf.getNumPages()
-					})
-
+				ctrl.setData({
+					title: data.fileName,
+					numPages
 				})
 			})
 		}

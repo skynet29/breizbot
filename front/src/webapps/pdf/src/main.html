@@ -3,9 +3,18 @@
 	<div bn-text="title"></div>
 	<div class="pages" bn-show="title != ''">
 		<div>
+			<button class="w3-button" title="zoomOut" bn-event="click: onZoomOut">
+				<i class="fa fa-search-minus"></i>
+			</button>	
+
+			<button class="w3-button" title="zoomIn" bn-event="click: onZoomIn">
+				<i class="fa fa-search-plus"></i>
+			</button>	
+
 			<button class="w3-button" title="previous page" bn-event="click: onPrevPage">
 				<i class="fa fa-angle-left"></i>
-			</button>			
+			</button>	
+
 			<button class="w3-button" title="next page" bn-event="click: onNextPage">
 				<i class="fa fa-angle-right"></i>
 			</button>			

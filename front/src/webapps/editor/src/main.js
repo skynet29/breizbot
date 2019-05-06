@@ -38,7 +38,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onOpenFile: function(ev) {
 					console.log('onOpenFile')
-					$pager.pushPage('openFile', {
+					$pager.pushPage('breizbot.files', {
 						title: 'Open File',
 						props: {
 							filterExtension: '.doc',
@@ -49,7 +49,7 @@ $$.control.registerControl('rootPage', {
 				onInsertImage: function(ev) {
 					console.log('onInsertImage')
 
-					$pager.pushPage('openFile', {
+					$pager.pushPage('breizbot.files', {
 						title: 'Insert Image',
 						props: {
 							imageOnly: true,

@@ -1,7 +1,9 @@
 $$.control.registerControl('breizbot.files', {
 	deps: ['breizbot.files'], 
 	props: {
-		showToolbar: true,
+		$pager: null,
+		cmd: '',
+		showToolbar: false,
 		imageOnly: false,
 		filterExtension: undefined,
 		showThumbnail: false,
@@ -14,13 +16,15 @@ $$.control.registerControl('breizbot.files', {
 	init: function(elt, srvFiles) {
 
 		const {
+			$pager,
+			cmd,
 			showToolbar,
-			 maxUploadSize,
-			 filterExtension,
-			 imageOnly,
-			 thumbnailSize,
-			 showThumbnail
-			} = this.props
+			maxUploadSize,
+			filterExtension,
+			imageOnly,
+			thumbnailSize,
+			showThumbnail
+		} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			
@@ -50,11 +54,19 @@ $$.control.registerControl('breizbot.files', {
 				onFileClick: function(ev) {
 					const info = $(this).closest('.thumbnail').data('info')
 					//console.log('onFileClick', info)
-					elt.trigger('fileclick', {
+					const data = {
 						fileName: info.name, 
 						rootDir: ctrl.model.rootDir,
-						isImage: info.isImage
-					})
+						isImage: info.isImage,
+						cmd
+					}
+
+					if ($pager != null) {
+						$pager.popPage(data)
+					}
+					else {
+						elt.trigger('fileclick', data)
+					}
 				},
 				onCheckClick: function(ev) {
 					console.log('onCheckClick')

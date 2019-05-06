@@ -42,7 +42,7 @@ $$.control.registerControl('rootPage', {
 					// })
 					$pager.pushPage('friendsPage', {
 						title: 'Select a friend',
-						buttons: [{name: 'call', label: 'Call'}]
+						buttons: [{name: 'call', icon: 'fa fa-phone fa-flip-vertical'}]
 					})
 
 				},
@@ -65,6 +65,10 @@ $$.control.registerControl('rootPage', {
 
 		this.onReturn = function(userName) {
 			//console.log('onReturn', userName)
+			if (userName == undefined) {
+				return
+			}
+			
 			rtc.call(userName)
 			.then(() => {
 				ctrl.setData({status: 'calling', distant: userName})

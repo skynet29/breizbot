@@ -67,6 +67,10 @@
         border: none; }
       .rootPage .scrollPanelTree .tree ul:focus {
         outline: none; }
+      .rootPage .scrollPanelTree .tree .fancytree-node {
+        display: flex;
+        align-items: center;
+        font-size: 1.3em; }
       .rootPage .scrollPanelTree .tree span.fa {
         color: #607d8b; }
 

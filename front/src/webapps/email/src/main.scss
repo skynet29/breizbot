@@ -36,7 +36,11 @@
 				outline: none;
 			}
 
-
+			.fancytree-node {
+				display: flex;
+				align-items: center;
+				font-size: 1.3em;
+			}
 
 			span.fa {
 				color: #607d8b;

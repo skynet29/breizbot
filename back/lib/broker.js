@@ -45,6 +45,9 @@ class Broker extends EventEmitter {
     client.on('text', (text) => {
 
       const msg = JSON.parse(text)
+      if (msg.type == 'ping') {
+        sendMsg(client, {type: 'pong'})
+      }
       if (msg.type == 'notif') {
         this.broadcastToSubscribers(msg)
       }

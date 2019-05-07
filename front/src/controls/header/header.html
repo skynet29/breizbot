@@ -3,6 +3,8 @@
 		<a bn-show="showHome" class="w3-button" href="/" title="Go Home">
 			<i class="fa fa-home fa-lg"></i>
 		</a>		
+		<button class="w3-button" title="FullScreen" bn-event="click: onFullScreen" bn-show="!fullScreen">
+			<i class="fa fa-expand"></i></button>
 		<div bn-show="hasIncomingCall" 
 			bn-control="brainjs.contextmenu"
 			bn-event="contextmenuchange: onCallResponse"

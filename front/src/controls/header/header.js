@@ -28,7 +28,8 @@ $$.control.registerControl('breizbot.header', {
 				title: this.props.title,
 				nbNotif: 0,
 				hasIncomingCall: false,
-				caller: ''
+				caller: '',
+				fullScreen: false
 
 			},
 			events: {
@@ -79,8 +80,28 @@ $$.control.registerControl('breizbot.header', {
 				onDropDown: function() {
 					console.log('onDropDown')
 					ctrl.scope.userMenu.toggle('w3-show')
+				},
+				onFullScreen: function(ev) {
+					console.log('onFullScreen')
+					const elem = document.documentElement
+					const requestFullscreen = elem.requestFullscreen ||
+						elem.webkitRequestFullscreen
+
+					if (requestFullscreen) {
+						requestFullscreen.call(elem)						
+					}
 				}
 			}
+		})
+
+		document.addEventListener("webkitfullscreenchange", function(ev) {
+		  console.log('fullscreenchange', ev)
+		  ctrl.setData({fullScreen: !ctrl.model.fullScreen})
+		})
+
+		document.addEventListener("fullscreenchange", function(ev) {
+		  console.log('fullscreenchange', ev)
+		  ctrl.setData({fullScreen: !ctrl.model.fullScreen})
 		})
 
 		function updateNotifs(nbNotif) {

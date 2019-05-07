@@ -21,6 +21,14 @@
       .boxesPage .scrollPanelTree .tree ul {
         height: 100%;
         border: none; }
+      .boxesPage .scrollPanelTree .tree ul:focus {
+        outline: none; }
+      .boxesPage .scrollPanelTree .tree .fancytree-node {
+        display: flex;
+        align-items: center;
+        font-size: 1.3em; }
+      .boxesPage .scrollPanelTree .tree span.fa {
+        color: #607d8b; }
 
 .mailboxPage {
   display: flex;

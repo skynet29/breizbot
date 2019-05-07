@@ -16,22 +16,24 @@ $$.control.registerControl('breizbot.pdf', {
 			data: {
 				numPages: 0,
 				title: '',
-				currentPage: 1
+				currentPage: 1,
+				wait: false
 			},
 			events: {
 				onNextPage: function(ev) {
 					//console.log('onNextPage')
-
+					ctrl.setData({wait: true})
 					ctrl.scope.pdf.nextPage().then((currentPage) => {
-						ctrl.setData({currentPage})
+						ctrl.setData({currentPage, wait: false})
 					})
 					
 				},
 
 				onPrevPage: function(ev) {
 					//console.log('onPrevPage')
+					ctrl.setData({wait: true})
 					ctrl.scope.pdf.prevPage().then((currentPage) => {
-						ctrl.setData({currentPage})
+						ctrl.setData({currentPage, wait: false})
 					})
 				},
 
@@ -44,11 +46,14 @@ $$.control.registerControl('breizbot.pdf', {
 
 		function openFile(url, title) {
 
+			ctrl.setData({wait: true})
+
 			ctrl.scope.pdf.openFile(url).then((numPages) => {
 				console.log('file loaded')
 				ctrl.setData({
 					title,
-					numPages
+					numPages,
+					wait: false
 				})
 			})			
 		}

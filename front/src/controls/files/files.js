@@ -62,8 +62,7 @@ $$.control.registerControl('breizbot.files', {
 					//console.log('onFileClick', info)
 					const data = {
 						fileName: info.name,
-						fullName: ctrl.model.rootDir + info.name,                       
-						url: info.url,
+						rootDir: ctrl.model.rootDir,                       
 						isImage: info.isImage,
 						cmd
 					}
@@ -242,9 +241,6 @@ $$.control.registerControl('breizbot.files', {
 			srvFiles.list(rootDir, {filterExtension, imageOnly}).then(function(files) {
 				console.log('files', files)
 				files.forEach((f) => {
-					if (!f.folder) {
-						f.url = srvFiles.fileUrl(rootDir + f.name)
-					}
 					if (f.isImage) {
 						f.thumbnailUrl = srvFiles.fileThumbnailUrl(rootDir + f.name, thumbnailSize)
 					}

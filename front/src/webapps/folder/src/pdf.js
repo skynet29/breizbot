@@ -6,17 +6,16 @@ $$.control.registerControl('pdfPage', {
 
 	props: {
 		$pager: null,
-		url: '',
 		fullName: ''
 	},
 
 	init: function(elt, files) {
 
-		const {$pager, url, fullName} = this.props
+		const {$pager, fullName} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				url
+				url: files.fileUrl(fullName)
 			}
 		})
 

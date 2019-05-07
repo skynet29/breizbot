@@ -82,15 +82,17 @@ $$.control.registerControl('rootPage', {
 				return
 			}
 			const {fileName, rootDir, cmd} = data
+			const url = files.fileUrl(rootDir + fileName)
+
 			if (cmd == 'openFile') {
 				ctrl.setData({fileName, rootDir})
 
-				ctrl.scope.editor.load(files.fileUrl(rootDir + fileName))
+				ctrl.scope.editor.load(url)
 
 			}
 			if (cmd == 'insertImage') {
 
-				ctrl.scope.editor.insertImage(files.fileUrl(rootDir + fileName))
+				ctrl.scope.editor.insertImage(url)
 			}
 		}
 

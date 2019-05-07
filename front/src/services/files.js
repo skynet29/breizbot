@@ -19,8 +19,9 @@ $$.service.registerService('breizbot.files', {
 			},
 
 			uploadFile: function(blob, saveAsfileName, destPath) {
-				console.log('[FileService] uploadFile', saveAsfileName)
+				console.log('[FileService] uploadFile', saveAsfileName, destPath)
 				if (!(blob instanceof Blob)) {
+					console.warn('File format not supported')
 					return Promise.reject('File format not supported')
 				}
 				//console.log('blob', blob)

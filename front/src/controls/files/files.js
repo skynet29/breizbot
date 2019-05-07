@@ -53,6 +53,9 @@ $$.control.registerControl('breizbot.files', {
 					if (name.endsWith('.doc')) {
 						return 'fa-file-word'
 					}
+					if (name.endsWith('.ogg')) {
+						return 'fa-file-audio'
+					}
 					return 'fa-file'
 				}
 			},

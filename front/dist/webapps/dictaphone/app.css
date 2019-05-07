@@ -1,0 +1,23 @@
+.rootPage {
+  padding: 10px;
+  display: flex;
+  flex-direction: column; }
+  .rootPage .scrollPanel {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 10px; }
+  .rootPage .sound-clips {
+    height: 100%; }
+    .rootPage .sound-clips .clip {
+      margin-top: 20px; }
+      .rootPage .sound-clips .clip audio {
+        width: 100%;
+        display: block; }
+      .rootPage .sound-clips .clip .clip-info {
+        padding: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center; }
+  .rootPage .visualizer {
+    height: 60px;
+    width: 100%; }

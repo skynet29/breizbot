@@ -1,0 +1,35 @@
+<div>
+	<canvas class="visualizer" bn-bind="canvas"></canvas>
+	<div>
+		<button 
+			class="w3-button" 
+			bn-event="click: onRecord"
+			bn-prop="{disabled: recording}"
+			bn-class="{'w3-red': recording, 'w3-blue': !recording}"
+		><i class="fas fa-circle"></i></button>
+
+		<button 
+			class="w3-button w3-blue" 
+			bn-event="click: onStop"
+			bn-prop="{disabled: !recording}"
+		><i class="fa fa-stop"></i></button>
+
+	</div>
+</div>
+
+<div class="scrollPanel">
+	<div class="sound-clips" bn-each="clips" bn-event="click.delete: onDeleteClip, click.save: onSaveClip">
+		<div class="clip">
+			<audio bn-attr="{src: $i.url}" controls=""></audio>
+			<div class="clip-info">
+				<span bn-text="$i.name"></span>
+				<div>
+					<button class="w3-button w3-blue" title="Save clip" bn-show="!$i.saved"><i class="fa fa-save save"></i></button>
+					<button class="w3-button w3-blue" title="Delete clip"><i class="fa fa-trash delete"></i></button>
+				</div>
+				
+			</div>
+		</div>
+	</div>	
+</div>
+

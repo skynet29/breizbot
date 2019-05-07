@@ -20,7 +20,7 @@
 <div class="scrollPanel">
 	<div class="sound-clips" bn-each="clips" bn-event="click.delete: onDeleteClip, click.save: onSaveClip">
 		<div class="clip">
-			<audio bn-attr="{src: $i.url}" controls=""></audio>
+			<audio bn-attr="{src: $i.url}" controls controlsList=nodownload></audio>
 			<div class="clip-info">
 				<span bn-text="$i.name"></span>
 				<div>

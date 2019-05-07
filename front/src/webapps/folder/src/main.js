@@ -44,7 +44,20 @@ $$.control.registerControl('rootPage', {
 								{name: 'del', icon: 'fa fa-trash'}
 							]
 						})						
-					}					
+					}	
+
+
+					if (fileName.endsWith('.ogg')) {
+						$pager.pushPage('soundPage', {
+							title: fileName,
+							props: {
+								fullName
+							},
+							buttons: [
+								{name: 'del', icon: 'fa fa-trash'}
+							]
+						})						
+					}									
 
 				}
 			}

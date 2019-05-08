@@ -2,16 +2,15 @@
 	<canvas class="visualizer" bn-bind="canvas"></canvas>
 	<div>
 		<button 
-			class="w3-button" 
+			class="w3-button w3-blue" 
 			bn-event="click: onRecord"
-			bn-prop="{disabled: recording}"
-			bn-class="{'w3-red': recording, 'w3-blue': !recording}"
+			bn-show="!recording"
 		><i class="fas fa-circle"></i></button>
 
 		<button 
-			class="w3-button w3-blue" 
+			class="w3-button w3-red" 
 			bn-event="click: onStop"
-			bn-prop="{disabled: !recording}"
+			bn-show="recording"
 		><i class="fa fa-stop"></i></button>
 
 	</div>

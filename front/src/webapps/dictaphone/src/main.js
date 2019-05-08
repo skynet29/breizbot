@@ -16,13 +16,13 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onRecord: function(ev) {
-					console.log('onRecord')
+					//console.log('onRecord')
 					ctrl.setData({recording: true})
 					mediaRecorder.start()
 				},
 
 				onStop: function(ev) {
-					console.log('onStop')
+					//console.log('onStop')
 					ctrl.setData({recording: false})
 					mediaRecorder.stop()
 				},
@@ -31,16 +31,19 @@ $$.control.registerControl('rootPage', {
 					//console.log('onDeleteClip')
 					const index = $(this).closest('.clip').index()
 					//console.log('index', index)
+					const data = ctrl.model.clips[index]
+					URL.revokeObjectURL(data.url)
+
 					ctrl.model.clips.splice(index, 1)
 					ctrl.update()
 				},
 
 				onSaveClip: function(ev) {
-					console.log('onSaveClip')
+					//console.log('onSaveClip')
 					const index = $(this).closest('.clip').index()
 					const data = ctrl.model.clips[index]
 
-					console.log('data', data)
+					//console.log('data', data)
 
 					fetch(data.url)
 					.then((resp) => { 

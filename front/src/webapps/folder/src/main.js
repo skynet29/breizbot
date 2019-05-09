@@ -47,7 +47,7 @@ $$.control.registerControl('rootPage', {
 					}	
 
 
-					if (fileName.endsWith('.ogg')) {
+					if (fileName.endsWith('.ogg') || fileName.endsWith('.mp3')) {
 						$pager.pushPage('soundPage', {
 							title: fileName,
 							props: {

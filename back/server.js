@@ -91,7 +91,6 @@ if (config.USESSL) {
 	, version: 'draft-12'
 	, server: 'https://acme-v02.api.letsencrypt.org/directory'
 	, configDir: config.CERTIF_HOME
-	, duplicate: true
 	})
 
 

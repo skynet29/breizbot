@@ -19,18 +19,34 @@
 
 	}
 
-	.main {
+	.mainText {
 		flex: 1;
 		padding: 10px;
 		overflow: auto;
 
 
 		pre {
-			margin: 0;
 			height: 100%;
 			width: 100%;
 		}
 
-
 	}
+
+	.mainHtml {
+		flex: 1;
+		padding: 0;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+
+		.embeddedImages {
+			padding-left: 10px;
+		}
+
+
+		iframe {
+			margin: 0;
+			flex: 1;
+		}
+	}	
 }

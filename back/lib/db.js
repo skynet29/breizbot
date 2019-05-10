@@ -141,12 +141,12 @@ module.exports =  {
 
 
 	getMailAccounts: function(userName) {
-		console.log(`getMailAccounts`, userName)
+		//console.log(`getMailAccounts`, userName)
 		return db.collection('mailAccounts').find({userName}).toArray()
 	},
 
 	getMailAccount: function(userName, name) {
-		console.log(`getMailAccount`, userName, name)
+		//console.log(`getMailAccount`, userName, name)
 		return db.collection('mailAccounts').findOne({userName, name})
 	},	
 

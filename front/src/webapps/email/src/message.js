@@ -13,10 +13,12 @@ $$.control.registerControl('messagePage', {
 
 	init: function(elt, srvMail) {
 
-		const {$pager, currentAccount, mailboxName, partID, item} = this.props
+		const {$pager, currentAccount, mailboxName, item} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				embeddedImages: [],
+				isHtml: false,
 				loading: true,
 				text: '',
 				item,
@@ -80,37 +82,88 @@ $$.control.registerControl('messagePage', {
 						$i.removeClass('fa-caret-down').addClass('fa-caret-right')						
 						$ul.slideUp()
 					}
+				},
+				onEmbeddedImages: function(ev) {
+					ev.preventDefault()
+					//ctrl.setData({embeddedImages: []})
+					const $iframe = $(ctrl.scope.iframe.get(0).contentWindow.document)
+
+					const {embeddedImages} = ctrl.model
+					ctrl.setData({embeddedImages: []})
+
+					embeddedImages.forEach((e) => {
+						const {type, subtype, partID, cid} = e
+						srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID).then((message) => {
+							const url = `data:${type}/${subtype};base64,` + message.data
+							const $img = $iframe.find(`img[src="cid:${cid}"]`)
+							$img.attr('src', url)
+
+						})					
+
+					})
+
 				}
 			}
 		})
 
-		srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID).then((message) => {
+		let partID = item.partID.html
+		let isHtml = true
+		if (partID == false) {
+			partID = item.partID.text
+			isHtml = false
+		}
+		console.log('isHtml', isHtml)
+
+
+		srvMail.openMessage(currentAccount, mailboxName, item.seqno, partID).then((message) => {
 			console.log('message', message)
 
-			const {text, attachments} = message
 
-			ctrl.setData({text, attachments, loading:false})
+			const {text, attachments, embeddedImages} = message
+
+
+			ctrl.setData({text, attachments, embeddedImages, loading:false, isHtml})
 
 		})
 
+		function replyMessage(text) {
+			console.log('replyMessage', text)
+			$pager.pushPage('writeMailPage', {
+				title: 'Reply message',
+				props: {
+					accountName: currentAccount,
+					data: {
+						to: item.from.email,
+						subject: 'Re: ' + item.subject,
+						text
+					}
+				},
+				buttons: [
+					{name: 'send', icon: 'fa fa-paper-plane'}
+				]
+			})			
+		}
+
 		this.onAction = function(action) {
 			console.log('onAction', action)
+			const HEADER = '\n\n----- Original mail -----\n'
+
 			if (action == 'reply') {
 
-				$pager.pushPage('writeMailPage', {
-					title: 'Reply message',
-					props: {
-						accountName: currentAccount,
-						data: {
-							to: item.from.email,
-							subject: 'Re: ' + item.subject,
-							text: '\n\n----- Original mail -----\n' + ctrl.model.text
-						}
-					},
-					buttons: [
-						{name: 'send', icon: 'fa fa-paper-plane'}
-					]
-				})
+				if (ctrl.model.isHtml && item.partID.text != false) {
+					srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID.text).then((message) => {
+						replyMessage(HEADER + message.text)
+					})						
+				}
+
+				else if (!ctrl.model.isHtml) {
+					replyMessage(HEADER + ctrl.model.text)
+				}
+				else {
+					replyMessage('')
+				}
+
+
 			}
 		}
 

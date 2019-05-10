@@ -47,22 +47,31 @@ function decodeString(name) {
   name = name.trim()
   //console.log('decodeString', name)
 
-  if (name.startsWith('=?utf-8?B?') || name.startsWith('=?UTF-8?B?')) {
+  if (name.toUpperCase().startsWith('=?UTF-8?B?')) {
     const t = name.split('?')
     //console.log('t', t)
     const buff = new Buffer(t[3], 'base64')
     name =  buff.toString('utf8')
-    //console.log('decoded string', name)
   }  
+
+  if (name.toUpperCase().startsWith('=?UTF-8?Q?')) {
+    const t = name.split('?')
+    name = quotedPrintable.decode(t[3])
+
+    name = iconv.decode(name, 'utf8')
+
+  }  
+
+  //console.log('decoded string', name)
 
   return name
 }
 
 
 function decodeHeaders(buffer) {
-  console.log('decodeHeaders', buffer)
+  //console.log('decodeHeaders', buffer)
   const headers = Imap.parseHeader(buffer)
-  console.log('headers', headers)
+  //console.log('headers', headers)
   let addr = {
     name: 'unknown',
     address: ''
@@ -138,7 +147,7 @@ function getAttachments(parts) {
   const ret = []
   parts.forEach((p) => {
     const {disposition, type, subtype, size, partID, encoding} = p
-    if (disposition == null || disposition.type != 'attachment') {
+    if (disposition == null || disposition.type.toUpperCase() != 'ATTACHMENT') {
       return
     }
 
@@ -154,6 +163,28 @@ function getAttachments(parts) {
   return ret
 }
 
+function getEmbeddedImages(parts) {
+  //console.log('getEmbeddedImages', parts)
+  const ret = []
+  parts.forEach((p) => {
+    const {id, type, subtype, size, partID, encoding, disposition} = p
+    if (disposition != null && disposition.type.toUpperCase() != 'INLINE') {
+      return
+    }
+    if (id == null || type != 'image') {
+      return
+    }
+    
+    //console.log('id', id)
+
+    let cid = id.replace(/[<>]+/g, '')
+
+
+    ret.push({cid, type, subtype, size, partID, encoding})
+
+  })
+  return ret
+}
 
 function imapFetch(imap, query, options, callback) {
 
@@ -183,6 +214,7 @@ function imapFetch(imap, query, options, callback) {
     })
 
     msg.once('attributes', function(attrs) {
+      //console.log('struct', attrs.struct)
 
       const parts = []
       parseStruct(attrs.struct, parts)
@@ -288,10 +320,11 @@ function openMailboxCb(mailboxName, pageNo) {
 
         data.forEach((d) => {
           const {attrs, seqno, parts, buffer} = d
-          const partID = getPartIDByType(parts, 'text', 'plain')
+          const text = getPartIDByType(parts, 'text', 'plain')
+          const html = getPartIDByType(parts, 'text', 'html')
           const header = decodeHeaders(buffer)
           header.seqno = seqno
-          header.partID = partID
+          header.partID = {text, html}
           header.flags = attrs.flags
           header.nbAttachments = getAttachments(parts).length
           messages.push(header)
@@ -342,12 +375,14 @@ function openMessageCb(mailboxName, seqNo, partID) {
       imapFetch(imap, seqNo, {bodies: [partID], markSeen: true}, function(data) {
 
         const {parts, buffer} = data[0]
+        //console.log('parts', parts)
 
         const info = getPartInfo(parts, partID)
         const text = decodeBody(buffer, info)
         const attachments = getAttachments(parts)
+        const embeddedImages = getEmbeddedImages(parts)
 
-        resolve({text, attachments})        
+        resolve({text, attachments, embeddedImages})        
 
       })
      

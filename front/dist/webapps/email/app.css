@@ -91,14 +91,24 @@
       margin: 0; }
     .messagePage .header .attachments strong {
       cursor: pointer; }
-  .messagePage .main {
+  .messagePage .mainText {
     flex: 1;
     padding: 10px;
     overflow: auto; }
-    .messagePage .main pre {
-      margin: 0;
+    .messagePage .mainText pre {
       height: 100%;
       width: 100%; }
+  .messagePage .mainHtml {
+    flex: 1;
+    padding: 0;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column; }
+    .messagePage .mainHtml .embeddedImages {
+      padding-left: 10px; }
+    .messagePage .mainHtml iframe {
+      margin: 0;
+      flex: 1; }
 
 .writeMailPage form {
   display: flex;

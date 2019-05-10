@@ -20,8 +20,14 @@
 	</div>
 	
 </div>
-<div class="main" bn-show="!loading">
-<!-- 	<iframe bn-attr="{srcdoc:text}"></iframe>
- -->
+
+<div class="mainHtml" bn-show="!loading && isHtml">
+	<div bn-show="embeddedImages.length > 0" class="embeddedImages w3-pale-yellow">
+		<a href="#" bn-event="click: onEmbeddedImages">Download embedded images</a>
+	</div>
+	<iframe bn-attr="{srcdoc:text}" bn-bind="iframe"></iframe>
+</div>
+
+<div class="mainText" bn-show="!loading && !isHtml">
  	<pre bn-text="text"></pre>
 </div>

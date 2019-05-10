@@ -12,16 +12,49 @@ $$.control.registerControl('accountPage', {
 
 		const {$pager} = this.props
 
+		const map = {
+			'Free': {
+				imapHost: 'imap.free.fr',
+				smtpHost: 'smtp.free.fr'
+			},
+			'Gmail': {
+				imapHost: 'imap.gmail.com',
+				smtpHost: 'smtp.gmail.com'
+			},
+			'SFR': {
+				imapHost: 'imap.sfr.fr',
+				smtpHost: 'smtp.sfr.fr'
+			},
+			'Orange': {
+				imapHost: 'imap.orange.fr',
+				smtpHost: 'smtp.orange.fr'
+			},
+			'Other': {
+				imapHost: '',
+				smtpHost: ''
+			},
+		}
+
 		const ctrl = $$.viewController(elt, {
 			data: {
+				provider: 'Gmail',
+				providers: Object.keys(map)
 			},
 			events: {
 				onSubmit: function(ev) {
 					ev.preventDefault()
 					const data = $(this).getFormData()
+					console.log('data', data)
 					srvMail.createMailAccount(data).then(() => {
 						$pager.popPage('update')
 					})
+				},
+				onProviderChange: function() {
+					const provider = $(this).val()
+					console.log('onProviderChange', provider)
+					ctrl.setData({provider})
+
+					ctrl.scope.form.setFormData(map[provider])
 				}
 			}
 		})

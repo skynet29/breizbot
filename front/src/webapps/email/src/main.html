@@ -2,7 +2,11 @@
 	<div class="info">
 		<p bn-show="accounts.length == 0">You have no email account</p>
 		<p bn-show="accounts.length > 0">Account: 
-			<select bn-control="brainjs.selectmenu" bn-each="accounts" bn-val="currentAccount"
+			<select 
+				bn-control="brainjs.selectmenu" 
+				bn-each="accounts" 
+				bn-val="currentAccount"
+				bn-iface="accounts"
 				bn-event="selectmenuchange: onAccountChange">
 				<option bn-text="$i"></option>
 			</select>

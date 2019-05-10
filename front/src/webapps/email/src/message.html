@@ -25,7 +25,7 @@
 	<div bn-show="embeddedImages.length > 0" class="embeddedImages w3-pale-yellow">
 		<a href="#" bn-event="click: onEmbeddedImages">Download embedded images</a>
 	</div>
-	<iframe bn-attr="{srcdoc:text}" bn-bind="iframe"></iframe>
+	<iframe bn-attr="{srcdoc:text}" bn-bind="iframe" bn-event="load: onFrameLoaded"></iframe>
 </div>
 
 <div class="mainText" bn-show="!loading && !isHtml">

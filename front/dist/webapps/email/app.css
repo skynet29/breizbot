@@ -7,6 +7,8 @@
     min-width: 120px; }
   .accountPage .brainjs-inputgroup {
     margin-bottom: 5px; }
+    .accountPage .brainjs-inputgroup input {
+      padding: 5px; }
 
 .boxesPage {
   padding: 10px;
@@ -108,7 +110,8 @@
       padding-left: 10px; }
     .messagePage .mainHtml iframe {
       margin: 0;
-      flex: 1; }
+      flex: 1;
+      border: none; }
 
 .writeMailPage form {
   display: flex;

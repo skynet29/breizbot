@@ -1,5 +1,5 @@
 <div class="main">
-	<form bn-event="submit: onSubmit">
+	<form bn-event="submit: onSubmit" bn-bind="form">
 
 		<div bn-control="brainjs.inputgroup">
 			<label>Account Name</label>
@@ -22,11 +22,19 @@
 		</div>
 
 		<div bn-control="brainjs.inputgroup">
+			<label>Provider</label>
+			<select bn-control="brainjs.selectmenu" bn-event="selectmenuchange: onProviderChange" bn-val="provider"
+			bn-each="providers">
+				<option bn-text="$i"></option>
+			</select>		
+		</div>		
+
+		<div bn-control="brainjs.inputgroup" bn-show="provider == 'Other'">
 			<label>Imap Server</label>
 			<input type="text" name="imapHost" required="">			
 		</div>		
 
-		<div bn-control="brainjs.inputgroup">
+		<div bn-control="brainjs.inputgroup"  bn-show="provider == 'Other'">
 			<label>SMTP Server</label>
 			<input type="text" name="smtpHost" required="">			
 		</div>		

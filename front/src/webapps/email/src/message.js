@@ -102,6 +102,12 @@ $$.control.registerControl('messagePage', {
 
 					})
 
+				},
+				onFrameLoaded: function(ev) {
+					console.log('onFrameLoaded')
+					const $iframe = $(this.contentWindow.document)
+					$iframe.find('a').attr('target', '_blank')
+
 				}
 			}
 		})

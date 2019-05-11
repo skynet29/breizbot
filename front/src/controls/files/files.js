@@ -76,11 +76,19 @@ $$.control.registerControl('breizbot.files', {
 				},
 				onCheckClick: function(ev) {
 					console.log('onCheckClick')
-					const info = $(this).closest('.thumbnail').data('info')
+					
+					const $checked = elt.find('.check:checked')
+					const nbSelection = $checked.length
+
+					let isFile = false
+					if (nbSelection == 1) {
+						const info = $checked.closest('.thumbnail').data('info')
+						isFile = !info.folder
+					}
 
 					ctrl.setData({
-						nbSelection: elt.find('.check:checked').length,
-						isFile: !info.folder
+						nbSelection,
+						isFile
 					})
 				},
 				onFolderClick: function(ev) {

@@ -44,6 +44,10 @@
       .boxesPage .scrollPanelTree .tree span.fa {
         color: #607d8b; }
 
+.contactsPage .scrollPanel {
+  height: 100%;
+  overflow-y: auto; }
+
 .mailboxPage {
   display: flex;
   flex-direction: column;

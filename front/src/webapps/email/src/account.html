@@ -2,6 +2,14 @@
 	<form bn-event="submit: onSubmit" bn-bind="form">
 
 		<div bn-control="brainjs.inputgroup">
+			<label>Provider</label>
+			<select bn-control="brainjs.selectmenu" bn-event="selectmenuchange: onProviderChange" bn-val="provider"
+			bn-each="providers">
+				<option bn-text="$i"></option>
+			</select>		
+		</div>			
+
+		<div bn-control="brainjs.inputgroup">
 			<label>Account Name</label>
 			<input type="text" name="name" required="" autofocus="">			
 		</div>
@@ -21,13 +29,7 @@
 			<input type="email" name="email" required="">			
 		</div>
 
-		<div bn-control="brainjs.inputgroup">
-			<label>Provider</label>
-			<select bn-control="brainjs.selectmenu" bn-event="selectmenuchange: onProviderChange" bn-val="provider"
-			bn-each="providers">
-				<option bn-text="$i"></option>
-			</select>		
-		</div>		
+	
 
 		<div bn-control="brainjs.inputgroup" bn-show="provider == 'Other'">
 			<label>Imap Server</label>

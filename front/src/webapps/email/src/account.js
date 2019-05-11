@@ -13,13 +13,17 @@ $$.control.registerControl('accountPage', {
 		const {$pager} = this.props
 
 		const map = {
-			'Free': {
-				imapHost: 'imap.free.fr',
-				smtpHost: 'smtp.free.fr'
-			},
 			'Gmail': {
 				imapHost: 'imap.gmail.com',
 				smtpHost: 'smtp.gmail.com'
+			},
+			'Outlook': {
+				imapHost: 'imap.outlook.com',
+				smtpHost: 'smtp.outlook.com'
+			},
+			'Free': {
+				imapHost: 'imap.free.fr',
+				smtpHost: 'smtp.free.fr'
 			},
 			'SFR': {
 				imapHost: 'imap.sfr.fr',

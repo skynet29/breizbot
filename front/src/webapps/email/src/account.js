@@ -33,6 +33,10 @@ $$.control.registerControl('accountPage', {
 				imapHost: 'imap.orange.fr',
 				smtpHost: 'smtp.orange.fr'
 			},
+			'Bouygues Telecom': {
+				imapHost: 'imap.bbox.fr',
+				smtpHost: 'smtp.bbox.fr'
+			},
 			'Other': {
 				imapHost: '',
 				smtpHost: ''

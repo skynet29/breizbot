@@ -48,7 +48,7 @@ module.exports =  {
 
 	changePassword: function(username, newPwd) {
 
-		console.log(`changePassword`, username, newPwd)
+		console.log(`[DB] changePassword`, username, newPwd)
 		var update = {'$set': {pwd: newPwd}}
 
 		return db.collection('users').updateOne({username}, update)
@@ -57,7 +57,7 @@ module.exports =  {
 
 	updateLastLoginDate: function(username) {
 
-		console.log(`updateLastLoginDate`, username)
+		console.log(`[DB] updateLastLoginDate`, username)
 		var update = {'$set': {lastLoginDate: Date.now()}}
 
 		return db.collection('users').updateOne({username}, update)
@@ -67,7 +67,7 @@ module.exports =  {
 
 	createUser: function(data) {
 
-		console.log(`createUser`, data)
+		console.log(`[DB] createUser`, data)
 		data.pwd = 'welcome'
 		data.apps = {}
 		data.createDate = Date.now()
@@ -79,7 +79,7 @@ module.exports =  {
 
 	deleteUser: function(username) {
 
-		console.log(`deleteUser`, username)
+		console.log(`[DB] deleteUser`, username)
 
 		return db.collection('users').deleteOne({username})
 	},
@@ -102,7 +102,7 @@ module.exports =  {
 	},
 
 	addNotif: function(to, from, notif) {
-		console.log(`addNotif`, to, from, notif)
+		console.log(`[DB] addNotif`, to, from, notif)
 		return db.collection('notifs').insertOne({to, from, notif, date: Date.now()})
 	},
 
@@ -117,12 +117,12 @@ module.exports =  {
 	},
 
 	removeNotif: function(notifId) {
-		console.log(`removeNotif`, notifId)
+		console.log(`[DB] removeNotif`, notifId)
 		return db.collection('notifs').deleteOne({_id: new ObjectID(notifId)})
 	},	
 
 	getFriends: function(userName) {
-		console.log(`getFriends`, userName)
+		console.log(`[DB] getFriends`, userName)
 		return db.collection('friends').find({
 			$or: [{user1: userName}, {user2: userName}]
 		}).toArray().then((friends) => {
@@ -135,29 +135,54 @@ module.exports =  {
 	},
 
 	addFriend: function(userName, friendUserName) {
-		console.log(`addFriend`, userName, friendUserName)
+		console.log(`[DB] addFriend`, userName, friendUserName)
 		return db.collection('friends').insertOne({user1: userName, user2: friendUserName})
 	},
 
 
 	getMailAccounts: function(userName) {
-		//console.log(`getMailAccounts`, userName)
+		//console.log(`[DB] getMailAccounts`, userName)
 		return db.collection('mailAccounts').find({userName}).toArray()
 	},
 
 	getMailAccount: function(userName, name) {
-		//console.log(`getMailAccount`, userName, name)
+		//console.log(`[DB] getMailAccount`, userName, name)
 		return db.collection('mailAccounts').findOne({userName, name})
 	},	
 
 	createMailAccount: function(userName, data) {
 
-		console.log(`createMaiAccount`, userName, data)
+		console.log(`[DB] createMaiAccount`, userName, data)
 		data.createDate = Date.now()
 		data.userName = userName
 
 		return db.collection('mailAccounts').insertOne(data)
+	},
+
+	addContact: function(userName, contactName, contactEmail) {
+		console.log(`[DB] addContact`, userName, contactName, contactEmail)
+		return db.collection('contacts').insertOne({
+			userName,
+			contactName,
+			contactEmail
+		})
+	},
+
+	getContacts: function(userName) {
+		console.log(`[DB] getContacts`, userName)
+		return db.collection('contacts').find({
+			userName
+		}, 
+		{
+			projection: {userName: 0}
+		}).toArray()
+	},
+
+	removeContact: function(contactId) {
+		console.log(`[DB] removeContact`, contactId)
+		return db.collection('contacts').deleteOne({_id: new ObjectID(contactId)})
 	}
+
 }
 
 

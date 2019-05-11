@@ -59,8 +59,19 @@ $$.service.registerService('breizbot.users', {
 
 			changePwd: function(newPwd) {
 				return http.post(`/api/users/changePwd`, {newPwd})
-			}
+			},
 
+			addContact: function(name, email) {
+				return http.post(`/api/users/addContact`, {name, email})
+			},
+
+			getContacts: function() {
+				return http.get(`/api/users/getContacts`)
+			},
+
+			removeContact: function(contactId) {
+				return http.delete(`/api/users/removeContact/${contactId}`)
+			}						
 		}
 	},
 	$iface: `
@@ -74,6 +85,11 @@ $$.service.registerService('breizbot.users', {
 		removeNotif(notifId):Promise;
 		getNotifs():Promise;
 		getNotifCount():Promise;
-		getFriends():Promise
+		getFriends():Promise;
+		addFriend(friendUserName):Promise;
+		changePwd(newPwd):Promise;
+		addContact(name, email):Promise;
+		getContacts():Promise(contacts);
+		removeContact(contactId):Promise
 	`
 });

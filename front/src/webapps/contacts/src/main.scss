@@ -1,0 +1,18 @@
+.rootPage {
+	display: flex;
+	flex-direction: column;
+	padding: 10px;
+	
+	.toolbar {
+		margin-bottom: 10px;
+		display: flex;
+		justify-content: flex-end;
+
+	}
+
+	.scrollPanel {
+		flex: 1;
+		overflow-y: auto;
+		border: 1px solid black;
+	}
+}

@@ -175,4 +175,50 @@ router.post('/addFriend', function(req, res) {
 
 })
 
+router.post('/addContact', function(req, res) {
+	console.log('addContact', req.session.user)
+
+	const userName = req.session.user
+	const {name, email} = req.body
+
+	db.addContact(userName, name, email)
+	.then(() => {
+		res.sendStatus(200)	
+	})	
+	.catch(() => {
+		res.sendStatus(400)
+	})
+
+})
+
+router.get('/getContacts', function(req, res) {
+	console.log('getContacts', req.session.user)
+
+	const userName = req.session.user
+
+	db.getContacts(userName)
+	.then((contacts) => {
+		res.json(contacts)	
+	})	
+	.catch(() => {
+		res.sendStatus(400)
+	})
+
+})
+
+
+router.delete('/removeContact/:id', function(req, res) {
+	console.log('removeContact', req.params)
+	const {id} = req.params
+
+	db.removeContact(id)
+	.then(() => {
+		res.sendStatus(200)		
+	})	
+	.catch(() => {
+		res.sendStatus(400)
+	})
+
+})
+
 module.exports = router

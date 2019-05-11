@@ -2,7 +2,7 @@ $$.control.registerControl('messagePage', {
 
 	template: {gulp_inject: './message.html'},
 
-	deps: ['breizbot.mails'],
+	deps: ['breizbot.mails', 'breizbot.users'],
 
 	props: {
 		$pager: null,
@@ -11,9 +11,10 @@ $$.control.registerControl('messagePage', {
 		item: null
 	},
 
-	init: function(elt, srvMail) {
+	init: function(elt, srvMail, users) {
 
 		const {$pager, currentAccount, mailboxName, item} = this.props
+
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -108,6 +109,19 @@ $$.control.registerControl('messagePage', {
 					const $iframe = $(this.contentWindow.document)
 					$iframe.find('a').attr('target', '_blank')
 
+				},
+				onAddContact: function(ev) {
+					console.log('onAddContact')
+					ev.preventDefault()
+					$pager.pushPage('addContactPage', {
+						title: 'Add Contact',
+						props: {
+							from: item.from
+						},
+						buttons: [
+							{name: 'add', icon: 'fa fa-user-plus'}
+						]
+					})
 				}
 			}
 		})

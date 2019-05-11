@@ -71,6 +71,8 @@ $$.control.registerControl('accountPage', {
 			ctrl.scope.submit.click()
 		}
 
+
+
 	}
 
 

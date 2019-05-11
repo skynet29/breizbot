@@ -27,6 +27,15 @@ $$.control.registerControl('writeMailPage', {
 						$pager.popPage()
 					})
 
+				},
+				openContact: function() {
+					console.log('openContact')
+					$pager.pushPage('contactsPage', {
+						title: 'Select a contact',
+						buttons: [
+							{name: 'ok', icon: 'fa fa-check'}
+						]
+					})
 				}
 			}
 
@@ -42,6 +51,13 @@ $$.control.registerControl('writeMailPage', {
 			console.log('onAction', action)
 			if (action == 'send') {
 				ctrl.scope.submit.click()
+			}
+		}
+
+		this.onReturn = function(data) {
+			console.log('onReturn', data)
+			if (data != undefined) {
+				ctrl.setData({data: {to: data.contactEmail}})
 			}
 		}
 	}

@@ -1,7 +1,9 @@
 <form bn-event="submit: onSend" bn-form="data">
 	<div class="header">
 		<div bn-control="brainjs.inputgroup">
-			<label>To:</label>
+			<div class="openContactPanel">
+				<button class="w3-button w3-blue" type="button" bn-event="click: openContact">To:</button>
+			</div>
 			<input type="email" name="to" bn-prop="{autofocus: data.text == undefined}" required="">		
 		</div>
 

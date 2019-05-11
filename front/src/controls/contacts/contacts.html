@@ -1,0 +1,17 @@
+<p bn-show="contacts.length == 0">You have no contacts</p>
+<ul class="w3-ul w3-border w3-white" 
+	bn-event="click.w3-bar: onItemClick, click.delete: onDeleteItem"
+	bn-each="contacts"
+	bn-show="contacts.length > 0"
+	>
+	<li class="w3-bar" bn-data="{item: $i}">
+		<span class="w3-button w3-right delete" title="Delete" bn-show="showDeleteButton"><i class="fa fa-trash"></i></span>
+
+		<div class="w3-bar-item">
+			<i class="fa fa-user w3-text-blue"></i>
+			<strong bn-text="$i.contactName"></strong><br>
+			<i class="fa fa-envelope w3-text-blue"></i>
+			<span bn-text="$i.contactEmail"></span>
+		</div>
+	</li>
+</ul>		

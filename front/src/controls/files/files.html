@@ -13,6 +13,12 @@
 			><i class="fa fa-upload"></i></button>		
 
 			<button 
+				title="Download selected file"
+				bn-event="click: onDownloadFile"
+				bn-prop="{disabled: nbSelection != 1 || !isFile}"
+			><i class="fa fa-download"></i></button>		
+
+			<button 
 				title="Toggle Select Mode"
 				bn-event="click: onToggleSelMode"
 			><i class="fa fa-check"></i></button>	
@@ -21,21 +27,21 @@
 		<div bn-control="brainjs.controlgroup">
 			<button title="Delete"
 				bn-event="click: onDeleteFiles"
-				bn-prop="{disabled: !hasSelection}"
+				bn-prop="{disabled: nbSelection == 0}"
 			><i class="fa fa-trash"></i></button>
 
 			<button title="Cut"
-				bn-prop="{disabled: !hasSelection}"
+				bn-prop="{disabled: nbSelection == 0}"
 				bn-event="click: onCutFiles"
 			><i class="fa fa-cut"></i></button>	
 
 			<button title="Copy"
-				bn-prop="{disabled: !hasSelection}"
+				bn-prop="{disabled: nbSelection == 0}"
 				bn-event="click: onCopyFiles"
 				><i class="fa fa-copy"></i></button>
 
 			<button title="Paste"
-				bn-prop="{disabled: !hasSelectedFiles()}"
+				bn-prop="{disabled:  selectedFiles.length == 0}"
 				bn-event="click: onPasteFiles"
 			><i class="fa fa-paste"></i></button>		
 		</div>

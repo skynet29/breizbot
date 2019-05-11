@@ -29,6 +29,7 @@ $$.control.registerControl('breizbot.files', {
 		const ctrl = $$.viewController(elt, {
 			
 			data: {
+				isFile: false,
 				showThumbnail,
 				thumbnailSize,
 				showToolbar,
@@ -37,13 +38,9 @@ $$.control.registerControl('breizbot.files', {
 				files: [],
 				selectedFiles: [],
 				operation: 'none',
-				hasSelection: false,
+				nbSelection: 0,
 				getSize: function(size) {
 					return 'Size : ' + Math.floor(size/1024) + ' Ko'
-				},
-
-				hasSelectedFiles: function() {
-					return selectedFiles.length > 0
 				},
 
 				getIconClass: function(name) {
@@ -79,8 +76,12 @@ $$.control.registerControl('breizbot.files', {
 				},
 				onCheckClick: function(ev) {
 					console.log('onCheckClick')
+					const info = $(this).closest('.thumbnail').data('info')
 
-					ctrl.setData({hasSelection: (elt.find('.check:checked').length > 0)})
+					ctrl.setData({
+						nbSelection: elt.find('.check:checked').length,
+						isFile: !info.folder
+					})
 				},
 				onFolderClick: function(ev) {
 					const info = $(this).closest('.thumbnail').data('info')
@@ -212,6 +213,17 @@ $$.control.registerControl('breizbot.files', {
 							})
 						})					
 					})
+				},
+				onDownloadFile: function(ev) {
+					const info = elt.find('.check:checked').closest('.thumbnail').data('info')
+					console.log('onDownloadFile', info)
+					const {rootDir} = ctrl.model
+
+					const link = document.createElement('a')
+					link.href = srvFiles.fileUrl(rootDir + info.name)
+					link.download = info.name
+					link.click()
+
 				}
 			}
 

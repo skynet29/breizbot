@@ -185,8 +185,8 @@ router.post('/addContact', function(req, res) {
 	.then(() => {
 		res.sendStatus(200)	
 	})	
-	.catch(() => {
-		res.sendStatus(400)
+	.catch((err) => {
+		res.status(400).send(err)
 	})
 
 })

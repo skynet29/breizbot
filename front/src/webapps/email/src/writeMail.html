@@ -4,7 +4,7 @@
 			<div class="openContactPanel">
 				<button class="w3-button w3-blue" type="button" bn-event="click: openContact">To:</button>
 			</div>
-			<input type="email" name="to" bn-prop="{autofocus: data.text == undefined}" required="">		
+			<input type="email" multiple="true" name="to" bn-prop="{autofocus: data.text == undefined}" required="" bn-bind="to">		
 		</div>
 
 		<div bn-control="brainjs.inputgroup">

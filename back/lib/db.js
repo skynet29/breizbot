@@ -161,11 +161,20 @@ module.exports =  {
 
 	addContact: function(userName, contactName, contactEmail) {
 		console.log(`[DB] addContact`, userName, contactName, contactEmail)
-		return db.collection('contacts').insertOne({
-			userName,
-			contactName,
-			contactEmail
+		return db.collection('contacts')
+			.findOne({userName, contactEmail})
+			.then((info) => {
+				if (info != null) {
+					return Promise.reject('Contact already exists')
+				}
+				return db.collection('contacts').insertOne({
+					userName,
+					contactName,
+					contactEmail
+				})				
 		})
+
+
 	},
 
 	getContacts: function(userName) {
@@ -175,7 +184,7 @@ module.exports =  {
 		}, 
 		{
 			projection: {userName: 0}
-		}).toArray()
+		}).sort({contactName: 1}).toArray()
 	},
 
 	removeContact: function(contactId) {

@@ -26,6 +26,9 @@ $$.control.registerControl('addContactPage', {
 						console.log('contact added !')
 						$pager.popPage('update')
 					})
+					.catch((err) => {
+						$$.ui.showAlert({title: 'Error', content: err.responseText})
+					})
 				}
 
 			}

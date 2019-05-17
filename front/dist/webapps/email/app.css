@@ -105,6 +105,10 @@
   flex-direction: column; }
   .messagePage .header {
     padding: 10px; }
+    .messagePage .header .to ul {
+      margin: 0; }
+    .messagePage .header .to strong {
+      cursor: pointer; }
     .messagePage .header .attachments ul {
       margin: 0; }
     .messagePage .header .attachments strong {

@@ -71,7 +71,7 @@ $$.control.registerControl('messagePage', {
 					}
 
 				},
-				onAttachClick: function(ev) {
+				onToggleDiv: function(ev) {
 					console.log('onAttachClick')
 					const $i = $(this).find('i')
 					const $ul = $(this).siblings('ul')
@@ -113,10 +113,11 @@ $$.control.registerControl('messagePage', {
 				onAddContact: function(ev) {
 					console.log('onAddContact')
 					ev.preventDefault()
+					const from = $(this).data('addr')
 					$pager.pushPage('addContactPage', {
 						title: 'Add Contact',
 						props: {
-							from: item.from
+							from
 						},
 						buttons: [
 							{name: 'add', icon: 'fa fa-user-plus'}
@@ -146,14 +147,14 @@ $$.control.registerControl('messagePage', {
 
 		})
 
-		function replyMessage(text) {
-			console.log('replyMessage', text)
+		function replyMessage(text, to) {
+			//console.log('replyMessage', text)
 			$pager.pushPage('writeMailPage', {
 				title: 'Reply message',
 				props: {
 					accountName: currentAccount,
 					data: {
-						to: item.from.email,
+						to,
 						subject: 'Re: ' + item.subject,
 						text
 					}
@@ -165,22 +166,28 @@ $$.control.registerControl('messagePage', {
 		}
 
 		this.onAction = function(action) {
-			console.log('onAction', action)
+			console.log('onAction', action, item)
 			const HEADER = '\n\n----- Original mail -----\n'
 
-			if (action == 'reply') {
+			if (action == 'reply' || action == 'replyAll') {
+
+				let to = item.from.email
+
+				if (action == 'replyAll' && item.to.length > 0) {					
+					to += ',' + item.to.map((a) => a.email).join(',')
+				}
 
 				if (ctrl.model.isHtml && item.partID.text != false) {
 					srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID.text).then((message) => {
-						replyMessage(HEADER + message.text)
+						replyMessage(HEADER + message.text, to)
 					})						
 				}
 
 				else if (!ctrl.model.isHtml) {
-					replyMessage(HEADER + ctrl.model.text)
+					replyMessage(HEADER + ctrl.model.text, to)
 				}
 				else {
-					replyMessage('')
+					replyMessage('', to)
 				}
 
 

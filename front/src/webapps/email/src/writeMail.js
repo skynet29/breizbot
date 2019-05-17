@@ -54,10 +54,19 @@ $$.control.registerControl('writeMailPage', {
 			}
 		}
 
-		this.onReturn = function(data) {
-			console.log('onReturn', data)
-			if (data != undefined) {
-				ctrl.setData({data: {to: data.contactEmail}})
+		this.onReturn = function(retData) {
+			console.log('onReturn', retData)
+
+			if (retData != undefined) {
+				const contacts = retData.map((a) => a.contactEmail)
+				console.log('contacts', contacts)
+				const to = ctrl.scope.to.val()
+				console.log('to', to)
+
+				if (to != '') {
+					contacts.unshift(to)
+				}
+				ctrl.setData({data: {to: contacts.join(',')}})
 			}
 		}
 	}

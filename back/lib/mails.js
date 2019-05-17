@@ -26,6 +26,8 @@ function imapConnect(userName, name, readyCallback) {
         tls: true
       }) 
 
+      imap.email = account.email
+
       imap.once('ready', function() {
         readyCallback(imap, resolve, reject)
       }) 
@@ -68,7 +70,7 @@ function decodeString(name) {
 }
 
 
-function decodeHeaders(buffer) {
+function decodeHeaders(buffer, myEmail) {
   //console.log('decodeHeaders', buffer)
   const headers = Imap.parseHeader(buffer)
   //console.log('headers', headers)
@@ -85,6 +87,10 @@ function decodeHeaders(buffer) {
   }
 
   return {
+    to: addrs.parseAddressList(headers.to[0])
+      .filter((a) => a.type == 'mailbox')
+      .filter((a) => a.address != myEmail)
+      .map((a) => {return {name: a.name, email: a.address}}),
     from: {
       name: addr.name || addr.address,
       email: addr.address
@@ -314,7 +320,7 @@ function openMailboxCb(mailboxName, pageNo) {
       const lastMsg = Math.max(1, firstMsg - nbMsgPerPage)
       const query = `${firstMsg}:${lastMsg}`
       console.log('query', query)
-      imapFetch(imap, query, {bodies: ['HEADER.FIELDS (FROM SUBJECT DATE)']}, function(data) {
+      imapFetch(imap, query, {bodies: ['HEADER.FIELDS (FROM TO SUBJECT DATE)']}, function(data) {
 
         const messages = []
 
@@ -322,7 +328,7 @@ function openMailboxCb(mailboxName, pageNo) {
           const {attrs, seqno, parts, buffer} = d
           const text = getPartIDByType(parts, 'text', 'plain')
           const html = getPartIDByType(parts, 'text', 'html')
-          const header = decodeHeaders(buffer)
+          const header = decodeHeaders(buffer, imap.email)
           header.seqno = seqno
           header.partID = {text, html}
           header.flags = attrs.flags

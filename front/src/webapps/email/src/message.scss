@@ -6,6 +6,15 @@
 	.header {
 		padding: 10px;
 
+		.to {
+			ul {
+				margin: 0;
+			}
+			strong {
+				cursor: pointer;
+			}				
+		}
+
 		.attachments {
 			ul {
 				margin: 0;

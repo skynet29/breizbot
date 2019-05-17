@@ -24,8 +24,8 @@ $$.control.registerControl('breizbot.contacts', {
 					const data =  $(this).data('item')
 					console.log('onItemClick', data)
 					if (showSelection) {
-						$(this).siblings('.w3-blue').removeClass('w3-blue')
-						$(this).addClass('w3-blue')						
+						//$(this).siblings('.w3-blue').removeClass('w3-blue')
+						$(this).toggleClass('w3-blue')						
 					}
 					elt.trigger('contactclick', data)					
 				},
@@ -53,7 +53,12 @@ $$.control.registerControl('breizbot.contacts', {
 		this.update = load
 
 		this.getSelection = function() {
-			return elt.find('li.w3-blue').data('item')
+			const ret = []
+			elt.find('li.w3-blue').each(function() {
+				ret.push($(this).data('item'))
+			})
+			console.log('ret', ret)
+			return ret
 		}
 
 	}

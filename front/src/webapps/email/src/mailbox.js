@@ -49,7 +49,8 @@ $$.control.registerControl('mailboxPage', {
 							item							
 						},
 						buttons: [
-							{name: 'reply', icon: 'fa fa-reply'}
+							{name: 'reply', icon: 'fa fa-reply'},
+							{name: 'replyAll', icon: 'fa fa-reply-all'}
 						]
 
 					})

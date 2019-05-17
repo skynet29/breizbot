@@ -20,7 +20,12 @@ $$.control.registerControl('friendsPage', {
 
 		this.onAction = function(cmd) {
 			console.log('onAction', cmd)
-			const {friendUserName, isConnected} = ctrl.scope.friends.getSelection()
+			const selection = ctrl.scope.friends.getSelection()
+			if (selection == undefined) {
+				$$.ui.showAlert({title: 'Error', content: 'Please select a friend'})
+				return
+			}
+			const {friendUserName, isConnected} = selection
 			console.log('userName', friendUserName)
 			if (!isConnected) {
 				$$.ui.showAlert({

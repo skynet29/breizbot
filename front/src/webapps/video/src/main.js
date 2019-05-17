@@ -127,11 +127,7 @@ $$.control.registerControl('rootPage', {
 
 		navigator.mediaDevices.getUserMedia({
 		  audio: true,
-		  video: {
-		  	// width: {max: elt.width()/ 2},
-		  	height: {max: elt.find('.video').height()/ 2}
-		  	//height: {max: 120}
-		  }
+		  video: true
 		})
 		.then(function(stream) {
 			console.log('localStream ready')

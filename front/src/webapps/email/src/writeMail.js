@@ -16,15 +16,25 @@ $$.control.registerControl('writeMailPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				data
+				data,
+				attachments: []
 			},
 			events: {
 				onSend: function(ev) {
 					console.log('onSend')
 					ev.preventDefault()
 					const data = $(this).getFormData()
-					srvMail.sendMail(accountName, data).then(() => {
+					const {attachments} = ctrl.model
+					if (attachments.length > 0) {
+						data.attachments = attachments.map((a) => a.rootDir + a.fileName)
+					}
+
+					srvMail.sendMail(accountName, data)
+					.then(() => {
 						$pager.popPage()
+					})
+					.catch((e) => {
+						$$.ui.showAlert({title: 'Error', content: e.responseText})
 					})
 
 				},
@@ -36,6 +46,13 @@ $$.control.registerControl('writeMailPage', {
 							{name: 'ok', icon: 'fa fa-check'}
 						]
 					})
+				},
+				onRemoveAttachment: function(ev) {
+					const idx = $(this).closest('li').index()
+					console.log('onRemoveAttachment', idx)
+					ctrl.model.attachments.splice(idx, 1)
+					ctrl.update()
+
 				}
 			}
 
@@ -52,12 +69,29 @@ $$.control.registerControl('writeMailPage', {
 			if (action == 'send') {
 				ctrl.scope.submit.click()
 			}
+			if( action == 'attachment') {
+				$pager.pushPage('breizbot.files', {
+					title: 'Select a file to attach',
+					props: {
+						cmd: 'attachFile',
+						showThumbnail: true
+					}
+				})
+			}
 		}
 
 		this.onReturn = function(retData) {
 			console.log('onReturn', retData)
+			if (retData == undefined) {
+				return
+			}
+			if (retData.cmd == 'attachFile') {
+				const {fileName, rootDir} = retData
+				ctrl.model.attachments.push({fileName, rootDir})
+				ctrl.update()
+			}
 
-			if (retData != undefined) {
+			else {
 				const contacts = retData.map((a) => a.contactEmail)
 				console.log('contacts', contacts)
 				const to = ctrl.scope.to.val()

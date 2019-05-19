@@ -11,6 +11,16 @@
 			<label>Subject:</label>
 			<input type="text" name="subject" required="">		
 		</div>	
+
+		<div bn-show="attachments.length > 0" class="attachments">
+			<label><i class="fa fa-paperclip"></i></label>			
+			<ul bn-each="attachments" bn-event="click.delete: onRemoveAttachment">
+				<li>
+					<span bn-text="$i.fileName"></span>
+					<i class="fa fa-times delete"></i>
+				</li>
+			</ul>
+		</div>
 	</div>
 	<textarea name="text" bn-bind="content"></textarea>	
 	<input type="submit" hidden="" bn-bind="submit">

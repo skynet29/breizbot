@@ -4,9 +4,13 @@ const  quotedPrintable = require('quoted-printable')
 const iconv  = require('iconv-lite')
 const nodemailer = require("nodemailer")
 const addrs = require("email-addresses")
+const path = require('path')
 
 require('colors')
 
+const config = require('../lib/config')
+
+const cloudPath = config.CLOUD_HOME
 
 const db = require('./db')
 
@@ -522,7 +526,7 @@ function moveMessage(userName, name, mailboxName, targetName, seqNos) {
 }
 
 function sendMail(userName, accountName, data) {
-  console.log('sendMail', userName, accountName, data)
+  console.log('sendMail', userName, accountName)
   return db.getMailAccount(userName, accountName).then((account) => {
 
     //console.log('account', account)
@@ -537,6 +541,13 @@ function sendMail(userName, accountName, data) {
     })
 
     data.from = account.email
+
+    if (data.attachments != undefined) {
+        data.attachments = data.attachments.map((a) => {
+          return {path: path.join(cloudPath, userName, a)}
+        })
+    }
+    console.log('data', data)
 
     return transporter.sendMail(data)
 

@@ -64,6 +64,7 @@ $$.control.registerControl('rootPage', {
 							accountName: ctrl.model.currentAccount
 						},
 						buttons: [
+							{name: 'attachment', icon: 'fa fa-paperclip'},
 							{name: 'send', icon: 'fa fa-paper-plane'}
 						]
 					})

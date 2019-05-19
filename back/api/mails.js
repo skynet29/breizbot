@@ -112,7 +112,7 @@ router.post('/sendMail', function(req, res) {
 	})
 	.catch((err) => {
 		console.log('err', err)
-		res.sendStatus(400)
+		res.status(400).send(err)
 	})	
 })
 

@@ -8,7 +8,8 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				agents: []
+				agents: [],
+				homeboxConnected: false
 			},
 			events: {
 				onActionStart: function() {
@@ -49,8 +50,9 @@ $$.control.registerControl('rootPage', {
 			dispTable(msg.data)
 		})
 
-
-
+		broker.register('breizbot.homebox.status', (msg) => {
+			ctrl.setData({homeboxConnected: msg.data.connected})
+		})
 	}
 });
 

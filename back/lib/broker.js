@@ -56,7 +56,8 @@ class Broker extends EventEmitter {
 
     client.on('close', (code)  => {
       console.log(`homebox client disconnected`)
-      this.homeboxClient = null      
+      this.homeboxClient = null    
+      this.sendMessage(undefined, 'breizbot.homebox.status', {connected: false})  
     })    
 
     client.on('error', (err) => {
@@ -77,7 +78,7 @@ class Broker extends EventEmitter {
       })       
     })
   
-
+    this.sendMessage(undefined, 'breizbot.homebox.status', {connected: true})
     
   }
 

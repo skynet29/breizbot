@@ -69,7 +69,7 @@ function onConnect(client, store) {
 		}		
 
 		const credentials = auth.parse(headers.authorization)
-		console.log('credentials', credentials)
+		//console.log('credentials', credentials)
 		const userName = credentials.name
 		db.getUserInfo(userName)
 		.then((userInfo) => {

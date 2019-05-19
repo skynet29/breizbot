@@ -143,6 +143,22 @@
   min-width: 80px;
   display: inline-block; }
 
+.writeMailPage .header .attachments {
+  display: flex;
+  flex-direction: row; }
+  .writeMailPage .header .attachments label {
+    text-align: center; }
+  .writeMailPage .header .attachments ul {
+    margin: 0;
+    padding: 0px; }
+    .writeMailPage .header .attachments ul li {
+      display: flex;
+      flex-direction: row;
+      align-items: center; }
+      .writeMailPage .header .attachments ul li i {
+        margin-left: 10px;
+        cursor: pointer; }
+
 .writeMailPage .header .openContactPanel {
   min-width: 80px; }
 

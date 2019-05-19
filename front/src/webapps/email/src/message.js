@@ -25,7 +25,7 @@ $$.control.registerControl('messagePage', {
 				item,
 				attachments: [],
 				canOpen: function(info) {
-					return (info.type == 'image' || info.subtype == 'pdf') && info.encoding.toUpperCase() == 'BASE64'
+					return (info.type == 'image' || info.subtype == 'pdf' || info.name.endsWith('.pdf')) && info.encoding.toUpperCase() == 'BASE64'
 				},
 				getSize: function(size) {
 					//console.log('getSize', size)
@@ -60,7 +60,7 @@ $$.control.registerControl('messagePage', {
 							]
 						})						
 					}
-					if (info.subtype == 'pdf') {
+					if (info.subtype == 'pdf' || info.name.endsWith('.pdf')) {
 						$pager.pushPage('pdfPage', {
 							title: info.name,
 							props,

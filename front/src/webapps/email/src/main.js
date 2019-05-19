@@ -49,6 +49,7 @@ $$.control.registerControl('rootPage', {
 						},
 						buttons: [
 							{name: 'reload', icon: 'fa fa-redo'},
+							{name: 'newMail', icon: 'fa fa-envelope'},
 							{name: 'move', icon: 'fa fa-file-export'},
 							{name: 'delete', icon: 'fa fa-trash'}
 						
@@ -59,7 +60,7 @@ $$.control.registerControl('rootPage', {
 				onNewEmail: function(ev) {
 					console.log('onNewEmail')
 					$pager.pushPage('writeMailPage', {
-						title: 'New message',
+						title: 'New Message',
 						props: {
 							accountName: ctrl.model.currentAccount
 						},

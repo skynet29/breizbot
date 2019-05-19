@@ -3,8 +3,8 @@
 	loading ...
 </div>
 <div class="header w3-blue" bn-show="!loading">
-	<div><strong>From: </strong><a href="#" bn-text="item.from.name" bn-event="click: onAddContact" bn-data="{addr: item.from}"></a></div>
-	<div><strong>Subject: </strong><span bn-text="item.subject" ></span></div>
+	<div class="from"><strong>From:</strong><a href="#" bn-text="item.from.name" bn-event="click: onAddContact" bn-data="{addr: item.from}"></a></div>
+	<div class="subject"><strong>Subject:</strong><span bn-text="item.subject" ></span></div>
 	<div bn-show="item.to.length > 0" class="to">
 		<strong bn-event="click: onToggleDiv"><i class="fa fa-caret-down fa-fw"></i>
 		To</strong>

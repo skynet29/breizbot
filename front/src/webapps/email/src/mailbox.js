@@ -42,7 +42,7 @@ $$.control.registerControl('mailboxPage', {
 					// $(this).addClass('w3-blue')
 					const item = $(this).closest('tr').data('item')
 					$pager.pushPage('messagePage', {
-						title: `Message #${item.seqno}`,
+						title: `Message #${ctrl.model.nbMsg - item.seqno + 1}`,
 						props: {
 							currentAccount,
 							mailboxName,
@@ -150,6 +150,19 @@ $$.control.registerControl('mailboxPage', {
 
 		load(1)
 
+		function newMessage() {
+			$pager.pushPage('writeMailPage', {
+				title: 'New Message',
+				props: {
+					accountName: currentAccount
+				},
+				buttons: [
+					{name: 'attachment', icon: 'fa fa-paperclip'},
+					{name: 'send', icon: 'fa fa-paper-plane'}
+				]
+			})			
+		}
+
 
 		this.onAction = function(action) {
 			console.log('onAction', action)
@@ -163,6 +176,10 @@ $$.control.registerControl('mailboxPage', {
 
 			if (action == 'move') {
 				moveMessage()
+			}
+
+			if (action == 'newMail') {
+				newMessage()
 			}			
 		}
 

@@ -113,6 +113,14 @@
       margin: 0; }
     .messagePage .header .attachments strong {
       cursor: pointer; }
+    .messagePage .header .subject {
+      display: flex; }
+      .messagePage .header .subject strong {
+        min-width: 80px; }
+    .messagePage .header .from {
+      display: flex; }
+      .messagePage .header .from strong {
+        min-width: 80px; }
   .messagePage .mainText {
     flex: 1;
     padding: 10px;

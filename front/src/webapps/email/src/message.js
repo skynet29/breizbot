@@ -11,6 +11,11 @@ $$.control.registerControl('messagePage', {
 		item: null
 	},
 
+	buttons: [
+		{name: 'reply', icon: 'fa fa-reply'},
+		{name: 'replyAll', icon: 'fa fa-reply-all'}
+	],	
+
 	init: function(elt, srvMail, users) {
 
 		const {$pager, currentAccount, mailboxName, item} = this.props
@@ -53,20 +58,13 @@ $$.control.registerControl('messagePage', {
 					if (info.type == 'image') {
 						$pager.pushPage('imagePage', {
 							title: info.name,
-							props,
-							buttons: [
-								{name: 'save', icon: 'fa fa-save'},
-								{name: 'fit', icon: 'fa fa-expand'}
-							]
+							props
 						})						
 					}
 					if (info.subtype == 'pdf' || info.name.endsWith('.pdf')) {
 						$pager.pushPage('pdfPage', {
 							title: info.name,
-							props,
-							buttons: [
-								{name: 'save', icon: 'fa fa-save'}
-							]
+							props
 						})						
 					}
 
@@ -118,10 +116,7 @@ $$.control.registerControl('messagePage', {
 						title: 'Add Contact',
 						props: {
 							from
-						},
-						buttons: [
-							{name: 'add', icon: 'fa fa-user-plus'}
-						]
+						}
 					})
 				}
 			}
@@ -158,10 +153,7 @@ $$.control.registerControl('messagePage', {
 						subject: 'Re: ' + item.subject,
 						text
 					}
-				},
-				buttons: [
-					{name: 'send', icon: 'fa fa-paper-plane'}
-				]
+				}
 			})			
 		}
 

@@ -12,6 +12,11 @@ $$.control.registerControl('imagePage', {
 		seqno: ''
 	},
 
+	buttons: [
+		{name: 'save', icon: 'fa fa-save'},
+		{name: 'fit', icon: 'fa fa-expand'}
+	],	
+
 	init: function(elt, srvMail, files) {
 
 		const {$pager, info, currentAccount, mailboxName, seqno} = this.props

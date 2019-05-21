@@ -75,6 +75,7 @@ app.use('/api/debug', require('./api/debug'))
 app.use('/api/mails', require('./api/mails'))
 
 app.use('/brainjs', express.static(config.BRAINJS_HOME))
+app.use('/lib', express.static(path.join(__dirname, '../front/externals')))
 app.use(express.static(path.join(__dirname, '../front/dist')))
 
 if (config.USESSL) {
@@ -104,6 +105,8 @@ else {
 	app.listen(config.httpPort, function() {
 		console.log('Server listening on port ' + config.httpPort)
 	})	
+
+	wss.init({}, store)
 }
 
 }

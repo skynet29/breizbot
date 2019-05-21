@@ -13,10 +13,12 @@
 
 			this.registeredTopics = {}
 
-			const {host, pathname} = location
+			let {hostname, pathname, protocol} = location
 			const port = 8090
+			protocol= (protocol == 'http:') ? 'ws:' : 'wss:'
 
-			this.url = `wss://${host}:${port}/hmi${pathname}`
+
+			this.url = `${protocol}//${hostname}:${port}/hmi${pathname}`
 		}
 
 

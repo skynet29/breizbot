@@ -11,6 +11,10 @@ $$.control.registerControl('boxesPage', {
 		seqNos: []
 	},
 
+	buttons: [
+		{name: 'apply', icon: 'fa fa-check'}
+	],
+	
 	init: function(elt, srvMail) {
 
 		const {$pager, currentAccount, mailboxName, seqNos} = this.props

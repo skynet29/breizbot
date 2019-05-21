@@ -8,6 +8,10 @@ $$.control.registerControl('accountPage', {
 		$pager: null
 	},
 
+	buttons: [
+		{name: 'create', icon: 'fa fa-check'}
+	],
+
 	init: function(elt, srvMail) {
 
 		const {$pager} = this.props

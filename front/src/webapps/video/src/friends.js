@@ -6,6 +6,10 @@ $$.control.registerControl('friendsPage', {
 		$pager: null
 	},
 
+	buttons: [
+		{name: 'call', icon: 'fa fa-phone fa-flip-vertical'}
+	],
+
 	init: function(elt) {
 
 		const {$pager} = this.props

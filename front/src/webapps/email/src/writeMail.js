@@ -10,6 +10,11 @@ $$.control.registerControl('writeMailPage', {
 		data: {}
 	},
 
+	buttons: [
+		{name: 'attachment', icon: 'fa fa-paperclip'},
+		{name: 'send', icon: 'fa fa-paper-plane'}
+	],	
+
 	init: function(elt, srvMail) {
 
 		const {$pager, accountName, data} = this.props
@@ -41,10 +46,7 @@ $$.control.registerControl('writeMailPage', {
 				openContact: function() {
 					console.log('openContact')
 					$pager.pushPage('contactsPage', {
-						title: 'Select a contact',
-						buttons: [
-							{name: 'ok', icon: 'fa fa-check'}
-						]
+						title: 'Select a contact'
 					})
 				},
 				onRemoveAttachment: function(ev) {

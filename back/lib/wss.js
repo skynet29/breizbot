@@ -13,8 +13,10 @@ const brokers = {}
 let wss
 
 function init(options, store) {
-	options.secure = true
-
+	if (Object.keys(options).length != 0) {
+		options.secure = true
+	}
+	
 	wss = ws.createServer(options, function(client) {
 		onConnect(client, store)
 	})

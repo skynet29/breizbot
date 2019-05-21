@@ -30,10 +30,7 @@ $$.control.registerControl('rootPage', {
 					const url = ctrl.scope.camera.takePicture()
 					$pager.pushPage('snapPage', {
 						title: 'Snapshot', 
-						props: {url},
-						buttons: [
-							{label: 'Save', icon: 'fa fa-save'}
-						]
+						props: {url}
 					})					
 				}
 			}

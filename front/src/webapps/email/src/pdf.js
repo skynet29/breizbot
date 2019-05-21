@@ -12,6 +12,10 @@ $$.control.registerControl('pdfPage', {
 		seqno: ''
 	},
 
+	buttons: [
+		{name: 'save', icon: 'fa fa-save'}
+	],	
+
 	init: function(elt, srvMail, files) {
 
 		const {$pager, info, currentAccount, mailboxName, seqno} = this.props

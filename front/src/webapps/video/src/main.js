@@ -31,18 +31,9 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onCall: function(ev) {
 					console.log('onCall')
-					// $$.ui.showPrompt({title: 'Call', content: 'User Name:'}, function(userName){
-					// 	rtc.call(userName)
-					// 	.then(() => {
-					// 		ctrl.setData({status: 'calling', distant: userName})
-					// 	})
-					// 	.catch((e) => {
-					// 		$$.ui.showAlert({title: 'Error', content: e.responseText})
-					// 	})
-					// })
+
 					$pager.pushPage('friendsPage', {
-						title: 'Select a friend',
-						buttons: [{name: 'call', icon: 'fa fa-phone fa-flip-vertical'}]
+						title: 'Select a friend'
 					})
 
 				},

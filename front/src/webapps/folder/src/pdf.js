@@ -9,6 +9,10 @@ $$.control.registerControl('pdfPage', {
 		fullName: ''
 	},
 
+	buttons: [
+		{name: 'del', icon: 'fa fa-trash'}
+	],
+	
 	init: function(elt, files) {
 
 		const {$pager, fullName} = this.props

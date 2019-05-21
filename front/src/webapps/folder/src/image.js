@@ -10,6 +10,11 @@ $$.control.registerControl('imagePage', {
 		fullName: ''
 	},
 
+	buttons: [
+		{name: 'del', icon: 'fa fa-trash'},
+		{name: 'fit', icon: 'fa fa-expand'}
+	],
+	
 	init: function(elt, files) {
 
 		const {$pager, fullName} = this.props

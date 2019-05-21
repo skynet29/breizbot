@@ -9,6 +9,10 @@ $$.control.registerControl('snapPage', {
 		url: null
 	},
 
+	buttons: [
+		{label: 'Save', icon: 'fa fa-save'}
+	],	
+
 	init: function(elt, files) {
 
 		const {url, $pager} = this.props

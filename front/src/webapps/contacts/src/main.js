@@ -17,10 +17,7 @@ $$.control.registerControl('rootPage', {
 				onAddContact: function() {
 					console.log('onAddContact')
 					$pager.pushPage('addContactPage', {
-						title: 'Add Contact',
-						buttons: [
-							{name: 'add', icon: 'fa fa-user-plus'}
-						]
+						title: 'Add Contact'
 					})
 				}
 			}

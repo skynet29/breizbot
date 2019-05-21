@@ -22,8 +22,7 @@ $$.control.registerControl('rootPage', {
 				onCreateAccount: function() {
 					console.log('onCreateAccount')
 					$pager.pushPage('accountPage', {
-						title: 'Create Mail Account',
-						buttons: [{name: 'create', icon: 'fa fa-check'}]
+						title: 'Create Mail Account'
 					})
 				},
 				onAccountChange: function() {
@@ -46,14 +45,7 @@ $$.control.registerControl('rootPage', {
 						props: {
 							currentAccount,
 							mailboxName
-						},
-						buttons: [
-							{name: 'reload', icon: 'fa fa-redo'},
-							{name: 'newMail', icon: 'fa fa-envelope'},
-							{name: 'move', icon: 'fa fa-file-export'},
-							{name: 'delete', icon: 'fa fa-trash'}
-						
-						]
+						}
 					})
 				},
 
@@ -63,11 +55,7 @@ $$.control.registerControl('rootPage', {
 						title: 'New Message',
 						props: {
 							accountName: ctrl.model.currentAccount
-						},
-						buttons: [
-							{name: 'attachment', icon: 'fa fa-paperclip'},
-							{name: 'send', icon: 'fa fa-paper-plane'}
-						]
+						}
 					})
 				}
 			}

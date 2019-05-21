@@ -10,6 +10,14 @@ $$.control.registerControl('mailboxPage', {
 		mailboxName: ''
 	},
 
+	buttons: [
+		{name: 'reload', icon: 'fa fa-redo'},
+		{name: 'newMail', icon: 'fa fa-envelope'},
+		{name: 'move', icon: 'fa fa-file-export'},
+		{name: 'delete', icon: 'fa fa-trash'}
+	
+	],	
+
 	init: function(elt, srvMail) {
 
 		const {$pager, currentAccount, mailboxName} = this.props
@@ -47,12 +55,7 @@ $$.control.registerControl('mailboxPage', {
 							currentAccount,
 							mailboxName,
 							item							
-						},
-						buttons: [
-							{name: 'reply', icon: 'fa fa-reply'},
-							{name: 'replyAll', icon: 'fa fa-reply-all'}
-						]
-
+						}
 					})
 				},
 
@@ -137,10 +140,7 @@ $$.control.registerControl('mailboxPage', {
 					currentAccount,
 					mailboxName,
 					seqNos
-				},
-				buttons: [
-					{name: 'apply', icon: 'fa fa-check'}
-				]
+				}
 			})
 			// srvMail.deleteMessage(currentAccount, mailboxName, seqNos).then(() => {
 			// 	console.log('Messages deleted')
@@ -155,11 +155,7 @@ $$.control.registerControl('mailboxPage', {
 				title: 'New Message',
 				props: {
 					accountName: currentAccount
-				},
-				buttons: [
-					{name: 'attachment', icon: 'fa fa-paperclip'},
-					{name: 'send', icon: 'fa fa-paper-plane'}
-				]
+				}
 			})			
 		}
 

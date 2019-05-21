@@ -1,0 +1,7 @@
+{	
+	"iconCls": "fa fa-cube fa-2x",
+	"colorCls": "w3-amber",
+	"title": "Demo 1",
+	"styles": ["app.css"],
+	"scripts": ["/lib/aframe/aframe-master.min.js"]
+}

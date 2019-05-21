@@ -26,11 +26,7 @@ $$.control.registerControl('rootPage', {
 							title: fileName,
 							props: {
 								fullName
-							},
-							buttons: [
-								{name: 'del', icon: 'fa fa-trash'},
-								{name: 'fit', icon: 'fa fa-expand'}
-							]
+							}
 						})
 					}
 
@@ -39,10 +35,7 @@ $$.control.registerControl('rootPage', {
 							title: fileName,
 							props: {
 								fullName
-							},
-							buttons: [
-								{name: 'del', icon: 'fa fa-trash'}
-							]
+							}
 						})						
 					}	
 
@@ -52,10 +45,7 @@ $$.control.registerControl('rootPage', {
 							title: fileName,
 							props: {
 								fullName
-							},
-							buttons: [
-								{name: 'del', icon: 'fa fa-trash'}
-							]
+							}
 						})						
 					}									
 

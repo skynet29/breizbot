@@ -9,6 +9,10 @@ $$.control.registerControl('addContactPage', {
 		from: {}
 	},
 
+	buttons: [
+		{name: 'add', icon: 'fa fa-user-plus'}
+	],	
+
 	init: function(elt, users) {
 
 		const {$pager, from} = this.props

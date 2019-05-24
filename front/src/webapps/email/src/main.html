@@ -4,11 +4,9 @@
 		<p bn-show="accounts.length > 0">Account: 
 			<select 
 				bn-control="brainjs.selectmenu" 
-				bn-each="accounts" 
+				bn-data="{items: accounts}" 
 				bn-val="currentAccount"
-				bn-iface="accounts"
 				bn-event="selectmenuchange: onAccountChange">
-				<option bn-text="$i"></option>
 			</select>
 		</p>
 		

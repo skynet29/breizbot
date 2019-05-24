@@ -73,6 +73,7 @@ app.use('/api/files', require('./api/files'))
 app.use('/api/rtc', require('./api/rtc'))
 app.use('/api/debug', require('./api/debug'))
 app.use('/api/mails', require('./api/mails'))
+app.use('/api/media', require('./api/media'))
 
 app.use('/brainjs', express.static(config.BRAINJS_HOME))
 app.use('/lib', express.static(path.join(__dirname, '../front/externals')))

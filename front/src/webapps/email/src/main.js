@@ -72,7 +72,6 @@ $$.control.registerControl('rootPage', {
 				const currentAccount = accounts[0]
 				console.log('currentAccount', currentAccount)
 				ctrl.setData({accounts, currentAccount})
-				ctrl.scope.accounts.refresh()
 				loadMailboxes()
 			})			
 		}

@@ -17,6 +17,8 @@ class Broker extends EventEmitter {
 		this.userName = userName
 		this.history = {}
     this.homeboxClient = null
+    this.services = new EventEmitter()
+
     setInterval(() => {
       //console.log('[Broker] check connection')
       const disconnnectedClients = this.clients.filter((client) => {return !client.pingOk})
@@ -37,6 +39,10 @@ class Broker extends EventEmitter {
 
     console.log('[Broker] setHomeboxClient', this.userName, client.path)
 
+    if (this.homeboxClient != null) {
+      this.homeboxClient.close()
+    }
+    
     this.homeboxClient = client
     client.userName = this.userName
 
@@ -51,6 +57,9 @@ class Broker extends EventEmitter {
       if (msg.type == 'notif') {
         this.broadcastToSubscribers(msg)
       }
+      if (msg.type == 'callServiceResp') {
+        this.services.emit(msg.srvName, msg)
+      }      
 
     })
 
@@ -276,6 +285,30 @@ class Broker extends EventEmitter {
     return this.clients
   }
 
+  callService(srvName, data) {
+    console.log('[broker] callService', srvName, data)
+    return new Promise((resolve, reject) => {
+      if (this.homeboxClient == null) {
+        reject('homebox is not connected')
+        return
+      }
+
+      this.services.once(srvName, function(msg) {
+        if (msg.err != undefined) {
+          reject(msg.err)
+        }
+        else {
+          resolve(msg.data)
+        }
+      })
+
+      sendMsg(this.homeboxClient, {
+        type: 'callService',
+        srvName,
+        data
+      })
+    })
+  }
 
 }
 

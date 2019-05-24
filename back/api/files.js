@@ -189,15 +189,6 @@ function isImage(fileName) {
 
 
 
-
-router.get('/load', function(req, res) {
-	console.log('load req', req.query)
-	var fileName = req.query.fileName
-	var user = req.session.user
-
-	res.sendFile(path.join(cloudPath, user, fileName))
-})
-
 router.get('/load', function(req, res) {
 	console.log('load req', req.query)
 	const fileName = req.query.fileName

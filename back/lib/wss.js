@@ -16,7 +16,7 @@ function init(options, store) {
 	if (Object.keys(options).length != 0) {
 		options.secure = true
 	}
-	
+
 	wss = ws.createServer(options, function(client) {
 		onConnect(client, store)
 	})
@@ -77,13 +77,7 @@ function onConnect(client, store) {
 		.then((userInfo) => {
 			const {pwd} = userInfo
 			if (pwd === credentials.pass) {
-					const broker = getBroker(userName)	
-					if (broker.homeboxClient != null) {
-						sendError(client, 'A homebox is already connected')
-					}
-					else {
-						broker.setHomeboxClient(client)
-					}
+					getBroker(userName).setHomeboxClient(client)
 			}
 			else {
 				sendError(client, 'Bad password')
@@ -159,11 +153,18 @@ function isUserConnected(userName) {
 	return getBroker(userName).hasClient()
 }
 
+
+function callService(userName, srvName, data) {
+	console.log('[WSS] callService', userName, srvName, data)
+	return getBroker(userName).callService(srvName, data)
+}
+
 module.exports = {
 	init,
 	sendMessage,
 	getBroker,
 	sendTo,
 	getClients,
-	isUserConnected
+	isUserConnected,
+	callService
 }

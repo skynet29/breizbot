@@ -19,25 +19,6 @@ $$.control.registerControl('rootPage', {
 					const {fileName, rootDir, isImage} = data
 					const fullName = rootDir + fileName
 
-					if (isImage) {						
-						$pager.pushPage('imagePage', {
-							title: fileName,
-							props: {
-								fullName
-							}
-						})
-					}
-
-					if (fileName.endsWith('.pdf')) {
-						$pager.pushPage('pdfPage', {
-							title: fileName,
-							props: {
-								fullName
-							}
-						})						
-					}	
-
-
 					if (fileName.endsWith('.ogg') || fileName.endsWith('.mp3')) {
 						$pager.pushPage('soundPage', {
 							title: fileName,

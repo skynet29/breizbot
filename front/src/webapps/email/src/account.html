@@ -4,8 +4,7 @@
 		<div bn-control="brainjs.inputgroup">
 			<label>Provider</label>
 			<select bn-control="brainjs.selectmenu" bn-event="selectmenuchange: onProviderChange" bn-val="provider"
-			bn-each="providers">
-				<option bn-text="$i"></option>
+			bn-data="{items: providers}">
 			</select>		
 		</div>			
 

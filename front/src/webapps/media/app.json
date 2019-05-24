@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fa fa-film fa-2x",
+	"colorCls": "w3-yellow",
+	"title": "Media",
+	"styles": ["app.css"]
+}

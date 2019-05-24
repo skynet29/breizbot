@@ -20,7 +20,6 @@
   flex-wrap: wrap;
   align-content: start; }
 
-
 .breizbot-files .contentPanel {
   height: 100%;
   overflow: hidden;
@@ -50,6 +49,38 @@
   top: 5px; }
 
 .breizbot-files .toolbar {
+  margin-bottom: 10px; }
+
+
+.breizbot-media .contentPanel {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  margin: 10px; }
+
+.breizbot-media .container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  align-content: start; }
+
+.breizbot-media .scrollPanel {
+  flex: 1;
+  overflow-y: auto; }
+
+.breizbot-media .thumbnail {
+  margin: 10px;
+  position: relative;
+  border: 1px solid black; }
+
+.breizbot-media .check {
+  position: absolute;
+  left: 5px;
+  top: 5px; }
+
+.breizbot-media .toolbar {
   margin-bottom: 10px; }
 
 .breizbot-header .header {

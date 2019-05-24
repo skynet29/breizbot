@@ -1,0 +1,17 @@
+.videoPage {
+	//margin: 10px;
+	height: 100%;
+	//overflow: hidden;
+
+	div {
+		height: 100%;
+
+		video {
+			object-fit: scale-down;
+			width: 100%;
+			height: 100%;
+		}		
+	}
+
+
+}

@@ -53,6 +53,9 @@ $$.control.registerControl('breizbot.files', {
 					if (name.endsWith('.ogg') || name.endsWith('.mp3')) {
 						return 'fa-file-audio'
 					}
+					if (name.endsWith('.mp4')) {
+						return 'fa-file-video'
+					}
 					return 'fa-file'
 				}
 			},

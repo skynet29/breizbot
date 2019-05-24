@@ -2,11 +2,14 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
+	deps: ['breizbot.media'],
+
+
 	props: {
 		$pager: null
 	},
 
-	init: function(elt) {
+	init: function(elt, srvMedia) {
 
 		const {$pager} = this.props
 
@@ -16,14 +19,15 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onFileClick: function(ev, data) {
 					console.log('onFileClick', data)
-					const {fileName, rootDir, isImage} = data
+					const {fileName, rootDir, driveName} = data
 					const fullName = rootDir + fileName
+					const url = srvMedia.fileUrl(driveName, fullName)
 
 					if (fileName.endsWith('.ogg') || fileName.endsWith('.mp3')) {
 						$pager.pushPage('soundPage', {
 							title: fileName,
 							props: {
-								fullName
+								url
 							}
 						})						
 					}
@@ -32,7 +36,7 @@ $$.control.registerControl('rootPage', {
 						$pager.pushPage('videoPage', {
 							title: fileName,
 							props: {
-								fullName
+								url
 							}
 						})						
 					}														

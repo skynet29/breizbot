@@ -1,51 +1,22 @@
 $$.control.registerControl('soundPage', {
 
-	deps: ['breizbot.files'],
-
 	template: {gulp_inject: './sound.html'},
 
 	props: {
 		$pager: null,
-		rootDir: '',
-		fullName: ''
+		url: '',
 	},
-
-	buttons: [
-		{name: 'del', icon: 'fa fa-trash'}
-	],
 	
-	init: function(elt, files) {
+	init: function(elt) {
 
-		const {$pager, fullName} = this.props
+		const {$pager, url} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				url: files.fileUrl(fullName)
+				url
 			}
 		})
 
-		function remove() {
-			$$.ui.showConfirm({title: 'Remove file', content: 'Are you sure ?'}, function() {
-				files.removeFiles([fullName])
-				.then(function(resp) {
-					console.log('resp', resp)
-					$pager.popPage('reload')
-				})
-				.catch(function(resp) {
-					console.log('resp', resp)
-					$$.ui.showAlert({
-						content: resp.responseText,
-						title: 'Error'
-					})
-				})
-			})			
-		}
-
-		this.onAction = function(action) {
-			if (action == 'del') {
-				remove()
-			}
-		}
 
 	}
 });

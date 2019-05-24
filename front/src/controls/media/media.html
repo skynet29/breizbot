@@ -15,10 +15,10 @@
 	</div>
 
 	<div>
-		<span bn-text="errorMsg"></span>
+		<span bn-text="errorMsg" class="w3-text-red"></span>
 	</div>
 
-	<div class="pathPanel">
+	<div class="pathPanel" bn-show="drives.length > 0">
 		Path:&nbsp;<span bn-text="rootDir"></span>
 	</div>
 
@@ -38,12 +38,12 @@
 						
 						<span bn-text="f.name"></span>
 					</div>
-					<div bn-if="!f.folder" bn-attr="{title: getSize(f.size)}" class="file">
+					<div bn-if="!f.folder" bn-attr="{title: f.name + '\n' + getSize(f.size)}" class="file">
 						<div>
 							<i bn-attr="{class: `fa fa-4x w3-text-blue-grey ${getIconClass(f.name)}`}"></i>
 						</div>
 						
-						<span bn-text="f.name"></span>
+						<span bn-text="f.name.slice(0, 20)"></span>
 					</div>			
 				
 			</div>

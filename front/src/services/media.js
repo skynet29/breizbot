@@ -10,8 +10,11 @@ $$.service.registerService('breizbot.media', {
 
 			list: function(driveName, destPath) {
 				return http.post('/api/media/list', {driveName, destPath})
-			}
+			},
 
+			fileUrl: function(driveName, fileName) {
+				return `/api/media/load?driveName=${driveName}&fileName=${fileName}`
+			},
 
 		}
 	},

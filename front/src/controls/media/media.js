@@ -17,7 +17,13 @@ $$.control.registerControl('breizbot.media', {
 				errorMsg: '',
 				currentDrive: '',
 				getSize: function(size) {
-					return 'Size : ' + Math.floor(size/1024) + ' Ko'
+					let unit = 'Ko'
+					size /= 1024
+					if (size > 1024) {
+						unit = 'Mo'
+						size /= 1024
+					}
+					return 'Size : ' + Math.floor(size) + ' ' + unit
 				},
 
 				getIconClass: function(name) {
@@ -39,20 +45,15 @@ $$.control.registerControl('breizbot.media', {
 			events: {
 				onFileClick: function(ev) {
 					const info = $(this).closest('.thumbnail').data('info')
-					//console.log('onFileClick', info)
+					console.log('onFileClick', info)
 					const data = {
+						driveName: ctrl.model.currentDrive,
 						fileName: info.name,
-						rootDir: ctrl.model.rootDir,                       
-						isImage: info.isImage,
-						cmd
+						rootDir: ctrl.model.rootDir                      
+
 					}
 
-					if ($pager != null) {
-						$pager.popPage(data)
-					}
-					else {
-						elt.trigger('fileclick', data)
-					}
+					elt.trigger('fileclick', data)
 				},
 
 				onFolderClick: function(ev) {

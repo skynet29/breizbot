@@ -6,6 +6,10 @@ $$.control.registerControl('breizbot.addUser', {
 		$pager: null
 	},
 
+	buttons: [
+		{label: 'Create', name: 'create'}
+	],
+
 	init: function(elt) {
 
 		const {$pager} = this.props

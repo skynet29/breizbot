@@ -18,8 +18,7 @@ $$.control.registerControl('breizbot.users', {
 			events: {
 				onAddUser: function(ev) {
 					$pager.pushPage('breizbot.addUser', {
-						title: 'Add User',
-						buttons: [{label: 'Create', name: 'create'}]
+						title: 'Add User'
 					})
 				},
 				onDelete: function(ev) {

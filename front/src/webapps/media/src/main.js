@@ -18,7 +18,7 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onFileClick: function(ev, data) {
-					console.log('onFileClick', data)
+					//console.log('onFileClick', data)
 					const {fileName, rootDir, driveName} = data
 					const fullName = rootDir + fileName
 					const url = srvMedia.fileUrl(driveName, fullName)

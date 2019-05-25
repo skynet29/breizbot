@@ -18,6 +18,12 @@ $$.control.registerControl('videoPage', {
 			}
 		})
 
+		this.dispose = function() {
+			//console.log('[media] dispose')
+			ctrl.scope.video.get(0).pause()
+			ctrl.scope.video.removeAttr('src')
+		}
+
 	}
 });
 

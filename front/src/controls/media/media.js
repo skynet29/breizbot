@@ -45,7 +45,7 @@ $$.control.registerControl('breizbot.media', {
 			events: {
 				onFileClick: function(ev) {
 					const info = $(this).closest('.thumbnail').data('info')
-					console.log('onFileClick', info)
+					//console.log('onFileClick', info)
 					const data = {
 						driveName: ctrl.model.currentDrive,
 						fileName: info.name,

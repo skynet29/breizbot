@@ -34,6 +34,19 @@ router.post('/list', function(req, res) {
 
 })
 
+function getMimeType(fileName) {
+	if (fileName.endsWith('.mp4')) {
+		return 'video/mp4'
+	}
+	if (fileName.endsWith('.mp3')) {
+		return 'audio/mpeg'
+	}
+	if (fileName.endsWith('.ogg')) {
+		return 'audio/ogg'
+	}
+
+}
+
 router.get('/load', function(req, res) {
 	console.log('load req', req.query)
 	const {fileName, driveName} = req.query
@@ -52,7 +65,7 @@ router.get('/load', function(req, res) {
 		console.log('start:', start, 'size:', size, 'bytesRead:', bytesRead, 'end:', end)
 		res.writeHead(206, {
 			'Content-Length': bytesRead,
-			'Content-Type': 'video/mp4',
+			'Content-Type': getMimeType(fileName),
 			'Accept-Ranges': 'bytes',
 			'Content-Range': `bytes ${start}-${end}/${size}`
 		})	

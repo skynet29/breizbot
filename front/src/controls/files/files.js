@@ -40,7 +40,13 @@ $$.control.registerControl('breizbot.files', {
 				operation: 'none',
 				nbSelection: 0,
 				getSize: function(size) {
-					return 'Size : ' + Math.floor(size/1024) + ' Ko'
+					let unit = 'Ko'
+					size /= 1024
+					if (size > 1024) {
+						unit = 'Mo'
+						size /= 1024
+					}
+					return 'Size : ' + Math.floor(size) + ' ' + unit
 				},
 
 				getIconClass: function(name) {

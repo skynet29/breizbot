@@ -68,22 +68,21 @@
 						
 						<span bn-text="f.name"></span>
 					</div>
-					<div bn-if="!f.folder && (!f.isImage || !showThumbnail)" bn-attr="{title: getSize(f.size)}" class="file">
+					<div bn-if="!f.folder && (!f.isImage || !showThumbnail)" bn-attr="{title: f.name + '\n' + getSize(f.size)}" class="file">
 						<div>
 							<i bn-attr="{class: `fa fa-4x w3-text-blue-grey ${getIconClass(f.name)}`}"></i>
 						</div>
 						
-						<span bn-text="f.name"></span>
+						<span bn-text="f.name.slice(0, 20)"></span>
 					</div>			
 
-					<div bn-if="!f.folder && f.isImage && showThumbnail" bn-attr="{title: getSize(f.size)}" class="file">
+					<div bn-if="!f.folder && f.isImage && showThumbnail" bn-attr="{title: f.name + '\n' + getSize(f.size)}" class="file">
 						<div>
 							<img bn-attr="{src: f.thumbnailUrl}">
 						</div>
 						
-						<span bn-text="f.name"></span>
-					</div>			
-
+						<span bn-text="f.name.slice(0, 20)"></span>
+					</div>	
 				
 			</div>
 		</div>

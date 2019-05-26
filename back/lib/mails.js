@@ -51,7 +51,7 @@ function imapConnect(userName, name, readyCallback) {
 
 function decodeString(name) {
   name = name.trim()
-  //console.log('decodeString', name)
+  console.log('decodeString', name)
 
   if (name.toUpperCase().startsWith('=?UTF-8?B?')) {
     const t = name.split('?')
@@ -76,7 +76,7 @@ function decodeString(name) {
 
 function decodeHeaders(buffer, myEmail) {
   //console.log('decodeHeaders', buffer)
-  const headers = Imap.parseHeader(buffer)
+  const headers = Imap.parseHeader(buffer.toString('utf8'))
   //console.log('headers', headers)
   let addr = {
     name: 'unknown',
@@ -111,7 +111,7 @@ function decodeHeaders(buffer, myEmail) {
 
 
 function decodeBody(body, info) {
-  //console.log('decodeBody', info)
+  console.log('decodeBody', info)
    const {encoding, params} = info
 
    console.log('body.length', body.length)
@@ -123,10 +123,14 @@ function decodeBody(body, info) {
    }
 
    if (encoding.toUpperCase() === 'QUOTED-PRINTABLE') {
-     body = quotedPrintable.decode(body)
+     body = quotedPrintable.decode(body.toString('utf8'))
 
      body = iconv.decode(body, params.charset)
 
+   }
+   if (encoding.toUpperCase() === '8BIT') {
+      const buff = new Buffer(body, 'binary')
+      body = iconv.decode(buff, params.charset)
    }
 
   return body
@@ -211,14 +215,14 @@ function imapFetch(imap, query, options, callback) {
 
   f.on('message', function(msg, seqno) {
     //console.log('message #', seqno)
-    let buffer = ''
+    let buffer = new Buffer(0)
 
     msg.on('body', function(stream, info) {
       //console.log('body', info)
       
 
       stream.on('data', function(chunk) {
-        buffer += chunk.toString('utf8')
+        buffer = Buffer.concat([buffer, chunk])
       })
 
       stream.once('end', function() {
@@ -438,7 +442,7 @@ function openAttachmentCb(mailboxName, seqNo, partID) {
 
       imapFetch(imap, seqNo, {bodies: [partID]}, function(data) {
 
-        resolve({data: data[0].buffer})        
+        resolve({data: data[0].buffer.toString('utf8')})        
 
       })
 

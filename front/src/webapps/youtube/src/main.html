@@ -1,0 +1,39 @@
+
+
+<form bn-event="submit: onStart" bn-bind="form">
+	<input type="url" name="url" placeholder="Paste video link url here" required="">
+	<button class="w3-button w3-blue" type="submit">Start</button>
+</form>
+
+<div class="info" bn-show="title != ''">
+	<div class="thumbnail">
+		<img bn-attr="{src: thumbnail_url}">
+		<div class="download">
+			<button 
+				class="w3-button w3-green" 
+				title="Download"
+				bn-event="click: onDownload"
+				><i class="fa fa-download"></i></button>
+			
+		</div>
+		<div>
+			<div class="w3-border" bn-show="percent != '0%'">
+				<div class="w3-container w3-green w3-center" bn-style="{width: percent}" bn-text="percent"></div>
+			</div>
+		</div>
+	</div>
+	<div class="details">
+		<div>
+			<strong>Title: </strong> <span bn-text="title"></span>				
+		</div>
+		<div>
+			<strong>Length (sec): </strong><span bn-text="length_seconds"></span>	
+		</div>
+		<div class="description">
+			<strong>Description: </strong><textarea bn-text="description"></textarea>	
+		</div>		
+		
+	</div>
+
+</div>
+	

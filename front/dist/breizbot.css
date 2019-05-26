@@ -20,6 +20,7 @@
   flex-wrap: wrap;
   align-content: start; }
 
+
 .breizbot-files .contentPanel {
   height: 100%;
   overflow: hidden;
@@ -51,6 +52,17 @@
 .breizbot-files .toolbar {
   margin-bottom: 10px; }
 
+.breizbot-header .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; }
+
+.breizbot-header .notification {
+  position: relative; }
+
+.breizbot-header .notification .w3-badge {
+  position: relative;
+  left: -15px; }
 
 .breizbot-media .contentPanel {
   height: 100%;
@@ -82,18 +94,6 @@
 
 .breizbot-media .toolbar {
   margin-bottom: 10px; }
-
-.breizbot-header .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center; }
-
-.breizbot-header .notification {
-  position: relative; }
-
-.breizbot-header .notification .w3-badge {
-  position: relative;
-  left: -15px; }
 
 .breizbot-pdf {
   display: flex;

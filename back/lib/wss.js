@@ -125,7 +125,7 @@ function onConnect(client, store) {
 }
 
 function sendMessage(userName, topic, data) {
-	console.log('[WSS] sendMessage', userName, topic, data)
+	//console.log('[WSS] sendMessage', userName, topic, data)
 	getBroker(userName).sendMessage(undefined, topic, data)
 }
 

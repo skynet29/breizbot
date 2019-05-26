@@ -1,0 +1,33 @@
+.rootPage {
+  padding: 10px;
+  display: flex;
+  flex-direction: column; }
+  .rootPage form {
+    display: flex;
+    flex-direction: row; }
+    .rootPage form input {
+      flex: 1;
+      padding: 5px; }
+  .rootPage .info {
+    flex: 1;
+    margin: 10px;
+    display: flex;
+    flex-direction: row; }
+    .rootPage .info .thumbnail {
+      display: flex;
+      flex-direction: column; }
+      .rootPage .info .thumbnail .download {
+        margin: 20px 0 20px 0; }
+    .rootPage .info .details {
+      flex: 1;
+      margin-left: 10px;
+      display: flex;
+      flex-direction: column; }
+      .rootPage .info .details .description {
+        flex: 1;
+        display: flex;
+        flex-direction: row; }
+        .rootPage .info .details .description textarea {
+          margin-left: 10px;
+          flex: 1;
+          border: none; }

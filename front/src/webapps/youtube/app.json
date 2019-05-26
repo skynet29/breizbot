@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fab fa-youtube fa-2x",
+	"colorCls": "w3-red",
+	"title": "Youtube",
+	"styles": ["app.css"]
+}

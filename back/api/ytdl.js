@@ -24,7 +24,7 @@ router.get('/info', function(req, res) {
 
 router.post('/download', function(req, res) {
 	console.log('/download', req.body)
-	const {url, fileName} = req.body
+	const {url, fileName, srcId} = req.body
 	const userName = req.session.user
 
 	const video = ytdl(url)
@@ -38,7 +38,7 @@ router.post('/download', function(req, res) {
 		const percent = Math.floor(totalDownloaded/total*100)
 		if (percent != lastPercent) {
 			lastPercent = percent
-			wss.sendMessage(userName, 'breizbot.ytdl.progress', {percent})
+			wss.sendTo(undefined, srcId, 'breizbot.ytdl.progress', {percent})
 		}
 	})
 

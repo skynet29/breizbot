@@ -9,8 +9,8 @@ $$.service.registerService('breizbot.ytdl', {
 				return http.get(`/api/ytdl/info?url=${url}`)
 			},
 
-			download: function(url, fileName) {
-				return http.post(`/api/ytdl/download`, {url, fileName})
+			download: function(url, fileName, srcId) {
+				return http.post(`/api/ytdl/download`, {url, fileName, srcId})
 			}			
 		}
 	},

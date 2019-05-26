@@ -6,6 +6,7 @@ $$.control.registerControl('rootPage', {
 
 	init: function(elt ,ytdl, broker) {
 
+		let srcId
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -22,26 +23,30 @@ $$.control.registerControl('rootPage', {
 					console.log('onStart', url)
 					ytdl.info(url).then((info) => {
 						console.log('info', info)
+						info.percent = '0%'
 						ctrl.setData(info)
 					})
 
 				},
 				onDownload: function(ev) {
 					const {url} = ctrl.scope.form.getFormData()
-					console.log('onDownload', url)
+					console.log('onDownload', url, srcId)
 					const fileName = ctrl.model.title + '.mp4'
-					ytdl.download(url, fileName)
+					ytdl.download(url, fileName, srcId)
 				}
 			}
 		})
 
-		broker.register('breizbot.ytdl.progress', (msg) => {
+		broker.onTopic('breizbot.ytdl.progress', (msg) => {
 			if (msg.hist == true) {
 				return
 			}
 			//console.log('progress', msg.data)
 			ctrl.setData({percent: msg.data.percent + '%'})
 		})
+
+		broker.on('ready', (msg) => { srcId = msg.clientId})
+
 
 	}
 

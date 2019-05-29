@@ -92,10 +92,15 @@ function decodeHeaders(buffer, myEmail) {
 
   let to = []
   if (headers.to != undefined && headers.to[0] != undefined) {
-    to = addrs.parseAddressList(headers.to[0])
+
+    let addresses = addrs.parseAddressList(headers.to[0])
+    if (Array.isArray(addresses)) {
+      to = addresses
       .filter((a) => a.type == 'mailbox')
       .filter((a) => a.address.toUpperCase() != myEmail.toUpperCase())
-      .map((a) => {return {name: a.name || a.address, email: a.address}})
+      .map((a) => {return {name: a.name || a.address, email: a.address}})      
+    }
+
   }  
 
   return {

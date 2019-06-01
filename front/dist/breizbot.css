@@ -12,10 +12,8 @@
   overflow-y: auto; }
 
 .breizbot-apps .main {
-  margin: 10px;
   display: flex;
   flex-direction: row;
-  height: 100%;
   align-items: flex-start;
   flex-wrap: wrap;
   align-content: start; }
@@ -63,6 +61,26 @@
 .breizbot-header .notification .w3-badge {
   position: relative;
   left: -15px; }
+
+.breizbot-home {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+  .breizbot-home .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
+    .breizbot-home .header .notification {
+      position: relative; }
+    .breizbot-home .header .notification .w3-badge {
+      position: relative;
+      left: -15px; }
+  .breizbot-home .breizbot-apps {
+    flex: 1;
+    overflow: hidden; }
+  .breizbot-home iframe {
+    flex: 1;
+    border: none; }
 
 .breizbot-media .contentPanel {
   height: 100%;

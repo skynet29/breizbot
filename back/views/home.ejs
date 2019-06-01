@@ -15,10 +15,7 @@ html, body {
 	margin: 0;
 }
 	
-body {
-	display: flex;
-	flex-direction: column;
-}
+
 
 
 
@@ -32,12 +29,8 @@ body {
 </script>
 
 <body>
-	<div bn-control="breizbot.header" 
-		data-user-name="<%= pseudo %>" 
-		data-title="Home"
-		data-show-home="false">	
-		</div>
-	<div bn-control="breizbot.home" style="flex: 1; overflow: hidden;"></div>
+
+	<div bn-control="breizbot.home" data-user-name="<%= pseudo %>"></div>
 </body>
 
 </html>

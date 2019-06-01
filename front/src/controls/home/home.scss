@@ -1,0 +1,32 @@
+.breizbot-home {
+	height: 100%;
+
+	display: flex;
+	flex-direction: column;
+
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+
+		.notification {
+			position: relative;
+		}
+
+		.notification .w3-badge {
+			position: relative;
+			left: -15px;
+		}			
+	}	
+
+
+	.breizbot-apps {
+		flex: 1;
+		overflow: hidden;
+	}
+
+	iframe {
+		flex: 1;
+		border: none;
+	}
+}

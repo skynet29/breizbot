@@ -100,6 +100,10 @@ function decodeHeaders(buffer, myEmail) {
       .filter((a) => a.address.toUpperCase() != myEmail.toUpperCase())
       .map((a) => {return {name: a.name || a.address, email: a.address}})      
     }
+    else {
+      console.log('subject', headers.subject[0])
+      console.warn('Bad header to', headers.to[0])
+    }
 
   }  
 

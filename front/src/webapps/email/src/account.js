@@ -71,6 +71,8 @@ $$.control.registerControl('accountPage', {
 			}
 		})
 
+		ctrl.scope.form.setFormData(map[ctrl.model.provider])
+
 		this.onAction = function(cmd) {
 			ctrl.scope.submit.click()
 		}

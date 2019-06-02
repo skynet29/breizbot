@@ -107,7 +107,8 @@ router.post('/sendMail', function(req, res) {
 	const userName = req.session.user
 	const {accountName, data} = req.body
 
-	mails.sendMail(userName, accountName, data).then(() => {
+	mails.sendMail(userName, accountName, data).then((data) => {
+		console.log('sendMail', data)
 		res.sendStatus(200)
 	})
 	.catch((err) => {

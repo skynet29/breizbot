@@ -50,38 +50,6 @@
 .breizbot-files .toolbar {
   margin-bottom: 10px; }
 
-.breizbot-header .header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center; }
-
-.breizbot-header .notification {
-  position: relative; }
-
-.breizbot-header .notification .w3-badge {
-  position: relative;
-  left: -15px; }
-
-.breizbot-home {
-  height: 100%;
-  display: flex;
-  flex-direction: column; }
-  .breizbot-home .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; }
-    .breizbot-home .header .notification {
-      position: relative; }
-    .breizbot-home .header .notification .w3-badge {
-      position: relative;
-      left: -15px; }
-  .breizbot-home .breizbot-apps {
-    flex: 1;
-    overflow: hidden; }
-  .breizbot-home iframe {
-    flex: 1;
-    border: none; }
-
 .breizbot-media .contentPanel {
   height: 100%;
   overflow: hidden;
@@ -151,3 +119,36 @@
   .breizbot-users .scrollPanel {
     flex: 1;
     overflow: auto; }
+
+.breizbot-viewer {
+  height: 100%; }
+  .breizbot-viewer .video {
+    height: 100%; }
+    .breizbot-viewer .video video {
+      object-fit: scale-down;
+      width: 100%;
+      height: 100%; }
+  .breizbot-viewer .audio {
+    margin: 10px; }
+    .breizbot-viewer .audio audio {
+      width: 100%; }
+
+.breizbot-home {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+  .breizbot-home .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
+    .breizbot-home .header .notification {
+      position: relative; }
+    .breizbot-home .header .notification .w3-badge {
+      position: relative;
+      left: -15px; }
+  .breizbot-home .breizbot-apps {
+    flex: 1;
+    overflow: hidden; }
+  .breizbot-home iframe {
+    flex: 1;
+    border: none; }

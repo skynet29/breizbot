@@ -16,46 +16,18 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onFileClick: function(ev, data) {
 					console.log('onFileClick', data)
-					const {fileName, rootDir, isImage} = data
+					const {fileName, rootDir} = data
 					const fullName = rootDir + fileName
 
-					if (isImage) {						
-						$pager.pushPage('imagePage', {
+					if ($$.util.getFileType(fileName) != undefined) {
+						$pager.pushPage('viewerPage', {
 							title: fileName,
 							props: {
 								fullName
 							}
 						})
 					}
-
-					if (fileName.endsWith('.pdf')) {
-						$pager.pushPage('pdfPage', {
-							title: fileName,
-							props: {
-								fullName
-							}
-						})						
-					}	
-
-
-					if (fileName.endsWith('.ogg') || fileName.endsWith('.mp3')) {
-						$pager.pushPage('soundPage', {
-							title: fileName,
-							props: {
-								fullName
-							}
-						})						
-					}
-
-					if (fileName.endsWith('.mp4')) {
-						$pager.pushPage('videoPage', {
-							title: fileName,
-							props: {
-								fullName
-							}
-						})						
-					}														
-
+													
 				}
 			}
 		})

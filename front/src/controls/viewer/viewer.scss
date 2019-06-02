@@ -1,9 +1,9 @@
-.videoPage {
+.breizbot-viewer {
 	//margin: 10px;
 	height: 100%;
 	//overflow: hidden;
 
-	div {
+	.video {
 		height: 100%;
 
 		video {
@@ -13,5 +13,11 @@
 		}		
 	}
 
+	.audio {
+		margin: 10px;
 
+		audio {
+			width: 100%;
+		}
+	}
 }

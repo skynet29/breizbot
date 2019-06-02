@@ -1,34 +1,30 @@
-$$.control.registerControl('pdfPage', {
+$$.control.registerControl('breizbot.viewer', {
 
 	deps: ['breizbot.files'],
 
-	template: {gulp_inject: './pdf.html'},
+	template: {gulp_inject: './viewer.html'},
 
 	props: {
-		$pager: null,
 		fullName: ''
 	},
-
-	buttons: [
-		{name: 'del', icon: 'fa fa-trash'}
-	],
 	
 	init: function(elt, files) {
 
-		const {$pager, fullName} = this.props
+		const {fullName} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				url: files.fileUrl(fullName)
+				url: files.fileUrl(fullName),
+				type: $$.util.getFileType(fullName)
 			}
 		})
 
-		function remove() {
+		function remove(callback) {
 			$$.ui.showConfirm({title: 'Remove file', content: 'Are you sure ?'}, function() {
 				files.removeFiles([fullName])
 				.then(function(resp) {
 					console.log('resp', resp)
-					$pager.popPage('reload')
+					callback()
 				})
 				.catch(function(resp) {
 					console.log('resp', resp)
@@ -40,13 +36,11 @@ $$.control.registerControl('pdfPage', {
 			})			
 		}
 
-		this.onAction = function(action) {
-			if (action == 'del') {
-				remove()
-			}
-		}
+		this.remove = remove
 
-	}
+	},
+	$iface: `remove()`
+
 });
 
 

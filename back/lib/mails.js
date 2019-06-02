@@ -137,11 +137,16 @@ function decodeBody(body, info) {
      body = iconv.decode(body, params.charset)
 
    }
+   
    if (encoding.toUpperCase() === '8BIT') {
       const buff = new Buffer(body, 'binary')
       body = iconv.decode(buff, params.charset)
    }
 
+   if (encoding.toUpperCase() === '7BIT') {
+      const buff = new Buffer(body, 'ascii')
+      body = iconv.decode(buff, params.charset)
+   }
   return body
 }
 

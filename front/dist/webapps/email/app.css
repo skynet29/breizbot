@@ -58,6 +58,8 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center; }
+    .mailboxPage .toolbar .loading {
+      padding: 8px 0 8px 0; }
   .mailboxPage .scrollPanelTable {
     flex: 1;
     overflow-y: auto;

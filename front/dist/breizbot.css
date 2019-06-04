@@ -50,6 +50,26 @@
 .breizbot-files .toolbar {
   margin-bottom: 10px; }
 
+.breizbot-home {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+  .breizbot-home .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
+    .breizbot-home .header .notification {
+      position: relative; }
+    .breizbot-home .header .notification .w3-badge {
+      position: relative;
+      left: -15px; }
+  .breizbot-home .breizbot-apps {
+    flex: 1;
+    overflow: hidden; }
+  .breizbot-home iframe {
+    flex: 1;
+    border: none; }
+
 .breizbot-media .contentPanel {
   height: 100%;
   overflow: hidden;
@@ -132,23 +152,3 @@
     margin: 10px; }
     .breizbot-viewer .audio audio {
       width: 100%; }
-
-.breizbot-home {
-  height: 100%;
-  display: flex;
-  flex-direction: column; }
-  .breizbot-home .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; }
-    .breizbot-home .header .notification {
-      position: relative; }
-    .breizbot-home .header .notification .w3-badge {
-      position: relative;
-      left: -15px; }
-  .breizbot-home .breizbot-apps {
-    flex: 1;
-    overflow: hidden; }
-  .breizbot-home iframe {
-    flex: 1;
-    border: none; }

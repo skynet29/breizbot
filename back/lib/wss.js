@@ -134,7 +134,7 @@ function sendMsg(client, msg) {
 }
 
 function sendTo(srcId, destId, topic, data) {
-	console.log('sendTo', destId, topic)
+	console.log('sendTo', {destId, topic, srcId})
 	const dest = wss.connections.find((client) => {
 		return client.clientId == destId
 	})

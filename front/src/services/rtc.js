@@ -7,8 +7,6 @@ $$.service.registerService('breizbot.rtc', {
 		let srcId
 		let destId
 
-		broker.on('ready', (msg) => { srcId = msg.clientId})
-
 		return {
 			getRemoteClientId: function() {
 				return destId
@@ -17,6 +15,11 @@ $$.service.registerService('breizbot.rtc', {
 			setRemoteClientId: function(clientId) {
 				destId = clientId
 			},
+
+			setLocalClientId: function(clientId) {
+				srcId = clientId
+			},
+
 
 			call: function(to) {
 				return http.post(`/api/rtc/sendToUser/${srcId}`, {to, type: 'call'})

@@ -114,33 +114,34 @@ $$.control.registerControl('rootPage', {
 		  pc = null		  
 		}	
 			
-		console.log('height', elt.find('.video').height())
+		function openMedia() {
+			console.log('openMedia')
+			navigator.mediaDevices.getUserMedia({
+			  audio: true,
+			  video: true
+			})
+			.then(function(stream) {
+				console.log('localStream ready')
+				
+				localVideo.srcObject = stream
+				localStream = stream
 
-		navigator.mediaDevices.getUserMedia({
-		  audio: true,
-		  video: true
-		})
-		.then(function(stream) {
-			console.log('localStream ready')
-			
-			localVideo.srcObject = stream
-			localStream = stream
+				if (params.caller != undefined) {
+					rtc.accept()
+					createPeerConnection()	
+					pc.addStream(localStream)				
+				}
+			})
+			.catch(function(e) {
+				console.log('error', e)
+				if (params.caller != undefined) {
+					rtc.deny()
+				}
+				ctrl.setData({distant: '', status: 'failed'})
+			  	//alert('getUserMedia() error: ' + e.name);
 
-			if (params.caller != undefined) {
-				rtc.accept()
-				createPeerConnection()	
-				pc.addStream(localStream)				
-			}
-		})
-		.catch(function(e) {
-			console.log('error', e)
-			if (params.caller != undefined) {
-				rtc.deny()
-			}
-			ctrl.setData({distant: '', status: 'failed'})
-		  	//alert('getUserMedia() error: ' + e.name);
-
-		})
+			})			
+		}
 
 		broker.onTopic('breizbot.rtc.accept', function(msg) {
 			if (msg.hist === true) {
@@ -217,6 +218,10 @@ $$.control.registerControl('rootPage', {
 
 		})	
 
+		broker.on('ready', (msg) => { 
+			rtc.setLocalClientId(msg.clientId)
+			openMedia()
+		})
 
 		window.onbeforeunload = function() {
 			if (pc != undefined) {

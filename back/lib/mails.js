@@ -122,6 +122,7 @@ function decodeHeaders(buffer, myEmail) {
 function decodeBody(body, info) {
   console.log('decodeBody', info)
    const {encoding, params} = info
+   const charset = (params != null) ? params.charset : 'utf8'
 
    console.log('body.length', body.length)
 
@@ -134,18 +135,18 @@ function decodeBody(body, info) {
    if (encoding.toUpperCase() === 'QUOTED-PRINTABLE') {
      body = quotedPrintable.decode(body.toString('utf8'))
 
-     body = iconv.decode(body, params.charset)
+     body = iconv.decode(body, charset)
 
    }
    
    if (encoding.toUpperCase() === '8BIT') {
       const buff = new Buffer(body, 'binary')
-      body = iconv.decode(buff, params.charset)
+      body = iconv.decode(buff, charset)
    }
 
    if (encoding.toUpperCase() === '7BIT') {
       const buff = new Buffer(body, 'ascii')
-      body = iconv.decode(buff, params.charset)
+      body = iconv.decode(buff, charset)
    }
   return body
 }

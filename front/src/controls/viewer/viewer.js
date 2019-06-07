@@ -5,21 +5,24 @@ $$.control.registerControl('breizbot.viewer', {
 	template: {gulp_inject: './viewer.html'},
 
 	props: {
-		fullName: ''
+		type: '',
+		url: '#'
 	},
 	
 	init: function(elt, files) {
 
-		const {fullName} = this.props
+		let {type, url} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				url: files.fileUrl(fullName),
-				type: $$.util.getFileType(fullName)
+				url,
+				type
 			}
 		})
 
-		function remove(callback) {
+		function remove(fullName, callback) {
+			console.log('[Viewer] remove', {fullName})
+
 			$$.ui.showConfirm({title: 'Remove file', content: 'Are you sure ?'}, function() {
 				files.removeFiles([fullName])
 				.then(function(resp) {
@@ -36,10 +39,40 @@ $$.control.registerControl('breizbot.viewer', {
 			})			
 		}
 
+		function save(destPath, fileName, callback) {			
+			console.log('[Viewer] save', {destPath, fileName})
+			if (ctrl.model.url == '') {
+				$$.ui.showAlert({title: 'Error', content: 'File not loaded, please wait'})
+				return
+			}
+			const blob = $$.util.dataURLtoBlob(ctrl.model.url)
+			files.uploadFile(blob, fileName, destPath).then(function(resp) {
+				console.log('resp', resp)
+				callback()
+			})	
+			.catch(function(resp) {
+				$$.ui.showAlert({
+					title: 'Error',
+					content: resp.responseText
+				})
+			})				
+		}		
+
 		this.remove = remove
+		this.save = save
+
+		this.setData = function(data) {
+			console.log('[Viewer] setData', data)
+			if (data.url) {
+				ctrl.setData({url: data.url})
+			}
+		}
 
 	},
-	$iface: `remove()`
+	$iface: `
+		remove(fullName, callback);
+		save(destPath, fileName, callback)
+		`
 
 });
 

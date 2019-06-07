@@ -1,7 +1,13 @@
 <div style="height: 100%; position: relative; text-align: center;">
 	<span bn-show="wait" class="w3-text-blue" style="position: relative; top: 50%;"><i class="fa fa-redo-alt fa-2x fa-pulse"></i></span>
 
-	<div bn-show="!wait" bn-control="breizbot.pdf" bn-data="{url}" style="height: 100%"></div>
-</div>
+	<div 
+		bn-show="!wait"
+		bn-control="breizbot.viewer" 
+		bn-data="{type, url}" 
+		style="height: 100%" 
+		bn-iface="viewer">
+			
+		</div>	
 
-
+</div>	

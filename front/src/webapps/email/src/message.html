@@ -18,10 +18,10 @@
 		<strong bn-event="click: onToggleDiv"><i class="fa fa-caret-down fa-fw"></i>
 		Attachments</strong>
 		<ul  bn-each="attachments" bn-event="click.item: onItemClick">
-			<li bn-show="canOpen($i)">
+			<li bn-show="$i.canOpen">
 				<a href="#" bn-text="$i.name" class="item" bn-data="{item: $i}"></a>
 				<span bn-text="getSize($i.size)"></span></li>
-			<li bn-show="!canOpen($i)">
+			<li bn-show="!$i.canOpen">
 				<span bn-text="$i.name"></span>
 				<span bn-text="getSize($i.size)"></span></li>				
 			</li>

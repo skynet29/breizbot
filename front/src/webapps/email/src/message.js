@@ -29,9 +29,6 @@ $$.control.registerControl('messagePage', {
 				text: '',
 				item,
 				attachments: [],
-				canOpen: function(info) {
-					return (info.type == 'image' || info.subtype == 'pdf' || info.name.endsWith('.pdf')) && info.encoding.toUpperCase() == 'BASE64'
-				},
 				getSize: function(size) {
 					//console.log('getSize', size)
 					size /= 1024
@@ -55,18 +52,10 @@ $$.control.registerControl('messagePage', {
 						mailboxName,
 						seqno: item.seqno
 					}
-					if (info.type == 'image') {
-						$pager.pushPage('imagePage', {
-							title: info.name,
-							props
-						})						
-					}
-					if (info.subtype == 'pdf' || info.name.endsWith('.pdf')) {
-						$pager.pushPage('pdfPage', {
-							title: info.name,
-							props
-						})						
-					}
+					$pager.pushPage('viewerPage', {
+						title: info.name,
+						props
+					})						
 
 				},
 				onToggleDiv: function(ev) {
@@ -136,6 +125,11 @@ $$.control.registerControl('messagePage', {
 
 
 			const {text, attachments, embeddedImages} = message
+
+			attachments.forEach((a) => {
+				a.canOpen = $$.util.getFileType(a.name) != undefined && a.encoding.toUpperCase() == 'BASE64'
+
+			})
 
 
 			ctrl.setData({text, attachments, embeddedImages, loading:false, isHtml})

@@ -1,8 +1,8 @@
-$$.control.registerControl('pdfPage', {
+$$.control.registerControl('viewerPage', {
 
-	template: {gulp_inject: './pdf.html'},
+	template: {gulp_inject: './viewer.html'},
 
-	deps: ['breizbot.mails', 'breizbot.files'],
+	deps: ['breizbot.mails'],
 
 	props: {
 		$pager: null,
@@ -16,7 +16,7 @@ $$.control.registerControl('pdfPage', {
 		{name: 'save', icon: 'fa fa-save'}
 	],	
 
-	init: function(elt, srvMail, files) {
+	init: function(elt, srvMail) {
 
 		const {$pager, info, currentAccount, mailboxName, seqno} = this.props
 		const {partID, type, subtype} = info
@@ -24,7 +24,8 @@ $$.control.registerControl('pdfPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				url: '',
-				wait: true
+				wait: true,
+				type: $$.util.getFileType(info.name)
 			},
 			events: {
 			}
@@ -37,35 +38,25 @@ $$.control.registerControl('pdfPage', {
 
 		})
 
-		function save() {
-			const {url} = ctrl.model
-			if (url == '') {
-				$$.ui.showAlert({title: 'Error', content: 'File not loaded, please wait'})
-				return
-			}
-			const blob = $$.util.dataURLtoBlob(url)
-			files.uploadFile(blob, info.name, '/documents/email').then(function(resp) {
-				console.log('resp', resp)
-				$pager.popPage()
-			})	
-			.catch(function(resp) {
-				$$.ui.showAlert({
-					title: 'Error',
-					content: resp.responseText
-				})
-			})				
-		}
-
 		this.onAction = function(action) {
 			console.log('onAction', action)
 			if (action == 'save') {
-				save()
+				ctrl.scope.viewer.save('/download/email', info.name, () => {
+					$pager.popPage()
+				})
 			}
 		}
 	}
 
 
 });
+
+
+
+
+
+
+
 
 
 

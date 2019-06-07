@@ -19,7 +19,8 @@ $$.control.registerControl('rootPage', {
 					const {fileName, rootDir} = data
 					const fullName = rootDir + fileName
 
-					if ($$.util.getFileType(fileName) != undefined) {
+					const type = $$.util.getFileType(fileName)
+					if (type != undefined) {
 						$pager.pushPage('viewerPage', {
 							title: fileName,
 							props: {

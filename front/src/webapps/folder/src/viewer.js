@@ -6,7 +6,7 @@ $$.control.registerControl('viewerPage', {
 
 	props: {
 		$pager: null,
-		fullName: ''
+		fullName: '',
 	},
 
 	buttons: [
@@ -19,7 +19,8 @@ $$.control.registerControl('viewerPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				fullName
+				type: $$.util.getFileType(fullName),
+				url: files.fileUrl(fullName)
 			}
 		})
 
@@ -27,7 +28,7 @@ $$.control.registerControl('viewerPage', {
 		this.onAction = function(action) {
 			console.log('onAction', action)
 			if (action == 'del') {
-				ctrl.scope.viewer.remove(function(){
+				ctrl.scope.viewer.remove(fullName, function(){
 					$pager.popPage('reload')
 				})
 			}

@@ -115,6 +115,8 @@
     .breizbot-pdf .toolbar .pages {
       display: flex;
       align-items: center; }
+    .breizbot-pdf .toolbar .loading {
+      padding: 8px 0 8px 0; }
 
 .breizbot-addUser {
   margin: 10px;

@@ -11,11 +11,11 @@ $$.service.registerService('breizbot.files', {
 			},
 
 			fileUrl: function(fileName) {
-				return '/api/files/load?fileName=' + fileName
+				return '/api/files/load?fileName=' + encodeURIComponent(fileName)
 			},
 
 			fileThumbnailUrl: function(fileName, size) {
-				return `/api/files/loadThumbnail?fileName=${fileName}&size=${size}`
+				return `/api/files/loadThumbnail?fileName=${encodeURIComponent(fileName)}&size=${encodeURIComponent(size)}`
 			},
 
 			uploadFile: function(blob, saveAsfileName, destPath) {

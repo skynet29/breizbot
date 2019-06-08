@@ -76,6 +76,7 @@ app.use('/api/mails', require('./api/mails'))
 app.use('/api/media', require('./api/media'))
 app.use('/api/ytdl', require('./api/ytdl'))
 app.use('/api/appData', require('./api/appData'))
+app.use('/api/cities', require('./api/cities'))
 
 app.use('/brainjs', express.static(config.BRAINJS_HOME))
 app.use('/lib', express.static(path.join(__dirname, '../front/externals')))

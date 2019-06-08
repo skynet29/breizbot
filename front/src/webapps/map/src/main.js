@@ -4,14 +4,28 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
+	props: {
+		$pager: null
+	},
+
 	init: function(elt, broker, appData) {
 
-		let {zoom, center} = appData.getData()
+		const {$pager} = this.props
+
+		const {zoom, center} = appData.getData()
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				center: center || {lat: 48.39, lng: -4.486},
 				zoom: zoom || 13
+			},
+			events: {
+				onSearch: function() {
+					console.log('onSearch')
+					$pager.pushPage('searchPage', {
+						title: 'Search City'
+					})
+				}
 			}
 		})
 
@@ -39,7 +53,24 @@ $$.control.registerControl('rootPage', {
 			console.log('Exit map app')
 			const {map} = ctrl.scope
 			return appData.saveData({zoom: map.getZoom(), center: map.getCenter()})
-		};			
+		}
+
+		this.onReturn = function(coord) {
+			console.log('onReturn', coord)
+			if (coord != undefined) {
+				const latlng = {lat: coord.lat, lng: coord.lon}
+				try {
+					ctrl.scope.map.updateShape('marker', {latlng})
+				}
+				catch(e) {
+					ctrl.scope.map.addShape('marker', {
+						type: 'marker',
+						latlng
+					})
+				}
+				ctrl.scope.map.flyTo(latlng, 13)
+			}
+		}
 
 	}
 });

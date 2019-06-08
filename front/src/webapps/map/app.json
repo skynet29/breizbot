@@ -2,5 +2,6 @@
 	"iconCls": "fa fa-globe fa-2x",
 	"colorCls": "w3-red",
 	"title": "Map",
-	"brainjs": ["map"]
+	"brainjs": ["map"],
+	"styles": ["app.css"]
 }

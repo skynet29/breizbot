@@ -1,0 +1,37 @@
+<form bn-event="submit: onSubmit" bn-show="countries.length > 0">
+	<div class="inputgroup">
+		<label>Country:</label>
+		<select 
+			bn-control="brainjs.selectmenu"
+			bn-data="{items: countries}"
+			bn-val="currentCountry"
+			bn-update="selectmenuchange"
+		></select>			
+	</div>
+	<div bn-control="brainjs.inputgroup" class="inputgroup">
+		<label>City</label>
+		<input type="text" name="search" required="">
+	</div>
+	<div>
+		<button class="w3-button w3-blue" type="submit">
+			<i class="fa fa-search"></i>
+		</button>
+	</div>
+
+</form>
+
+<div class="scrollPanel" bn-show="countries.length > 0">
+	<ul class="w3-ul w3-border w3-white" 
+		bn-event="click.w3-bar: onItemClick"
+		bn-each="cities"
+		bn-show="cities.length > 0"
+		>
+		<li class="w3-bar">
+
+			<div class="w3-bar-item">
+				<span bn-text="$i.name"></span>
+			</div>
+		</li>
+	</ul>	
+</div>
+	

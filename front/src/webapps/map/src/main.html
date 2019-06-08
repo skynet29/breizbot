@@ -1,10 +1,16 @@
 <div bn-control="brainjs.map" 
 	style="height: 100%"
 	bn-iface="map"
+	class="map" 
 	bn-data="{
 		center,
 		zoom,
 		scale: true,
 		coordinates: true
 	}"
-	></div>
+	></div>	
+<div class="toolbar">
+	<button class="w3-button w3-blue" bn-event="click: onSearch">
+		<i class="fa fa-search"></i>
+	</button>
+</div>

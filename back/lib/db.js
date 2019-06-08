@@ -204,8 +204,24 @@ module.exports =  {
 		const update = {'$set': {data}}
 
 		return db.collection('appData').updateOne({userName, appName}, update, {upsert: true})
-	}	
+	},
 
+
+	getCountries: function() {
+		console.log(`[DB] getCountries`)
+
+		return db.collection('cities').distinct('country')
+	},	
+
+	getCities: function(country, search) {
+		console.log(`[DB] getCities`, country, search)
+
+		return db
+			.collection('cities')
+			.find({country, name: {$regex: `\w*(?i)${search}(?-i)\w*`}})
+			.sort({name: 1})
+			.toArray()
+	}	
 }
 
 

@@ -166,7 +166,7 @@ $$.control.registerControl('breizbot.home', {
 
 		users.getNotifCount().then(updateNotifs)
 
-		function goHome() {
+		function loadApp() {
 			srvApps.listMyApp().then((apps) => {
 				console.log('apps', apps)
 				ctrl.setData({
@@ -175,10 +175,33 @@ $$.control.registerControl('breizbot.home', {
 					title: 'Home',
 					appUrl:'about:blank'
 				})
-			})				
+			})			
 		}
 
-		goHome()	
+		function goHome() {
+			const $iframe = $(ctrl.scope.iframe.get(0).contentWindow.document)
+			const rootPage = $iframe.find('.rootPage').iface()
+			console.log('rootPage', rootPage)
+			if (typeof rootPage.exitApp == 'function') {
+				const ret = rootPage.exitApp()
+				if (ret instanceof Promise) {
+					ret.then(() => {
+						loadApp()
+					})
+				}
+				else {
+					loadApp()
+				}
+			}
+			else {
+				loadApp()
+			}
+
+				
+		}
+
+		loadApp()	
+		
 
 	}
 });

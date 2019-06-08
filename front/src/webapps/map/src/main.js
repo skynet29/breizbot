@@ -1,12 +1,19 @@
 $$.control.registerControl('rootPage', {
 
-	deps: ['breizbot.broker'],
+	deps: ['breizbot.broker', 'breizbot.appData'],
 
 	template: {gulp_inject: './main.html'},
 
-	init: function(elt, broker) {
+	init: function(elt, broker, appData) {
 
-		const ctrl = $$.viewController(elt)
+		let {zoom, center} = appData.getData()
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+				center: center || {lat: 48.39, lng: -4.486},
+				zoom: zoom || 13
+			}
+		})
 
 		broker.register('homebox.map.updateShape.*', (msg) => {
 
@@ -27,6 +34,12 @@ $$.control.registerControl('rootPage', {
 				ctrl.scope.map.addShape(shapeId, shape)
 			}
 		})
+
+		this.exitApp = function() {
+			console.log('Exit map app')
+			const {map} = ctrl.scope
+			return appData.saveData({zoom: map.getZoom(), center: map.getCenter()})
+		};			
 
 	}
 });

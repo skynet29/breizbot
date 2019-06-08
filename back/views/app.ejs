@@ -37,9 +37,17 @@ body {
 
 <script>
 	$(function() {
-		$$.service.configureService('breizbot.params', '<%- params %>')
-		
-		$$.viewController('body')
+		$.getJSON('/api/appData').then((data) => {
+			console.log('appData', data)
+			$$.service.configureService('breizbot.params', '<%- params %>')
+			$$.service.configureService('breizbot.appData', data)
+			
+			$$.viewController('body')			
+		})
+		.catch((e) => {
+			console.error('Error', e)
+		})
+
 	})
 
 </script>

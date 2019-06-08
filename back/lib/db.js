@@ -190,7 +190,21 @@ module.exports =  {
 	removeContact: function(contactId) {
 		console.log(`[DB] removeContact`, contactId)
 		return db.collection('contacts').deleteOne({_id: new ObjectID(contactId)})
-	}
+	},
+
+	getAppData: function(userName, appName) {
+		console.log(`[DB] getAppData`, {userName, appName})
+
+		return db.collection('appData').findOne({userName, appName})
+	},
+
+	saveAppData: function(userName, appName, data) {
+		console.log(`[DB] saveAppData`, {userName, appName, data})
+
+		const update = {'$set': {data}}
+
+		return db.collection('appData').updateOne({userName, appName}, update, {upsert: true})
+	}	
 
 }
 

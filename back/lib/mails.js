@@ -127,9 +127,9 @@ function decodeBody(body, info) {
    console.log('body.length', body.length)
 
    if (encoding.toUpperCase() === 'BASE64') {
-      const buff = new Buffer(body, 'base64')
+      const buff = new Buffer(body.toString('utf8'), 'base64')
      //return 'base64 encoding not supported'
-     body = buff.toString('utf8')
+     body = iconv.decode(buff, charset)
    }
 
    if (encoding.toUpperCase() === 'QUOTED-PRINTABLE') {

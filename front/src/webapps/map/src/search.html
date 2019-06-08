@@ -20,7 +20,15 @@
 
 </form>
 
-<div class="scrollPanel" bn-show="countries.length > 0">
+<div>
+	<strong bn-text="message"></strong>
+</div>
+
+<div bn-show="running">
+	<i class="fa fa-spinner fa-pulse"></i> Running...
+</div>
+
+<div class="scrollPanel" bn-show="countries.length > 0 && cities.length > 0">
 	<ul class="w3-ul w3-border w3-white" 
 		bn-event="click.w3-bar: onItemClick"
 		bn-each="cities"

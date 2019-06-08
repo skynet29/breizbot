@@ -24,3 +24,5 @@
     flex: 1;
     overflow: auto;
     border: 1px solid black; }
+    .searchPage .scrollPanel .w3-bar {
+      cursor: pointer; }

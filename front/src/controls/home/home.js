@@ -42,7 +42,7 @@ $$.control.registerControl('breizbot.home', {
 				onContextMenu: function(ev, data) {
 					console.log('onContextMenu', data)
 					if (data.cmd == 'logout') {
-						location.href = '/logout'
+						logout()
 					}
 					if (data.cmd == 'apps') {
 						openApp('Store', 'store')
@@ -157,11 +157,14 @@ $$.control.registerControl('breizbot.home', {
 
 		function openApp(title, appName, params) {
 			console.log('openApp', title, appName, params)
-			ctrl.setData({
-				isHome: false, 
-				title,
-				appUrl: getAppUrl(appName, params)
-			})			
+			saveData().then(() => {
+				ctrl.setData({
+					isHome: false, 
+					title,
+					appUrl: getAppUrl(appName, params)
+				})							
+			})
+
 		}
 
 		users.getNotifCount().then(updateNotifs)
@@ -178,26 +181,30 @@ $$.control.registerControl('breizbot.home', {
 			})			
 		}
 
-		function goHome() {
-			const $iframe = $(ctrl.scope.iframe.get(0).contentWindow.document)
-			const rootPage = $iframe.find('.rootPage').iface()
-			console.log('rootPage', rootPage)
-			if (typeof rootPage.exitApp == 'function') {
-				const ret = rootPage.exitApp()
-				if (ret instanceof Promise) {
-					ret.then(() => {
-						loadApp()
-					})
-				}
-				else {
-					loadApp()
+		function saveData() {
+			console.log('[System] saveData')
+			if (!ctrl.model.isHome)	{
+				const $iframe = $(ctrl.scope.iframe.get(0).contentWindow.document)
+				const rootPage = $iframe.find('.rootPage').iface()
+				console.log('rootPage', rootPage)
+				if (typeof rootPage.exitApp == 'function') {
+					const ret = rootPage.exitApp()
+					if (ret instanceof Promise) {
+						return ret
+					}
 				}
 			}
-			else {
-				loadApp()
-			}
+			return Promise.resolve()		
+		}
 
-				
+		function goHome() {
+			saveData().then(loadApp)				
+		}
+
+		function logout() {
+			saveData().then(() => {
+				location.href = '/logout'
+			})			
 		}
 
 		loadApp()	

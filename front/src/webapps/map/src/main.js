@@ -30,6 +30,8 @@ $$.control.registerControl('rootPage', {
 				onLocationChange: function(ev, state) {
 					console.log('onLocationChange', state)
 					if (state == 'ON') {
+						navigator.geolocation.getCurrentPosition(updateLocation)
+						
 						const watchID = navigator.geolocation.watchPosition(
 							updateLocation,
 							geoError,

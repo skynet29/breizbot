@@ -218,7 +218,7 @@ module.exports =  {
 
 		return db
 			.collection('cities')
-			.find({country, name: {$regex: `\w*(?i)${search}(?-i)\w*`}})
+			.find({country, name: {$regex: `^(?i)${search}(?-i)\w*`}})
 			.sort({name: 1})
 			.toArray()
 	}	

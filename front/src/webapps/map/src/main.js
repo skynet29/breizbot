@@ -17,7 +17,8 @@ $$.control.registerControl('rootPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				center: center || {lat: 48.39, lng: -4.486},
-				zoom: zoom || 13
+				zoom: zoom || 13,
+				watchID: null
 			},
 			events: {
 				onSearch: function() {
@@ -25,9 +26,55 @@ $$.control.registerControl('rootPage', {
 					$pager.pushPage('searchPage', {
 						title: 'Search City'
 					})
+				},
+				onLocationChange: function(ev, state) {
+					console.log('onLocationChange', state)
+					if (state == 'ON') {
+						const watchID = navigator.geolocation.watchPosition(
+							updateLocation,
+							geoError,
+							{
+								enableHighAccuracy: true
+							}
+						)
+						ctrl.setData({watchID})
+					}
+					else {
+						navigator.geolocation.clearWatch(ctrl.model.watchID)
+						ctrl.setData({watchID: null})
+						ctrl.scope.map.removeShape('location')
+					}
 				}
 			}
 		})
+
+		function geoError() {
+			console.log('geolocation error')
+		}
+
+		function updateLocation(position) {
+			const latlng = {
+				lat: position.coords.latitude,
+				lng: position.coords.longitude
+			}
+			console.log('updateLocation', latlng)
+			try {
+				ctrl.scope.map.updateShape('location', {latlng})
+			}
+			catch(e) {
+				ctrl.scope.map.addShape('location', {
+					type: 'marker',
+					icon: {
+						type: 'font',
+						className: 'far fa-dot-circle',
+						color: 'red',
+						fontSize: 20
+					},
+					latlng
+				})
+			}
+			ctrl.scope.map.panTo(latlng)			
+		}
 
 		broker.register('homebox.map.updateShape.*', (msg) => {
 

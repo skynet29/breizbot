@@ -11,5 +11,23 @@
 		top: 10px;
 		right: 10px;
 		z-index: 1000;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+
+		.location {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			margin-bottom: 10px;
+
+			.jq-flipswitch {
+				margin: 0 0 0 10px;
+				box-shadow: none;
+			}
+			
+		}
+
+
 	}
 }

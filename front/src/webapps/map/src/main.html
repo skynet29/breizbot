@@ -10,7 +10,22 @@
 	}"
 	></div>	
 <div class="toolbar">
-	<button class="w3-button w3-blue" bn-event="click: onSearch">
-		<i class="fa fa-search"></i>
-	</button>
+	<div class="location">
+		<label>Geolocation</label>
+		<div 
+			bn-control="brainjs.flipswitch"
+			bn-event="flipswitchchange: onLocationChange"
+			data-width="100"
+			data-height="25"
+			>
+			
+		</div>		
+	</div>
+
+	<div bn-show="watchID == null">
+		<button class="w3-button w3-blue" bn-event="click: onSearch" title="Search city">
+			<i class="fa fa-search-location"></i>
+		</button>		
+	</div>
+
 </div>

@@ -21,28 +21,34 @@ $$.service.registerService('breizbot.rtc', {
 			},
 
 
-			call: function(to) {
-				return http.post(`/api/rtc/sendToUser/${srcId}`, {to, type: 'call'})
+			call: function(to, appName, iconCls) {
+				return http.post(`/api/rtc/sendToUser`, {
+					to,
+					srcId,
+					type: 'call',
+					data: {appName, iconCls}
+				})
 			},
 
 			cancel: function(to) {
-				return http.post(`/api/rtc/sendToUser/${srcId}`, {to, type: 'cancel'})
+				return http.post(`/api/rtc/sendToUser`, {to, srcId, type: 'cancel'})
 			},
 
 			accept: function() {
-				return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'accept'})
+				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'accept'})
 			},
 
 			deny: function() {
-				return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'deny'})
+				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'deny'})
 			},
 
 			bye: function() {
-				return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'bye'})
+				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'bye'})
 			},
 
 			candidate: function(info) {
-				return http.post(`/api/rtc/sendToClient/${srcId}`, {
+				return http.post(`/api/rtc/sendToClient`, {
+					srcId,
 					destId, 
 					type: 'candidate', 
 					data: {
@@ -54,11 +60,11 @@ $$.service.registerService('breizbot.rtc', {
 			},
 
 			offer: function(data) {
-				return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'offer', data})
+				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'offer', data})
 			},
 
 			answer: function(data) {
-				return http.post(`/api/rtc/sendToClient/${srcId}`, {destId, type: 'answer', data})
+				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'answer', data})
 			}
 
 		}

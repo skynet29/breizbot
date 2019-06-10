@@ -28,15 +28,18 @@ $$.control.registerControl('breizbot.home', {
 				isHome: true,				
 				nbNotif: 0,
 				hasIncomingCall: false,
-				caller: '',
+				callInfo: null,
 				fullScreen: false,
-				appUrl: 'about:blank'
+				appUrl: 'about:blank',
+				getMyApps: function() {
+					return apps.filter((a) => a.activated)
+				}
 
 			},
 			events: {
 				onAppClick: function(ev, data) {
 					console.log('onAppClick', data)
-					openApp(data.props.title, data.appName)
+					openApp(data.appName)
 
 				},				
 				onContextMenu: function(ev, data) {
@@ -45,7 +48,7 @@ $$.control.registerControl('breizbot.home', {
 						logout()
 					}
 					if (data.cmd == 'apps') {
-						openApp('Store', 'store')
+						openApp('store')
 					}
 					if (data.cmd == 'pwd') {
 						$$.ui.showPrompt({title: 'Change Password', label: 'New Password:'}, function(newPwd) {
@@ -65,7 +68,7 @@ $$.control.registerControl('breizbot.home', {
 						$$.ui.showAlert({content: 'no notifications', title: 'Notifications'})
 					}
 					else {
-						openApp('Notifications', 'notif')
+						openApp('notif')
 					}					
 				},
 				onCallResponse: function(ev, data) {
@@ -73,9 +76,10 @@ $$.control.registerControl('breizbot.home', {
 					console.log('onCallResponse', data)
 					ctrl.setData({hasIncomingCall: false})
 					audio.pause()
-					if (cmd == 'accept') {		
-						openApp('Phone', 'video', {
-							caller: ctrl.model.caller,
+					if (cmd == 'accept') {	
+						const {from, appName} = ctrl.model.callInfo
+						openApp(appName, {
+							caller: from,
 							clientId: rtc.getRemoteClientId()							
 						})				
 					}
@@ -126,7 +130,7 @@ $$.control.registerControl('breizbot.home', {
 				return
 			}
 			console.log('msg', msg)
-			ctrl.setData({hasIncomingCall: true, caller: msg.data.from})
+			ctrl.setData({hasIncomingCall: true, callInfo: msg.data})
 			rtc.setRemoteClientId(msg.srcId)
 			audio.play()
 		})
@@ -155,8 +159,11 @@ $$.control.registerControl('breizbot.home', {
 
 		}
 
-		function openApp(title, appName, params) {
-			console.log('openApp', title, appName, params)
+		function openApp(appName, params) {
+			const appInfo = ctrl.model.apps.find((a) => a.appName == appName)
+			const title = appInfo.props.title
+			//console.log('appInfo', appInfo)
+			console.log('openApp', appName, params)
 			saveData().then(() => {
 				ctrl.setData({
 					isHome: false, 
@@ -170,8 +177,8 @@ $$.control.registerControl('breizbot.home', {
 		users.getNotifCount().then(updateNotifs)
 
 		function loadApp() {
-			srvApps.listMyApp().then((apps) => {
-				console.log('apps', apps)
+			srvApps.listAll().then((apps) => {
+				//console.log('apps', apps)
 				ctrl.setData({
 					apps,
 					isHome: true,

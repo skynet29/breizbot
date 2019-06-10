@@ -14,17 +14,5 @@ router.get('/all', function(req, res) {
 	})
 })
 
-router.get('/myapp', function(req, res) {
-	apps.getAppsInfo()
-	.then(function(appsInfo) {
-		const {apps} = req.session.userInfo
-		const ret = appsInfo.filter((appInfo) => appInfo.appName in apps)
-	
-		res.json(ret)
-		
-	})
-})
-
-
 
 module.exports = router

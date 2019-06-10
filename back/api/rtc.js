@@ -3,12 +3,11 @@ const wss = require('../lib/wss')
 
 
 
-router.post('/sendToUser/:srcId', function(req, res) {
+router.post('/sendToUser', function(req, res) {
 	//console.log('[RTC] sendToUser', req.params, req.body)
 	const from = req.session.user
-	const {srcId} =  req.params
 
-	let {to, data, type} = req.body
+	let {to, data, type, srcId} = req.body
 
 	if (data == undefined) {
 		data = {}
@@ -25,11 +24,10 @@ router.post('/sendToUser/:srcId', function(req, res) {
 	}
 })
 
-router.post('/sendToClient/:srcId', function(req, res) {
+router.post('/sendToClient', function(req, res) {
 	//console.log('[RTC] sendToClient', req.params, req.body)
-	const {srcId} =  req.params
-
-	const {destId, data, type} = req.body
+	
+	const {destId, data, type, srcId} = req.body
 
 	if (wss.sendTo(srcId, destId, 'breizbot.rtc.' + type, data)) {
 		res.sendStatus(200)

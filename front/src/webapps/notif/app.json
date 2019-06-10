@@ -1,4 +1,5 @@
 {	
 	"title": "Notifications",
-	"styles": ["app.css"]
+	"styles": ["app.css"],
+	"visible": false
 }

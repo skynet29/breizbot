@@ -22,11 +22,9 @@ function getAppInfo(appName) {
 		})
 }
 
-const sysApps = ['store', 'notif', 'template']
-
 function getPropFiles(folders) {
 	//console.log('folders', folders)
-	const promises = folders.filter((name) => !sysApps.includes(name)).map(function(appName) {
+	const promises = folders.map(function(appName) {
 
 		return getAppInfo(appName)
 				.then(function(props) {

@@ -60,7 +60,7 @@ $$.control.registerControl('rootPage', {
 				return
 			}
 			
-			rtc.call(userName)
+			rtc.call(userName, 'video', 'fa fa-phone fa-flip-vertical')
 			.then(() => {
 				ctrl.setData({status: 'calling', distant: userName})
 			})

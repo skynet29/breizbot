@@ -23,8 +23,12 @@ $$.control.registerControl('breizbot.apps', {
 			}
 		})
 
+
 		this.setData = function(data) {
-			ctrl.setData(data)
+			console.log('data', data)
+			ctrl.setData({
+				apps: data.apps.filter((a) => a.props.visible != false && a.appName != 'template')
+			})
 		}
 	},
 

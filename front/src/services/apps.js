@@ -7,17 +7,11 @@ $$.service.registerService('breizbot.apps', {
 		return {
 			listAll: function() {
 				return http.get('/api/apps/all')
-			},
-
-			listMyApp: function() {
-				return http.get('/api/apps/myapp')
-			}
-			
+			}			
 		}
 	},
 
 	$iface: `
 		listAll():Promise;
-		listMyApp():Promise 
 		`
 });

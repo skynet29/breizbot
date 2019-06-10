@@ -139,7 +139,7 @@ function sendTo(srcId, destId, topic, data) {
 		return client.clientId == destId
 	})
 	if (dest != undefined) {
-		sendMsg(dest, {type: 'notif', topic, data, srcId})
+		sendMsg(dest, {type: 'notif', topic, data, srcId, time: Date.now()})
 		return true
 	}
 	return false

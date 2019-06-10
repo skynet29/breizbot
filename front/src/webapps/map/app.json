@@ -1,5 +1,5 @@
 {	
-	"iconCls": "fa fa-globe fa-2x",
+	"iconCls": "fa fa-map fa-2x",
 	"colorCls": "w3-red",
 	"title": "Map",
 	"brainjs": ["map"],

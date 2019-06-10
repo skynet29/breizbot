@@ -227,7 +227,7 @@ $$.control.registerControl('rootPage', {
 			if (pc != undefined) {
 		  		rtc.bye()
 			}
-		};		
+		}		
 	
 	}
 

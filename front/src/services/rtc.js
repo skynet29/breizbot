@@ -65,6 +65,10 @@ $$.service.registerService('breizbot.rtc', {
 
 			answer: function(data) {
 				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'answer', data})
+			},
+
+			sendMessage: function(data) {
+				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'tchat', data})
 			}
 
 		}

@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fa fa-comments fa-2x",
+	"colorCls": "w3-brown",
+	"title": "Tchat",
+	"styles": ["app.css"]
+}

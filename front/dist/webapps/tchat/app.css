@@ -1,0 +1,47 @@
+.rootPage {
+  display: flex;
+  flex-direction: column;
+  padding: 10px; }
+  .rootPage .toolbar {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px;
+    align-items: center; }
+    .rootPage .toolbar p {
+      margin: 0px; }
+  .rootPage .content {
+    flex: 1;
+    border: 1px solid lightgrey;
+    margin-bottom: 10px;
+    overflow: auto; }
+    .rootPage .content .messages {
+      padding: 10px; }
+      .rootPage .content .messages .me {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        align-items: center;
+        margin-bottom: 5px; }
+        .rootPage .content .messages .me .text {
+          padding: 5px;
+          margin-right: 5px;
+          background-color: lightblue;
+          max-width: 150px;
+          border-radius: 5px; }
+      .rootPage .content .messages .you {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        margin-bottom: 5px; }
+        .rootPage .content .messages .you .text {
+          padding: 5px;
+          margin-left: 5px;
+          background-color: lightpink;
+          max-width: 150px;
+          border-radius: 5px; }
+  .rootPage .footer form {
+    display: flex; }
+    .rootPage .footer form input {
+      flex: 1;
+      padding-left: 5px; }

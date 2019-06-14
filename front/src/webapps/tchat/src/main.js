@@ -53,7 +53,7 @@ $$.control.registerControl('rootPage', {
 					const {message} = $(this).getFormData()
 					$(this).resetForm()
 					console.log('onSubmit', message)
-					rtc.sendMessage(message)
+					rtc.sendData('tchat', message)
 					ctrl.model.messages.push({
 						text: message,
 						me: true,

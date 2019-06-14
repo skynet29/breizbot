@@ -15,10 +15,29 @@ $$.control.registerControl('breizbot.home', {
 
 	init: function(elt, broker, users, rtc, srvApps) {
 
+		function createAudio() {
+			let audio = null
+			return {
+				play: function() {
+					//console.log('audio play')
+					audio = new Audio('/assets/skype.mp3')
+					audio.loop = true	
+					setTimeout(() => {audio.play()}, 100)
+				},
+
+				stop: function() {
+					//console.log('audio stop')
+					if (audio != null) {
+						audio.pause()
+					}
+					audio = null
+				}
+			}
+		}
+
 		const {userName} = this.props
 
-		const audio = new Audio('/assets/skype.mp3')
-		audio.loop = true
+		const audio = createAudio()
 	
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -75,7 +94,7 @@ $$.control.registerControl('breizbot.home', {
 					const {cmd} = data
 					console.log('onCallResponse', data)
 					ctrl.setData({hasIncomingCall: false})
-					audio.pause()
+					audio.stop()
 					if (cmd == 'accept') {	
 						const {from, appName} = ctrl.model.callInfo
 						openApp(appName, {
@@ -141,7 +160,7 @@ $$.control.registerControl('breizbot.home', {
 			}
 			console.log('msg', msg)
 			ctrl.setData({hasIncomingCall: false})
-			audio.pause()
+			audio.stop()
 		})
 
 		function getAppUrl(appName, params) {

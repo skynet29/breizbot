@@ -35,40 +35,19 @@ $$.service.registerService('breizbot.rtc', {
 			},
 
 			accept: function() {
-				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'accept'})
+				return this.sendData('accept')
 			},
 
 			deny: function() {
-				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'deny'})
+				return this.sendData('deny')
 			},
 
 			bye: function() {
-				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'bye'})
+				return this.sendData('bye')
 			},
 
-			candidate: function(info) {
-				return http.post(`/api/rtc/sendToClient`, {
-					srcId,
-					destId, 
-					type: 'candidate', 
-					data: {
-						label: info.sdpMLineIndex,
-						id: info.sdpMid,
-						candidate: info.candidate	
-					}
-				})
-			},
-
-			offer: function(data) {
-				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'offer', data})
-			},
-
-			answer: function(data) {
-				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'answer', data})
-			},
-
-			sendMessage: function(data) {
-				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type: 'tchat', data})
+			sendData: function(type, data) {
+				return http.post(`/api/rtc/sendToClient`, {destId, srcId, type, data})
 			}
 
 		}

@@ -92,8 +92,15 @@ $$.control.registerControl('rootPage', {
 
 			  pc.onicecandidate = function(event) {
 			  	//console.log('onicecandidate', event)
-			  	if (event.candidate) {
-			  		rtc.candidate(event.candidate)
+			  	const info = event.candidate
+
+			  	if (info) {
+			  		rtc.sendData('candidate', {
+			  			label: info.sdpMLineIndex,
+			  			id: info.sdpMid,
+			  			candidate: info.candidate				  			
+			  		})
+		  		
 			  	}
 			  }
 			  pc.onaddstream = function(event) {
@@ -157,7 +164,7 @@ $$.control.registerControl('rootPage', {
 			pc.createOffer().then((sessionDescription) => {
 				console.log('createOffer', sessionDescription)
 				pc.setLocalDescription(sessionDescription)
-				rtc.offer(sessionDescription)
+				rtc.sendData('offer', sessionDescription)
 			})
 		})
 
@@ -193,7 +200,7 @@ $$.control.registerControl('rootPage', {
 			console.log('Sending answer to peer.')
 			pc.createAnswer().then((sessionDescription) => {
 				pc.setLocalDescription(sessionDescription)
-				rtc.answer(sessionDescription)
+				rtc.sendData('answer', sessionDescription)
 
 			})
 

@@ -21,6 +21,9 @@ $$.control.registerControl('rootPage', {
 						function() {
 							srvUsers.activateApp(data.appName, !data.activated).then(() => {
 								data.activated = !data.activated
+								const info = ctrl.model.apps.find((a) => a.appName == data.appName)	
+								info.activated = data.activated
+								ctrl.update()
 							})
 						})
 				}

@@ -28,11 +28,12 @@ $$.control.registerControl('breizbot.apps', {
 
 
 		this.setData = function(data) {
-			console.log('data', data)
+			//console.log('data', data)
 			ctrl.setData({
 				apps: data.apps.filter((a) => a.props.visible != false && a.appName != 'template')
 			})
 		}
+
 	},
 
 	$iface: `setData(data)`,

@@ -1,6 +1,7 @@
 <div class="scrollPanel">
 	<div bn-each="apps" bn-iter="app" class="main" bn-event="click.tile: onTileClick">			
-		<div class="tile w3-btn" bn-attr="{class: `tile w3-btn ${app.props.colorCls}`}" bn-data="{item: app}">
+		<div bn-attr="{class: `tile w3-btn ${app.props.colorCls}`}" bn-data="{item: app}">
+			<div class="arrow-right" bn-show="showActivated && app.activated"></div>
 			<div bn-show="typeof app.props.iconCls == 'string'" style="margin-bottom: 5px;">
 				<i bn-attr="{class: app.props.iconCls}"></i>
 			</div>

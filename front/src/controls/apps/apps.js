@@ -1,7 +1,8 @@
 $$.control.registerControl('breizbot.apps', {
 
 	props: {
-		apps: []
+		apps: [],
+		showActivated: false
 	},
 
 	$iface: 'setData(data)',
@@ -10,10 +11,12 @@ $$.control.registerControl('breizbot.apps', {
 
 	init: function(elt) {
 
+		const {apps, showActivated} = this.props
+
 		const ctrl = $$.viewController(elt, {
 			data: {
-				apps: this.props.apps
-
+				apps,
+				showActivated
 			},
 			events: {
 				onTileClick: function(ev) {

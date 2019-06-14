@@ -14,13 +14,7 @@ $$.control.registerControl('friendsPage', {
 
 		const {$pager} = this.props
 
-		const ctrl = $$.viewController(elt, {
-			events: {
-				onFriendSelect: function(ev, data) {
-					//console.log('onFriendSelect', data)
-				}
-			}
-		})
+		const ctrl = $$.viewController(elt)
 
 		this.onAction = function(cmd) {
 			console.log('onAction', cmd)

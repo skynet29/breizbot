@@ -27,7 +27,7 @@
 
 </div>
 
-<div class="content" bn-show="status == 'connected'">
+<div class="content" bn-show="status == 'connected'" bn-bind="content">
 	<div bn-each="messages" class="messages">
 		<div class="me" bn-show="$i.me">
 			<div bn-text="$i.text" class="text"></div>
@@ -44,5 +44,6 @@
 <div class="footer" bn-show="status == 'connected'">
 	<form bn-event="submit: onSubmit">
 		<input type="text" name="message" required="" placeholder="Write a message..." autocomplete="off">
+		<button class="w3-button w3-blue" type="submit">Send</button>
 	</form>
 </div>

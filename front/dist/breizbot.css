@@ -81,6 +81,23 @@
     flex: 1;
     border: none; }
 
+.breizbot-pdf {
+  display: flex;
+  flex-direction: column; }
+  .breizbot-pdf .brainjs-pdf {
+    flex: 1; }
+  .breizbot-pdf .toolbar {
+    padding: 0 10px 0 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between; }
+    .breizbot-pdf .toolbar .pages {
+      display: flex;
+      align-items: center; }
+    .breizbot-pdf .toolbar .loading {
+      padding: 8px 0 8px 0; }
+
 .breizbot-media .contentPanel {
   height: 100%;
   overflow: hidden;
@@ -111,23 +128,6 @@
 
 .breizbot-media .toolbar {
   margin-bottom: 10px; }
-
-.breizbot-pdf {
-  display: flex;
-  flex-direction: column; }
-  .breizbot-pdf .brainjs-pdf {
-    flex: 1; }
-  .breizbot-pdf .toolbar {
-    padding: 0 10px 0 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between; }
-    .breizbot-pdf .toolbar .pages {
-      display: flex;
-      align-items: center; }
-    .breizbot-pdf .toolbar .loading {
-      padding: 8px 0 8px 0; }
 
 .breizbot-addUser {
   margin: 10px;

@@ -31,7 +31,7 @@ $$.control.registerControl('rootPage', {
 					console.log('onCall')
 
 					$pager.pushPage('friendsPage', {
-						title: 'Select a friend'
+						title: 'Select a friend to tchat with'
 					})
 
 				},
@@ -60,6 +60,7 @@ $$.control.registerControl('rootPage', {
 						time: new Date().toLocaleTimeString()
 					})
 					ctrl.update()
+					ctrl.scope.content.scrollToBottom()
 				}
 			}
 		})
@@ -104,15 +105,13 @@ $$.control.registerControl('rootPage', {
 			if (msg.hist === true) {
 				return
 			}
-			console.log('msg', msg)
-			const date = new Date(msg.time)
-			console.log('date', date)
 			ctrl.model.messages.push({
 				text: msg.data,
 				me: false,
 				time: new Date(msg.time).toLocaleTimeString()
 			})
-			ctrl.update()			
+			ctrl.update()		
+			ctrl.scope.content.scrollToBottom()	
 		})		
 
 		broker.onTopic('breizbot.rtc.bye', function(msg) {

@@ -43,13 +43,10 @@ $$.control.registerControl('breizbot.home', {
 			data: {
 				apps: [],
 				userName,
-				title: 'Home',
-				isHome: true,				
 				nbNotif: 0,
 				hasIncomingCall: false,
 				callInfo: null,
 				fullScreen: false,
-				appUrl: 'about:blank',
 				getMyApps: function() {
 					return apps.filter((a) => a.activated)
 				}
@@ -117,9 +114,32 @@ $$.control.registerControl('breizbot.home', {
 						requestFullscreen.call(elem)						
 					}
 				},
-				onGoHome: function() {
-					console.log('onGoHome')
-					goHome()
+				onTabRemove: function(ev, idx) {
+					console.log('onTabRemove', idx)
+					const info = ctrl.scope.tabs.getTabInfo(idx)
+					console.log('info', info)
+					info.ctrlIface.onAppExit().then(() => {
+						ctrl.scope.tabs.removeTab(idx)
+					})					
+				},
+				onTabActivate: function(ev, ui) {	
+					console.log('onTabActivate')
+					const {newTab, oldTab} = ui
+					const newTabIdx = newTab.index()
+					const oldTabIdx = oldTab.index()
+					if (oldTabIdx > 0) {
+						const info = ctrl.scope.tabs.getTabInfo(oldTabIdx)
+						info.ctrlIface.onAppSuspend()
+					}
+					if (newTabIdx > 0) {
+						const info = ctrl.scope.tabs.getTabInfo(newTabIdx)
+						info.ctrlIface.onAppResume()						
+					}
+					if (newTabIdx == 0) {
+						loadApp()
+					}
+
+
 				}
 			}
 		})
@@ -183,13 +203,18 @@ $$.control.registerControl('breizbot.home', {
 			const title = appInfo.props.title
 			//console.log('appInfo', appInfo)
 			console.log('openApp', appName, params)
-			saveData().then(() => {
-				ctrl.setData({
-					isHome: false, 
-					title,
-					appUrl: getAppUrl(appName, params)
-				})							
-			})
+			let idx = ctrl.scope.tabs.getTabIndexFromTitle(title)
+			if (idx < 0) { // apps not already run
+				idx = ctrl.scope.tabs.addTab(title, {
+					removable: true,
+					control: 'breizbot.appTab',
+					props: {
+						appUrl: getAppUrl(appName, params)
+					}
+				})
+			}
+
+			ctrl.scope.tabs.setSelectedTabIndex(idx)
 
 		}
 
@@ -199,38 +224,14 @@ $$.control.registerControl('breizbot.home', {
 			srvApps.listAll().then((apps) => {
 				//console.log('apps', apps)
 				ctrl.setData({
-					apps,
-					isHome: true,
-					title: 'Home',
-					appUrl:'about:blank'
+					apps
 				})
 			})			
 		}
 
-		function saveData() {
-			console.log('[System] saveData')
-			if (!ctrl.model.isHome)	{
-				const $iframe = $(ctrl.scope.iframe.get(0).contentWindow.document)
-				const rootPage = $iframe.find('.rootPage').iface()
-				console.log('rootPage', rootPage)
-				if (typeof rootPage.exitApp == 'function') {
-					const ret = rootPage.exitApp()
-					if (ret instanceof Promise) {
-						return ret
-					}
-				}
-			}
-			return Promise.resolve()		
-		}
-
-		function goHome() {
-			saveData().then(loadApp)				
-		}
 
 		function logout() {
-			saveData().then(() => {
-				location.href = '/logout'
-			})			
+			location.href = '/logout'
 		}
 
 		loadApp()	

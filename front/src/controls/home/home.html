@@ -1,11 +1,5 @@
 <div class="header w3-teal">
 	<div>
-		<button class="w3-button" title="Go Home" bn-show="!isHome"
-		bn-event="click: onGoHome">
-			<i class="fa fa-home fa-lg"></i>
-		</button>
-			
-		</a>		
 		<button class="w3-button" title="FullScreen" bn-event="click: onFullScreen" bn-show="!fullScreen">
 			<i class="fa fa-expand"></i></button>
 		<div bn-show="hasIncomingCall" 
@@ -26,8 +20,8 @@
 	</div>
 
 
-	<strong bn-text="title"></strong>
-
+<!-- 	<strong bn-text="title"></strong>
+ -->
 	<div>
 		<button class="notification w3-button" title="Notification" bn-event="click: onNotification">
 			<i class="fa fa-lg fa-bell w3-text-white" ></i>
@@ -60,12 +54,15 @@
 	
 </div>
 
-
-<div bn-control="breizbot.apps" 
-	bn-data="{apps: getMyApps()}"
-	bn-event="appclick: onAppClick"
-	bn-show="isHome" 
-	>		
+<div bn-control="brainjs.tabs" 
+	class="content" 
+	bn-iface="tabs" 
+	bn-event="tabsremove: onTabRemove, tabsactivate: onTabActivate">
+	<div bn-control="breizbot.apps" 
+		bn-data="{apps: getMyApps()}"
+		bn-event="appclick: onAppClick"
+		title="Home" 
+		>		
+	</div>
+	
 </div>
-
-<iframe bn-attr="{src: appUrl}" bn-show="!isHome" bn-bind="iframe"></iframe>

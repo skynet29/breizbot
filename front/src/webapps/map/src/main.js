@@ -98,8 +98,7 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		this.exitApp = function() {
-			console.log('Exit map app')
+		this.onAppExit = function() {
 			const {map} = ctrl.scope
 			return appData.saveData({zoom: map.getZoom(), center: map.getCenter()})
 		}

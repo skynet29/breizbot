@@ -15,7 +15,7 @@ $$.control.registerControl('rootPage', {
 		const whiteSquareGrey = '#a9a9a9'
 		const blackSquareGrey = '#696969'		
 
-		const game = new Chess()
+		let game = new Chess()
 
 		const board = Chessboard('myBoard', {
 			draggable: true,
@@ -121,6 +121,10 @@ $$.control.registerControl('rootPage', {
 				onHangup: function(ev) {
 					rtc.bye()
 					ctrl.setData({status: 'ready', distant: '', messages: []})
+					board.clear()
+					game = new Chess()
+					removeHighlights('black')
+					removeHighlights('white')
 				}
 
 			}
@@ -204,6 +208,7 @@ $$.control.registerControl('rootPage', {
 			rtc.setRemoteClientId(msg.srcId)
 			ctrl.setData({status: 'connected', yourTurn: true})
 			board.start()
+			updateStatus()
 
 		})
 
@@ -244,6 +249,10 @@ $$.control.registerControl('rootPage', {
 			}
 			console.log('msg', msg)
 			ctrl.setData({status: 'disconnected', distant: '', messages: []})
+			game = new Chess()
+			board.clear()
+			removeHighlights('black')
+			removeHighlights('white')			
 
 		})			
 

@@ -12,6 +12,11 @@ $$.control.registerControl('breizbot.appTab', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				appUrl				
+			},
+			events: {
+				onFrameLoaded: function() {
+					console.log('onFrameLoaded')
+				}
 			}
 		})
 
@@ -41,6 +46,11 @@ $$.control.registerControl('breizbot.appTab', {
 			if (rootPage && typeof rootPage.onAppResume == 'function') {
 				rootPage.onAppResume()
 			}
-		}		
+		}
+
+		this.setAppUrl = function(appUrl) {
+			console.log('[appTab] setAppUrl', appUrl)
+			ctrl.setData({appUrl: appUrl + '&date=' + Date.now()})
+		}
 	}
 });

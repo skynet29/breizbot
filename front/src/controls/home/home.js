@@ -204,14 +204,21 @@ $$.control.registerControl('breizbot.home', {
 			//console.log('appInfo', appInfo)
 			console.log('openApp', appName, params)
 			let idx = ctrl.scope.tabs.getTabIndexFromTitle(title)
+			const appUrl = getAppUrl(appName, params)
 			if (idx < 0) { // apps not already run
 				idx = ctrl.scope.tabs.addTab(title, {
 					removable: true,
 					control: 'breizbot.appTab',
 					props: {
-						appUrl: getAppUrl(appName, params)
+						appUrl
 					}
 				})
+			}
+			else {
+				const info = ctrl.scope.tabs.getTabInfo(idx)
+				if (params != undefined) {
+					info.ctrlIface.setAppUrl(appUrl)
+				}
 			}
 
 			ctrl.scope.tabs.setSelectedTabIndex(idx)

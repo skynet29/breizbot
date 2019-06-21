@@ -7,7 +7,7 @@
 			bn-event="contextmenuchange: onCallResponse"
 			bn-data="{
 				trigger: 'left', 
-				title: callInfo && callInfo.from,
+				title: (callInfo && callInfo.from) || '' ,
 				items: {
 					accept: {name: 'Accept'},
 					deny: {name: 'Decline'},

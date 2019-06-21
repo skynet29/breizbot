@@ -40,6 +40,11 @@
 				bn-event="click: onCopyFiles"
 				><i class="fa fa-copy"></i></button>
 
+			<button title="Share"
+				bn-prop="{disabled: nbSelection == 0 || rootDir == '/share/'}"
+				bn-event="click: onShareFiles"
+				><i class="fa fa-share-alt"></i></button>
+
 			<button title="Paste"
 				bn-prop="{disabled:  selectedFiles.length == 0}"
 				bn-event="click: onPasteFiles"

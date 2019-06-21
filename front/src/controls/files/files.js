@@ -189,6 +189,25 @@ $$.control.registerControl('breizbot.files', {
 					
 					setSelMode(false)
 				},
+
+				onShareFiles: function(ev) {
+					console.log('onShareFiles')
+					srvFiles.shareFiles(getSelFiles())
+					.then(function(resp) {
+						console.log('resp', resp)
+						ctrl.setData({selectedFiles: [], operation: 'none'})
+						loadData()
+					})
+					.catch(function(resp) {
+						console.log('resp', resp)
+						//ctrl.setData({selectedFiles: [], operation: 'none'})
+						$$.ui.showAlert({
+							content: resp.responseText,
+							title: 'Error'
+						})
+					})						
+				},
+
 				onPasteFiles: function(ev) {
 					console.log('onPasteFiles')
 					const {rootDir, selectedFiles, operation} = ctrl.model
@@ -248,7 +267,7 @@ $$.control.registerControl('breizbot.files', {
 
 		function setSelMode(selMode) {
 			if (selMode == false) {
-				ctrl.model.hasSelection = false
+				ctrl.model.nbSelection = 0
 			}
 			ctrl.model.selectMode = selMode
 			ctrl.forceUpdate('files')
@@ -282,7 +301,13 @@ $$.control.registerControl('breizbot.files', {
 					files.unshift({name: '..', folder: true})
 				}
 
-				ctrl.setData({files, rootDir, selectMode: false, hasSelection: false})
+				ctrl.setData({
+					files, 
+					rootDir, 
+					selectMode: false, 
+					hasSelection: false, 
+					nbSelection: 0
+				})
 
 			})		
 		}

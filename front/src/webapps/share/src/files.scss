@@ -1,0 +1,34 @@
+.filesPage {
+	.contentPanel {
+		height: 100%;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		margin: 10px;
+	}
+
+	.container {
+		display: flex;
+		flex-direction: row;
+		//flex: 1;
+		//align-items: stretch;
+		align-items: flex-start;
+		flex-wrap: wrap;
+		align-content: start;
+	}
+
+	.scrollPanel {
+		flex: 1;
+		overflow-y: auto;
+	}
+
+	.thumbnail {
+		margin: 10px;
+		position: relative;
+		border: 1px solid black;
+	}
+
+	.toolbar {
+		margin-bottom: 10px;
+	}
+}

@@ -11,11 +11,11 @@ $$.service.registerService('breizbot.files', {
 			},
 
 			fileUrl: function(fileName) {
-				return '/api/files/load?fileName=' + encodeURIComponent(fileName)
+				return $$.util.getUrlParams('/api/files/load', {fileName})
 			},
 
 			fileThumbnailUrl: function(fileName, size) {
-				return `/api/files/loadThumbnail?fileName=${encodeURIComponent(fileName)}&size=${encodeURIComponent(size)}`
+				return $$.util.getUrlParams('/api/files/loadThumbnail', {fileName, size})
 			},
 
 			uploadFile: function(blob, saveAsfileName, destPath) {
@@ -45,6 +45,11 @@ $$.service.registerService('breizbot.files', {
 				console.log('[FileService] moveFiles', fileNames, destPath)
 				return http.post('/api/files/move', {fileNames, destPath})
 			},
+
+			shareFiles: function(fileNames) {
+				console.log('[FileService] shareFiles', fileNames)
+				return http.post('/api/files/move', {fileNames, destPath: '/share'})
+			},			
 
 			copyFiles: function(fileNames, destPath) {
 				console.log('[FileService] copyFiles', fileNames, destPath)

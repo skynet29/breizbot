@@ -184,18 +184,7 @@ $$.control.registerControl('breizbot.home', {
 		})
 
 		function getAppUrl(appName, params) {
-			let appUrl = `/apps/${appName}`
-
-			if (typeof params == 'object') {
-				const keys = []
-				for(let i in params) {
-					keys.push(i + '=' + params[i])
-				}
-		
-				appUrl += `?` + keys.join('&')
-			}
-			return appUrl
-
+			return $$.util.getUrlParams(`/apps/${appName}`, params)
 		}
 
 		function openApp(appName, params) {

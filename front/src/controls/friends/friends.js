@@ -2,7 +2,8 @@ $$.control.registerControl('breizbot.friends', {
 
 	props: {
 		showSelection: false,
-		showSendMessage: false
+		showSendMessage: false,
+		showConnectionState: true
 	},
 
 	deps: ['breizbot.users', 'breizbot.broker'],
@@ -11,17 +12,18 @@ $$.control.registerControl('breizbot.friends', {
 
 	init: function(elt, users, broker) {
 
-		const {showSelection, showSendMessage} = this.props
+		const {showSelection, showSendMessage, showConnectionState} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				friends: [],
-				showSendMessage
+				showSendMessage,
+				showConnectionState
 			},
 			events: {
 				onItemClick: function() {
 					const userName =  $(this).data('item').friendUserName
-					console.log('onItemClick', userName)
+					//console.log('onItemClick', userName)
 					if (showSelection) {
 						$(this).siblings('.w3-blue').removeClass('w3-blue')
 						$(this).addClass('w3-blue')						
@@ -31,7 +33,7 @@ $$.control.registerControl('breizbot.friends', {
 				onSendMessage: function(ev) {
 					ev.stopPropagation()
 					const userName =  $(this).closest('li').data('item').friendUserName
-					console.log('onSendMessage', userName)
+					//console.log('onSendMessage', userName)
 					$$.ui.showPrompt({title: 'Send Message', label: 'Message:'}, function(text) {
 						users.sendNotif(userName, {text, reply: true})
 					})

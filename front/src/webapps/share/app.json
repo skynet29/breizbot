@@ -1,0 +1,7 @@
+{	
+	"iconCls": "fas fa-share-alt fa-2x",
+	"colorCls": "w3-green",
+	"title": "Share",
+	"brainjs": ["map", "pdf"],	
+	"styles": ["app.css"]
+}

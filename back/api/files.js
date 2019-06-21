@@ -193,9 +193,7 @@ router.get('/load', function(req, res) {
 	console.log('load req', req.query)
 	const fileName = req.query.fileName
 	const user = req.session.user
-	const range = req.headers.range
-	console.log('range', range)	
-
+	
 	res.sendFile(path.join(cloudPath, user, fileName))
 })
 

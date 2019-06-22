@@ -1,3 +1,4 @@
+const path = require('path')
 const config = require('../lib/config')
 const db = require('../lib/db')
 
@@ -48,6 +49,7 @@ module.exports = function(app) {
 				req.session.connected = true
 				req.session.user = user
 				req.session.userInfo = data
+				req.session.userPath = path.join(config.CLOUD_HOME, user)
 				res.redirect('/')				
 			})
 			

@@ -4,7 +4,7 @@ const db = require('../lib/db')
 
 router.get('/', function(req, res) {
 	const userName = req.session.user
-	const appName = req.headers.referer.split('/').pop()
+	const appName = req.appName
 	db.getAppData(userName, appName)
 	.then((info) => {
 		const data = (info && info.data) || {}
@@ -21,7 +21,7 @@ router.get('/', function(req, res) {
 
 router.post('/', function(req, res) {
 	const userName = req.session.user
-	const appName = req.headers.referer.split('/').pop()
+	const appName = req.appName
 	const data = req.body
 	db.saveAppData(userName, appName, data)
 	.then(() => {

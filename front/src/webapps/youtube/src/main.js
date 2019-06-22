@@ -2,7 +2,7 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
-	deps: ['breizbot.ytdl', 'breizbot.broker'],
+	deps: ['app.ytdl', 'breizbot.broker'],
 
 	init: function(elt ,ytdl, broker) {
 

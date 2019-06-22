@@ -1,4 +1,4 @@
-$$.service.registerService('breizbot.ytdl', {
+$$.service.registerService('app.ytdl', {
 
 	deps: ['brainjs.http'],
 
@@ -6,11 +6,11 @@ $$.service.registerService('breizbot.ytdl', {
 
 		return {
 			info: function(url) {
-				return http.get(`/api/ytdl/info?url=${url}`)
+				return http.get(`/api/app/youtube/info?url=${url}`)
 			},
 
 			download: function(url, fileName, srcId) {
-				return http.post(`/api/ytdl/download`, {url, fileName, srcId})
+				return http.post(`/api/app/youtube/download`, {url, fileName, srcId})
 			}			
 		}
 	},

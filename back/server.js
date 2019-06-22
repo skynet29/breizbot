@@ -3,6 +3,8 @@ console.log('config', config)
 
 const db = require('./lib/db')
 const wss = require('./lib/wss')
+const fs = require('fs-extra')
+require('colors')
 
 
 db.init().then(dbReady)
@@ -59,9 +61,22 @@ app.all('/api/*' , function(req, res, next) {
 		res.sendStatus('401')
 	}
 	else { 
+		req.appName = req.headers.referer.split('/').pop()
 		next()
 	}
 })
+
+// forbid acces to webapp private REST API 
+app.all('/api/app/:appName/*' , function(req, res, next) {
+
+	if (req.params.appName != req.appName) {
+		res.sendStatus('401')
+	}
+	else { 
+		next()
+	}
+})
+
 
 require('./controllers/login')(app)
 require('./controllers/app')(app)
@@ -74,10 +89,24 @@ app.use('/api/rtc', require('./api/rtc'))
 app.use('/api/debug', require('./api/debug'))
 app.use('/api/mails', require('./api/mails'))
 app.use('/api/media', require('./api/media'))
-app.use('/api/ytdl', require('./api/ytdl'))
 app.use('/api/appData', require('./api/appData'))
 app.use('/api/cities', require('./api/cities'))
 app.use('/api/share', require('./api/share'))
+
+const ctx = {wss}
+const appsPath = path.join(__dirname, '../front/src/webapps')
+
+const apps = fs.readdirSync(appsPath)
+//console.log('apps', apps)
+apps.forEach((appName) => {
+	const appPath = path.join(appsPath, appName, 'index.js')
+	if (fs.existsSync(appPath)) {
+		const router = require(appPath)(ctx)
+		console.log(`add API router for app ${appName}`.blue)
+		app.use(`/api/app/${appName}`, router)
+	}
+
+})
 
 app.use('/brainjs', express.static(config.BRAINJS_HOME))
 app.use('/lib', express.static(path.join(__dirname, '../front/externals')))

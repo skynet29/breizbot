@@ -107,6 +107,15 @@ $$.control.registerControl('filesPage', {
 						f.thumbnailUrl = srvFiles.fileThumbnailUrl(userName, rootDir + f.name, thumbnailSize)
 					}
 				})
+				files.sort((a, b) => {
+				  if (a.folder && !b.folder) {
+				    return -1
+				  }
+				  if (!a.folder && b.folder) {
+				    return 1
+				  }
+				  return a.name > b.name
+				})				
 
 				if (rootDir != '/') {
 					files.unshift({name: '..', folder: true})

@@ -309,6 +309,15 @@ $$.control.registerControl('breizbot.files', {
 						f.thumbnailUrl = srvFiles.fileThumbnailUrl(rootDir + f.name, thumbnailSize)
 					}
 				})
+				files.sort((a, b) => {
+				  if (a.folder && !b.folder) {
+				    return -1
+				  }
+				  if (!a.folder && b.folder) {
+				    return 1
+				  }
+				  return a.name > b.name
+				})				
 
 				if (rootDir != '/') {
 					files.unshift({name: '..', folder: true})

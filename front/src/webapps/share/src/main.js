@@ -15,7 +15,7 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onSelectFriend: function(ev, data) {
-					console.log('onSelectFriend', data)
+					//console.log('onSelectFriend', data)
 					const {userName} = data
 					$pager.pushPage('filesPage', {
 						title: userName,

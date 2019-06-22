@@ -41,7 +41,7 @@ $$.control.registerControl('viewerPage', {
 		this.onAction = function(action) {
 			console.log('onAction', action)
 			if (action == 'save') {
-				ctrl.scope.viewer.save('/download/email', info.name, () => {
+				ctrl.scope.viewer.save('/apps/email', info.name, () => {
 					$pager.popPage()
 				})
 			}

@@ -17,8 +17,14 @@ router.get('/info', function(req, res) {
 	const {url} = req.query
 
 	ytdl.getBasicInfo(url).then((info) => {
-		const {title, description, length_seconds, thumbnail_url} = info
-		res.json({title, description, length_seconds, thumbnail_url})		
+		console.log('info', Object.keys(info.player_response.videoDetails))
+		const {title, shortDescription, lengthSeconds, thumbnail} = info.player_response.videoDetails
+		res.json({
+			title, 
+			description: shortDescription,
+			length_seconds: lengthSeconds, 
+			thumbnail_url: thumbnail.thumbnails[2].url
+		})		
 	})	
 })
 
@@ -45,7 +51,7 @@ router.post('/download', function(req, res) {
 	video.on('response', (data) => {
 		res.sendStatus(200)
 	})
-	const destPath = path.join(cloudPath, userName, 'video/download')
+	const destPath = path.join(cloudPath, userName, 'apps/ytdl')
 	fs.lstat(destPath)
 	.catch(function(err) {
 		console.log('lstat', err)

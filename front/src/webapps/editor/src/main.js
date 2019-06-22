@@ -32,7 +32,7 @@ $$.control.registerControl('rootPage', {
 					}
 					$$.ui.showPrompt({title: 'Save File', content: "FileName:"}, function(fileName) {
 						fileName += '.doc'
-						ctrl.setData({fileName, rootDir: '/documents'})
+						ctrl.setData({fileName, rootDir: '/apps/editor'})
 						saveFile()
 					})
 				},

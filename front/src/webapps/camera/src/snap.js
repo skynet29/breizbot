@@ -28,7 +28,7 @@ $$.control.registerControl('snapPage', {
 			const fileName = 'SNAP' + Date.now() + '.png'
 			console.log('fileName', fileName)
 			const blob = $$.util.dataURLtoBlob(url)
-			files.uploadFile(blob, fileName, '/images/camera').then(function(resp) {
+			files.uploadFile(blob, fileName, '/apps/camera').then(function(resp) {
 				console.log('resp', resp)
 				$pager.popPage()
 			})	

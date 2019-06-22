@@ -39,6 +39,7 @@ $$.control.registerControl('breizbot.files', {
 				selectedFiles: [],
 				operation: 'none',
 				nbSelection: 0,
+				isShareSelected: false,
 				getSize: function(size) {
 					let unit = 'Ko'
 					size /= 1024
@@ -66,6 +67,10 @@ $$.control.registerControl('breizbot.files', {
 				}
 			},
 			events: {
+				onReload: function(ev) {
+					loadData()
+				},
+
 				onFileClick: function(ev) {
 					const info = $(this).closest('.thumbnail').data('info')
 					//console.log('onFileClick', info)
@@ -85,6 +90,14 @@ $$.control.registerControl('breizbot.files', {
 				},
 				onCheckClick: function(ev) {
 					console.log('onCheckClick')
+
+					const info = $(this).closest('.thumbnail').data('info')
+
+					//console.log('info', info)
+					if (info.name == 'share' && ctrl.model.rootDir == '/') {
+						ctrl.model.isShareSelected = $(this).getValue()
+					}
+					//console.log('isShareSelected', ctrl.model.isShareSelected)
 					
 					const $checked = elt.find('.check:checked')
 					const nbSelection = $checked.length
@@ -306,7 +319,8 @@ $$.control.registerControl('breizbot.files', {
 					rootDir, 
 					selectMode: false, 
 					hasSelection: false, 
-					nbSelection: 0
+					nbSelection: 0,
+					isShareSelected: false
 				})
 
 			})		

@@ -18,10 +18,19 @@
 				bn-prop="{disabled: nbSelection != 1 || !isFile}"
 			><i class="fa fa-download"></i></button>		
 
+	
+		</div>
+
+		<div bn-control="brainjs.controlgroup">
 			<button 
 				title="Toggle Select Mode"
 				bn-event="click: onToggleSelMode"
-			><i class="fa fa-check"></i></button>	
+			><i class="fa fa-check"></i></button>
+
+			<button 
+				title="Reload"
+				bn-event="click: onReload"
+			><i class="fa fa-sync-alt"></i></button>	
 		</div>
 
 		<div bn-control="brainjs.controlgroup">
@@ -41,7 +50,7 @@
 				><i class="fa fa-copy"></i></button>
 
 			<button title="Share"
-				bn-prop="{disabled: nbSelection == 0 || rootDir == '/share/'}"
+				bn-prop="{disabled: nbSelection == 0 || rootDir.startsWith('/share/') || isShareSelected}"
 				bn-event="click: onShareFiles"
 				><i class="fa fa-share-alt"></i></button>
 

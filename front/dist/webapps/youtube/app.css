@@ -4,7 +4,8 @@
   flex-direction: column; }
   .rootPage form {
     display: flex;
-    flex-direction: row; }
+    flex-direction: row;
+    margin-bottom: 10px; }
     .rootPage form input {
       flex: 1;
       padding: 5px; }
@@ -12,22 +13,26 @@
     flex: 1;
     margin: 10px;
     display: flex;
-    flex-direction: row; }
+    flex-direction: column; }
     .rootPage .info .thumbnail {
       display: flex;
-      flex-direction: column; }
+      flex-direction: row;
+      margin-bottom: 10px; }
       .rootPage .info .thumbnail .download {
-        margin: 20px 0 20px 0; }
+        margin: 0 0 0 20px; }
     .rootPage .info .details {
       flex: 1;
-      margin-left: 10px;
       display: flex;
       flex-direction: column; }
+      .rootPage .info .details > div {
+        display: flex; }
+      .rootPage .info .details strong {
+        display: inline-block;
+        min-width: 100px; }
       .rootPage .info .details .description {
         flex: 1;
         display: flex;
         flex-direction: row; }
         .rootPage .info .details .description textarea {
-          margin-left: 10px;
           flex: 1;
           border: none; }

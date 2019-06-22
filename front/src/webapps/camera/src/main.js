@@ -19,12 +19,13 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				constraints: {
-					width: {max: elt.width()},
-					height: {max: elt.height()}
-				}
+				ready: false
 			},
 			events: {
+				onCameraReady: function() {
+					console.log('onCameraReady')
+					ctrl.setData({ready: true})
+				},
 				onTakePicture: function(ev) {
 					audio.play()
 					const url = ctrl.scope.camera.takePicture()

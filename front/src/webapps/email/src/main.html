@@ -12,22 +12,20 @@
 		
 	</div>
 	<div>
-		<button 
-			class="w3-btn w3-blue" 
-			title="Create account"
-			bn-event="click: onCreateAccount"
-		>
-			<i class="fa fa-plus"></i>
-		</button>
-
-		<button 
-			class="w3-btn w3-blue" 
-			title="New email"
-			bn-event="click: onNewEmail"
-			bn-show="accounts.length > 0"
-		>
-			<i class="fa fa-envelope"></i>
-		</button>
+		<div bn-control="brainjs.contextmenu" 
+			bn-data="{
+				items: {
+					add: {name: 'Add Account', icon: 'fas fa-plus'},
+					new: {name: 'New Message', icon: 'fas fa-envelope', disabled: accounts.length == 0}
+				}
+			}" 
+			data-trigger="left" 
+			class="w3-button w3-blue" 
+			bn-event="contextmenuchange: onMenu"
+			>
+				<i class="fa fa-ellipsis-v"></i>
+    	
+		</div>		
 		
 	</div>
 	

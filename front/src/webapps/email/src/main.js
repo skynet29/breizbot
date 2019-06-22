@@ -19,12 +19,23 @@ $$.control.registerControl('rootPage', {
 				mailboxes: [],
 			},
 			events: {
-				onCreateAccount: function() {
-					console.log('onCreateAccount')
-					$pager.pushPage('accountPage', {
-						title: 'Create Mail Account'
-					})
+				onMenu: function(ev, data) {
+					console.log('onMenu', data)
+					if (data.cmd == 'add') {
+						$pager.pushPage('accountPage', {
+							title: 'Create Mail Account'
+						})						
+					}
+					if (data.cmd == 'new') {
+						$pager.pushPage('writeMailPage', {
+							title: 'New Message',
+							props: {
+								accountName: ctrl.model.currentAccount
+							}
+						})						
+					}
 				},
+
 				onAccountChange: function() {
 					console.log('onAccountChange', $(this).val())
 					ctrl.setData({currentAccount: $(this).val()})
@@ -47,17 +58,8 @@ $$.control.registerControl('rootPage', {
 							mailboxName
 						}
 					})
-				},
-
-				onNewEmail: function(ev) {
-					console.log('onNewEmail')
-					$pager.pushPage('writeMailPage', {
-						title: 'New Message',
-						props: {
-							accountName: ctrl.model.currentAccount
-						}
-					})
 				}
+
 			}
 		})
 

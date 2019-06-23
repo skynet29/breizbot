@@ -28,7 +28,7 @@ module.exports = function(ctx) {
 	})
 
 	router.post('/download', function(req, res) {
-		console.log('/download', req.body)
+		console.log('youtube/download', req.body)
 		const {url, fileName, srcId} = req.body
 		const userName = req.session.user
 

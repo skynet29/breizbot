@@ -11,6 +11,7 @@ module.exports = function(app) {
 			const {userInfo} = req.session
 			const appPath = path.join('/webapps/', app)
 			req.query.$userName = req.session.user
+			req.query.$appName = app
 
 
 			apps.getAppInfo(app).then((appInfo) => {

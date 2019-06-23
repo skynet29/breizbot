@@ -1,22 +1,18 @@
 $$.service.registerService('app.ytdl', {
 
-	deps: ['brainjs.http'],
+	deps: ['breizbot.http'],
 
 	init: function(config, http) {
 
 		return {
 			info: function(url) {
-				return http.get(`/api/app/youtube/info?url=${url}`)
+				return http.get(`info`, {url})
 			},
 
 			download: function(url, fileName, srcId) {
-				return http.post(`/api/app/youtube/download`, {url, fileName, srcId})
+				return http.post(`download`, {url, fileName, srcId})
 			}			
 		}
-	},
+	}
 
-	$iface: `
-		info(url):Promise;
-		download():Promise
-		`
 });

@@ -93,7 +93,7 @@ app.use('/api/appData', require('./api/appData'))
 app.use('/api/cities', require('./api/cities'))
 app.use('/api/share', require('./api/share'))
 
-const ctx = {wss}
+const ctx = {wss, config}
 const appsPath = path.join(__dirname, '../front/src/webapps')
 
 const apps = fs.readdirSync(appsPath)

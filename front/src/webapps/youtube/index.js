@@ -9,8 +9,7 @@ module.exports = function(ctx) {
 
 	console.log('start API youtube')
 
-	const {wss} = ctx
-
+	const {wss, config} = ctx
 
 	router.get('/info', function(req, res) {
 		console.log('youtube/info', req.query)
@@ -51,7 +50,7 @@ module.exports = function(ctx) {
 		video.on('response', (data) => {
 			res.sendStatus(200)
 		})
-		const destPath = path.join(req.session.userPath, 'apps/ytdl')
+		const destPath = path.join(config.CLOUD_HOME, userName, 'apps/ytdl')
 		fs.lstat(destPath)
 		.catch(function(err) {
 			console.log('lstat', err)

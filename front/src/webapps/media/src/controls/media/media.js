@@ -1,6 +1,6 @@
-$$.control.registerControl('breizbot.media', {
+$$.control.registerControl('app.media', {
 
-	deps: ['breizbot.media'], 
+	deps: ['app.media'], 
 
 
 	template: {gulp_inject: './media.html'},

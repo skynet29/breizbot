@@ -1,19 +1,19 @@
-$$.service.registerService('breizbot.media', {
+$$.service.registerService('app.media', {
 
-	deps: ['brainjs.http'],
+	deps: ['breizbot.http'],
 
 	init: function(config, http) {
 		return {
 			drive: function() {
-				return http.get('/api/media/drive')
+				return http.get('/drive')
 			},
 
 			list: function(driveName, destPath) {
-				return http.post('/api/media/list', {driveName, destPath})
+				return http.post('/list', {driveName, destPath})
 			},
 
 			fileUrl: function(driveName, fileName) {
-				return `/api/media/load?driveName=${driveName}&fileName=${fileName}`
+				return `/api/app/media/load?driveName=${driveName}&fileName=${fileName}`
 			},
 
 		}

@@ -2,7 +2,7 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
-	deps: ['breizbot.media'],
+	deps: ['app.media'],
 
 
 	props: {

@@ -1,16 +1,18 @@
 $$.service.registerService('breizbot.cities', {
 
-	deps: ['brainjs.http'],
+	deps: ['brainjs.resource'],
 
-	init: function(config, http) {
+	init: function(config, resource) {
+
+		const http = resource('/api/cities')
 
 		return {
 			getCountries: function() {
-				return http.get('/api/cities/countries')
+				return http.get('/countries')
 			},
 
 			getCities: function(country, search) {
-				return http.post('/api/cities/cities', {country, search})
+				return http.post('/cities', {country, search})
 			}
 			
 		}

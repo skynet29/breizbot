@@ -1,13 +1,15 @@
 $$.service.registerService('breizbot.files', {
 
-	deps: ['brainjs.http'],
+	deps: ['brainjs.resource'],
 
-	init: function(config, http) {
+	init: function(config, resource) {
+		const http = resource('/api/files')
+		
 		return {
 			list: function(path, options) {
 				console.log('[FileService] list', path)
 
-				return http.post('/api/files/list', {path, options})
+				return http.post('/list', {path, options})
 			},
 
 			fileUrl: function(fileName) {
@@ -28,32 +30,32 @@ $$.service.registerService('breizbot.files', {
 				var fd = new FormData()
 				fd.append('file', blob, saveAsfileName)
 				fd.append('destPath', destPath)
-				return http.postFormData('/api/files/save', fd)
+				return http.postFormData('/save', fd)
 			},
 
 			removeFiles: function(fileNames) {
 				console.log('[FileService] removeFiles', fileNames)
-				return http.post('/api/files/delete', fileNames)
+				return http.post('/delete', fileNames)
 			},
 
 			mkdir: function(fileName) {
 				console.log('[FileService] mkdir', fileName)
-				return http.post('/api/files/mkdir', {fileName})
+				return http.post('/mkdir', {fileName})
 			},
 
 			moveFiles: function(fileNames, destPath) {
 				console.log('[FileService] moveFiles', fileNames, destPath)
-				return http.post('/api/files/move', {fileNames, destPath})
+				return http.post('/move', {fileNames, destPath})
 			},
 
 			shareFiles: function(fileNames) {
 				console.log('[FileService] shareFiles', fileNames)
-				return http.post('/api/files/move', {fileNames, destPath: '/share'})
+				return http.post('/move', {fileNames, destPath: '/share'})
 			},			
 
 			copyFiles: function(fileNames, destPath) {
 				console.log('[FileService] copyFiles', fileNames, destPath)
-				return http.post('/api/files/copy', {fileNames, destPath})
+				return http.post('/copy', {fileNames, destPath})
 			}	
 		}
 	},

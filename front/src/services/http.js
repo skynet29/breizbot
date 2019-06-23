@@ -4,7 +4,7 @@ $$.service.registerService('breizbot.http', {
 
 	init: function(config, resource, params) {
 
-		return resource(`api/app/${params.$appName}`)
+		return resource(`/api/app/${params.$appName}`)
 	}
 
 });

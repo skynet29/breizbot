@@ -1,76 +1,78 @@
 $$.service.registerService('breizbot.users', {
 
-	deps: ['brainjs.http'],
+	deps: ['brainjs.resource'],
 
-	init: function(config, http) {
+	init: function(config, resource) {
+
+		const http = resource('/api/users')
 
 		return {
 			list: function() {
-				return http.get('/api/users')
+				return http.get('/')
 			},
 
-			match: function(matchUser) {
-				return http.get(`/api/users?match=${matchUser}`)
+			match: function(match) {
+				return http.get('/', {match})
 			},
 
 			add: function(data) {
-				return http.post('/api/users', data)
+				return http.post('/', data)
 			},
 
 			remove: function(user) {
-				return http.delete(`/api/users/${user}`)
+				return http.delete(`/${user}`)
 			},
 
 			update: function(user, data) {
-				return http.put(`/api/users/${user}`, data)
+				return http.put(`/${user}`, data)
 			},
 
 			get: function(user) {
-				return http.get(`/api/users/${user}`)
+				return http.get(`/${user}`)
 			},
 
 			activateApp: function(appName, activated) {
-				return http.post(`/api/users/activateApp`, {appName, activated})
+				return http.post(`/activateApp`, {appName, activated})
 			},
 
 			sendNotif: function(to, notif) {
-				return http.post(`/api/users/sendNotif`, {to, notif})
+				return http.post(`/sendNotif`, {to, notif})
 			},
 
 			removeNotif: function(notifId) {
-				return http.delete(`/api/users/removeNotif/${notifId}`)
+				return http.delete(`/removeNotif/${notifId}`)
 			},
 
 			getNotifs: function() {
-				return http.get(`/api/users/getNotifs`)
+				return http.get(`/getNotifs`)
 			},
 			
 			getNotifCount: function() {
-				return http.get(`/api/users/getNotifCount`)
+				return http.get(`/getNotifCount`)
 			},
 
 			getFriends: function() {
-				return http.get(`/api/users/getFriends`)
+				return http.get(`/getFriends`)
 			},
 
 			addFriend: function(friendUserName) {
-				return http.post(`/api/users/addFriend`, {friendUserName})
+				return http.post(`/addFriend`, {friendUserName})
 			},
 
 			changePwd: function(newPwd) {
-				return http.post(`/api/users/changePwd`, {newPwd})
+				return http.post(`/changePwd`, {newPwd})
 			},
 
 			addContact: function(name, email) {
-				return http.post(`/api/users/addContact`, {name, email})
+				return http.post(`/addContact`, {name, email})
 			},
 
 			getContacts: function() {
-				return http.get(`/api/users/getContacts`)
+				return http.get(`/getContacts`)
 			},
 
 			removeContact: function(contactId) {
-				return http.delete(`/api/users/removeContact/${contactId}`)
+				return http.delete(`/removeContact/${contactId}`)
 			}						
 		}
 	},

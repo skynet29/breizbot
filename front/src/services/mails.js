@@ -1,45 +1,47 @@
 $$.service.registerService('breizbot.mails', {
 
-	deps: ['brainjs.http'],
+	deps: ['brainjs.resource'],
 
-	init: function(config, http) {
+	init: function(config, resource) {
+
+		const http = resource('/api/mails')
 
 		return {
 			getMailAccount: function() {
-				return http.get('/api/mails/')
+				return http.get('/')
 			},
 
 			createMailAccount: function(data) {
-				return http.post('/api/mails', data)
+				return http.post('/', data)
 			},
 
 			getMailboxes: function(name) {
-				return http.post(`/api/mails/getMailboxes`, {name})
+				return http.post(`/getMailboxes`, {name})
 			},
 
 			openMailbox: function(name, mailboxName, pageNo) {
-				return http.post(`/api/mails/openMailbox`, {name, mailboxName, pageNo})
+				return http.post(`/openMailbox`, {name, mailboxName, pageNo})
 			},
 
 			openMessage: function(name, mailboxName, seqNo, partID)	{
-				return http.post(`/api/mails/openMessage`, {name, mailboxName, seqNo, partID})
+				return http.post(`/openMessage`, {name, mailboxName, seqNo, partID})
 			},
 
 			openAttachment: function(name, mailboxName, seqNo, partID)	{
-				return http.post(`/api/mails/openAttachment`, {name, mailboxName, seqNo, partID})
+				return http.post(`/openAttachment`, {name, mailboxName, seqNo, partID})
 			},
 
 			deleteMessage: function(name, mailboxName, seqNos)	{
-				return http.post(`/api/mails/deleteMessage`, {name, mailboxName, seqNos})
+				return http.post(`/deleteMessage`, {name, mailboxName, seqNos})
 			},	
 
 			moveMessage: function(name, mailboxName, targetName, seqNos)	{
-				return http.post(`/api/mails/moveMessage`, {name, mailboxName, targetName, seqNos})
+				return http.post(`/moveMessage`, {name, mailboxName, targetName, seqNos})
 			},						
 					
 
 			sendMail: function(accountName, data) {
-				return http.post(`/api/mails/sendMail`, {accountName, data})
+				return http.post(`/sendMail`, {accountName, data})
 			}
 		}
 	},

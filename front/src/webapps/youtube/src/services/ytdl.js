@@ -6,11 +6,11 @@ $$.service.registerService('app.ytdl', {
 
 		return {
 			info: function(url) {
-				return http.get(`info`, {url})
+				return http.get(`/info`, {url})
 			},
 
 			download: function(url, fileName, srcId) {
-				return http.post(`download`, {url, fileName, srcId})
+				return http.post(`/download`, {url, fileName, srcId})
 			}			
 		}
 	}

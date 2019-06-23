@@ -1,10 +1,8 @@
-$$.service.registerService('breizbot.mails', {
+$$.service.registerService('app.mails', {
 
-	deps: ['brainjs.resource'],
+	deps: ['breizbot.http'],
 
-	init: function(config, resource) {
-
-		const http = resource('/api/mails')
+	init: function(config, http) {
 
 		return {
 			getMailAccount: function() {

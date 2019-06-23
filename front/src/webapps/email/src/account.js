@@ -2,7 +2,7 @@ $$.control.registerControl('accountPage', {
 
 	template: {gulp_inject: './account.html'},
 
-	deps: ['breizbot.mails'],
+	deps: ['app.mails'],
 
 	props: {
 		$pager: null

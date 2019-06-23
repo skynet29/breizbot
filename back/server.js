@@ -87,22 +87,25 @@ app.use('/api/apps', require('./api/apps'))
 app.use('/api/files', require('./api/files'))
 app.use('/api/rtc', require('./api/rtc'))
 app.use('/api/debug', require('./api/debug'))
-app.use('/api/mails', require('./api/mails'))
+//app.use('/api/mails', require('./api/mails'))
 app.use('/api/media', require('./api/media'))
 app.use('/api/appData', require('./api/appData'))
 app.use('/api/cities', require('./api/cities'))
 app.use('/api/share', require('./api/share'))
 
-const ctx = {wss, config}
+
 const appsPath = path.join(__dirname, '../front/src/webapps')
 
 const apps = fs.readdirSync(appsPath)
 //console.log('apps', apps)
 apps.forEach((appName) => {
+	//console.log('check path', appName)
 	const appPath = path.join(appsPath, appName, 'index.js')
 	if (fs.existsSync(appPath)) {
-		const router = require(appPath)(ctx)
+		const ctx = {wss, config, db: db.collection(appName)}
 		console.log(`add API router for app ${appName}`.blue)
+
+		const router = require(appPath)(ctx)
 		app.use(`/api/app/${appName}`, router)
 	}
 

@@ -22,6 +22,10 @@ module.exports =  {
 
 	},
 
+	collection: function(collectionName) {
+		return db.collection(collectionName)
+	},
+
 	getUserList: function(matchedUser) {
 
 		console.log('getUserList', matchedUser)
@@ -137,26 +141,6 @@ module.exports =  {
 	addFriend: function(userName, friendUserName) {
 		console.log(`[DB] addFriend`, userName, friendUserName)
 		return db.collection('friends').insertOne({user1: userName, user2: friendUserName})
-	},
-
-
-	getMailAccounts: function(userName) {
-		//console.log(`[DB] getMailAccounts`, userName)
-		return db.collection('mailAccounts').find({userName}).toArray()
-	},
-
-	getMailAccount: function(userName, name) {
-		//console.log(`[DB] getMailAccount`, userName, name)
-		return db.collection('mailAccounts').findOne({userName, name})
-	},	
-
-	createMailAccount: function(userName, data) {
-
-		console.log(`[DB] createMaiAccount`, userName, data)
-		data.createDate = Date.now()
-		data.userName = userName
-
-		return db.collection('mailAccounts').insertOne(data)
 	},
 
 	addContact: function(userName, contactName, contactEmail) {

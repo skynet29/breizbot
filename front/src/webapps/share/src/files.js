@@ -1,5 +1,5 @@
 $$.control.registerControl('filesPage', {
-	deps: ['breizbot.share'], 
+	deps: ['app.share'], 
 	props: {
 		$pager: null,
 		userName: '',

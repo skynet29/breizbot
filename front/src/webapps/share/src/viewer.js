@@ -1,6 +1,6 @@
 $$.control.registerControl('viewerPage', {
 
-	deps: ['breizbot.share'],
+	deps: ['app.share'],
 
 	template: {gulp_inject: './viewer.html'},
 

@@ -1,13 +1,13 @@
-$$.service.registerService('breizbot.share', {
+$$.service.registerService('app.share', {
 
-	deps: ['brainjs.http'],
+	deps: ['breizbot.http'],
 
 	init: function(config, http) {
 		return {
 			list: function(user, path) {
 				console.log('[Share] list', path)
 
-				return http.post('/api/share/list', {path, user}).then((files) => {
+				return http.post('/list', {path, user}).then((files) => {
 					files.forEach((file) => {
 						file.isImage = ($$.util.getFileType(file.name) == 'image')
 					})
@@ -16,11 +16,11 @@ $$.service.registerService('breizbot.share', {
 			},
 
 			fileUrl: function(user, fileName) {
-				return $$.util.getUrlParams('/api/share/load', {user, fileName})
+				return $$.util.getUrlParams('/api/app/share/load', {user, fileName})
 			},
 
 			fileThumbnailUrl: function(user, fileName, size) {
-				return $$.util.getUrlParams('/api/share/loadThumbnail', {user, fileName, size})
+				return $$.util.getUrlParams('/api/app/share/loadThumbnail', {user, fileName, size})
 			}
 
 

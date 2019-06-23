@@ -87,11 +87,9 @@ app.use('/api/apps', require('./api/apps'))
 app.use('/api/files', require('./api/files'))
 app.use('/api/rtc', require('./api/rtc'))
 app.use('/api/debug', require('./api/debug'))
-//app.use('/api/mails', require('./api/mails'))
 app.use('/api/media', require('./api/media'))
 app.use('/api/appData', require('./api/appData'))
 app.use('/api/cities', require('./api/cities'))
-app.use('/api/share', require('./api/share'))
 
 
 const appsPath = path.join(__dirname, '../front/src/webapps')

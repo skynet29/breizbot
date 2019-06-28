@@ -50,7 +50,7 @@ $$.control.registerControl('rootPage', {
 						return resp.blob()
 					})
 					.then((blob) => {
-						return files.uploadFile(blob, data.name + '.ogg', '/sounds/micro')
+						return files.uploadFile(blob, data.name + '.ogg', '/apps/micro')
 					})
 					.then((resp) => {
 						console.log('resp', resp)

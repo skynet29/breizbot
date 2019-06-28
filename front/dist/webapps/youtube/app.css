@@ -36,3 +36,15 @@
         .rootPage .info .details .description textarea {
           flex: 1;
           border: none; }
+  .rootPage .results {
+    flex: 1;
+    overflow-y: auto; }
+    .rootPage .results .item {
+      display: flex;
+      margin-top: 5px;
+      cursor: pointer;
+      padding: 5px; }
+      .rootPage .results .item img {
+        margin: 0 10px 0 0; }
+    .rootPage .results .item:hover {
+      background-color: #bbb; }

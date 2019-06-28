@@ -15,7 +15,11 @@ $$.service.registerService('app.ytdl', {
 
 			download: function(url, fileName) {
 				return http.post(`/download`, {url, fileName, srcId})
-			}			
+			},
+
+			search: function(query, maxResults = 3)	{
+				return http.post(`/search`, {query, maxResults})
+			}		
 		}
 	}
 

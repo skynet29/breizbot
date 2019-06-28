@@ -57,5 +57,23 @@
 		}		
 	}
 
+	.results {
+		flex: 1;
+		overflow-y: auto;
+		.item {
+			display: flex;
+			margin-top: 5px;
+			cursor: pointer;
+			padding: 5px;
+
+			img {
+				margin: 0 10px 0 0;
+			}
+		}
+		.item:hover {
+			background-color: #bbb;
+		}
+	}
+
 
 }

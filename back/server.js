@@ -74,15 +74,15 @@ app.all('/api/*' , function(req, res, next) {
 })
 
 // forbid acces to webapp private REST API 
-app.all('/api/app/:appName/*' , function(req, res, next) {
+// app.all('/api/app/:appName/*' , function(req, res, next) {
 
-	if (req.params.appName != req.appName) {
-		res.sendStatus('401')
-	}
-	else { 
-		next()
-	}
-})
+// 	if (req.params.appName != req.appName) {
+// 		res.sendStatus('401')
+// 	}
+// 	else { 
+// 		next()
+// 	}
+// })
 
 
 require('./controllers/login')(app)

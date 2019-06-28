@@ -4,12 +4,52 @@ const ytdl = require('ytdl-core');
 
 const path = require('path')
 const fs = require('fs-extra')
+const fetch = require('node-fetch')
+const querystring = require('querystring')
 
 module.exports = function(ctx) {
 
 	console.log('start API youtube')
 
 	const {wss, config} = ctx
+
+	const ytAPIUrl = 'https://www.googleapis.com/youtube/v3/search?'
+	const apiKey = 'AIzaSyDH0qRqgnKqGdfVZlN1F4Ff3zPiiiJFQGE'
+
+	router.post('/search', function(req, res) {
+		console.log('youtube/search', req.body)
+
+		const {query, maxResults} = req.body
+
+		const params = {
+			part: 'snippet',
+			maxResults: maxResults || 3,
+			key: apiKey,
+			q: query,				
+		}
+
+		fetch(ytAPIUrl + querystring.stringify(params))
+		.then((rep) => {
+			return rep.json()
+		})
+		.then((json) => {
+			res.json(json.items
+				.filter((i) => i.id.kind == 'youtube#video')
+				.map((i) => {
+				const {title, thumbnails} = i.snippet
+				return {
+					id: i.id.videoId,
+					title,
+					thumbnail: thumbnails.default.url
+				}
+			}))
+		})
+		.catch((e) => {
+			console.log('error', e)
+			res.sendStatus(404)
+		})
+
+	})
 
 	router.get('/info', function(req, res) {
 		console.log('youtube/info', req.query)

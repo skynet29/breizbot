@@ -1,18 +1,24 @@
 
 
 <form bn-event="submit: onStart" bn-bind="form">
-	<input type="url" name="url" placeholder="Paste video link url here" required="">
+	<input type="text" name="url" placeholder="Search or paste video link url here" required="" bn-event="click: onInputClick" autocomplete="off">
 	<button class="w3-button w3-blue" type="submit"><i class="fa fa-search"></i></button>
 </form>
 
-<div class="w3-border" bn-show="percent != '0%'">
-	<div class="w3-container w3-green w3-center" bn-style="{width: percent}" bn-text="percent"></div>
+<div class="w3-border" bn-show="percent != 0">
+	<div class="w3-container w3-green w3-center" bn-style="{width: percent + '%'}" bn-text="percent"></div>
 </div>
 
-<div class="info" bn-show="title != ''">
+<div bn-show="showInfo && results.length > 0">
+	<button class="w3-button w3-blue" title="Back to list" bn-event="click: onBackToList">
+		<i class="fa fa-chevron-left"></i>
+	</button>
+</div>	
+
+<div class="info" bn-show="showInfo && title != ''">
 	<div class="thumbnail">
 		<img bn-attr="{src: thumbnail_url}">
-		<div class="download" bn-show="percent == '0%'">
+		<div class="download" bn-show="percent == 0">
 			<button 
 				class="w3-button w3-green" 
 				title="Download"
@@ -38,3 +44,12 @@
 
 </div>
 	
+
+<div class="results" bn-show="!showInfo">
+	<div bn-each="results" bn-event="click.item: onItemInfo">
+		<div class="item">
+			<img bn-attr="{src: $i.thumbnail}">
+			<strong bn-text="$i.title"></strong>
+		</div>
+	</div>
+</div>

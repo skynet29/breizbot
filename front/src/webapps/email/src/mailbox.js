@@ -11,7 +11,7 @@ $$.control.registerControl('mailboxPage', {
 	},
 
 	buttons: [
-		{name: 'reload', icon: 'fa fa-redo'},
+		{name: 'reload', icon: 'fa fa-sync-alt'},
 		{name: 'newMail', icon: 'fa fa-envelope'},
 		{name: 'move', icon: 'fa fa-file-export'},
 		{name: 'delete', icon: 'fa fa-trash'}

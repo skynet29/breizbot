@@ -4,6 +4,8 @@ console.log('config', config)
 const db = require('./lib/db')
 const wss = require('./lib/wss')
 const fs = require('fs-extra')
+const parseUrl = require('url').parse
+
 require('colors')
 
 
@@ -60,8 +62,13 @@ app.all('/api/*' , function(req, res, next) {
 	if (!req.session.connected) {
 		res.sendStatus('401')
 	}
-	else { 
-		req.appName = req.headers.referer.split('/').pop()
+	else {
+		const referer = req.headers.referer
+		if (referer != undefined) {
+			const url = parseUrl(referer)
+			req.appName = url.pathname.split('/').pop()			
+		}
+
 		next()
 	}
 })

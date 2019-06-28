@@ -2,7 +2,7 @@ $$.control.registerControl('messagePage', {
 
 	template: {gulp_inject: './message.html'},
 
-	deps: ['app.mails', 'breizbot.users'],
+	deps: ['app.mails', 'breizbot.users', 'breizbot.scheduler'],
 
 	props: {
 		$pager: null,
@@ -16,7 +16,7 @@ $$.control.registerControl('messagePage', {
 		{name: 'replyAll', icon: 'fa fa-reply-all'}
 	],	
 
-	init: function(elt, srvMail, users) {
+	init: function(elt, srvMail, users, scheduler) {
 
 		const {$pager, currentAccount, mailboxName, item} = this.props
 
@@ -94,7 +94,15 @@ $$.control.registerControl('messagePage', {
 				onFrameLoaded: function(ev) {
 					console.log('onFrameLoaded')
 					const $iframe = $(this.contentWindow.document)
-					$iframe.find('a').attr('target', '_blank')
+					$iframe.find('a')
+					.attr('target', '_blank')
+					.on('click', function(ev) {
+						const href = $(this).attr('href')
+						if (href.startsWith('https://youtu.be/')) {
+							ev.preventDefault()
+							scheduler.openApp('youtube', {url: href})
+						}
+					})
 
 				},
 				onAddContact: function(ev) {

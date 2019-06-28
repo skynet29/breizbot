@@ -38,6 +38,7 @@ $$.control.registerControl('breizbot.home', {
 		const {userName} = this.props
 
 		const audio = createAudio()
+		let rootId
 	
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -159,6 +160,16 @@ $$.control.registerControl('breizbot.home', {
 		
 		}
 
+		broker.on('ready', (msg) => { 
+			rootId = msg.clientId
+		})
+
+		broker.onTopic('breizbot.rtc.openApp', function(msg) {
+			//console.log('openApp', msg.data)
+			const {appName, appParams} = msg.data
+			openApp(appName, appParams)
+		})
+
 		broker.register('breizbot.notifCount', function(msg) {
 			//console.log('msg', msg)
 			updateNotifs(msg.data)
@@ -191,6 +202,8 @@ $$.control.registerControl('breizbot.home', {
 			const appInfo = ctrl.model.apps.find((a) => a.appName == appName)
 			const title = appInfo.props.title
 			//console.log('appInfo', appInfo)
+			params = params || {}
+			params.$rootId = rootId
 			console.log('openApp', appName, params)
 			let idx = ctrl.scope.tabs.getTabIndexFromTitle(title)
 			const appUrl = getAppUrl(appName, params)

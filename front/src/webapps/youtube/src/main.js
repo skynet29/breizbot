@@ -2,11 +2,9 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
-	deps: ['app.ytdl', 'breizbot.broker'],
+	deps: ['app.ytdl', 'breizbot.broker', 'breizbot.params'],
 
-	init: function(elt ,ytdl, broker) {
-
-		let srcId
+	init: function(elt ,ytdl, broker, params) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -20,22 +18,26 @@ $$.control.registerControl('rootPage', {
 				onStart: function(ev) {
 					ev.preventDefault()
 					const {url} = $(this).getFormData()
-					console.log('onStart', url)
-					ytdl.info(url).then((info) => {
-						console.log('info', info)
-						info.percent = '0%'
-						ctrl.setData(info)
-					})
-
+					showInfo(url)
 				},
 				onDownload: function(ev) {
 					const {url} = ctrl.scope.form.getFormData()
-					console.log('onDownload', url, srcId)
+					console.log('onDownload', url)
 					const fileName = ctrl.model.title + '.mp4'
-					ytdl.download(url, fileName, srcId)
+					ytdl.download(url, fileName)
 				}
 			}
 		})
+
+		function showInfo(url) {
+			console.log('showInfo', url)
+			ytdl.info(url).then((info) => {
+				console.log('info', info)
+				info.percent = '0%'
+				ctrl.setData(info)
+			})
+
+		}
 
 		broker.onTopic('breizbot.ytdl.progress', (msg) => {
 			if (msg.hist == true) {
@@ -45,8 +47,10 @@ $$.control.registerControl('rootPage', {
 			ctrl.setData({percent: msg.data.percent + '%'})
 		})
 
-		broker.on('ready', (msg) => { srcId = msg.clientId})
-
+		if (params.url != undefined) {
+			ctrl.scope.form.setFormData({url: params.url})
+			showInfo(params.url)
+		}
 
 	}
 

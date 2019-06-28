@@ -14,7 +14,8 @@ $$.control.registerControl('rootPage', {
 				description: '',
 				percent: 0,
 				results: [],
-				showInfo: true
+				showInfo: true,
+				videoUrl: ''
 			},
 			events: {
 				onStart: function(ev) {
@@ -28,10 +29,10 @@ $$.control.registerControl('rootPage', {
 					}
 				},
 				onDownload: function(ev) {
-					const {url} = ctrl.scope.form.getFormData()
-					console.log('onDownload', url)
-					const fileName = ctrl.model.title + '.mp4'
-					ytdl.download(url, fileName)
+					const {videoUrl, title} = ctrl.model
+					console.log('onDownload', videoUrl)
+					const fileName = title + '.mp4'
+					ytdl.download(videoUrl, fileName)
 				},
 
 				onItemInfo: function(ev) {
@@ -55,7 +56,8 @@ $$.control.registerControl('rootPage', {
 			ytdl.info(url).then((info) => {
 				//console.log('info', info)
 				info.percent = 0
-				info.showInfo = true
+				info.showInfo = true,
+				info.videoUrl = url
 				ctrl.setData(info)
 			})
 		}

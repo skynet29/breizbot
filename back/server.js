@@ -5,6 +5,7 @@ const db = require('./lib/db')
 const wss = require('./lib/wss')
 const fs = require('fs-extra')
 const parseUrl = require('url').parse
+const helmet = require('helmet')
 
 require('colors')
 
@@ -39,6 +40,12 @@ store.on('error', function(error) {
 })
 
 const app = express()
+
+app.use(helmet({
+  frameguard: {
+    action: 'sameorigin'
+  }
+}))
 
 app.use(session({
 	secret: 'keyboard cat',

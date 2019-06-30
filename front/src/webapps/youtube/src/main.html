@@ -1,7 +1,7 @@
 
 
 <form bn-event="submit: onStart" bn-bind="form">
-	<input type="text" name="url" placeholder="Search or paste video link url here" required="" bn-event="click: onInputClick" autocomplete="off">
+	<input type="text" name="url" placeholder="Search or paste video link url here" required="" bn-event="click: onInputClick" autocomplete="on">
 	<button class="w3-button w3-blue" type="submit"><i class="fa fa-search"></i></button>
 </form>
 
@@ -19,11 +19,20 @@
 	<div class="thumbnail">
 		<img bn-attr="{src: thumbnail_url}">
 		<div class="download" bn-show="percent == 0">
-			<button 
-				class="w3-button w3-green" 
-				title="Download"
-				bn-event="click: onDownload"
-				><i class="fa fa-download"></i></button>
+			<div>
+				<button 
+					class="w3-button w3-green" 
+					title="Download"
+					bn-event="click: onDownload"
+					><i class="fa fa-download"></i></button>
+				
+			</div>
+			<div>
+				<a class="w3-button w3-red" title="Play on Youtube" bn-attr="{href: videoUrl}" target="_blank">
+					<i class="fa fa-play-circle"></i>
+				</a>
+				
+			</div>
 			
 		</div>
 	</div>
@@ -45,9 +54,9 @@
 </div>
 	
 
-<div class="results" bn-show="!showInfo">
+<div class="results w3-light-grey" bn-show="!showInfo">
 	<div bn-each="results" bn-event="click.item: onItemInfo">
-		<div class="item">
+		<div class="item w3-card-2 w3-hover-shadow">
 			<img bn-attr="{src: $i.thumbnail}">
 			<strong bn-text="$i.title"></strong>
 		</div>

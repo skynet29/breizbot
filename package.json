@@ -22,6 +22,7 @@
     "fs-extra": "^7.0.1",
     "greenlock": "^2.6.7",
     "greenlock-store-fs": "^3.0.2",
+    "helmet": "^3.18.0",
     "mongodb": "^3.1.13",
     "node-fetch": "^2.6.0",
     "nodejs-websocket": "^1.7.2",

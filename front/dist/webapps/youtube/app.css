@@ -11,7 +11,7 @@
       padding: 5px; }
   .rootPage .info {
     flex: 1;
-    margin: 10px;
+    margin-top: 10px;
     display: flex;
     flex-direction: column; }
     .rootPage .info .thumbnail {
@@ -19,7 +19,11 @@
       flex-direction: row;
       margin-bottom: 10px; }
       .rootPage .info .thumbnail .download {
-        margin: 0 0 0 20px; }
+        margin: 0 0 0 20px;
+        display: flex;
+        flex-direction: column; }
+        .rootPage .info .thumbnail .download > div {
+          margin-bottom: 10px; }
     .rootPage .info .details {
       flex: 1;
       display: flex;
@@ -38,13 +42,14 @@
           border: none; }
   .rootPage .results {
     flex: 1;
-    overflow-y: auto; }
+    overflow-y: auto;
+    padding: 5px;
+    border: 1px solid lightgrey; }
     .rootPage .results .item {
       display: flex;
-      margin-top: 5px;
+      margin: 10px;
       cursor: pointer;
-      padding: 5px; }
+      padding: 5px;
+      background-color: white; }
       .rootPage .results .item img {
         margin: 0 10px 0 0; }
-    .rootPage .results .item:hover {
-      background-color: #bbb; }

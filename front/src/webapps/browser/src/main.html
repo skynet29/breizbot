@@ -1,0 +1,17 @@
+<form bn-event="submit: onSearch" bn-bind="form">
+	<input type="text" name="url" placeholder="What are you looking for ?" required="" bn-event="click: onInputClick" autocomplete="on">
+	<button class="w3-button w3-blue" type="submit"><i class="fa fa-search"></i></button>
+</form>
+<div class="results w3-light-grey">
+	<div bn-each="results">
+		<div class="w3-card-2 item">
+			<div class="link">
+				<a bn-attr="{href: $i.url}" bn-html="$i.title" class="link" target="_blank"></a>
+				
+			</div>
+			<div bn-html="$i.source" class="source"></div>		
+			<div bn-html="$i.desc" class="desc"></div>	
+		</div>
+	</div>
+	
+</div>

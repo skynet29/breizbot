@@ -2,7 +2,6 @@ $$.control.registerControl('breizbot.files', {
 	deps: ['breizbot.files'], 
 	props: {
 		$pager: null,
-		cmd: '',
 		showToolbar: false,
 		imageOnly: false,
 		filterExtension: undefined,
@@ -17,7 +16,6 @@ $$.control.registerControl('breizbot.files', {
 
 		const {
 			$pager,
-			cmd,
 			showToolbar,
 			maxUploadSize,
 			filterExtension,
@@ -77,8 +75,7 @@ $$.control.registerControl('breizbot.files', {
 					const data = {
 						fileName: info.name,
 						rootDir: ctrl.model.rootDir,                       
-						isImage: info.isImage,
-						cmd
+						isImage: info.isImage
 					}
 
 					if ($pager != null) {

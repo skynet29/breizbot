@@ -41,9 +41,16 @@ $$.control.registerControl('rootPage', {
 					$pager.pushPage('breizbot.files', {
 						title: 'Open File',
 						props: {
-							filterExtension: '.doc',
-							cmd: 'openFile'
-						}
+							filterExtension: '.doc'
+						},
+						onReturn: function(data) {
+							console.log('onReturn', data)
+							const {fileName, rootDir, cmd} = data
+							const url = files.fileUrl(rootDir + fileName)
+
+							ctrl.setData({fileName, rootDir})
+							ctrl.scope.editor.load(url)
+						}						
 					})
 				},
 				onInsertImage: function(ev) {
@@ -55,7 +62,23 @@ $$.control.registerControl('rootPage', {
 							imageOnly: true,
 							cmd: 'insertImage',
 							showThumbnail: true
-						}
+						},
+						onReturn: function(data) {
+							console.log('onReturn', data)
+							const {fileName, rootDir, cmd} = data
+							const url = files.fileUrl(rootDir + fileName)
+
+							if (cmd == 'openFile') {
+								ctrl.setData({fileName, rootDir})
+
+								ctrl.scope.editor.load(url)
+
+							}
+							if (cmd == 'insertImage') {
+
+								ctrl.scope.editor.insertImage(url)
+							}
+						}						
 					})					
 				}
 			}

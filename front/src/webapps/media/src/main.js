@@ -28,7 +28,12 @@ $$.control.registerControl('rootPage', {
 							title: fileName,
 							props: {
 								url
-							}
+							},
+							onReturn: function(data) {
+								if (data === 'reload') {
+									ctrl.scope.files.update()
+								}
+							}							
 						})						
 					}
 
@@ -37,19 +42,19 @@ $$.control.registerControl('rootPage', {
 							title: fileName,
 							props: {
 								url
-							}
+							},
+							onReturn: function(data) {
+								if (data === 'reload') {
+									ctrl.scope.files.update()
+								}
+							}							
 						})						
 					}														
 
 				}
 			}
 		})
-		this.onReturn = function(data) {
-			console.log('onReturn', data)
-			if (data === 'reload') {
-				ctrl.scope.files.update()
-			}
-		}
+
 	}
 });
 

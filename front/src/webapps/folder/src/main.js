@@ -25,19 +25,19 @@ $$.control.registerControl('rootPage', {
 							title: fileName,
 							props: {
 								fullName
-							}
+							},
+							onReturn: function(data) {
+								if (data === 'reload') {
+									ctrl.scope.files.update()
+								}
+							}							
 						})
 					}
 													
 				}
 			}
 		})
-		this.onReturn = function(data) {
-			console.log('onReturn', data)
-			if (data === 'reload') {
-				ctrl.scope.files.update()
-			}
-		}
+
 	}
 });
 

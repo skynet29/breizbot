@@ -55,7 +55,8 @@ $$.control.registerControl('mailboxPage', {
 							currentAccount,
 							mailboxName,
 							item							
-						}
+						},
+						onBack: load
 					})
 				},
 
@@ -180,10 +181,6 @@ $$.control.registerControl('mailboxPage', {
 		}
 
 
-		this.onReturn = function(data) {
-			console.log('onReturn', data)
-			load()
-		}
 	}
 
 

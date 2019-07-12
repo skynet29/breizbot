@@ -33,7 +33,16 @@ $$.control.registerControl('rootPage', {
 					console.log('onCall')
 
 					$pager.pushPage('friendsPage', {
-						title: 'Select a friend'
+						title: 'Select a friend',
+						onReturn: function(userName) {
+							rtc.call(userName, 'video', 'fa fa-phone fa-flip-vertical')
+							.then(() => {
+								ctrl.setData({status: 'calling', distant: userName})
+							})
+							.catch((e) => {
+								$$.ui.showAlert({title: 'Error', content: e.responseText})
+							})
+						}						
 					})
 
 				},
@@ -54,20 +63,7 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		this.onReturn = function(userName) {
-			//console.log('onReturn', userName)
-			if (userName == undefined) {
-				return
-			}
-			
-			rtc.call(userName, 'video', 'fa fa-phone fa-flip-vertical')
-			.then(() => {
-				ctrl.setData({status: 'calling', distant: userName})
-			})
-			.catch((e) => {
-				$$.ui.showAlert({title: 'Error', content: e.responseText})
-			})
-		}
+
 
 		const pcConfig = {
 		  'iceServers': [{

@@ -31,7 +31,16 @@ $$.control.registerControl('rootPage', {
 					console.log('onCall')
 
 					$pager.pushPage('friendsPage', {
-						title: 'Select a friend to tchat with'
+						title: 'Select a friend to tchat with',
+						onReturn: function(userName) {
+							rtc.call(userName, 'tchat', 'fa fa-comments')
+							.then(() => {
+								ctrl.setData({status: 'calling', distant: userName})
+							})
+							.catch((e) => {
+								$$.ui.showAlert({title: 'Error', content: e.responseText})
+							})
+						}						
 					})
 
 				},
@@ -65,20 +74,7 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		this.onReturn = function(userName) {
-			//console.log('onReturn', userName)
-			if (userName == undefined) {
-				return
-			}
-			
-			rtc.call(userName, 'tchat', 'fa fa-comments')
-			.then(() => {
-				ctrl.setData({status: 'calling', distant: userName})
-			})
-			.catch((e) => {
-				$$.ui.showAlert({title: 'Error', content: e.responseText})
-			})
-		}	
+	
 
 		broker.onTopic('breizbot.rtc.accept', function(msg) {
 			if (msg.hist === true) {

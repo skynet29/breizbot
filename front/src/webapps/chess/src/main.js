@@ -105,7 +105,17 @@ $$.control.registerControl('rootPage', {
 					console.log('onCall')
 
 					$pager.pushPage('friendsPage', {
-						title: 'Select a friend to play with'
+						title: 'Select a friend to play with',
+						onReturn: function(userName) {
+							//console.log('onReturn', userName)
+							rtc.call(userName, 'chess', 'fa fa-chess')
+							.then(() => {
+								ctrl.setData({status: 'calling', distant: userName})
+							})
+							.catch((e) => {
+								$$.ui.showAlert({title: 'Error', content: e.responseText})
+							})
+						}						
 					})
 
 				},
@@ -184,20 +194,7 @@ $$.control.registerControl('rootPage', {
 
 		updateStatus()
 
-		this.onReturn = function(userName) {
-			//console.log('onReturn', userName)
-			if (userName == undefined) {
-				return
-			}
-			
-			rtc.call(userName, 'chess', 'fa fa-chess')
-			.then(() => {
-				ctrl.setData({status: 'calling', distant: userName})
-			})
-			.catch((e) => {
-				$$.ui.showAlert({title: 'Error', content: e.responseText})
-			})
-		}	
+	
 
 		broker.onTopic('breizbot.rtc.accept', function(msg) {
 			if (msg.hist === true) {

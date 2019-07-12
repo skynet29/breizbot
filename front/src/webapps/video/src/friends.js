@@ -7,7 +7,7 @@ $$.control.registerControl('friendsPage', {
 	},
 
 	buttons: [
-		{name: 'call', icon: 'fa fa-phone fa-flip-vertical'}
+		{name: 'call', icon: 'fa fa-check'}
 	],
 
 	init: function(elt) {

@@ -58,7 +58,7 @@ $$.control.registerControl('accountPage', {
 					const data = $(this).getFormData()
 					console.log('data', data)
 					srvMail.createMailAccount(data).then(() => {
-						$pager.popPage('update')
+						$pager.popPage()
 					})
 				},
 				onProviderChange: function() {

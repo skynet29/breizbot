@@ -17,17 +17,15 @@ $$.control.registerControl('rootPage', {
 				onAddContact: function() {
 					console.log('onAddContact')
 					$pager.pushPage('addContactPage', {
-						title: 'Add Contact'
+						title: 'Add Contact',
+						onReturn: function(data) {
+							ctrl.scope.contacts.update()
+						}
 					})
 				}
 			}
 		})
 
-		this.onReturn = function(data) {
-			if (data == 'update') {
-				ctrl.scope.contacts.update()
-			}
-		}
 
 
 	}

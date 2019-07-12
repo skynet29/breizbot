@@ -23,7 +23,8 @@ $$.control.registerControl('rootPage', {
 					console.log('onMenu', data)
 					if (data.cmd == 'add') {
 						$pager.pushPage('accountPage', {
-							title: 'Create Mail Account'
+							title: 'Add Mail Account',
+							onReturn: loadAccount
 						})						
 					}
 					if (data.cmd == 'new') {
@@ -56,6 +57,12 @@ $$.control.registerControl('rootPage', {
 						props: {
 							currentAccount,
 							mailboxName
+						},
+						onBack: function() {
+							const activeNode = ctrl.scope.tree.getActiveNode()
+							if (activeNode != null) {
+								activeNode.setActive(false)
+							}
 						}
 					})
 				}
@@ -92,18 +99,6 @@ $$.control.registerControl('rootPage', {
 
 		loadAccount()
 
-		this.onReturn = function(data) {
-			console.log('onReturn', data)
-			if (data == 'update') {
-				loadAccount()
-			}
-			if (data == undefined) {
-				const activeNode = ctrl.scope.tree.getActiveNode()
-				if (activeNode != null) {
-					activeNode.setActive(false)
-				}
-			}
-		}
 	}
 
 

@@ -46,7 +46,18 @@ $$.control.registerControl('writeMailPage', {
 				openContact: function() {
 					console.log('openContact')
 					$pager.pushPage('contactsPage', {
-						title: 'Select a contact'
+						title: 'Select a contact',
+						onReturn: function(friends) {
+							const contacts = friends.map((a) => a.contactEmail)
+							console.log('contacts', contacts)
+							const to = ctrl.scope.to.val()
+							console.log('to', to)
+
+							if (to != '') {
+								contacts.unshift(to)
+							}
+							ctrl.setData({data: {to: contacts.join(',')}})							
+						}
 					})
 				},
 				onRemoveAttachment: function(ev) {
@@ -75,35 +86,16 @@ $$.control.registerControl('writeMailPage', {
 				$pager.pushPage('breizbot.files', {
 					title: 'Select a file to attach',
 					props: {
-						cmd: 'attachFile',
 						showThumbnail: true
+					},
+					onReturn: function(data) {
+						const {fileName, rootDir} = data
+						ctrl.model.attachments.push({fileName, rootDir})
+						ctrl.update()						
 					}
 				})
 			}
 		}
 
-		this.onReturn = function(retData) {
-			console.log('onReturn', retData)
-			if (retData == undefined) {
-				return
-			}
-			if (retData.cmd == 'attachFile') {
-				const {fileName, rootDir} = retData
-				ctrl.model.attachments.push({fileName, rootDir})
-				ctrl.update()
-			}
-
-			else {
-				const contacts = retData.map((a) => a.contactEmail)
-				console.log('contacts', contacts)
-				const to = ctrl.scope.to.val()
-				console.log('to', to)
-
-				if (to != '') {
-					contacts.unshift(to)
-				}
-				ctrl.setData({data: {to: contacts.join(',')}})
-			}
-		}
 	}
 })

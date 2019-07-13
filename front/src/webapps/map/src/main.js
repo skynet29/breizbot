@@ -24,7 +24,21 @@ $$.control.registerControl('rootPage', {
 				onSearch: function() {
 					console.log('onSearch')
 					$pager.pushPage('searchPage', {
-						title: 'Search City'
+						title: 'Search City',
+						onReturn: function(coord) {
+							console.log('onReturn', coord)
+							const latlng = {lat: coord.lat, lng: coord.lon}
+							try {
+								ctrl.scope.map.updateShape('marker', {latlng})
+							}
+							catch(e) {
+								ctrl.scope.map.addShape('marker', {
+									type: 'marker',
+									latlng
+								})
+							}
+							ctrl.scope.map.flyTo(latlng, 13)
+						}						
 					})
 				},
 				onLocationChange: function(ev, state) {
@@ -102,24 +116,6 @@ $$.control.registerControl('rootPage', {
 			const {map} = ctrl.scope
 			return appData.saveData({zoom: map.getZoom(), center: map.getCenter()})
 		}
-
-		this.onReturn = function(coord) {
-			console.log('onReturn', coord)
-			if (coord != undefined) {
-				const latlng = {lat: coord.lat, lng: coord.lon}
-				try {
-					ctrl.scope.map.updateShape('marker', {latlng})
-				}
-				catch(e) {
-					ctrl.scope.map.addShape('marker', {
-						type: 'marker',
-						latlng
-					})
-				}
-				ctrl.scope.map.flyTo(latlng, 13)
-			}
-		}
-
 	}
 });
 

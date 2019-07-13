@@ -141,7 +141,8 @@ $$.control.registerControl('mailboxPage', {
 					currentAccount,
 					mailboxName,
 					seqNos
-				}
+				},
+				onReturn: load
 			})
 			// srvMail.deleteMessage(currentAccount, mailboxName, seqNos).then(() => {
 			// 	console.log('Messages deleted')

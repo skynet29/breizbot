@@ -187,7 +187,7 @@ module.exports = function(ctx) {
         return
       }
 
-      let name = disposition.params.filename
+      let name = disposition.params && disposition.params.filename
 
       if (name != undefined) {
 

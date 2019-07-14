@@ -5,12 +5,20 @@ $$.service.registerService('app.mails', {
 	init: function(config, http) {
 
 		return {
-			getMailAccount: function() {
-				return http.get('/')
+			getMailAccounts: function() {
+				return http.get('/getMailAccounts')
+			},
+
+			getMailAccount: function(name) {
+				return http.post('/getMailAccount', {name})
 			},
 
 			createMailAccount: function(data) {
-				return http.post('/', data)
+				return http.post('/createMailAccount', data)
+			},
+
+			updateMailAccount: function(data) {
+				return http.post('/updateMailAccount', data)
 			},
 
 			getMailboxes: function(name) {

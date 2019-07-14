@@ -35,6 +35,17 @@ $$.control.registerControl('rootPage', {
 							}
 						})						
 					}
+					if (data.cmd == 'edit') {
+						srvMail.getMailAccount(ctrl.model.currentAccount).then((data) => {
+							$pager.pushPage('accountPage', {
+								title: 'Edit Mail Account',
+								props: {
+									data
+								}
+							})						
+
+						})
+					}
 				},
 
 				onAccountChange: function() {
@@ -73,7 +84,7 @@ $$.control.registerControl('rootPage', {
 
 		function loadAccount() {
 			console.log('loadAccount')
-			srvMail.getMailAccount().then((accounts) => {
+			srvMail.getMailAccounts().then((accounts) => {
 				console.log('accounts', accounts)
 				if (accounts.length == 0) {
 					return

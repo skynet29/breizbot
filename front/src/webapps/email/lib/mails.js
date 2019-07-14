@@ -5,6 +5,7 @@ const iconv  = require('iconv-lite')
 const nodemailer = require("nodemailer")
 const addrs = require("email-addresses")
 const path = require('path')
+const mimemessage = require('mimemessage')
 
 require('colors')
 
@@ -16,6 +17,15 @@ module.exports = function(ctx) {
 
   const db = require('./db')(ctx.db)
 
+  function getIMap(account) {
+    return new Imap({
+          user: account.user,
+          password: account.pwd,
+          host: account.imapHost,
+          port: 993,
+          tls: true
+        }) 
+  }
 
   function imapConnect(userName, name, readyCallback) {
     return db.getMailAccount(userName, name).then((account) => {
@@ -24,13 +34,7 @@ module.exports = function(ctx) {
 
       return new Promise((resolve, reject) => {
 
-        const imap = new Imap({
-          user: account.user,
-          password: account.pwd,
-          host: account.imapHost,
-          port: 993,
-          tls: true
-        }) 
+        const imap = getIMap(account)
 
         imap.email = account.email
 
@@ -53,7 +57,7 @@ module.exports = function(ctx) {
 
   function decodeString(name) {
     name = name.trim()
-    console.log('decodeString', name)
+    //console.log('decodeString', name)
 
     if (name.toUpperCase().startsWith('=?UTF-8?B?')) {
       const t = name.split('?')
@@ -538,6 +542,8 @@ module.exports = function(ctx) {
           resolve()
         })     
       })
+
+
     }
 
    
@@ -549,6 +555,62 @@ module.exports = function(ctx) {
 
     return imapConnect(userName, name, moveMessageCb(mailboxName, targetName, seqNos))
 
+  }
+
+  function appendMsg(account, data) {
+     const imap = getIMap(account)
+
+    return new Promise((resolve, reject) => {
+      imap.once('ready', () => {
+        console.log('imap ready')
+        imap.openBox('Sent', false, (err, box) => {
+          if (err) {
+            console.log('err', err)
+            imap.end()
+            reject(err)
+            return
+          }
+
+          const msg = mimemessage.factory({
+            contentType: 'multipart/alternate',
+            body: []
+          })
+
+          const plainEntity = mimemessage.factory({
+            body: data.text
+          })      
+
+          msg.header('To', data.to)
+          msg.header('Subject', data.subject)
+          msg.header('From', data.from)
+          msg.header('Date', new Date().toString())
+          msg.body.push(plainEntity)
+
+          console.log('message', msg.toString())
+
+          imap.append(msg.toString(), function(err) {
+            console.log('err', err)
+             imap.end()
+
+            if (err) {
+              reject(err)
+            }
+            else {
+              resolve()
+            }
+
+          })
+         
+        })
+      })
+
+      imap.once("error", function(err) {
+        console.log('error', err)
+        reject(err)
+      })
+
+      imap.connect()          
+    })    
   }
 
   function sendMail(userName, accountName, data) {
@@ -575,7 +637,20 @@ module.exports = function(ctx) {
       }
       console.log('data', data)
 
-      return transporter.sendMail(data)
+
+
+      if (account.makeCopy == 'YES') {
+        console.log('Make a copy to Sent folder')
+       
+        return appendMsg(account, data).then(() => {
+             return transporter.sendMail(data)
+        })
+ 
+      }
+      else {
+        return transporter.sendMail(data)
+      }
+     
 
     })
 

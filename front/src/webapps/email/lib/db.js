@@ -23,6 +23,16 @@ module.exports = function(db) {
 			return db.insertOne(data)
 		},
 
+		updateMailAccount: function(userName, data) {
+
+			console.log(`[DB] updateMailAccount`, userName, data)
+			const {email, imapHost, smtpHost, pwd, makeCopy, name} = data
+
+			const update = {'$set': {email, imapHost, smtpHost, pwd, makeCopy}}
+
+			return db.updateOne({userName, name}, update)
+
+		}
 
 	}
 

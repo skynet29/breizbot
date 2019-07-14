@@ -3,16 +3,30 @@
 	display: flex;
 	justify-content: center;
 
-	label {
-		display: inline-block;
-		min-width: 120px;
-	}
 
 	.brainjs-inputgroup {
 		margin-bottom: 5px;
 
+		label {
+			display: inline-block;
+			min-width: 150px;
+		}
+
 		input {
 			padding: 5px;
 		}
+	}
+
+	.copySent {
+		display: flex;
+		align-items: center;
+		margin-top: 10px;
+
+		.jq-flipswitch {
+			margin: 0 0 0 10px;
+			//box-shadow: none;
+			box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 2px #EEE inset;
+		}		
+
 	}	
 }

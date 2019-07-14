@@ -5,7 +5,8 @@ $$.control.registerControl('accountPage', {
 	deps: ['app.mails'],
 
 	props: {
-		$pager: null
+		$pager: null,
+		data: null
 	},
 
 	buttons: [
@@ -14,7 +15,7 @@ $$.control.registerControl('accountPage', {
 
 	init: function(elt, srvMail) {
 
-		const {$pager} = this.props
+		const {$pager, data} = this.props
 
 		const map = {
 			'Gmail': {
@@ -47,19 +48,38 @@ $$.control.registerControl('accountPage', {
 			},
 		}
 
+		function getProvider(info) {
+			for(let k in map) {
+				if (map[k].imapHost == info.imapHost) {
+					return k
+				}
+			}
+			return 'Other'
+		}
+
 		const ctrl = $$.viewController(elt, {
 			data: {
-				provider: 'Gmail',
-				providers: Object.keys(map)
+				provider: (data != null) ? getProvider(data) : 'Gmail',
+				providers: Object.keys(map),
+				data,
+				isEdit: data != null
 			},
 			events: {
 				onSubmit: function(ev) {
 					ev.preventDefault()
-					const data = $(this).getFormData()
-					console.log('data', data)
-					srvMail.createMailAccount(data).then(() => {
-						$pager.popPage()
-					})
+					const formData = $(this).getFormData()
+					console.log('formData', formData)
+					if (data == null) {
+						srvMail.createMailAccount(formData).then(() => {
+							$pager.popPage()
+						})						
+					}
+					else {
+						srvMail.updateMailAccount(formData).then(() => {
+							$pager.popPage()
+						})												
+					}
+
 				},
 				onProviderChange: function() {
 					const provider = $(this).val()

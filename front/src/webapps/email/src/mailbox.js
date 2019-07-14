@@ -30,6 +30,7 @@ $$.control.registerControl('mailboxPage', {
 				nbPage: 0,
 				check: false,
 				loading: false,
+				mailboxName,
 
 
 				getDate: function(date) {
@@ -41,6 +42,10 @@ $$.control.registerControl('mailboxPage', {
 
 				isSeen: function(flags) {
 					return flags.includes('\\Seen')
+				},
+
+				isSentBox: function(mailboxName) {
+					return mailboxName == 'Sent'
 				}
 
 			},
@@ -157,6 +162,11 @@ $$.control.registerControl('mailboxPage', {
 				title: 'New Message',
 				props: {
 					accountName: currentAccount
+				},
+				onReturn: function() {
+					if (mailboxName == 'Sent') {
+						load()
+					}
 				}
 			})			
 		}

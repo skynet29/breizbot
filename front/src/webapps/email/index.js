@@ -6,7 +6,7 @@ module.exports = function(ctx) {
 	const mails = require('./lib/mails')(ctx)	
 
 
-	router.get('/', function(req, res) {
+	router.get('/getMailAccounts', function(req, res) {
 		const userName = req.session.user
 
 		db.getMailAccounts(userName).then((accounts) => {
@@ -18,7 +18,34 @@ module.exports = function(ctx) {
 		})	
 	})
 
-	router.post('/', function(req, res) {
+	router.post('/getMailAccount', function(req, res) {
+		const userName = req.session.user
+		const {name} = req.body
+
+		db.getMailAccount(userName, name).then((account) => {
+
+			res.json(account)
+		})
+		.catch(() => {
+			res.sendStatus(400)
+		})	
+	})	
+
+	router.post('/updateMailAccount', function(req, res) {
+		const userName = req.session.user
+		const data = req.body
+
+
+		db.updateMailAccount(userName, data).then(() => {
+
+			res.sendStatus(200)
+		})
+		.catch(() => {
+			res.sendStatus(400)
+		})	
+	})	
+
+	router.post('/createMailAccount', function(req, res) {
 		db.createMailAccount(req.session.user, req.body).then((data) => {
 			res.json(data)
 		})

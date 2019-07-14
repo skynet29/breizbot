@@ -12,6 +12,7 @@
     "email-addresses": "^3.0.3",
     "iconv-lite": "^0.4.24",
     "imap": "^0.8.19",
+    "mimemessage": "^1.0.5",
     "nodemailer": "^6.2.1",
     "quoted-printable": "^1.0.1"
   }

@@ -1,16 +1,19 @@
 <div class="main">
-	<form bn-event="submit: onSubmit" bn-bind="form">
+	<form bn-event="submit: onSubmit" bn-bind="form" bn-form="data">
 
 		<div bn-control="brainjs.inputgroup">
 			<label>Provider</label>
-			<select bn-control="brainjs.selectmenu" bn-event="selectmenuchange: onProviderChange" bn-val="provider"
-			bn-data="{items: providers}">
+			<select bn-control="brainjs.selectmenu" 
+				bn-event="selectmenuchange: onProviderChange" bn-val="provider"
+				bn-data="{items: providers}"
+				bn-prop="{disabled: isEdit}"
+			>
 			</select>		
 		</div>			
 
 		<div bn-control="brainjs.inputgroup">
 			<label>Account Name</label>
-			<input type="text" name="name" required="" autofocus="">			
+			<input type="text" name="name" required="" autofocus="" bn-prop="{disabled: isEdit}">			
 		</div>
 
 		<div bn-control="brainjs.inputgroup">
@@ -39,6 +42,11 @@
 			<label>SMTP Server</label>
 			<input type="text" name="smtpHost" required="">			
 		</div>		
+
+		<div class="copySent">
+			<label>Make a copy of sent mail in Sent folder</label>
+			<div bn-control="brainjs.flipswitch" bn-data="{height: 25, width: 100, texts: {left: 'YES', right: 'NO'}}" name="makeCopy"></div>
+		</div>
 
 		<input type="submit" hidden="" bn-bind="submit">
 	</form>

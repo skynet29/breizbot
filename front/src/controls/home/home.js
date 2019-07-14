@@ -35,6 +35,18 @@ $$.control.registerControl('breizbot.home', {
 			}
 		}
 
+		rtc.processCall()
+		
+		rtc.on('call', function(callInfo) {
+			ctrl.setData({hasIncomingCall: true, callInfo})
+			audio.play()
+		})
+
+		rtc.on('cancel', function() {
+			ctrl.setData({hasIncomingCall: false})
+			audio.stop()
+		})		
+
 		const {userName} = this.props
 
 		const audio = createAudio()
@@ -175,24 +187,7 @@ $$.control.registerControl('breizbot.home', {
 			updateNotifs(msg.data)
 		})
 
-		broker.register('breizbot.rtc.call', function(msg) {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			ctrl.setData({hasIncomingCall: true, callInfo: msg.data})
-			rtc.setRemoteClientId(msg.srcId)
-			audio.play()
-		})
 
-		broker.register('breizbot.rtc.cancel', function(msg) {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			ctrl.setData({hasIncomingCall: false})
-			audio.stop()
-		})
 
 		function getAppUrl(appName, params) {
 			return $$.util.getUrlParams(`/apps/${appName}`, params)

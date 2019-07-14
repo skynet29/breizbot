@@ -102,6 +102,19 @@
     .breizbot-pdf .toolbar .loading {
       padding: 8px 0 8px 0; }
 
+.breizbot-rtc {
+  display: flex;
+  flex-direction: column; }
+  .breizbot-rtc .toolbar {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px;
+    align-items: center; }
+    .breizbot-rtc .toolbar p {
+      margin: 0px; }
+  .breizbot-rtc .panel {
+    flex: 1; }
+
 .breizbot-addUser {
   margin: 10px;
   display: flex;

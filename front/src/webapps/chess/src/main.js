@@ -2,15 +2,9 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
-	props: {
-		$pager: null
-	},
+	deps: ['breizbot.rtc'],
 
-	deps: ['breizbot.rtc', 'breizbot.broker', 'breizbot.params'],
-
-	init: function(elt, rtc, broker, params) {
-
-		const {$pager} = this.props
+	init: function(elt, rtc) {
 
 		const whiteSquareGrey = '#a9a9a9'
 		const blackSquareGrey = '#696969'		
@@ -83,54 +77,14 @@ $$.control.registerControl('rootPage', {
 			}			
 		}	
 
-		const data = {
-			status: 'ready',
-			distant: '',
-			yourTurn: false,
-			message: ''
-		}
-
-		if (params.caller != undefined) {
-			data.status = 'connected'
-			data.distant = params.caller
-			rtc.setRemoteClientId(params.clientId)
-			board.orientation('black')
-			board.start()
-		}
 
 		const ctrl = $$.viewController(elt, {
-			data,
+			data: {
+				yourTurn: false,
+				message: ''				
+			},
 			events: {
-				onCall: function(ev) {
-					console.log('onCall')
-
-					$pager.pushPage('friendsPage', {
-						title: 'Select a friend to play with',
-						onReturn: function(userName) {
-							//console.log('onReturn', userName)
-							rtc.call(userName, 'chess', 'fa fa-chess')
-							.then(() => {
-								ctrl.setData({status: 'calling', distant: userName})
-							})
-							.catch((e) => {
-								$$.ui.showAlert({title: 'Error', content: e.responseText})
-							})
-						}						
-					})
-
-				},
-				onCancel: function(ev) {
-					rtc.cancel(ctrl.model.distant)
-					.then(() => {
-						ctrl.setData({status: 'canceled', distant: ''})
-					})
-					.catch((e) => {
-						$$.ui.showAlert({title: 'Error', content: e.responseText})
-					})
-				},
 				onHangup: function(ev) {
-					rtc.bye()
-					ctrl.setData({status: 'ready', distant: '', messages: []})
 					board.clear()
 					game = new Chess()
 					removeHighlights('black')
@@ -194,37 +148,18 @@ $$.control.registerControl('rootPage', {
 
 		updateStatus()
 
-	
 
-		broker.onTopic('breizbot.rtc.accept', function(msg) {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			rtc.cancel(ctrl.model.distant)
-			rtc.setRemoteClientId(msg.srcId)
-			ctrl.setData({status: 'connected', yourTurn: true})
+		rtc.on('accept', function() {
+			board.orientation('white')
 			board.start()
+			ctrl.setData({yourTurn: true})
 			updateStatus()
 
 		})
 
-		broker.onTopic('breizbot.rtc.deny', function(msg) {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			ctrl.setData({status: 'refused'})
-			rtc.cancel(ctrl.model.distant)
 
-		})	
-
-		broker.onTopic('breizbot.rtc.chess', function(msg) {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			const {source, target} = msg.data
+		rtc.onData('chess', function(data) {
+			const {source, target} = data
 
 			board.move(`${source}-${target}`)
 			ctrl.setData({yourTurn: true})
@@ -240,12 +175,7 @@ $$.control.registerControl('rootPage', {
 		
 		})		
 
-		broker.onTopic('breizbot.rtc.bye', function(msg) {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			ctrl.setData({status: 'disconnected', distant: '', messages: []})
+		rtc.on('bye', function(msg) {
 			game = new Chess()
 			board.clear()
 			removeHighlights('black')
@@ -253,19 +183,19 @@ $$.control.registerControl('rootPage', {
 
 		})			
 
-		broker.on('ready', (msg) => { 
-			rtc.setLocalClientId(msg.clientId)
-			if (params.caller != undefined) {
+		rtc.on('ready', () => { 
+			if (rtc.isCallee) {
+				board.orientation('black')
+				board.start()
 				rtc.accept()				
 			}			
 		})
 
-		window.onbeforeunload = function() {
-			if (ctrl.model.status == 'connected') {
-		  		rtc.bye()
-			}
-	
-		}	
+
+		this.onAppExit = function() {
+			return rtc.bye()
+		}
+
 
 	}
 

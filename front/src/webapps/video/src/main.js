@@ -1,63 +1,22 @@
 $$.control.registerControl('rootPage', {
 
-	props: {
-		$pager: null
-	},
 
-	deps: ['breizbot.rtc', 'breizbot.broker', 'breizbot.params'],
+	deps: ['breizbot.rtc'],
 
 	template: {gulp_inject: './main.html'},
 
-	init: function(elt, rtc, broker, params) {
+	init: function(elt, rtc) {
 
-		const {$pager} = this.props
-
-		const data = {
-			status: 'ready',
-			distant: '',
-			videoSize: ''
-		}
-
-		if (params.caller != undefined) {
-			data.status = 'connected'
-			data.distant = params.caller
-			rtc.setRemoteClientId(params.clientId)
-		}
-
-
+		rtc.on('status', (data) => {
+			ctrl.setData({status: data.status})
+		})
 
 		const ctrl = $$.viewController(elt, {
-			data,
+			data: {
+				status: 'ready'
+			},
 			events: {
-				onCall: function(ev) {
-					console.log('onCall')
-
-					$pager.pushPage('friendsPage', {
-						title: 'Select a friend',
-						onReturn: function(userName) {
-							rtc.call(userName, 'video', 'fa fa-phone fa-flip-vertical')
-							.then(() => {
-								ctrl.setData({status: 'calling', distant: userName})
-							})
-							.catch((e) => {
-								$$.ui.showAlert({title: 'Error', content: e.responseText})
-							})
-						}						
-					})
-
-				},
-				onCancel: function(ev) {
-					rtc.cancel(ctrl.model.distant)
-					.then(() => {
-						ctrl.setData({status: 'canceled', distant: ''})
-					})
-					.catch((e) => {
-						$$.ui.showAlert({title: 'Error', content: e.responseText})
-					})
-				},
 				onHangup: function(ev) {
-					rtc.bye()
-					ctrl.setData({status: 'ready', distant: ''})
 					stop()
 				}
 			}
@@ -129,7 +88,7 @@ $$.control.registerControl('rootPage', {
 				localVideo.srcObject = stream
 				localStream = stream
 
-				if (params.caller != undefined) {
+				if (rtc.isCallee) {
 					rtc.accept()
 					createPeerConnection()	
 					pc.addStream(localStream)				
@@ -137,24 +96,14 @@ $$.control.registerControl('rootPage', {
 			})
 			.catch(function(e) {
 				console.log('error', e)
-				if (params.caller != undefined) {
+				if (rtc.isCallee) {
 					rtc.deny()
 				}
-				ctrl.setData({distant: '', status: 'failed'})
-			  	//alert('getUserMedia() error: ' + e.name);
 
 			})			
 		}
 
-		broker.onTopic('breizbot.rtc.accept', function(msg) {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			rtc.cancel(ctrl.model.distant)
-			rtc.setRemoteClientId(msg.srcId)
-
-			ctrl.setData({status: 'connected'})
+		rtc.on('accept', function() {
 			createPeerConnection()
 			pc.addStream(localStream)
 			pc.createOffer().then((sessionDescription) => {
@@ -164,22 +113,9 @@ $$.control.registerControl('rootPage', {
 			})
 		})
 
-		broker.onTopic('breizbot.rtc.deny', function(msg) {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			ctrl.setData({status: 'refused'})
-			rtc.cancel(ctrl.model.distant)
 
-		})
-
-		broker.onTopic('breizbot.rtc.candidate', function(msg) {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			const {label, candidate} = msg.data
+		rtc.onData('candidate', function(data) {
+			const {label, candidate} = data
 
 		    pc.addIceCandidate(new RTCIceCandidate({
 		      sdpMLineIndex: label,
@@ -187,12 +123,8 @@ $$.control.registerControl('rootPage', {
 		    }))		
 		})		
 
-		broker.onTopic('breizbot.rtc.offer', function(msg) {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			pc.setRemoteDescription(new RTCSessionDescription(msg.data))
+		rtc.onData('offer', function(data) {
+			pc.setRemoteDescription(new RTCSessionDescription(data))
 			console.log('Sending answer to peer.')
 			pc.createAnswer().then((sessionDescription) => {
 				pc.setLocalDescription(sessionDescription)
@@ -202,34 +134,21 @@ $$.control.registerControl('rootPage', {
 
 		})	
 
-		broker.onTopic('breizbot.rtc.answer', function(msg) {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			pc.setRemoteDescription(new RTCSessionDescription(msg.data))
+		rtc.onData('answer', function(data) {
+			pc.setRemoteDescription(new RTCSessionDescription(data))
 
 		})	
 
-		broker.onTopic('breizbot.rtc.bye', function(msg) {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			ctrl.setData({status: 'disconnected', distant: ''})
+		rtc.on('bye', function() {
 			stop()
-
 		})	
 
-		broker.on('ready', (msg) => { 
-			rtc.setLocalClientId(msg.clientId)
+		rtc.on('ready', () => { 
 			openMedia()
 		})
 
-		window.onbeforeunload = function() {
-			if (pc != undefined) {
-		  		rtc.bye()
-			}
+		this.onAppExit = function() {
+			return rtc.bye()
 		}		
 	
 	}

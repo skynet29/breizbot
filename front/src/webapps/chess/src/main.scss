@@ -3,17 +3,6 @@
 	flex-direction: column;
 	padding: 10px;
 
-	.toolbar {
-		display: flex;
-		justify-content: space-between;
-		margin: 10px;
-		align-items: center;
-
-		p {
-			margin: 0px;
-		}
-	}
-
 	.message {
 		margin-left: 10px;
 	}

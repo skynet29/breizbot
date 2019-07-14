@@ -1,13 +1,6 @@
 .rootPage {
   display: flex;
   flex-direction: column; }
-  .rootPage .toolbar {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px;
-    align-items: center; }
-    .rootPage .toolbar p {
-      margin: 0px; }
   .rootPage .video {
     text-align: center;
     flex: 1;

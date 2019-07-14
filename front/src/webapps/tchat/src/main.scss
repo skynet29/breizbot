@@ -3,66 +3,66 @@
 	flex-direction: column;
 	padding: 10px;
 
-	.toolbar {
-		display: flex;
-		justify-content: space-between;
-		margin: 10px;
-		align-items: center;
-
-		p {
-			margin: 0px;
-		}
+	.breizbot-rtc {
+		height: 100%;
 	}
 
-	.content {
+	.panel {
 		flex: 1;
-		border: 1px solid lightgrey;
-		margin-bottom: 10px;
-		overflow: auto;
+		display: flex;
+		flex-direction: column;
 
-		.messages {
-			padding: 10px;
-			.me {
+		.content {
+			flex: 1;
+			border: 1px solid lightgrey;
+			margin-bottom: 10px;
+			overflow: auto;
+
+			.messages {
+				padding: 10px;
+				.me {
+					display: flex;
+					flex-direction: row;
+					justify-content: flex-start;
+					align-items: center;
+					margin-bottom: 5px;
+
+					.text {
+						padding: 5px;
+						margin-right: 5px;
+						background-color: lightblue;
+						max-width: 150px;
+						border-radius: 5px;
+					}
+				}
+				.you {
+					display: flex;
+					flex-direction: row;
+					justify-content: flex-end;
+					align-items: center;
+					margin-bottom: 5px;
+
+					.text {
+						padding: 5px;
+						margin-left: 5px;					
+						background-color: lightpink;
+						max-width: 150px;
+						border-radius: 5px;
+					}				
+				}			
+			}
+		}
+
+		.footer {
+			
+			form {
 				display: flex;
-				flex-direction: row;
-				justify-content: flex-start;
-				align-items: center;
-				margin-bottom: 5px;
-
-				.text {
-					padding: 5px;
-					margin-right: 5px;
-					background-color: lightblue;
-					max-width: 150px;
-					border-radius: 5px;
+				input {
+					flex: 1;
+					padding-left: 5px;
 				}
 			}
-			.you {
-				display: flex;
-				flex-direction: row;
-				justify-content: flex-end;
-				align-items: center;
-				margin-bottom: 5px;
-
-				.text {
-					padding: 5px;
-					margin-left: 5px;					
-					background-color: lightpink;
-					max-width: 150px;
-					border-radius: 5px;
-				}				
-			}			
-		}
+		}		
 	}
 
-	.footer {
-		
-		form {
-			display: flex;
-			input {
-				flex: 1;
-				padding-left: 5px;
-			}
-		}
-	}
 }

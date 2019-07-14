@@ -1,37 +1,12 @@
-
-
-<div class="toolbar">
-
-		<div>
-			<p>Status: <span bn-text="status"></span></p>
-			<p>Distant: <strong bn-text="distant"></strong></p>						
-<!-- 			<p>Video Size: <span bn-text="videoSize"></span></p>						
- -->		</div>		
-
-		<div>
-			<button 
-				title="Call a friend" 
-				bn-event="click: onCall"
-				bn-show="['ready', 'disconnected', 'refused', 'canceled'].includes(status)"
-				class="w3-btn w3-green"><i class="fa fa-phone fa-flip-vertical"></i></button>
-
-			<button 
-				bn-event="click: onCancel"
-				bn-show="status == 'calling'"
-				class="w3-btn w3-blue">Cancel</button>
-
-			<button 
-				title="Hangup" 
-				bn-event="click: onHangup"
-				bn-show="status == 'connected'"
-				class="w3-btn w3-red"><i class="fa fa-phone-slash"></i></button>			
-		</div>
-
-
+<div bn-control="breizbot.rtc" 
+	bn-data="{
+		appName:'video',
+		iconCls: 'fa fa-phone fa-flip-vertical',
+		title: 'Select a friend to call'
+	}"
+	bn-event="rtchangup: onHangup"
+>
 </div>
-
-	
-
 <div class="video">
 
 	  <video bn-bind="localVideo" autoplay muted playsinline bn-class="{reduced: status == 'connected'}"></video>

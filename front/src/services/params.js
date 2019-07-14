@@ -2,6 +2,6 @@ $$.service.registerService('breizbot.params', {
 
 	init: function(config) {
 
-		return JSON.parse(config)
+		return (typeof config == 'string') ? JSON.parse(config) : {}
 	}
 });

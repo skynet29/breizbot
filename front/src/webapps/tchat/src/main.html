@@ -1,49 +1,32 @@
-<div class="toolbar">
+<div bn-control="breizbot.rtc" 
+	bn-data="{
+		appName:'tchat',
+		iconCls: 'fa fa-comments',
+		title: 'Select a friend to tchat with'
+	}"
+	bn-event="rtchangup: onHangup"
+>
 
-		<div>
-			<p>Status: <span bn-text="status"></span></p>
-			<p>Distant: <strong bn-text="distant"></strong></p>						
-		</div>		
 
-		<div>
-			<button 
-				title="Call a friend" 
-				bn-event="click: onCall"
-				bn-show="['ready', 'disconnected', 'refused', 'canceled'].includes(status)"
-				class="w3-btn w3-green"><i class="fa fa-user"></i></button>
-
-			<button 
-				bn-event="click: onCancel"
-				bn-show="status == 'calling'"
-				class="w3-btn w3-blue">Cancel</button>
-
-			<button 
-				title="Hangup" 
-				bn-event="click: onHangup"
-				bn-show="status == 'connected'"
-				class="w3-btn w3-red"><i class="fa fa-comment-slash"></i></button>			
+	<div class="content" bn-bind="content">
+		<div bn-each="messages" class="messages">
+			<div class="me" bn-show="$i.me">
+				<div bn-text="$i.text" class="text"></div>
+				<div bn-text="$i.time"></div>			
+			</div>
+			<div class="you" bn-show="!$i.me">
+				<div bn-text="$i.time"></div>			
+				<div bn-text="$i.text" class="text"></div>
+			</div>
 		</div>
-
-
-</div>
-
-<div class="content" bn-show="status == 'connected'" bn-bind="content">
-	<div bn-each="messages" class="messages">
-		<div class="me" bn-show="$i.me">
-			<div bn-text="$i.text" class="text"></div>
-			<div bn-text="$i.time"></div>			
-		</div>
-		<div class="you" bn-show="!$i.me">
-			<div bn-text="$i.time"></div>			
-			<div bn-text="$i.text" class="text"></div>
-		</div>
+		
 	</div>
-	
-</div>
 
-<div class="footer" bn-show="status == 'connected'">
-	<form bn-event="submit: onSubmit">
-		<input type="text" name="message" required="" placeholder="Write a message..." autocomplete="off">
-		<button class="w3-button w3-blue" type="submit">Send</button>
-	</form>
+	<div class="footer">
+		<form bn-event="submit: onSubmit">
+			<input type="text" name="message" required="" placeholder="Write a message..." autocomplete="off">
+			<button class="w3-button w3-blue" type="submit">Send</button>
+		</form>
+	</div>
+
 </div>

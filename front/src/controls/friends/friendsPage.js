@@ -1,6 +1,6 @@
-$$.control.registerControl('friendsPage', {
+$$.control.registerControl('breizbot.friendsPage', {
 
-	template: {gulp_inject: './friends.html'},
+	template: {gulp_inject: './friendsPage.html'},
 
 	props: {
 		$pager: null

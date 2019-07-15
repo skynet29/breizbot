@@ -1,3 +1,15 @@
+<div bn-show="showForm">
+	<form bn-event="submit: onSubmit">
+		<div bn-control="brainjs.inputgroup">
+			<label>Name:</label>
+			<input type="text" name="name" required="" autofocus="">			
+		</div>
+		<input type="submit" hidden="" bn-bind="submit">
+	</form>
+
+	<p>Select target folder:</p>
+</div>
+
 <div class="scrollPanelTree">
 	<div 
 		class="tree" 

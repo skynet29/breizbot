@@ -7,8 +7,7 @@ $$.control.registerControl('boxesPage', {
 	props: {
 		$pager: null,
 		currentAccount: '',
-		mailboxName: '',
-		seqNos: []
+		showForm: false
 	},
 
 	buttons: [
@@ -17,13 +16,35 @@ $$.control.registerControl('boxesPage', {
 	
 	init: function(elt, srvMail) {
 
-		const {$pager, currentAccount, mailboxName, seqNos} = this.props
+		const {$pager, currentAccount, showForm} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				mailboxes: []
+				mailboxes: [],
+				showForm
 			},
 			events: {
+				onSubmit: function(ev) {
+					ev.preventDefault()
+					const {name} = $(this).getFormData()
+					//console.log('onSubmit', name)
+
+					const {tree} = ctrl.scope
+					const node = tree.getActiveNode()
+					if (node == null) {
+						$$.ui.showAlert({title: 'Warning', content: 'Please select a target mailbox'})
+						return
+					}
+					let targetName = tree.getNodePath(node) + '/' + name
+					//console.log('targetName', targetName)
+					const token = targetName.split('/')
+					token.shift()
+					targetName = token.join('/')
+					//console.log('targetName', targetName)
+
+
+					$pager.popPage(targetName)					
+				}
 			}
 		})
 
@@ -32,9 +53,21 @@ $$.control.registerControl('boxesPage', {
 			console.log('loadMailboxes')
 			srvMail.getMailboxes(currentAccount).then((mailboxes) => {
 				console.log('mailboxes', mailboxes)
-				ctrl.setData({
-					mailboxes
-				})
+				if (showForm) {
+					ctrl.setData({
+						mailboxes: [{
+							title: 'Folders',
+							folder: true,
+							children: mailboxes,
+							expanded: true
+						}]
+					})
+				}
+				else {
+					ctrl.setData({
+						mailboxes
+					})
+				}
 			})
 		}
 
@@ -44,6 +77,12 @@ $$.control.registerControl('boxesPage', {
 		this.onAction = function(action) {
 			console.log('onAction', action)
 			if (action == 'apply') {
+
+				if (showForm) {
+					ctrl.scope.submit.click()
+					return
+				}
+
 				const {tree} = ctrl.scope
 				const node = tree.getActiveNode()
 				if (node == null) {
@@ -51,15 +90,8 @@ $$.control.registerControl('boxesPage', {
 					return
 				}
 				const targetName = tree.getNodePath(node)
-				if (targetName == mailboxName) {
-					$$.ui.showAlert({title: 'Select Target Mailbox', content: 'Please select a target mailbox different from current mailbox'})
-					return
-				}
 
-				srvMail.moveMessage(currentAccount, mailboxName, targetName, seqNos).then(() => {
-					$pager.popPage()
-				})
-				
+				$pager.popPage(targetName)
 			}
 		}
 

@@ -25,6 +25,10 @@ $$.service.registerService('app.mails', {
 				return http.post(`/getMailboxes`, {name})
 			},
 
+			addMailbox: function(name, mailboxName) {
+				return http.post(`/addMailbox`, {name, mailboxName})
+			},
+
 			openMailbox: function(name, mailboxName, pageNo) {
 				return http.post(`/openMailbox`, {name, mailboxName, pageNo})
 			},

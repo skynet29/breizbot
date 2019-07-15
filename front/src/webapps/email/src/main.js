@@ -46,6 +46,22 @@ $$.control.registerControl('rootPage', {
 
 						})
 					}
+					if (data.cmd == 'newFolder') {
+						$pager.pushPage('boxesPage', {
+							title: 'Add new folder',
+							props: {
+								currentAccount: ctrl.model.currentAccount,
+								showForm: true
+							},
+							onReturn: function(targetName) {
+								console.log('onReturn', targetName)
+								srvMail.addMailbox(ctrl.model.currentAccount, targetName).then(() => {
+									loadMailboxes()
+								})
+
+							}
+						})
+					}
 				},
 
 				onAccountChange: function() {

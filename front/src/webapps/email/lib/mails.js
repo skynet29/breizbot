@@ -329,6 +329,29 @@ module.exports = function(ctx) {
      
   }
 
+  function addMailboxCb(mailboxName) {
+    return function(imap, resolve, reject) {
+      imap.addBox(mailboxName, function(err) { 
+        imap.end() 
+        if (err) {
+          console.log('err', err)
+          
+          reject(err)
+          return
+        }
+        resolve()
+      })
+
+    }
+  }
+
+
+  function addMailbox(userName, name, mailboxName) {
+    console.log('addMailbox', userName, name, mailboxName)
+
+    return imapConnect(userName, name, addMailboxCb(mailboxName))
+  }
+
   const nbMsgPerPage = 20
 
   function openMailboxCb(mailboxName, pageNo) {
@@ -663,7 +686,8 @@ module.exports = function(ctx) {
     openAttachment,
     deleteMessage,
     moveMessage,
-    sendMail
+    sendMail,
+    addMailbox
   }
 
 }

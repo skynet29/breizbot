@@ -143,11 +143,19 @@ $$.control.registerControl('mailboxPage', {
 			$pager.pushPage('boxesPage', {
 				title: 'Select target mailbox',
 				props: {
-					currentAccount,
-					mailboxName,
-					seqNos
+					currentAccount
 				},
-				onReturn: load
+				onReturn: function(targetName) {
+					if (targetName == mailboxName) {
+						$$.ui.showAlert({title: 'Select Target Mailbox', content: 'Target mailbox must be different from current mailbox'})
+						return
+					}
+
+					srvMail.moveMessage(currentAccount, mailboxName, targetName, seqNos)
+					.then(() => {
+						load()
+					})
+				}
 			})
 			// srvMail.deleteMessage(currentAccount, mailboxName, seqNos).then(() => {
 			// 	console.log('Messages deleted')

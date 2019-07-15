@@ -67,6 +67,19 @@ module.exports = function(ctx) {
 		})	
 	})
 
+	router.post('/addMailbox', function(req, res) {
+		const userName = req.session.user
+		const {name, mailboxName} = req.body
+
+		mails.addMailbox(userName, name, mailboxName).then(() => {
+			res.sendStatus(200)
+		})
+		.catch((err) => {
+			console.log('err', err)
+			res.sendStatus(400)
+		})	
+	})	
+
 	router.post('/openMailbox', function(req, res) {
 		const userName = req.session.user
 		const {name, mailboxName, pageNo} = req.body

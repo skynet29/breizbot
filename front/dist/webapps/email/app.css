@@ -1,3 +1,36 @@
+.rootPage {
+  padding-left: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  display: flex;
+  flex-direction: column; }
+  .rootPage .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
+    .rootPage .toolbar .info {
+      display: flex;
+      align-items: center; }
+      .rootPage .toolbar .info .nbMsg {
+        margin-left: 20px; }
+  .rootPage .scrollPanelTree {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid black; }
+    .rootPage .scrollPanelTree .tree {
+      height: 100%; }
+      .rootPage .scrollPanelTree .tree ul {
+        height: 100%;
+        border: none; }
+      .rootPage .scrollPanelTree .tree ul:focus {
+        outline: none; }
+      .rootPage .scrollPanelTree .tree .fancytree-node {
+        display: flex;
+        align-items: center;
+        font-size: 1.3em; }
+      .rootPage .scrollPanelTree .tree span.fa {
+        color: #607d8b; }
+
 .accountPage {
   margin: 10px;
   display: flex;
@@ -75,39 +108,6 @@
       cursor: pointer; }
     .mailboxPage .scrollPanelTable table tr.unseen {
       font-weight: bold; }
-
-.rootPage {
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-bottom: 10px;
-  display: flex;
-  flex-direction: column; }
-  .rootPage .toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; }
-    .rootPage .toolbar .info {
-      display: flex;
-      align-items: center; }
-      .rootPage .toolbar .info .nbMsg {
-        margin-left: 20px; }
-  .rootPage .scrollPanelTree {
-    flex: 1;
-    overflow-y: auto;
-    border: 1px solid black; }
-    .rootPage .scrollPanelTree .tree {
-      height: 100%; }
-      .rootPage .scrollPanelTree .tree ul {
-        height: 100%;
-        border: none; }
-      .rootPage .scrollPanelTree .tree ul:focus {
-        outline: none; }
-      .rootPage .scrollPanelTree .tree .fancytree-node {
-        display: flex;
-        align-items: center;
-        font-size: 1.3em; }
-      .rootPage .scrollPanelTree .tree span.fa {
-        color: #607d8b; }
 
 .messagePage {
   display: flex;

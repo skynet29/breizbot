@@ -6,10 +6,21 @@
 		<i class="fa fa-camera"></i>
 	</button>
 
+<select 
+	bn-control="brainjs.selectmenu" 
+	bn-data="{items: videoDevices}"
+	bn-event="selectmenuchange: onDeviceChange"
+	bn-show="videoDevices.length > 1"
+	bn-bind="select"
+	>
+		
+</select>
+
 <div class="main w3-pale-blue">
 	<div 
 		bn-control="brainjs.camera" 
 		bn-event="cameraready: onCameraReady"
+		bn-data="{constraints}"
 		bn-iface="camera">
 			
 		</div>	

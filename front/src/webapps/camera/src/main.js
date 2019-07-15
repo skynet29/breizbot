@@ -19,7 +19,9 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				ready: false
+				ready: false,
+				videoDevices: [],
+				constraints: {video: true}
 			},
 			events: {
 				onCameraReady: function() {
@@ -33,22 +35,33 @@ $$.control.registerControl('rootPage', {
 						title: 'Snapshot', 
 						props: {url}
 					})					
+				},
+				onDeviceChange: function(ev, data) {
+					console.log('onDeviceChange', $(this).getValue())
+					const constraints = {
+						video: {
+							deviceId: {
+								exact: $(this).getValue()
+							}
+						}
+					}
+					ctrl.setData({constraints})
+
+
 				}
 			}
 		})
 
+		$$.util.getVideoDevices().then((videoDevices) => {
+			ctrl.setData({
+				videoDevices: videoDevices.map((i) => {
+					return {value: i.id, label: i.label}
+				})
+			})
+		})
 
 		ctrl.scope.camera.start()
 
-		window.addEventListener('resize', function() {
-			console.log('onresize')
-			ctrl.setData({
-				constraints: {
-					width: {max: elt.width()},
-					height: {max: elt.height()}
-				}
-			})
-		})		
 	}
 
 

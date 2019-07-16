@@ -82,7 +82,7 @@ $$.control.registerControl('accountPage', {
 
 				},
 				onProviderChange: function() {
-					const provider = $(this).val()
+					const provider = $(this).getValue()
 					console.log('onProviderChange', provider)
 					ctrl.setData({provider})
 

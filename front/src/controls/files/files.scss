@@ -1,10 +1,12 @@
 .breizbot-files {
+	overflow: hidden;
+
 	.contentPanel {
 		height: 100%;
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		margin: 10px;
+		padding: 10px;
 	}
 
 	.container {
@@ -16,6 +18,7 @@
 		flex: 1;
 		overflow-y: auto;
 		border: 1px solid lightgrey;
+		margin-top: 10px;
 	}
 
 	.thumbnail {

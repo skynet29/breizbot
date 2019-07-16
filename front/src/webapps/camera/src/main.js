@@ -19,7 +19,8 @@ $$.control.registerControl('rootPage', {
 			data: {
 				ready: false,
 				videoDevices: [],
-				constraints: {video: true}
+				constraints: {video: true},
+				showMessage: false
 			},
 			events: {
 				onCameraReady: function() {
@@ -56,9 +57,16 @@ $$.control.registerControl('rootPage', {
 					return {value: i.id, label: i.label}
 				})
 			})
+
+			if (videoDevices.length > 0) {
+				ctrl.scope.camera.start()
+			}
+			else {
+				ctrl.setData({showMessage: true})
+			}
 		})
 
-		ctrl.scope.camera.start()
+		
 
 	}
 

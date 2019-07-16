@@ -9,23 +9,34 @@
 
 	.container {
 		display: flex;
-		flex-direction: row;
-		//flex: 1;
-		//align-items: stretch;
-		align-items: flex-start;
-		flex-wrap: wrap;
-		align-content: start;
+		flex-direction: column;
 	}
 
 	.scrollPanel {
 		flex: 1;
 		overflow-y: auto;
+		border: 1px solid lightgrey;
 	}
 
 	.thumbnail {
-		margin: 10px;
+		margin: 5px;
 		position: relative;
-		border: 1px solid black;
+		padding: 10px;
+
+		.item {
+			display: flex;
+			align-items: center;
+			cursor: pointer;
+
+			.icon {
+				margin-right: 10px;
+			}
+
+			.info {
+				display: flex;
+				flex-direction: column;
+			}
+		}
 	}
 
 	.check {

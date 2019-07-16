@@ -6,7 +6,7 @@ $$.control.registerControl('breizbot.files', {
 		imageOnly: false,
 		filterExtension: undefined,
 		showThumbnail: false,
-		thumbnailSize: '?x100',
+		thumbnailSize: '100x?',
 		maxUploadSize: 2*1024*2014 // 2 Mo		
 	},
 
@@ -39,13 +39,17 @@ $$.control.registerControl('breizbot.files', {
 				nbSelection: 0,
 				isShareSelected: false,
 				getSize: function(size) {
-					let unit = 'Ko'
-					size /= 1024
+					let unit = 'octets'
+					if (size > 1024) {
+						unit = 'Ko'
+						size /= 1024
+					}
+
 					if (size > 1024) {
 						unit = 'Mo'
 						size /= 1024
 					}
-					return 'Size : ' + Math.floor(size) + ' ' + unit
+					return 'Size: ' + Math.floor(size) + ' ' + unit
 				},
 
 				getIconClass: function(name) {

@@ -1,20 +1,22 @@
-<button 
-	title="Take picture" 
-	bn-event="click: onTakePicture" 
-	bn-show="ready"
-	class="w3-btn w3-blue">
-		<i class="fa fa-camera"></i>
-	</button>
+<div class="footer">
+	<button 
+		title="Take picture" 
+		bn-event="click: onTakePicture" 
+		bn-show="ready"
+		class="w3-button w3-circle w3-blue">
+			<i class="fa fa-camera"></i>
+		</button>
+	
+</div>
 
-<select 
+<div 
 	bn-control="brainjs.selectmenu" 
 	bn-data="{items: videoDevices}"
 	bn-event="selectmenuchange: onDeviceChange"
 	bn-show="videoDevices.length > 1"
-	bn-bind="select"
 	>
 		
-</select>
+</div>
 
 <div class="main w3-pale-blue">
 	<div 

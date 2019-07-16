@@ -1,13 +1,13 @@
 <div class="toolbar">
 	<div class="info">
 		<p bn-show="accounts.length == 0">You have no email account</p>
-		<p bn-show="accounts.length > 0">Account: 
-			<select 
+		<p bn-show="accounts.length > 0">Account:&nbsp; 
+			<div 
 				bn-control="brainjs.selectmenu" 
 				bn-data="{items: accounts}" 
 				bn-val="currentAccount"
 				bn-event="selectmenuchange: onAccountChange">
-			</select>
+			</div>
 		</p>
 		
 	</div>

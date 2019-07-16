@@ -65,8 +65,8 @@ $$.control.registerControl('rootPage', {
 				},
 
 				onAccountChange: function() {
-					console.log('onAccountChange', $(this).val())
-					ctrl.setData({currentAccount: $(this).val()})
+					console.log('onAccountChange', $(this).getValue())
+					ctrl.setData({currentAccount: $(this).getValue()})
 					loadMailboxes()
 				},
 

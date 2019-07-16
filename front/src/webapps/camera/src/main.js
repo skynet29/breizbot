@@ -14,8 +14,6 @@ $$.control.registerControl('rootPage', {
 
 		const {$pager} = this.props
 
-		console.log('width', elt.width(), 'height', elt.height())
-
 
 		const ctrl = $$.viewController(elt, {
 			data: {

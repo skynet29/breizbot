@@ -60,7 +60,8 @@
       align-items: center;
       cursor: pointer; }
       .breizbot-files .thumbnail .item .icon {
-        margin-right: 10px; }
+        margin-right: 10px;
+        width: 100px; }
       .breizbot-files .thumbnail .item .info {
         display: flex;
         flex-direction: column; }

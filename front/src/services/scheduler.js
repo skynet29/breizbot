@@ -12,7 +12,11 @@ $$.service.registerService('breizbot.scheduler', {
 					type: 'openApp', 
 					data: {appName, appParams}
 				})
-			}		
+			},
+			logout: function() {
+				console.log('[scheduler] logout')
+				return http.post('/api/logout')
+			}		 
 		}
 	},
 

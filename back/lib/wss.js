@@ -130,6 +130,7 @@ function sendMessage(userName, topic, data) {
 }
 
 function sendMsg(client, msg) {
+	//console.log('sendMsg', msg)
 	client.sendText(JSON.stringify(msg))
 }
 
@@ -166,5 +167,6 @@ module.exports = {
 	sendTo,
 	getClients,
 	isUserConnected,
-	callService
+	callService,
+	sendMsg
 }

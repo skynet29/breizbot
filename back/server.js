@@ -104,6 +104,7 @@ app.use('/api/rtc', require('./api/rtc'))
 app.use('/api/debug', require('./api/debug'))
 app.use('/api/appData', require('./api/appData'))
 app.use('/api/cities', require('./api/cities'))
+app.use('/api/logout', require('./api/logout'))
 
 
 const appsPath = path.join(__dirname, '../front/src/webapps')

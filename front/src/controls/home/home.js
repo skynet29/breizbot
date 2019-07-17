@@ -4,7 +4,8 @@ $$.control.registerControl('breizbot.home', {
 		'breizbot.broker',
 		'breizbot.users',
 		'breizbot.rtc',
-		'breizbot.apps'
+		'breizbot.apps',
+		'breizbot.scheduler'
 	],
 
 	props: {
@@ -13,7 +14,7 @@ $$.control.registerControl('breizbot.home', {
 
 	template: {gulp_inject: './home.html'},
 
-	init: function(elt, broker, users, rtc, srvApps) {
+	init: function(elt, broker, users, rtc, srvApps, scheduler) {
 
 		function createAudio() {
 			let audio = null
@@ -187,6 +188,9 @@ $$.control.registerControl('breizbot.home', {
 			updateNotifs(msg.data)
 		})
 
+		broker.onTopic('breizbot.logout', function(msg) {
+			location.href = '/logout'
+		})
 
 
 		function getAppUrl(appName, params) {
@@ -234,8 +238,8 @@ $$.control.registerControl('breizbot.home', {
 		}
 
 
-		function logout() {
-			location.href = '/logout'
+		function logout() {			
+			scheduler.logout()
 		}
 
 		loadApp()	

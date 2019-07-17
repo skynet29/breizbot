@@ -95,21 +95,13 @@ $$.control.registerControl('breizbot.fsbase', {
 				sortFiles(files)					
 				ctrl.setData({files})
 			}
-			if (selectMode != ctrl.model.selectMode) {
+			if (selectMode != undefined && selectMode != ctrl.model.selectMode) {
 				ctrl.model.selectMode = selectMode
 				ctrl.forceUpdate('files')
 			}
-			if (showThumbnail != ctrl.model.showThumbnail) {
+			if (showThumbnail != undefined && showThumbnail != ctrl.model.showThumbnail) {
 				ctrl.setData({showThumbnail})
 			}
-		}
-
-		function setSelMode(selMode) {
-			if (selMode == false) {
-				ctrl.model.nbSelection = 0
-			}
-			ctrl.model.selectMode = selMode
-			ctrl.forceUpdate('files')
 		}
 
 		this.getSelFiles = function() {

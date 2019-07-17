@@ -4,39 +4,10 @@
 		Path:&nbsp;<span bn-text="rootDir"></span>
 	</div>
 
-	<div class="scrollPanel">
+	<div
+		bn-control="breizbot.fsbase"
+		bn-event="folderclick: onFolderClick, fileclick: onFileClick"
+		bn-data="{files}"
+	></div>
 
-		<div bn-each="files" 
-			bn-iter="f" 
-			class="container"
-			bn-bind="files" 
-			bn-event="click.folder: onFolderClick, click.file: onFileClick">
-			
-			<div class="thumbnail w3-btn" bn-data="{info: f}">	
-					<div bn-if="f.folder" class="folder">
-						<div>
-							<i class="fa fa-4x fa-folder-open w3-text-blue-grey"></i>
-						</div>
-						
-						<span bn-text="f.name"></span>
-					</div>
-					<div bn-if="!f.folder && (!f.isImage || !showThumbnail)" bn-attr="{title: f.name + '\n' + getSize(f.size)}" class="file">
-						<div>
-							<i bn-attr="{class: `fa fa-4x w3-text-blue-grey ${getIconClass(f.name)}`}"></i>
-						</div>
-						
-						<span bn-text="f.name.slice(0, 20)"></span>
-					</div>			
-
-					<div bn-if="!f.folder && f.isImage && showThumbnail" bn-attr="{title: f.name + '\n' + getSize(f.size)}" class="file">
-						<div>
-							<img bn-attr="{src: f.thumbnailUrl}">
-						</div>
-						
-						<span bn-text="f.name.slice(0, 20)"></span>
-					</div>	
-				
-			</div>
-		</div>
-	</div>
 </div>

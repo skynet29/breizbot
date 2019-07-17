@@ -3,8 +3,6 @@ $$.control.registerControl('filesPage', {
 	props: {
 		$pager: null,
 		userName: '',
-		showThumbnail: true,
-		thumbnailSize: '?x100'	
 	},
 
 	template: {gulp_inject: './files.html'},
@@ -15,11 +13,11 @@ $$.control.registerControl('filesPage', {
 
 	init: function(elt, srvFiles) {
 
+		const thumbnailSize = '100x?'
+
 		const {
 			$pager,
 			userName,
-			showThumbnail,
-			thumbnailSize
 		} = this.props
 
 		const ctrl = $$.viewController(elt, {
@@ -27,37 +25,9 @@ $$.control.registerControl('filesPage', {
 			data: {
 				rootDir: '/',
 				files: [],
-				showThumbnail,
-				getSize: function(size) {
-					let unit = 'Ko'
-					size /= 1024
-					if (size > 1024) {
-						unit = 'Mo'
-						size /= 1024
-					}
-					return 'Size : ' + Math.floor(size) + ' ' + unit
-				},
-
-				getIconClass: function(name) {
-					if (name.endsWith('.pdf')) {
-						return 'fa-file-pdf'
-					}
-					if (name.endsWith('.doc')) {
-						return 'fa-file-word'
-					}
-					if (name.endsWith('.ogg') || name.endsWith('.mp3')) {
-						return 'fa-file-audio'
-					}
-					if (name.endsWith('.mp4')) {
-						return 'fa-file-video'
-					}
-					return 'fa-file'
-				}
 			},
 			events: {
-				onFileClick: function(ev) {
-
-					const info = $(this).closest('.thumbnail').data('info')
+				onFileClick: function(ev, info) {
 					console.log('onFileClick', info)
 
 					const fullName = ctrl.model.rootDir + info.name
@@ -74,8 +44,7 @@ $$.control.registerControl('filesPage', {
 					}					
 				},
 
-				onFolderClick: function(ev) {
-					const info = $(this).closest('.thumbnail').data('info')
+				onFolderClick: function(ev, info) {
 
 					const dirName = info.name
 					//console.log('onFolderClick', dirName)
@@ -107,15 +76,6 @@ $$.control.registerControl('filesPage', {
 						f.thumbnailUrl = srvFiles.fileThumbnailUrl(userName, rootDir + f.name, thumbnailSize)
 					}
 				})
-				files.sort((a, b) => {
-				  if (a.folder && !b.folder) {
-				    return -1
-				  }
-				  if (!a.folder && b.folder) {
-				    return 1
-				  }
-				  return a.name > b.name
-				})				
 
 				if (rootDir != '/') {
 					files.unshift({name: '..', folder: true})

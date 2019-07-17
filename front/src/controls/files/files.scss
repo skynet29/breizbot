@@ -9,49 +9,6 @@
 		padding: 10px;
 	}
 
-	.container {
-		display: flex;
-		flex-direction: column;
-	}
-
-	.scrollPanel {
-		flex: 1;
-		overflow-y: auto;
-		border: 1px solid lightgrey;
-		margin-top: 10px;
-	}
-
-	.thumbnail {
-		margin: 5px;
-		position: relative;
-		padding: 10px;
-		background-color: white;
-
-		.item {
-			display: flex;
-			align-items: center;
-			cursor: pointer;
-
-
-			.icon {
-				margin-right: 10px;
-				width: 100px;
-				text-align: center;
-			}
-
-			.info {
-				display: flex;
-				flex-direction: column;
-			}
-		}
-	}
-
-	.check {
-		position: absolute;
-		left: 5px;
-		top: 5px;
-	}
-
 	.toolbar {
 		margin-bottom: 10px;
 	}

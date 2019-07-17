@@ -37,45 +37,16 @@ $$.control.registerControl('breizbot.files', {
 				selectedFiles: [],
 				operation: 'none',
 				nbSelection: 0,
-				isShareSelected: false,
-				getSize: function(size) {
-					let unit = 'octets'
-					if (size > 1024) {
-						unit = 'Ko'
-						size /= 1024
-					}
+				isShareSelected: false
 
-					if (size > 1024) {
-						unit = 'Mo'
-						size /= 1024
-					}
-					return 'Size: ' + Math.floor(size) + ' ' + unit
-				},
-
-				getIconClass: function(name) {
-					if (name.endsWith('.pdf')) {
-						return 'fa-file-pdf'
-					}
-					if (name.endsWith('.doc')) {
-						return 'fa-file-word'
-					}
-					if (name.endsWith('.ogg') || name.endsWith('.mp3')) {
-						return 'fa-file-audio'
-					}
-					if (name.endsWith('.mp4')) {
-						return 'fa-file-video'
-					}
-					return 'fa-file'
-				}
 			},
 			events: {
 				onReload: function(ev) {
 					loadData()
 				},
 
-				onFileClick: function(ev) {
-					const info = $(this).closest('.thumbnail').data('info')
-					//console.log('onFileClick', info)
+				onFileClick: function(ev, info) {
+					console.log('onFileClick', info)
 					const data = {
 						fileName: info.name,
 						rootDir: ctrl.model.rootDir,                       
@@ -89,23 +60,21 @@ $$.control.registerControl('breizbot.files', {
 						elt.trigger('fileclick', data)
 					}
 				},
-				onCheckClick: function(ev) {
-					console.log('onCheckClick')
-
-					const info = $(this).closest('.thumbnail').data('info')
+				onCheckClick: function(ev, info, value) {
+					console.log('onCheckClick', info, value)
 
 					//console.log('info', info)
 					if (info.name == 'share' && ctrl.model.rootDir == '/') {
-						ctrl.model.isShareSelected = $(this).getValue()
+						ctrl.model.isShareSelected = value
 					}
 					//console.log('isShareSelected', ctrl.model.isShareSelected)
 					
-					const $checked = elt.find('.check:checked')
-					const nbSelection = $checked.length
+					const checked = ctrl.scope.files.getSelFiles()
+					const nbSelection = checked.length
 
 					let isFile = false
 					if (nbSelection == 1) {
-						const info = $checked.closest('.thumbnail').data('info')
+						const info = checked[0]
 						isFile = !info.folder
 					}
 
@@ -114,11 +83,10 @@ $$.control.registerControl('breizbot.files', {
 						isFile
 					})
 				},
-				onFolderClick: function(ev) {
-					const info = $(this).closest('.thumbnail').data('info')
+				onFolderClick: function(ev, info) {
 
 					const dirName = info.name
-					//console.log('onFolderClick', dirName)
+					console.log('onFolderClick', dirName)
 					if (dirName == '..') {
 						const split = ctrl.model.rootDir.split('/')						
 						split.pop()
@@ -284,18 +252,11 @@ $$.control.registerControl('breizbot.files', {
 				ctrl.model.nbSelection = 0
 			}
 			ctrl.model.selectMode = selMode
-			ctrl.forceUpdate('files')
+			ctrl.update()
 		}
 
 		function getSelFiles() {
-			const selFiles = []
-			elt.find('.check:checked').each(function() {
-				const info = $(this).closest('.thumbnail').data('info')
-				
-				selFiles.push(ctrl.model.rootDir + info.name)
-			})
-			console.log('selFiles', selFiles)	
-			return selFiles		
+			return ctrl.scope.files.getSelFiles().map((f) => ctrl.model.rootDir + f.name)
 		}
 
 		function loadData(rootDir) {
@@ -310,16 +271,7 @@ $$.control.registerControl('breizbot.files', {
 						f.thumbnailUrl = srvFiles.fileThumbnailUrl(rootDir + f.name, thumbnailSize)
 					}
 				})
-				files.sort((a, b) => {
-				  if (a.folder && !b.folder) {
-				    return -1
-				  }
-				  if (!a.folder && b.folder) {
-				    return 1
-				  }
-				  return a.name > b.name
-				})				
-
+			
 				if (rootDir != '/') {
 					files.unshift({name: '..', folder: true})
 				}

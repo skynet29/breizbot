@@ -35,7 +35,13 @@ $$.control.registerControl('breizbot.fsbase', {
 						unit = 'Mo'
 						size /= 1024
 					}
-					return 'Size: ' + Math.floor(size) + ' ' + unit
+
+					size = Math.floor(size*10)/10
+					return 'Size: ' + size + ' ' + unit
+				},
+
+				getDimension: function(d) {
+					return `Dimension: ${d.width}x${d.height}`
 				},
 
 				getIconClass: function(name) {

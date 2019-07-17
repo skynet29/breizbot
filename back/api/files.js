@@ -3,6 +3,9 @@ const fs = require('fs-extra')
 const ffmpeg = require('ffmpeg-static')
 const genThumbnail = require('simple-thumbnail')
 const config = require('../lib/config')
+const {promisify} = require('util')
+const imageSize = promisify(require('image-size'))
+
 
 const cloudPath = config.CLOUD_HOME
 
@@ -20,13 +23,23 @@ router.post('/list', function(req, res) {
 	.then(function(files) {
 		//console.log('files', files)
 		const promises = files.map((file) => {
-			return fs.lstat(path.join(rootPath, file)).then((statInfo) => {	
-				return {
+			const filePath = path.join(rootPath, file)
+			return fs.lstat(filePath).then((statInfo) => {	
+				const ret = {
 					name: file, 
 					folder: statInfo.isDirectory(),
 					size: statInfo.size,
 					isImage: isImage(file)
+				}
 
+				if (ret.isImage) {
+					return imageSize(filePath).then((dimension) => {
+						ret.dimension = dimension
+						return ret
+					})
+				}
+				else {
+					return ret
 				}
 			})
 		})

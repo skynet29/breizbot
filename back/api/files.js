@@ -1,10 +1,7 @@
 const path = require('path')
 const fs = require('fs-extra')
-const ffmpeg = require('ffmpeg-static')
-const genThumbnail = require('simple-thumbnail')
 const config = require('../lib/config')
-const {promisify} = require('util')
-const imageSize = promisify(require('image-size'))
+const {imageSize, genThumbnail, isImage} = require('../lib/util')
 
 
 const cloudPath = config.CLOUD_HOME
@@ -34,6 +31,7 @@ router.post('/list', function(req, res) {
 
 				if (ret.isImage) {
 					return imageSize(filePath).then((dimension) => {
+						console.log('dimension', dimension)
 						ret.dimension = dimension
 						return ret
 					})
@@ -196,12 +194,6 @@ router.post('/copy', function(req, res) {
 
 
 
-function isImage(fileName) {
-	return (/\.(gif|jpg|jpeg|png)$/i).test(fileName)
-}	
-
-
-
 router.get('/load', function(req, res) {
 	console.log('load req', req.query)
 	const fileName = req.query.fileName
@@ -214,9 +206,7 @@ router.get('/loadThumbnail', function(req, res) {
 	console.log('load req', req.query)
 	const {fileName, size} = req.query
 	const user = req.session.user
-	genThumbnail(path.join(cloudPath, user, fileName), res, size, {
-		path: ffmpeg.path
-	})
+	genThumbnail(path.join(cloudPath, user, fileName), res, size)
 })
 
 module.exports = router

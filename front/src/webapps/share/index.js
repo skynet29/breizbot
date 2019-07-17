@@ -1,13 +1,14 @@
 const path = require('path')
 const fs = require('fs-extra')
-const ffmpeg = require('ffmpeg-static')
-const genThumbnail = require('simple-thumbnail')
 const router = require('express').Router()
-
 
 module.exports = function(ctx) {
 
 	const {config} = ctx
+
+	const {imageSize, genThumbnail, isImage} = ctx.util
+
+
 
 	const cloudPath = config.CLOUD_HOME
 
@@ -22,16 +23,28 @@ module.exports = function(ctx) {
 		fs.readdir(rootPath)
 		.then(function(files) {
 			//console.log('files', files)
-			const promises = files.map((file) => {
-				return fs.lstat(path.join(rootPath, file)).then((statInfo) => {	
-					return {
-						name: file, 
-						folder: statInfo.isDirectory(),
-						size: statInfo.size
-					}
-				})
+		const promises = files.map((file) => {
+			const filePath = path.join(rootPath, file)
+			return fs.lstat(filePath).then((statInfo) => {	
+				const ret = {
+					name: file, 
+					folder: statInfo.isDirectory(),
+					size: statInfo.size,
+					isImage: isImage(file)
+				}
+
+				if (ret.isImage) {
+					return imageSize(filePath).then((dimension) => {
+						console.log('dimension', dimension)
+						ret.dimension = dimension
+						return ret
+					})
+				}
+				else {
+					return ret
+				}
 			})
-			
+		})
 			return Promise.all(promises)
 		
 		})
@@ -57,9 +70,7 @@ module.exports = function(ctx) {
 	router.get('/loadThumbnail', function(req, res) {
 		console.log('load req', req.query)
 		const {fileName, size, user} = req.query
-		genThumbnail(path.join(cloudPath, user, 'share', fileName), res, size, {
-			path: ffmpeg.path
-		})
+		genThumbnail(path.join(cloudPath, user, 'share', fileName), res, size)
 	})
 
 	return router

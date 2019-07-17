@@ -1,12 +1,12 @@
 <form bn-event="submit: onSubmit" bn-show="countries.length > 0">
 	<div class="inputgroup">
 		<label>Country:</label>
-		<select 
+		<span 
 			bn-control="brainjs.selectmenu"
 			bn-data="{items: countries}"
 			bn-val="currentCountry"
 			bn-update="selectmenuchange"
-		></select>			
+		></span>			
 	</div>
 	<div bn-control="brainjs.inputgroup" class="inputgroup">
 		<label>City</label>

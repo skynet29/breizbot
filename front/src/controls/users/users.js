@@ -18,7 +18,11 @@ $$.control.registerControl('breizbot.users', {
 			events: {
 				onAddUser: function(ev) {
 					$pager.pushPage('breizbot.addUser', {
-						title: 'Add User'
+						title: 'Add User',
+						onReturn: function(data) {
+							//console.log('onReturn', data)
+							users.add(data).then(getUsers)
+						}						
 					})
 				},
 				onDelete: function(ev) {
@@ -50,10 +54,7 @@ $$.control.registerControl('breizbot.users', {
 
 		getUsers()
 
-		this.onReturn = function(data) {
-			//console.log('onReturn', data)
-			users.add(data).then(getUsers)
-		}
+
 
 	},
 

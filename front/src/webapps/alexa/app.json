@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fa fa-circle-notch fa-2x",
+	"colorCls": "w3-blue",
+	"title": "Alexa",
+	"styles": ["app.css"]
+}

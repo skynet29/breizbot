@@ -8,6 +8,7 @@ var sass = require('gulp-sass')
 var uglify = require('gulp-uglify-es').default
 var rename = require("gulp-rename")
 const eslint = require('gulp-eslint')
+const browserify = require('gulp-browserify')
 
 sass.compiler = require('node-sass')
 
@@ -17,7 +18,15 @@ function source(dest, srcs, options) {
 
 	let stream = gulp.src(srcs)
 
-	if (options.isCode === true) {
+	if (options.browserify === true) {
+		stream = stream.pipe(browserify({
+		          insertGlobals : true,
+		          debug: true
+		        }))		
+	}
+
+
+	if (options.isCode === true || options.browserify === true) {
 		stream = stream.pipe(injectHTML())
 		stream = stream.pipe(eslint({
 			useEslintrc: false,		
@@ -29,6 +38,7 @@ function source(dest, srcs, options) {
 		stream = stream.pipe(eslint.format())
 
 	}
+
 
 	if (options.isSass === true) {
 		stream = stream.pipe(sass().on('error', sass.logError))

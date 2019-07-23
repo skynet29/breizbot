@@ -16,7 +16,8 @@ $$.control.registerControl('rootPage', {
 					$$.ui.showConfirm({
 						title: data.props.title, 
 						content: 'Description:',
-						okText: (data.activated) ? 'Desactivate' : 'Activate'
+						width: 'auto',
+						okText: (data.activated) ? 'Remove from Home page' : 'Add to Home page'
 					},
 						function() {
 							srvUsers.activateApp(data.appName, !data.activated).then(() => {

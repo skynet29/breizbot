@@ -95,6 +95,7 @@ app.all('/api/app/:appName/*' , function(req, res, next) {
 
 require('./controllers/login')(app)
 require('./controllers/app')(app)
+require('./controllers/alexa')(app)
 
 
 app.use('/api/users', require('./api/users'))
@@ -105,6 +106,7 @@ app.use('/api/debug', require('./api/debug'))
 app.use('/api/appData', require('./api/appData'))
 app.use('/api/cities', require('./api/cities'))
 app.use('/api/logout', require('./api/logout'))
+app.use('/api/alexa', require('./api/alexa'))
 
 
 const appsPath = path.join(__dirname, '../front/src/webapps')

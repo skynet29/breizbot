@@ -1,0 +1,20 @@
+<div>
+	<button 
+		class="w3-button w3-blue"
+		bn-event="click: onConnect"
+		bn-show="!connected"
+		>Connect</button>
+
+		<button 
+			class="w3-button w3-blue" 
+			bn-event="click: onRecord"
+			bn-show="!recording && connected"
+		><i class="fas fa-circle"></i></button>
+
+		<button 
+			class="w3-button w3-red" 
+			bn-event="click: onStop"
+			bn-show="recording && connected"
+		><i class="fa fa-stop"></i></button>
+
+</div>

@@ -212,6 +212,10 @@ class Broker extends EventEmitter {
         client.pingOk = true
       break
 
+      case 'ping':
+        sendMsg(client, {type: 'pong'})
+      break      
+
 			case 'unregister':
         this.handleUnregister(client, msg)       
 			break

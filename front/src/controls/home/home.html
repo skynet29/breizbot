@@ -2,6 +2,10 @@
 	<div>
 		<button class="w3-button" title="FullScreen" bn-event="click: onFullScreen" bn-show="!fullScreen">
 			<i class="fa fa-expand"></i></button>
+		<button class="w3-button" title="Connection Status">
+			<i bn-class="{'w3-text-green': connected, 'w3-text-red': !connected}" class="fa fa-circle"></i>
+			
+		</button>			
 		<div bn-show="hasIncomingCall" 
 			bn-control="brainjs.contextmenu"
 			bn-event="contextmenuchange: onCallResponse"

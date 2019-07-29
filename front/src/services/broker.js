@@ -9,7 +9,9 @@
 			this.sock = null
 			this.isConnected = false
 			this.tryReconnect = true
+			this.isPingOk = true
 			this.topics = new EventEmitter2({wildcard: true})
+			this.pingInterval = 10*1000;
 
 			this.registeredTopics = {}
 
@@ -21,6 +23,32 @@
 			this.url = `${protocol}//${hostname}:${port}/hmi${pathname}`
 		}
 
+		checkPing() {
+			setTimeout(() => {
+				//console.log('timeout', this.isPingOk)
+				if (!this.isPingOk) {
+					//this.sock.close()
+					this.onClose()
+				}
+				else {
+					this.isPingOk = false
+					this.sendMsg({type: 'ping'})
+					this.checkPing()
+				}
+			}, this.pingInterval)			
+		}
+
+		onClose() {
+			//console.log('onClose')
+			if (this.isConnected) {
+				console.log('[Broker] Disconnected !')
+				this.emit('connected', false)
+			}
+			this.isConnected = false
+			if (this.tryReconnect) {
+				setTimeout(() => {this.connect()}, 5000)
+			}			
+		}
 
 		connect() {
 
@@ -31,8 +59,11 @@
 			this.sock.addEventListener('open', () => {
 				console.log("Connected to broker")
 				this.isConnected = true
+				this.emit('connected', true)
+				this.checkPing()
 
 			}) 
+
 
 			this.sock.addEventListener('message', (ev) => {
 				const msg = JSON.parse(ev.data)
@@ -53,6 +84,10 @@
 					this.sendMsg({type: 'pong'})
 				}
 
+				if (msg.type == 'pong') {
+					this.isPingOk = true
+				}
+
 				if (msg.type == 'notif') {
 					this.topics.emit(msg.topic, msg)
 				}
@@ -65,15 +100,7 @@
 			})
 
 			this.sock.addEventListener('close', (code, reason) => {
-				//console.log('WS close', code, reason)
-				if (this.isConnected) {
-					console.log('[Broker] Disconnected !')
-				}
-				this.isConnected = false
-				if (this.tryReconnect) {
-					setTimeout(() => {this.connect()}, 5000)
-				}
-
+				this.onClose()
 			})
 
 		}

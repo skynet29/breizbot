@@ -61,6 +61,7 @@ $$.control.registerControl('breizbot.home', {
 				hasIncomingCall: false,
 				callInfo: null,
 				fullScreen: false,
+				connected: false,
 				getMyApps: function() {
 					return apps.filter((a) => a.activated)
 				}
@@ -175,6 +176,10 @@ $$.control.registerControl('breizbot.home', {
 
 		broker.on('ready', (msg) => { 
 			rootId = msg.clientId
+		})
+
+		broker.on('connected', (state) => {
+			ctrl.setData({connected: state})
 		})
 
 		broker.onTopic('breizbot.rtc.openApp', function(msg) {

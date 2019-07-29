@@ -83,6 +83,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center; }
+    .breizbot-home .header .state {
+      padding: 8px 16px 8px 16px; }
     .breizbot-home .header .notification {
       position: relative; }
     .breizbot-home .header .notification .w3-badge {

@@ -5,16 +5,20 @@
 		bn-show="!connected"
 		>Connect</button>
 
-		<button 
-			class="w3-button w3-blue" 
-			bn-event="click: onRecord"
-			bn-show="!recording && connected"
-		><i class="fas fa-circle"></i></button>
+		<div bn-show="connected" class="record">
+			<button 
+				class="w3-button w3-blue w3-circle" 
+				bn-event="click: onRecord"
+				bn-show="!recording"
+			><i class="fas fa-microphone-alt fa-2x"></i></button>
 
-		<button 
-			class="w3-button w3-red" 
-			bn-event="click: onStop"
-			bn-show="recording && connected"
-		><i class="fa fa-stop"></i></button>
+			<button 
+				class="w3-button w3-red w3-circle" 
+				bn-event="click: onStop"
+				bn-show="recording"
+			><i class="fas fa-microphone-alt fa-2x"></i></button>
+			
+		</div>
+
 
 </div>

@@ -6,15 +6,9 @@ $$.control.registerControl('breizbot.alexa', {
 		const hash = window.location.hash.substr(1)
 
 		//console.log('hash', hash)
-		const params = new URLSearchParams(hash)
+		const params = $$.util.parseUrlParams(hash)
 		//console.log('params', params)
-		const ret = {}
-		for(let p of params) {
-			//console.log('p', p)
-			ret[p[0]] = p[1]
-		}
-		console.log('ret', ret)
-		http.post('/api/alexa/auth', ret).then(() => {
+		http.post('/api/alexa/auth', params).then(() => {
 			window.close()
 		})
 	}

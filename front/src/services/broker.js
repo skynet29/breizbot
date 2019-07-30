@@ -67,6 +67,10 @@
 
 
 			this.sock.addEventListener('message', (ev) => {
+				if (ev.currentTarget != this.sock) {
+					console.log('[broker] message bad target')
+					return
+				}
 				const msg = JSON.parse(ev.data)
 				//console.log('[Broker] message', msg)
 				
@@ -95,13 +99,17 @@
 				if (msg.type == 'error') {
 					console.log('[Broker] log', msg.text)
 					this.tryReconnect = false
-					sock.close()
+					this.sock.close()
 				}
 											
 			})
 
-			this.sock.addEventListener('close', (code, reason) => {
-				console.log('[broker] close', code, reason)
+			this.sock.addEventListener('close', (ev) => {
+				if (ev.currentTarget != this.sock) {
+					console.log('[broker] close bad target')
+					return
+				}				
+				console.log('[broker] close')
 				this.onClose()
 			})
 

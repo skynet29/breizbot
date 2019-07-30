@@ -59,6 +59,7 @@
 			this.sock.addEventListener('open', () => {
 				console.log("Connected to broker")
 				this.isConnected = true
+				this.isPingOk = true
 				this.emit('connected', true)
 				this.checkPing()
 
@@ -100,6 +101,7 @@
 			})
 
 			this.sock.addEventListener('close', (code, reason) => {
+				console.log('[broker] close', code, reason)
 				this.onClose()
 			})
 

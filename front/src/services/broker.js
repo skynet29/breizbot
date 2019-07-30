@@ -67,11 +67,13 @@
 
 
 			this.sock.addEventListener('message', (ev) => {
+				const msg = JSON.parse(ev.data)
+
 				if (ev.currentTarget != this.sock) {
-					console.log('[broker] message bad target')
+					console.log('[broker] message bad target', msg.type)
+					ev.currentTarget.close()
 					return
 				}
-				const msg = JSON.parse(ev.data)
 				//console.log('[Broker] message', msg)
 				
 				if (msg.type == 'ready') {

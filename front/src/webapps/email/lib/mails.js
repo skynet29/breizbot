@@ -600,7 +600,7 @@ module.exports = function(ctx) {
           })
 
           const plainEntity = mimemessage.factory({
-            body: data.text
+            body: data.text.replace(/\n/g, '\r\n')
           })      
 
           msg.header('To', data.to)

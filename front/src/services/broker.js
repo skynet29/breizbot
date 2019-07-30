@@ -25,8 +25,9 @@
 
 		checkPing() {
 			setTimeout(() => {
-				console.log('timeout', this.isPingOk)
+				
 				if (!this.isPingOk) {
+					console.log('timeout ping')
 					//this.sock.close()
 					this.onClose()
 				}

@@ -2,7 +2,7 @@ const wildcard = require('wildcard')
 const uniqid = require('uniqid')
 const EventEmitter = require('events')
 
-const pingInterval = 60000 // 1 min
+const pingInterval = 30 * 1000 // 30 sec
 
 function sendMsg(client, msg) {
   //console.log('[Broker] sendMsg', msg)
@@ -21,16 +21,15 @@ class Broker extends EventEmitter {
 
     setInterval(() => {
       //console.log('[Broker] check connection')
-      const disconnnectedClients = this.clients.filter((client) => {return !client.pingOk})
+      const now = Date.now()
+      const disconnnectedClients = this.clients.filter((client) => {
+        return (now - client.lastPingDate) > pingInterval
+      })
       disconnnectedClients.forEach((client) => {
         console.log('[Broker] connection timeout', this.userName, client.path, client.clientId)
         client.close()
       })
 
-      this.clients.forEach((client) => {
-        client.pingOk = false
-        sendMsg(client, {type: 'ping'})
-      })
     }, pingInterval)
 
 	}
@@ -102,7 +101,7 @@ class Broker extends EventEmitter {
     client.userName = this.userName
 
 		client.registeredTopics = {}
-    client.pingOk = true
+    client.lastPingDate = Date.now()
 
 		client.on('text', (text) => {
 
@@ -208,11 +207,9 @@ class Broker extends EventEmitter {
 		}	
 
 		switch(msg.type) {
-      case 'pong':
-        client.pingOk = true
-      break
 
       case 'ping':
+        client.lastPingDate = Date.now()
         sendMsg(client, {type: 'pong'})
       break      
 

@@ -28,7 +28,9 @@
 				
 				if (!this.isPingOk) {
 					console.log('timeout ping')
-					//this.sock.close()
+					this.sock.onmessage = null
+					this.sock.onclose = null
+					this.sock.close()
 					this.onClose()
 				}
 				else {
@@ -57,17 +59,17 @@
 
 			this.sock = new WebSocket(this.url)
 	
-			this.sock.addEventListener('open', () => {
+			this.sock.onopen = () => {
 				console.log("Connected to broker")
 				this.isConnected = true
 				this.isPingOk = true
 				this.emit('connected', true)
 				this.checkPing()
 
-			}) 
+			}
 
 
-			this.sock.addEventListener('message', (ev) => {
+			this.sock.onmessage =  (ev) => {
 				const msg = JSON.parse(ev.data)
 
 				if (ev.currentTarget != this.sock) {
@@ -88,10 +90,6 @@
 					this.emit('ready', {clientId: msg.clientId})							
 				}
 
-				if (msg.type == 'ping') {
-					this.sendMsg({type: 'pong'})
-				}
-
 				if (msg.type == 'pong') {
 					this.isPingOk = true
 				}
@@ -105,16 +103,16 @@
 					this.sock.close()
 				}
 											
-			})
+			}
 
-			this.sock.addEventListener('close', (ev) => {
+			this.sock.onclose = (ev) => {
 				if (ev.currentTarget != this.sock) {
 					console.log('[broker] close bad target')
 					return
 				}				
 				console.log('[broker] close')
 				this.onClose()
-			})
+			}
 
 		}
 

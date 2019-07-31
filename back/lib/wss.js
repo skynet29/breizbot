@@ -35,9 +35,9 @@ function sendError(client, text) {
 	client.sendText(JSON.stringify(msg))
 }
 
-function getBroker(userName) {
+function getBroker(userName, forceCreate = false) {
 	let broker = brokers[userName]
-	if (broker == undefined) {
+	if (broker == undefined && forceCreate === true) {
 		broker = brokers[userName] = new Broker(userName)
 		broker.on('connect', (isConnected) => {
 			if (isConnected)
@@ -77,7 +77,7 @@ function onConnect(client, store) {
 		.then((userInfo) => {
 			const {pwd} = userInfo
 			if (pwd === credentials.pass) {
-					getBroker(userName).setHomeboxClient(client)
+					getBroker(userName, true).setHomeboxClient(client)
 			}
 			else {
 				sendError(client, 'Bad password')
@@ -113,7 +113,7 @@ function onConnect(client, store) {
 				return
 			}
 			const userName = session.user
-			const broker = getBroker(userName)
+			const broker = getBroker(userName, true)
 			client.sessionId = sid
 			
 			broker.addClient(client)
@@ -126,7 +126,10 @@ function onConnect(client, store) {
 
 function sendMessage(userName, topic, data) {
 	//console.log('[WSS] sendMessage', userName, topic, data)
-	getBroker(userName).sendMessage(undefined, topic, data)
+	const broker = getBroker(userName)
+	if (broker != undefined) {
+		broker.sendMessage(undefined, topic, data)		
+	}
 }
 
 function sendMsg(client, msg) {
@@ -151,13 +154,21 @@ function getClients() {
 }
 
 function isUserConnected(userName) {
-	return getBroker(userName).hasClient()
+	const broker = getBroker(userName)
+	if (broker != undefined) {
+		return broker.hasClient()
+	}	
+	return false
 }
 
 
 function callService(userName, srvName, data) {
 	console.log('[WSS] callService', userName, srvName, data)
-	return getBroker(userName).callService(srvName, data)
+	const broker = getBroker(userName)
+	if (broker != undefined) {
+		return broker.callService(srvName, data)
+	}		
+	return Promise.reject('homebox is not connected')
 }
 
 module.exports = {

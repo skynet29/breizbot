@@ -7,11 +7,11 @@ $$.service.registerService('breizbot.scheduler', {
 		return {
 			openApp: function(appName, appParams) {
 				console.log('[scheduler] openApp', appName, appParams)
-				return http.post(`/api/rtc/sendToClient`, {
-					destId: params.$rootId,
-					type: 'openApp', 
-					data: {appName, appParams}
-				})
+				window.parent.postMessage({
+					type: 'openApp',
+					 data: {appName, appParams}
+					}, location.href)
+
 			},
 			logout: function() {
 				console.log('[scheduler] logout')

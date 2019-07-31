@@ -15,7 +15,7 @@ $$.control.registerControl('breizbot.appTab', {
 			},
 			events: {
 				onFrameLoaded: function() {
-					console.log('onFrameLoaded')
+					console.log('[appTab] onFrameLoaded')
 				}
 			}
 		})

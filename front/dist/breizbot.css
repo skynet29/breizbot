@@ -57,12 +57,13 @@
         align-items: center;
         cursor: pointer; }
         .breizbot-fsbase .container .thumbnail .item .icon {
-          margin-right: 10px;
-          width: 100px;
+          min-width: 100px;
           text-align: center; }
         .breizbot-fsbase .container .thumbnail .item .info {
           display: flex;
-          flex-direction: column; }
+          flex-direction: column;
+          overflow: hidden;
+          margin-left: 5px; }
 
 .breizbot-files {
   overflow: hidden; }

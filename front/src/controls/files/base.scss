@@ -28,14 +28,15 @@
 
 
 				.icon {
-					margin-right: 10px;
-					width: 100px;
+					min-width: 100px;
 					text-align: center;
 				}
 
 				.info {
 					display: flex;
 					flex-direction: column;
+					overflow: hidden;
+					margin-left: 5px;
 				}
 			}
 		}			

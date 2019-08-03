@@ -1,27 +1,21 @@
 <div class="toolbar">
 	<div class="info">
-		<p bn-show="accounts.length == 0">You have no email account</p>
-		<p bn-show="accounts.length > 0">Account:&nbsp; 
+		<span bn-show="accounts.length == 0">You have no email account</span>
+		<div bn-show="accounts.length > 0" class="account">
+			<span>Account:&nbsp;</span> 
 			<div 
 				bn-control="brainjs.selectmenu" 
 				bn-data="{items: accounts}" 
 				bn-val="currentAccount"
 				bn-event="selectmenuchange: onAccountChange">
 			</div>
-		</p>
+		</div>
 		
 	</div>
 	<div>
 		<div bn-control="brainjs.contextmenu" 
 			bn-data="{
-				items: {
-					add: {name: 'Add Account', icon: 'fas fa-plus'},
-					edit: {name: 'Edit Selected Account', icon: 'fas fa-edit', disabled: accounts.length == 0},
-					sep2: '------',
-					newFolder: {name: 'New Folder', icon: 'fas fa-folder-plus'},
-					sep: '------',
-					new: {name: 'New Message', icon: 'fas fa-envelope', disabled: accounts.length == 0}
-				}
+				items: getItems()
 			}" 
 			data-trigger="left" 
 			class="w3-button w3-blue" 

@@ -17,6 +17,21 @@ $$.control.registerControl('rootPage', {
 				accounts: [],
 				currentAccount: '',
 				mailboxes: [],
+				getItems: function() {
+					if (accounts.length == 0) {
+						return {
+							add: {name: 'Add Account', icon: 'fas fa-plus'},
+						}
+					}
+					return {
+						add: {name: 'Add Account', icon: 'fas fa-plus'},
+						edit: {name: 'Edit Selected Account', icon: 'fas fa-edit'},
+						sep2: '------',
+						newFolder: {name: 'New Folder', icon: 'fas fa-folder-plus'},
+						sep: '------',
+						new: {name: 'New Message', icon: 'fas fa-envelope'}					
+					}
+				}
 			},
 			events: {
 				onMenu: function(ev, data) {

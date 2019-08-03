@@ -9,6 +9,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
+		margin-top: 5px;
 
 		.info {
 			display: flex;
@@ -16,6 +17,11 @@
 
 			.nbMsg {
 				margin-left: 20px;
+			}
+
+			.account {
+				display: flex;
+				align-items: center;
 			}
 		}
 	}

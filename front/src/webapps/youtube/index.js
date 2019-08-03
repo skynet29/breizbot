@@ -69,8 +69,9 @@ module.exports = function(ctx) {
 
 	router.post('/download', function(req, res) {
 		console.log('youtube/download', req.body)
-		const {url, fileName, srcId} = req.body
+		let {url, fileName, srcId} = req.body
 		const userName = req.session.user
+		fileName = fileName.replace(/\//g, '_')
 
 		const video = ytdl(url)
 

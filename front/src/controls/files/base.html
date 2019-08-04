@@ -13,7 +13,8 @@
 				</div>
 				
 				<div class="info">
-					<span bn-text="f.name"></span>												
+					<strong bn-text="f.name"></strong>		
+					<span bn-text="getDate(f.mtime)" bn-if="f.name != '..'"></span>										
 				</div>
 			</div>
 			<div 
@@ -26,6 +27,7 @@
 				
 				<div class="info">
 					<strong bn-text="f.name"></strong>
+					<span bn-text="getDate(f.mtime)"></span>							
 					<span bn-text="getSize(f.size)"></span>	
 				</div>
 			</div>			
@@ -40,6 +42,7 @@
 				
 				<div class="info">
 					<strong bn-text="f.name"></strong>
+					<span bn-text="getDate(f.mtime)"></span>
 					<span bn-text="getSize(f.size)"></span>						
 					<span bn-text="getDimension(f.dimension)"></span>					
 				</div>

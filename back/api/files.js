@@ -22,11 +22,13 @@ router.post('/list', function(req, res) {
 		const promises = files.map((file) => {
 			const filePath = path.join(rootPath, file)
 			return fs.lstat(filePath).then((statInfo) => {	
+				console.log('statInfo', statInfo)
 				const ret = {
 					name: file, 
 					folder: statInfo.isDirectory(),
 					size: statInfo.size,
-					isImage: isImage(file)
+					isImage: isImage(file),
+					mtime: statInfo.mtimeMs
 				}
 
 				if (ret.isImage) {

@@ -58,6 +58,11 @@ $$.control.registerControl('breizbot.fsbase', {
 						return 'fa-file-video'
 					}
 					return 'fa-file'
+				},
+				getDate: function(timeMs) {
+					const date = new Date(timeMs).toLocaleDateString()
+					return 'Last Modif: ' + date
+
 				}
 			},
 			events: {

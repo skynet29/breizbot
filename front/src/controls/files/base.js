@@ -62,21 +62,31 @@ $$.control.registerControl('breizbot.fsbase', {
 			},
 			events: {
 				onFileClick: function(ev) {
-					const info = $(this).closest('.thumbnail').data('info')
+					const idx = $(this).closest('.thumbnail').index()					
+					const info = ctrl.model.files[idx]
 					//console.log('onFileClick', info)
 					elt.trigger('fileclick', info)
 				},
 				onCheckClick: function(ev) {
-					const info = $(this).closest('.thumbnail').data('info')
-					console.log('onCheckClick')
+					const idx = $(this).closest('.thumbnail').index()					
+					const info = ctrl.model.files[idx]
+					console.log('onCheckClick', info)
 					elt.trigger('checkclick', [info, $(this).getValue()])
 
 				},
 				onFolderClick: function(ev) {
-					const info = $(this).closest('.thumbnail').data('info')
+					const idx = $(this).closest('.thumbnail').index()					
+					const info = ctrl.model.files[idx]
 					//console.log('onFolderClick', info)
 					elt.trigger('folderclick', info)
 				},
+				onContextMenu: function(ev, data) {
+					const idx = $(this).closest('.thumbnail').index()					
+					const info = ctrl.model.files[idx]
+					//console.log('onContextMenu', data, info)
+					elt.trigger('itemcontextmenu', [data.cmd, info])
+				}
+
 			}
 
 		})
@@ -113,7 +123,8 @@ $$.control.registerControl('breizbot.fsbase', {
 		this.getSelFiles = function() {
 			const selFiles = []
 			elt.find('.check:checked').each(function() {
-				const info = $(this).closest('.thumbnail').data('info')
+				const idx = $(this).closest('.thumbnail').index()					
+				const info = ctrl.model.files[idx]
 				
 				selFiles.push(info)
 			})

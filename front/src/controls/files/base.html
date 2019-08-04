@@ -3,9 +3,9 @@
 	bn-iter="f" 
 	class="container"
 	bn-bind="files" 
-	bn-event="click.folder: onFolderClick, click.check: onCheckClick, click.file: onFileClick">
+	bn-event="click.folder: onFolderClick, click.check: onCheckClick, click.file: onFileClick, contextmenuchange.thumbnail: onContextMenu">
 	
-	<div class="thumbnail w3-card-2" bn-data="{info: f}">	
+	<div class="thumbnail w3-card-2" bn-control="brainjs.contextmenu" bn-data="{items: f.items || {}}">	
 			<input type="checkbox" bn-show="selectMode && f.name != '..'" class="check w3-check">		
 			<div bn-if="f.folder" class="folder item">
 				<div class="icon">

@@ -56,7 +56,16 @@ $$.service.registerService('breizbot.files', {
 			copyFiles: function(fileNames, destPath) {
 				console.log('[FileService] copyFiles', fileNames, destPath)
 				return http.post('/copy', {fileNames, destPath})
-			}	
+			},	
+			renameFile: function(filePath, oldFileName, newFileName) {
+				console.log('[FileService] renameFile', filePath, oldFileName, newFileName)
+				return http.post('/rename', {filePath, oldFileName, newFileName})
+			},
+			resizeImage: function(filePath, fileName, resizeFormat) {
+				console.log('[FileService] resizeImage', filePath, fileName, resizeFormat)
+				return http.post('/resizeImage', {filePath, fileName, resizeFormat})
+			}
+
 		}
 	},
 

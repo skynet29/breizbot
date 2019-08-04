@@ -27,7 +27,6 @@ $$.control.registerControl('breizbot.files', {
 		const ctrl = $$.viewController(elt, {
 			
 			data: {
-				isFile: false,
 				showThumbnail,
 				thumbnailSize,
 				showToolbar,
@@ -43,6 +42,59 @@ $$.control.registerControl('breizbot.files', {
 			events: {
 				onReload: function(ev) {
 					loadData()
+				},
+
+				onContextMenu: function(ev, cmd, info) {
+					console.log('onContextMenu', cmd, info)
+
+					const {rootDir} = ctrl.model
+
+					if (cmd == 'download') {
+						const url = srvFiles.fileUrl(rootDir + info.name)
+						$$.util.downloadUrl(url, info.name)
+					}
+
+					if (cmd == 'rename') {
+						const oldFileName = info.name
+						$$.ui.showPrompt({label: 'New name', title: 'Rename', value: oldFileName}, function(newFileName) {
+							console.log('newFileName', newFileName)
+							if (newFileName != oldFileName) {
+								srvFiles.renameFile(rootDir, oldFileName, newFileName)
+								.then(function(resp) {
+									console.log('resp', resp)
+									loadData()
+								})
+								.catch(function(resp) {
+									console.log('resp', resp)
+									$$.ui.showAlert({
+										content: resp.responseText,
+										title: 'Error'
+									})
+								})								}
+						})
+					}
+
+					if (cmd == 'makeResizedCopy') {
+						$$.ui.showPrompt({
+							label: 'Rescale percentage:', 
+							title: 'Make resized copy',
+							attrs: {min: 10, max: 90, type: 'number'},
+							value: 50
+						}, function(percentage) {
+							srvFiles.resizeImage(rootDir, info.name, percentage+'%')
+							.then(function(resp) {
+								console.log('resp', resp)
+								loadData()
+							})
+							.catch(function(resp) {
+								console.log('resp', resp)
+								$$.ui.showAlert({
+									content: resp.responseText,
+									title: 'Error'
+								})
+							})								
+						})
+					}
 				},
 
 				onFileClick: function(ev, info) {
@@ -72,16 +124,7 @@ $$.control.registerControl('breizbot.files', {
 					const checked = ctrl.scope.files.getSelFiles()
 					const nbSelection = checked.length
 
-					let isFile = false
-					if (nbSelection == 1) {
-						const info = checked[0]
-						isFile = !info.folder
-					}
-
-					ctrl.setData({
-						nbSelection,
-						isFile
-					})
+					ctrl.setData({nbSelection})
 				},
 				onFolderClick: function(ev, info) {
 
@@ -219,9 +262,7 @@ $$.control.registerControl('breizbot.files', {
 							$$.ui.showAlert({content: 'File too big', title: 'Import file'})
 							return
 						}
-						$$.util.readFileAsDataURL(file, function(dataURL) {
-							//console.log('dataURL', dataURL)
-							const blob = $$.util.dataURLtoBlob(dataURL)
+						$$.util.readFile(file).then((blob) => {
 							srvFiles.uploadFile(blob, file.name, ctrl.model.rootDir).then(function() {
 								loadData()
 							})
@@ -229,19 +270,10 @@ $$.control.registerControl('breizbot.files', {
 								console.log('resp', resp)
 								$$.ui.showAlert({content: resp.responseText, title: 'Error'})							
 							})
-						})					
+
+						})
+				
 					})
-				},
-				onDownloadFile: function(ev) {
-					const info = elt.find('.check:checked').closest('.thumbnail').data('info')
-					console.log('onDownloadFile', info)
-					const {rootDir} = ctrl.model
-
-					const link = document.createElement('a')
-					link.href = srvFiles.fileUrl(rootDir + info.name)
-					link.download = info.name
-					link.click()
-
 				}
 			}
 
@@ -256,7 +288,9 @@ $$.control.registerControl('breizbot.files', {
 		}
 
 		function getSelFiles() {
-			return ctrl.scope.files.getSelFiles().map((f) => ctrl.model.rootDir + f.name)
+			const selFiles = ctrl.scope.files.getSelFiles()
+			console.log('selFiles', selFiles)
+			return selFiles.map((f) => ctrl.model.rootDir + f.name)
 		}
 
 		function loadData(rootDir) {
@@ -267,8 +301,14 @@ $$.control.registerControl('breizbot.files', {
 			srvFiles.list(rootDir, {filterExtension, imageOnly}).then(function(files) {
 				console.log('files', files)
 				files.forEach((f) => {
+					f.items = {}
 					if (f.isImage) {
 						f.thumbnailUrl = srvFiles.fileThumbnailUrl(rootDir + f.name, thumbnailSize)
+						f.items.makeResizedCopy = {name: 'Make resized copy', icon: 'fas fa-compress-arrows-alt'}
+					}
+					f.items.rename = {name: 'Rename'}
+					if (!f.folder) {
+						f.items.download = {name: 'Download', icon: 'fas fa-download'}
 					}
 				})
 			

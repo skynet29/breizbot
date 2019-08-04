@@ -12,12 +12,6 @@
 				bn-event="click: onImportFile"
 			><i class="fa fa-upload"></i></button>		
 
-			<button 
-				title="Download selected file"
-				bn-event="click: onDownloadFile"
-				bn-prop="{disabled: nbSelection != 1 || !isFile}"
-			><i class="fa fa-download"></i></button>		
-
 	
 		</div>
 
@@ -70,6 +64,6 @@
 		bn-control="breizbot.fsbase" 
 		bn-data="{files, selectMode, showThumbnail}"
 		bn-iface="files"
-		bn-event="folderclick: onFolderClick, fileclick: onFileClick, checkclick: onCheckClick"
+		bn-event="folderclick: onFolderClick, fileclick: onFileClick, checkclick: onCheckClick, itemcontextmenu: onContextMenu"
 		></div>
 </div>

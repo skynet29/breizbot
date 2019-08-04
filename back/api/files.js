@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs-extra')
 const config = require('../lib/config')
-const {imageSize, genThumbnail, isImage} = require('../lib/util')
+const {imageSize, genThumbnail, isImage, resizeImage} = require('../lib/util')
 
 
 const cloudPath = config.CLOUD_HOME
@@ -168,6 +168,44 @@ router.post('/move', function(req, res) {
 	})			
 })
 
+router.post('/rename', function(req, res) {
+	console.log('move req', req.body)
+	const {filePath, oldFileName, newFileName} = req.body
+
+	var user = req.session.user
+
+	const oldFullPath = path.join(cloudPath, user, filePath, oldFileName)
+	const newFullPath = path.join(cloudPath, user, filePath, newFileName)
+
+	fs.move(oldFullPath, newFullPath)
+	.then(function() {
+		res.status(200).send('File moved !')
+	})
+	.catch(function(e) {
+		console.log('error', e)
+		res.status(400).send(e.message)
+	})			
+})
+
+router.post('/resizeImage', function(req, res) {
+	console.log('resizeImage', req.body)
+	const {filePath, fileName, resizeFormat} = req.body
+
+	var user = req.session.user
+
+	const fullPath = path.join(cloudPath, user, filePath)
+
+	resizeImage(fullPath, fileName, resizeFormat)
+	.then(function() {
+		res.status(200).send('File resized!')
+	})
+	.catch(function(e) {
+		console.log('error', e)
+		res.status(400).send(e.message)
+	})			
+})
+
+
 router.post('/copy', function(req, res) {
 	console.log('copy req', req.body)
 	var fileNames = req.body.fileNames
@@ -195,7 +233,7 @@ router.post('/copy', function(req, res) {
 
 
 router.get('/load', function(req, res) {
-	console.log('load req', req.query)
+	//console.log('load req', req.query)
 	const fileName = req.query.fileName
 	const user = req.session.user
 	
@@ -203,7 +241,7 @@ router.get('/load', function(req, res) {
 })
 
 router.get('/loadThumbnail', function(req, res) {
-	console.log('load req', req.query)
+	//console.log('load req', req.query)
 	const {fileName, size} = req.query
 	const user = req.session.user
 	genThumbnail(path.join(cloudPath, user, fileName), res, size)

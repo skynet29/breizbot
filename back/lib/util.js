@@ -2,6 +2,7 @@ const simpleThumbnail = require('simple-thumbnail')
 const {promisify} = require('util')
 const imageSize = promisify(require('image-size'))
 const ffmpeg = require('ffmpeg-static')
+const path = require('path')
 
 
 module.exports = {
@@ -13,6 +14,14 @@ module.exports = {
 	genThumbnail: function(filePath, res, size) {
 		return simpleThumbnail(filePath, res, size, {
 			path: ffmpeg.path})
+	},
+
+	resizeImage: function(filePath, fileName, resizeFormat) {
+		const fullName = path.join(filePath, fileName)
+		const resizedFullName = path.join(filePath, 'Resized_' + fileName)
+		return simpleThumbnail(fullName, resizedFullName, resizeFormat, {
+			path: ffmpeg.path
+		})
 	},
 
 	imageSize

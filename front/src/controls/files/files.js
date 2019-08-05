@@ -98,7 +98,8 @@ $$.control.registerControl('breizbot.files', {
 				},
 
 				onFileClick: function(ev, info) {
-					console.log('onFileClick', info)
+					//console.log('onFileClick', info)
+					ev.stopPropagation()
 					const data = {
 						fileName: info.name,
 						rootDir: ctrl.model.rootDir,                       
@@ -334,6 +335,10 @@ $$.control.registerControl('breizbot.files', {
 		}
 
 		loadData()
+
+		this.getFiles = function() {
+			return ctrl.model.files.filter((f) => !f.folder)
+		}
 
 		this.update = function() {
 			console.log('[FileCtrl] update')

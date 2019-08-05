@@ -1,0 +1,28 @@
+<div class="content">
+	<div bn-control="brainjs.image" bn-data="{src}"></div>
+	<div class="buttons">
+		<div>
+			<button 
+				class="w3-button w3-circle w3-blue-grey" 
+				bn-show="idx > 0"
+				bn-event="click: onPrevImage"
+				><i class="fa fa-angle-left"></i>
+			</button>		
+		</div>
+		<div>
+			<button 
+				class="w3-button w3-circle w3-blue-grey"  
+				bn-show="idx < nbImages - 1"
+				bn-event="click: onNextImage"
+				>
+				<i class="fa fa-angle-right"></i>
+			</button>	
+		</div>
+
+	</div>	
+</div>
+<div class="band w3-blue-grey" bn-bind="band">
+	<div bn-each="thumbnails" bn-event="click.image: onImageClick">
+		<img bn-attr="{src: $i}" class="image">			
+	</div>
+</div>

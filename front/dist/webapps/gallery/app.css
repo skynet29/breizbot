@@ -1,0 +1,31 @@
+.gallery {
+  display: flex;
+  flex-direction: column; }
+  .gallery .content {
+    flex: 1;
+    position: relative; }
+    .gallery .content .brainjs-image {
+      height: 100%; }
+    .gallery .content .buttons {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 1500;
+      padding: 10px;
+      pointer-events: none; }
+      .gallery .content .buttons button {
+        pointer-events: all; }
+  .gallery .band {
+    overflow-x: auto; }
+    .gallery .band img {
+      border: 2px solid transparent; }
+    .gallery .band img.selected {
+      border: 2px solid orange; }
+
+.rootPage .breizbot-files {
+  height: 100%; }

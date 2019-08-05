@@ -60,7 +60,6 @@ $$.control.registerControl('rootPage', {
 						title: 'Insert Image',
 						props: {
 							imageOnly: true,
-							cmd: 'insertImage',
 							showThumbnail: true
 						},
 						onReturn: function(data) {

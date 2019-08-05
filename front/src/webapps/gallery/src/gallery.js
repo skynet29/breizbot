@@ -19,7 +19,8 @@ $$.control.registerControl('gallery', {
 				idx: firstIdx,
 				nbImages: files.length,
 				src: getFileUrl(firstIdx),
-				thumbnails: getThumbnailsUrl()
+				thumbnails: getThumbnailsUrl(),
+				width: getThumbnailWidth() + 'px'
 			},
 			events: {
 				onPrevImage: function() {
@@ -46,7 +47,9 @@ $$.control.registerControl('gallery', {
 		function updateSelection() {
 			ctrl.setData({src: getFileUrl(ctrl.model.idx)})
 			ctrl.scope.band.find('img.selected').removeClass('selected')
-			ctrl.scope.band.find('img').eq(ctrl.model.idx).addClass('selected')
+			const $img = ctrl.scope.band.find('img').eq(ctrl.model.idx)
+			$img.addClass('selected')
+			$img.get(0).scrollIntoView()
 		}
 
 		function getFileUrl(idx) {
@@ -55,6 +58,13 @@ $$.control.registerControl('gallery', {
 
 		function getThumbnailsUrl() {
 			return files.map((f) => filesSrv.fileThumbnailUrl(rootDir + f.name, '?x50'))
+		}
+
+		function getThumbnailWidth() {
+			return files.reduce((total, f) => {
+				const {width, height} = f.dimension
+				return total + (width * 50 / height) + 5
+			}, 0)
 		}
 
 	}

@@ -104,7 +104,7 @@ $$.control.registerControl('breizbot.fsbase', {
 			  if (!a.folder && b.folder) {
 			    return 1
 			  }
-			  return a.name > b.name
+			  return a.name.localeCompare(b.name)
 			})			
 		}
 

@@ -304,11 +304,16 @@ $$.control.registerControl('breizbot.files', {
 					f.items = {}
 					if (f.isImage) {
 						f.thumbnailUrl = srvFiles.fileThumbnailUrl(rootDir + f.name, thumbnailSize)
-						f.items.makeResizedCopy = {name: 'Make resized copy', icon: 'fas fa-compress-arrows-alt'}
 					}
-					f.items.rename = {name: 'Rename'}
-					if (!f.folder) {
-						f.items.download = {name: 'Download', icon: 'fas fa-download'}
+					if (showToolbar) {
+						f.items.rename = {name: 'Rename'}
+						if (f.isImage) {
+							f.items.makeResizedCopy = {name: 'Make resized copy', icon: 'fas fa-compress-arrows-alt'}
+						}
+						if (!f.folder) {
+							f.items.download = {name: 'Download', icon: 'fas fa-download'}
+						}
+
 					}
 				})
 			

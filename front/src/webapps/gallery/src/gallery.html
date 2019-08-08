@@ -1,6 +1,6 @@
 <div class="content">
-	<div bn-control="brainjs.image" bn-data="{src}"></div>
-	<div class="buttons">
+	<div bn-control="brainjs.image" bn-data="{src}" bn-iface="image"></div>
+	<div class="buttons" bn-show="showButtons">
 		<div>
 			<button 
 				class="w3-button w3-circle w3-blue-grey" 
@@ -21,7 +21,7 @@
 
 	</div>	
 </div>
-<div class="band w3-blue-grey" bn-bind="band">
+<div class="band w3-blue-grey" bn-bind="band" bn-show="showButtons">
 	<div bn-each="thumbnails" bn-event="click.image: onImageClick" bn-style="{width}">
 		<img bn-attr="{src: $i}" class="image">			
 	</div>

@@ -7,12 +7,21 @@ $$.control.registerControl('gallery', {
 	props: {
 		rootDir: '',
 		files: [],
-		firstIdx: 0
+		firstIdx: 0,
+		$pager: null
 	},
+
+	buttons: [
+		{name: 'play', icon: 'fa fa-play', title: 'Play'},
+		{name: 'pause', icon: 'fa fa-pause', title: 'Pause', visible: false}
+	],	
 
 	init: function(elt, filesSrv) {
 
-		const {rootDir, files, firstIdx} = this.props
+		const {rootDir, files, firstIdx, $pager} = this.props
+		const diaporamaInterval = 20 * 1000;
+
+		let timerId
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -20,7 +29,8 @@ $$.control.registerControl('gallery', {
 				nbImages: files.length,
 				src: getFileUrl(firstIdx),
 				thumbnails: getThumbnailsUrl(),
-				width: getThumbnailWidth() + 'px'
+				width: getThumbnailWidth() + 'px',
+				showButtons: true
 			},
 			events: {
 				onPrevImage: function() {
@@ -65,6 +75,57 @@ $$.control.registerControl('gallery', {
 				const {width, height} = f.dimension
 				return total + (width * 50 / height) + 5
 			}, 0)
+		}
+
+		function stopDiaporama() {
+			//console.log('stopDiaporama')
+			clearInterval(timerId)
+			$pager.setButtonVisible({play: true, pause: false})
+			ctrl.setData({showButtons: true})
+			ctrl.scope.image.enableHandlers(true)
+			ctrl.scope.image.invalidateSize()
+			timerId = undefined			
+		}
+
+		function startDiaporama() {
+			$pager.setButtonVisible({play: false, pause: true})
+			ctrl.setData({showButtons: false})
+			ctrl.scope.image.enableHandlers(false)
+			ctrl.scope.image.invalidateSize()
+			if (ctrl.model.idx == ctrl.model.nbImages - 1) {
+				ctrl.model.idx = 0
+				updateSelection()
+			}
+
+			timerId = setInterval(() => {
+				ctrl.model.idx++
+				//console.log('timeout', ctrl.model.idx)
+				updateSelection()
+
+				if (ctrl.model.idx == ctrl.model.nbImages - 1) {
+					stopDiaporama()
+				}
+
+			}, diaporamaInterval)
+
+		}
+
+		this.onAction = function(action) {
+			//console.log('onAction', action)
+			if (action == 'play') {
+				startDiaporama()
+			}
+
+			if (action == 'pause') {
+				stopDiaporama()
+			}
+		}
+
+		this.dispose = function() {
+			//console.log('dispose')
+			if (timerId != undefined) {
+				clearInterval(timerId)
+			}
 		}
 
 	}

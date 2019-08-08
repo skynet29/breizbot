@@ -300,7 +300,7 @@ $$.control.registerControl('breizbot.files', {
 				rootDir = ctrl.model.rootDir
 			}
 			srvFiles.list(rootDir, {filterExtension, imageOnly}).then(function(files) {
-				console.log('files', files)
+				//console.log('files', files)
 				files.forEach((f) => {
 					f.items = {}
 					if (f.isImage) {

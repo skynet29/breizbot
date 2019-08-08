@@ -109,7 +109,7 @@ $$.control.registerControl('breizbot.fsbase', {
 		}
 
 		this.setData = function(data) {
-			console.log('[fsbase] setData', data)
+			//console.log('[fsbase] setData', data)
 
 			let {files, selectMode, showThumbnail} = data
 			if (Array.isArray(files)) {

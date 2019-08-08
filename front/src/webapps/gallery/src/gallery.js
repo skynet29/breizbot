@@ -98,12 +98,12 @@ $$.control.registerControl('gallery', {
 			}
 
 			timerId = setInterval(() => {
-				ctrl.model.idx++
-				//console.log('timeout', ctrl.model.idx)
-				updateSelection()
-
 				if (ctrl.model.idx == ctrl.model.nbImages - 1) {
 					stopDiaporama()
+				}
+				else {
+					ctrl.model.idx++
+					updateSelection()
 				}
 
 			}, diaporamaInterval)

@@ -1,0 +1,38 @@
+<div class="title">
+	<strong>Title:</strong>
+	<span bn-text="title"></span>
+</div>
+<div class="toolbar">
+	<button bn-show="!playing" bn-event="click: onPlay">
+		<i class="fa fa-play"></i>
+	</button>
+	
+	<button bn-show="playing" bn-event="click: onPause">
+		<i class="fa fa-pause"></i>
+	</button>
+	
+	<button bn-prop="{disabled: !(idx > 0)}" bn-event="click: onPrev">
+		<i class="fa fa-step-backward"></i>
+	</button>
+	
+	<button bn-prop="{disabled: !(idx < nbFiles - 1)}" bn-event="click: onNext">
+		<i class="fa fa-step-forward"></i>
+	</button>
+</div>
+
+<div class="slider">
+	<span bn-text="getTimeInfo()"></span>
+	<div bn-control="brainjs.slider" 
+		bn-data="{max: duration}"
+		bn-event="input: onSliderChange" 		 
+		bn-val="curTime">		
+	</div>
+	
+</div>
+
+<audio 
+	bn-attr="{src}" 
+	bn-bind="audio"
+	autoplay="" 
+	bn-event="canplay: onLoad, timeupdate: onTimeUpdate, playing: onPlaying, pause: onPaused, ended: onEnded">		
+</audio>

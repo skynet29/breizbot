@@ -1,0 +1,21 @@
+.player {
+	padding: 10px;
+
+	audio {
+		width: 100%;
+	}
+
+	.toolbar {
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+
+	.slider {
+		display: flex;
+		align-items: center;
+		.brainjs-slider {
+			margin-left: 20px;
+			flex: 1;
+		}
+	}
+}

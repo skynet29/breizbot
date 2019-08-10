@@ -1,0 +1,16 @@
+.rootPage .breizbot-files {
+  height: 100%; }
+
+.player {
+  padding: 10px; }
+  .player audio {
+    width: 100%; }
+  .player .toolbar {
+    margin-top: 10px;
+    margin-bottom: 10px; }
+  .player .slider {
+    display: flex;
+    align-items: center; }
+    .player .slider .brainjs-slider {
+      margin-left: 20px;
+      flex: 1; }

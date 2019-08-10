@@ -28,7 +28,7 @@ module.exports =  {
 
 	getUserList: function(matchedUser) {
 
-		console.log('getUserList', matchedUser)
+		//console.log('getUserList', matchedUser)
 
 		let filter = {}
 		if (matchedUser != undefined) {
@@ -45,7 +45,7 @@ module.exports =  {
 
 	getUserInfo: function(username) {
 
-		console.log('getUserInfo', username)
+		//console.log('getUserInfo', username)
 		return db.collection('users').findOne({username})
 	},
 
@@ -61,7 +61,7 @@ module.exports =  {
 
 	updateLastLoginDate: function(username) {
 
-		console.log(`[DB] updateLastLoginDate`, username)
+		//console.log(`[DB] updateLastLoginDate`, username)
 		var update = {'$set': {lastLoginDate: Date.now()}}
 
 		return db.collection('users').updateOne({username}, update)
@@ -111,12 +111,12 @@ module.exports =  {
 	},
 
 	getNotifs: function(to) {
-		console.log('getNotifs')
+		//console.log('getNotifs')
 		return db.collection('notifs').find({to}).toArray()
 	},
 
 	getNotifCount: function(to) {
-		console.log('getNotifCount')
+		//console.log('getNotifCount')
 		return db.collection('notifs').countDocuments({to})
 	},
 
@@ -126,7 +126,7 @@ module.exports =  {
 	},	
 
 	getFriends: function(userName) {
-		console.log(`[DB] getFriends`, userName)
+		//console.log(`[DB] getFriends`, userName)
 		return db.collection('friends').find({
 			$or: [{user1: userName}, {user2: userName}]
 		}).toArray().then((friends) => {
@@ -162,7 +162,7 @@ module.exports =  {
 	},
 
 	getContacts: function(userName) {
-		console.log(`[DB] getContacts`, userName)
+		//console.log(`[DB] getContacts`, userName)
 		return db.collection('contacts').find({
 			userName
 		}, 
@@ -177,7 +177,7 @@ module.exports =  {
 	},
 
 	getAppData: function(userName, appName) {
-		console.log(`[DB] getAppData`, {userName, appName})
+		//console.log(`[DB] getAppData`, {userName, appName})
 
 		return db.collection('appData').findOne({userName, appName})
 	},
@@ -192,13 +192,13 @@ module.exports =  {
 
 
 	getCountries: function() {
-		console.log(`[DB] getCountries`)
+		//console.log(`[DB] getCountries`)
 
 		return db.collection('cities').distinct('country')
 	},	
 
 	getCities: function(country, search) {
-		console.log(`[DB] getCities`, country, search)
+		//console.log(`[DB] getCities`, country, search)
 
 		return db
 			.collection('cities')

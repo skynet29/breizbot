@@ -14,9 +14,12 @@ router.post('/sendToUser', function(req, res) {
 	}
 	data.from = from
 
-	const broker = wss.getBroker(to)
-	if (broker.hasClient()) {
-		broker.sendMessage(srcId, 'breizbot.rtc.' + type, data)
+	if (wss.sendToUser(to, {
+		type: 'notif',
+		srcId,
+		topic: 'breizbot.rtc.' + type,
+		data
+	})) {
 		res.sendStatus(200);
 	}
 	else {
@@ -29,7 +32,11 @@ router.post('/sendToClient', function(req, res) {
 	
 	const {destId, data, type, srcId} = req.body
 
-	if (wss.sendTo(srcId, destId, 'breizbot.rtc.' + type, data)) {
+	if (wss.sendToClient(destId, {
+		type: 'notif',
+		topic: 'breizbot.rtc.' + type,
+		srcId,
+		data})) {
 		res.sendStatus(200)
 	}
 	else {

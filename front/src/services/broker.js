@@ -11,7 +11,8 @@
 			this.tryReconnect = true
 			this.isPingOk = true
 			this.topics = new EventEmitter2({wildcard: true})
-			this.pingInterval = 10*1000;
+			this.pingInterval = 10*1000
+			this.timeoutId = undefined
 
 			this.registeredTopics = {}
 
@@ -24,7 +25,7 @@
 		}
 
 		checkPing() {
-			setTimeout(() => {
+			this.timeoutId = setTimeout(() => {
 				
 				if (!this.isPingOk) {
 					console.log('timeout ping')
@@ -111,6 +112,10 @@
 					return
 				}				
 				console.log('[broker] close')
+				if (this.timeoutId != undefined) {
+					clearTimeout(this.timeoutId)
+					this.timeoutId = undefined					
+				}
 				this.onClose()
 			}
 

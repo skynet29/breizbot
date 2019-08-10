@@ -1,16 +1,49 @@
+const wildcard = require('wildcard')
 const ws = require("nodejs-websocket")
 const cookie = require('cookie')
 const auth = require('basic-auth')
+const uniqid = require('uniqid')
+const EventEmitter = require('events')
+
 require('colors')
 
 const db = require('./db')
 
+const history = {}
+const pingInterval = 30 * 1000 // 30 sec
+
+
+function addToHistory(userName, msg) {
+	if (history[userName] == undefined) {
+		history[userName] = {}
+	}
+	msg.hist = true
+	history[userName][msg.topic] = msg
+}
+
+function forwardHistory(userName, topic, client) {
+	if (history[userName]) {
+		const msgs = wildcard(topic, history[userName])
+		for(let i in msgs) {
+		  sendMsg(client, msgs[i])
+		}		
+	}
+
+}
 
 const config = require('./config')
-const Broker = require('./broker')
 
-const brokers = {}
 let wss
+
+setInterval(() => {
+  //console.log('[Broker] check connection')
+  const now = Date.now()
+  wss.connections.forEach((client) => {
+    if ((now - client.lastPingDate) > pingInterval) {
+    	client.close()
+    }
+  })
+}, pingInterval)
 
 function init(options, store) {
 	if (Object.keys(options).length != 0) {
@@ -26,42 +59,26 @@ function init(options, store) {
 	})
 }
 
-function sendError(client, text) {
-	console.log('sendError', text)
-	const msg = {
-		type: 'error',
-		text
-	}
+function sendMsg(client, msg) {
+  	//console.log('[Broker] sendMsg', msg)
+  	if (client == undefined) {
+  		return
+  	}
+	msg.time = Date.now()
 	client.sendText(JSON.stringify(msg))
 }
 
-function getBroker(userName, forceCreate = false) {
-	let broker = brokers[userName]
-	if (broker == undefined && forceCreate === true) {
-		broker = brokers[userName] = new Broker(userName)
-		broker.on('connect', (isConnected) => {
-			if (isConnected)
-				console.log(`client '${userName}' is connected`.green)
-			else
-				console.log(`client '${userName}' is disconnected`.red)
 
-			db.getFriends(userName).then((friends) => {
-				friends.forEach((friend) => {
-					if (isUserConnected(friend)) {
-						sendMessage(friend, 'breizbot.friends', {isConnected, userName})
-					}
-				})
-			})
-		})
-	}
-	return broker	
+
+function sendError(client, text) {
+	console.log('sendError', text)
+	sendMsg(client, {type: 'error', text})
 }
-
 
 function onConnect(client, store) {
 
 	const {path, headers} = client
-	console.log('onConnect', path)
+	//console.log('onConnect', path)
 
 	if (path.startsWith('/homebox/')) {
 		const authorization = headers.authorization
@@ -77,7 +94,7 @@ function onConnect(client, store) {
 		.then((userInfo) => {
 			const {pwd} = userInfo
 			if (pwd === credentials.pass) {
-					getBroker(userName, true).setHomeboxClient(client)
+					addHomeboxClient(client, userName)
 			}
 			else {
 				sendError(client, 'Bad password')
@@ -113,10 +130,9 @@ function onConnect(client, store) {
 				return
 			}
 			const userName = session.user
-			const broker = getBroker(userName, true)
 			client.sessionId = sid
-			
-			broker.addClient(client)
+
+			addHmiClient(client, userName)
 		})
 	}
 	else {
@@ -124,26 +140,257 @@ function onConnect(client, store) {
 	}
 }
 
-function sendMessage(userName, topic, data) {
-	//console.log('[WSS] sendMessage', userName, topic, data)
-	const broker = getBroker(userName)
-	if (broker != undefined) {
-		broker.sendMessage(undefined, topic, data)		
+
+
+function getHmiClients(userName) {
+	return wss.connections.filter((c) => c.userName == userName && c.hmi === true)
+}
+
+function sendToUser(userName, msg) {
+	//console.log('sendToUser', userName, msg)
+
+	const clients = getHmiClients(userName)
+	if (clients.length == 0) {
+		//console.log(`user '${userName}' is not connected yet`.yellow)
+		addToHistory(userName, msg)
+		return false
 	}
+
+	msg.time = Date.now()
+	const text = JSON.stringify(msg)
+
+	clients.forEach((client) => {
+		Object.keys(client.registeredTopics).forEach((registeredTopic) => {
+		  if (wildcard(registeredTopic, msg.topic)) {
+		    client.sendText(text)
+		    return
+		  }
+
+		}) 		
+	})
+	addToHistory(userName, msg)
+	return true
 }
 
-function sendMsg(client, msg) {
-	//console.log('sendMsg', msg)
-	client.sendText(JSON.stringify(msg))
+function sendTopic(userName, topic, data) {
+	return sendToUser(userName, {type: 'notif', topic, data})
 }
 
-function sendTo(srcId, destId, topic, data) {
-	//console.log('sendTo', {destId, topic, srcId})
+function addHmiClient(client, userName) {
+	const clientId = uniqid()
+	client.registeredTopics = {}
+	client.clientId = clientId
+	client.hmi = true
+	client.userName = userName
+	client.lastPingDate = Date.now()
+
+	console.log(`Client connected`, client.path, userName, clientId)
+
+	if (getHmiClients(userName).length == 1) {
+		console.log(`user '${userName}' is connected`.green)
+		sendFriends(userName, true)
+	}
+
+	client.on('text', (text) => {
+
+		const msg = JSON.parse(text)
+		const {type, topic} = msg
+		if (type == 'register') {
+			//console.log('register', topic)
+			client.registeredTopics[topic] = 1	
+
+			forwardHistory(userName, topic, client)
+
+			registerHomeboxTopics(getHomeboxClient(userName), [topic])
+
+		}
+
+		if (type == 'unregister') {
+			//console.log('unregister', topic)
+			if (client.registeredTopics[topic] != undefined) {
+			  delete client.registeredTopics[topic]
+			}
+
+			unregisterHomeboxTopics(getHomeboxClient(userName), [topic])
+		}
+
+		if (type == 'notif' && topic.startsWith('homebox.')) {
+			//console.log('notif', topic)
+			sendMsg(getHomeboxClient(userName), msg)
+		}
+
+		if (type == 'ping') {
+			//console.log('ping')
+			client.lastPingDate = Date.now()
+			sendMsg(client, {type: 'pong'})			
+		}
+
+	})
+
+	client.on('close', (code)  => {
+		console.log(`Client disconnected`, clientId)
+		const topics = Object.keys(client.registeredTopics)
+		unregisterHomeboxTopics(getHomeboxClient(userName), topics)
+
+		if (getHmiClients(userName).length == 0) {
+			console.log(`client '${userName}' is disconnected`.red)
+			sendFriends(userName, false)
+		}		
+	})	
+
+	client.on('error', (err) => {
+		console.log('connection error')
+	})  
+
+
+	sendMsg(client, {type: 'ready', clientId})
+
+
+}
+
+function getHomeboxClient(userName) {
+	return wss.connections.find((c) => c.userName == userName && c.homebox === true)
+}
+
+function registerHomeboxTopics(client, topics) {
+	if (client == undefined) {
+		return
+	}
+
+	topics.forEach((topic) => {
+	  if (topic.startsWith('homebox.')) {
+	    if (client.registeredTopics[topic] == undefined) {
+	      client.registeredTopics[topic] = 1
+	      sendMsg(client, {type: 'register', topic})
+	    }
+	    else {
+	      client.registeredTopics[topic]++
+	    }
+	  }           
+	})  
+}
+
+function unregisterHomeboxTopics(client, topics) {
+	if (client == undefined) {
+		return
+	}
+
+	topics.forEach((topic) => {
+	  if (topic.startsWith('homebox.')) {
+	    if (client.registeredTopics[topic] != undefined) {
+	      if (--client.registeredTopics[topic] == 0) {
+	      	delete client.registeredTopics[topic]
+	      	sendMsg(client, {type: 'unregister', topic})	      	
+	      }
+	    }
+	  }           
+	})  
+}
+
+function addHomeboxClient(client, userName) {
+	client.registeredTopics = {}
+	client.clientId = uniqid()
+	client.homebox = true
+	client.userName = userName
+	client.services = new EventEmitter()
+	client.lastPingDate = Date.now()
+
+	console.log(`homebox '${userName}' is connected`.green)
+	sendTopic(userName, 'breizbot.homebox.status', {connected: true})
+
+	client.on('text', (text) => {
+
+		const msg = JSON.parse(text)
+		const {type, topic} = msg
+
+		if (type == 'ping') {
+			client.lastPingDate = Date.now()
+			sendMsg(client, {type: 'pong'})
+		}
+
+		if (type == 'notif') {
+			sendToUser(userName, msg)
+		}
+		if (type == 'callServiceResp') {
+		  client.services.emit(msg.srvName, msg)
+		}      
+
+
+	})
+
+	client.on('close', (code)  => {
+		//console.log(`Client disconnected`)
+		console.log(`homebox '${userName}' is disconnected`.red)
+		sendTopic(userName, 'breizbot.homebox.status', {connected: false})
+		
+	})		
+
+	client.on('error', (err) => {
+		console.log('connection error')
+	})  	
+
+	getHmiClients(userName).forEach((client) => {
+		const topics = Object.keys(client.registeredTopics)
+		registerHomeboxTopics(client, topics)
+	})
+
+}
+
+function callService(userName, srvName, data) {
+  console.log('[broker] callService', srvName, data)
+  return new Promise((resolve, reject) => {
+  	const client = getHomeboxClient(userName)
+    if (client == undefined) {
+      reject('homebox is not connected')
+      return
+    }
+
+    client.services.once(srvName, (msg) => {
+      if (msg.err != undefined) {
+        reject(msg.err)
+      }
+      else {
+        resolve(msg.data)
+      }
+    })
+
+    sendMsg(client, {
+      type: 'callService',
+      srvName,
+      data
+    })
+
+  })
+}
+
+function logout(sessionId) {
+	wss.connections.find((client) => {
+		if (client.sessionId == sessionId && client.path == '/hmi/') {
+			sendMsg(client, {type: 'notif', topic: 'breizbot.logout'})
+		}
+	})	
+}
+
+function isUserConnected(userName) {
+	return getHmiClients(userName).length != 0
+}
+
+
+function sendFriends(userName, isConnected) {
+	db.getFriends(userName).then((friends) => {
+		friends.forEach((friend) => {
+			sendTopic(friend, 'breizbot.friends', {isConnected, userName})
+		})
+	})
+}
+
+function sendToClient(destId, msg) {
+	console.log('sendToClient', destId, msg)
 	const dest = wss.connections.find((client) => {
 		return client.clientId == destId
 	})
 	if (dest != undefined) {
-		sendMsg(dest, {type: 'notif', topic, data, srcId, time: Date.now()})
+		sendMsg(dest, msg)
 		return true
 	}
 	return false
@@ -153,31 +400,12 @@ function getClients() {
 	return wss.connections
 }
 
-function isUserConnected(userName) {
-	const broker = getBroker(userName)
-	if (broker != undefined) {
-		return broker.hasClient()
-	}	
-	return false
-}
-
-
-function callService(userName, srvName, data) {
-	console.log('[WSS] callService', userName, srvName, data)
-	const broker = getBroker(userName)
-	if (broker != undefined) {
-		return broker.callService(srvName, data)
-	}		
-	return Promise.reject('homebox is not connected')
-}
-
 module.exports = {
 	init,
-	sendMessage,
-	getBroker,
-	sendTo,
-	getClients,
+	logout,
 	isUserConnected,
-	callService,
-	sendMsg
+	sendToUser,
+	sendToClient,
+	getClients,
+	callService
 }

@@ -7,7 +7,13 @@
     width: 100%; }
   .player .toolbar {
     margin-top: 10px;
-    margin-bottom: 10px; }
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; }
+    .player .toolbar .shuffle {
+      display: flex;
+      margin-left: 10px; }
   .player .slider {
     display: flex;
     align-items: center; }

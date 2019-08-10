@@ -50,9 +50,6 @@
     display: flex;
     align-items: center;
     margin-top: 10px; }
-    .accountPage .copySent .jq-flipswitch {
-      margin: 0 0 0 10px;
-      box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.1), 0px 0px 0px 2px #EEE inset; }
 
 .addContactPage {
   margin: 10px;
@@ -65,28 +62,6 @@
     margin-bottom: 5px; }
     .addContactPage .brainjs-inputgroup input {
       padding: 5px; }
-
-.boxesPage {
-  padding: 10px;
-  display: flex;
-  flex-direction: column; }
-  .boxesPage .scrollPanelTree {
-    flex: 1;
-    overflow-y: auto;
-    border: 1px solid black; }
-    .boxesPage .scrollPanelTree .tree {
-      height: 100%; }
-      .boxesPage .scrollPanelTree .tree ul {
-        height: 100%;
-        border: none; }
-      .boxesPage .scrollPanelTree .tree ul:focus {
-        outline: none; }
-      .boxesPage .scrollPanelTree .tree .fancytree-node {
-        display: flex;
-        align-items: center;
-        font-size: 1.3em; }
-      .boxesPage .scrollPanelTree .tree span.fa {
-        color: #607d8b; }
 
 .contactsPage .scrollPanel {
   height: 100%;
@@ -112,6 +87,28 @@
       cursor: pointer; }
     .mailboxPage .scrollPanelTable table tr.unseen {
       font-weight: bold; }
+
+.boxesPage {
+  padding: 10px;
+  display: flex;
+  flex-direction: column; }
+  .boxesPage .scrollPanelTree {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid black; }
+    .boxesPage .scrollPanelTree .tree {
+      height: 100%; }
+      .boxesPage .scrollPanelTree .tree ul {
+        height: 100%;
+        border: none; }
+      .boxesPage .scrollPanelTree .tree ul:focus {
+        outline: none; }
+      .boxesPage .scrollPanelTree .tree .fancytree-node {
+        display: flex;
+        align-items: center;
+        font-size: 1.3em; }
+      .boxesPage .scrollPanelTree .tree span.fa {
+        color: #607d8b; }
 
 .messagePage {
   display: flex;

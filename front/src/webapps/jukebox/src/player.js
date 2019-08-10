@@ -15,6 +15,8 @@ $$.control.registerControl('player', {
 
 		const {rootDir, files, firstIdx, $pager} = this.props
 
+		let shuffleIndexes = null
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				idx: firstIdx,
@@ -67,6 +69,17 @@ $$.control.registerControl('player', {
 					audio.currentTime = value
 				},
 
+				onShuffleChange: function(ev, value) {
+					console.log('onShuffleChange', value)
+					if (value == 'ON') {
+						shuffleIndexes = knuthShuffle(ctrl.model.nbFiles)
+						console.log('shuffleIndexes', shuffleIndexes)
+					}
+					else {
+						shuffleIndexes = null
+					}
+				},
+
 				onEnded: next,
 
 				onPrev: prev,
@@ -84,6 +97,13 @@ $$.control.registerControl('player', {
 		}
 
 		function next() {
+			if (shuffleIndexes != null) {
+				if (shuffleIndexes.length > 0) {
+					setIndex(shuffleIndexes.pop())
+				}
+				return
+			}
+			
 			let {idx, nbFiles} = ctrl.model
 			if (idx < nbFiles - 1) {
 				setIndex(idx+1)
@@ -97,6 +117,24 @@ $$.control.registerControl('player', {
 				idx
 			})						
 		}
+
+		function knuthShuffle(length) {
+			console.log('knuthShuffle', length)
+			let arr = []
+			for(let k = 0; k < length; k++) {
+				arr.push(k)
+			}
+
+		    var rand, temp, i;
+		 
+		    for (i = arr.length - 1; i > 0; i -= 1) {
+		        rand = Math.floor((i + 1) * Math.random());//get random between zero and i (inclusive)
+		        temp = arr[rand];//swap i and the zero-indexed number
+		        arr[rand] = arr[i];
+		        arr[i] = temp;
+		    }
+		    return arr;
+		}		
 
 
 		const audio = ctrl.scope.audio.get(0)

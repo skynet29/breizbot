@@ -3,21 +3,38 @@
 	<span bn-text="title"></span>
 </div>
 <div class="toolbar">
-	<button bn-show="!playing" bn-event="click: onPlay">
-		<i class="fa fa-play"></i>
-	</button>
-	
-	<button bn-show="playing" bn-event="click: onPause">
-		<i class="fa fa-pause"></i>
-	</button>
-	
-	<button bn-prop="{disabled: !(idx > 0)}" bn-event="click: onPrev">
-		<i class="fa fa-step-backward"></i>
-	</button>
-	
-	<button bn-prop="{disabled: !(idx < nbFiles - 1)}" bn-event="click: onNext">
-		<i class="fa fa-step-forward"></i>
-	</button>
+	<div>
+		<button bn-show="!playing" bn-event="click: onPlay">
+			<i class="fa fa-play"></i>
+		</button>
+		
+		<button bn-show="playing" bn-event="click: onPause">
+			<i class="fa fa-pause"></i>
+		</button>
+		
+		<button bn-prop="{disabled: !(idx > 0)}" bn-event="click: onPrev">
+			<i class="fa fa-step-backward"></i>
+		</button>
+		
+		<button bn-prop="{disabled: !(idx < nbFiles - 1)}" bn-event="click: onNext">
+			<i class="fa fa-step-forward"></i>
+		</button>		
+	</div>
+
+
+	<div class="shuffle">
+		<span>Shuffle</span>
+		<div 
+			bn-control="brainjs.flipswitch"
+			bn-event="flipswitchchange: onShuffleChange"
+			data-width="100"
+			data-height="25"
+			>
+			
+		</div>			
+	</div>
+
+
 </div>
 
 <div class="slider">

@@ -393,6 +393,7 @@ function sendToClient(destId, msg) {
 		sendMsg(dest, msg)
 		return true
 	}
+	console.log('client not found !')
 	return false
 }
 

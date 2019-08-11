@@ -8,6 +8,7 @@ $$.control.registerControl('gallery', {
 		rootDir: '',
 		files: [],
 		firstIdx: 0,
+		friendUser: '',
 		$pager: null
 	},
 
@@ -18,7 +19,7 @@ $$.control.registerControl('gallery', {
 
 	init: function(elt, filesSrv) {
 
-		const {rootDir, files, firstIdx, $pager} = this.props
+		const {rootDir, files, firstIdx, $pager, friendUser} = this.props
 		const diaporamaInterval = 20 * 1000;
 
 		let timerId
@@ -63,11 +64,11 @@ $$.control.registerControl('gallery', {
 		}
 
 		function getFileUrl(idx) {
-			return filesSrv.fileUrl(rootDir + files[idx].name)
+			return filesSrv.fileUrl(rootDir + files[idx].name, friendUser)
 		}
 
 		function getThumbnailsUrl() {
-			return files.map((f) => filesSrv.fileThumbnailUrl(rootDir + f.name, '?x50'))
+			return files.map((f) => filesSrv.fileThumbnailUrl(rootDir + f.name, '?x50', friendUser))
 		}
 
 		function getThumbnailWidth() {

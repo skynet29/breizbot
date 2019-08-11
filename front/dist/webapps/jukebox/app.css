@@ -1,5 +1,18 @@
-.rootPage .breizbot-files {
+.files .breizbot-files {
   height: 100%; }
+
+.friends {
+  padding: 10px; }
+
+.rootPage {
+  padding: 10px; }
+  .rootPage .w3-bar {
+    cursor: pointer; }
+  .rootPage .w3-bar-item {
+    display: flex;
+    align-items: center; }
+    .rootPage .w3-bar-item span {
+      margin-left: 20px; }
 
 .player {
   padding: 10px; }

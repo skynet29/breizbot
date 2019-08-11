@@ -15,23 +15,19 @@ $$.control.registerControl('rootPage', {
 			data: {
 			},
 			events: {
-				onFileClick: function(ev, data) {
-					//console.log('onFileClick', data)
-					const {rootDir, fileName } = data
-					const files = ctrl.scope.files.getFiles()
-					//console.log('files', files)
-					const firstIdx = files.findIndex((f) => f.name == fileName)
-					//console.log('firstIdx', firstIdx)
-					$pager.pushPage('player', {
-						title: 'Playlist',
-						props: {
-							firstIdx,
-							files,
-							rootDir
-						}
+				onHome: function() {
+					console.log('onHome')
+					$pager.pushPage('files', {
+						title: 'Home files'					
 					})
-
+				},
+				onShare: function() {
+					console.log('onShare')
+					$pager.pushPage('friends', {
+						title: 'Shared files'					
+					})
 				}
+
 			}
 		})
 

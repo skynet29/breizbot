@@ -8,12 +8,13 @@ $$.control.registerControl('player', {
 		rootDir: '',
 		files: [],
 		firstIdx: 0,
-		$pager: null
+		$pager: null,
+		friendUser: ''
 	},
 
 	init: function(elt, filesSrv) {
 
-		const {rootDir, files, firstIdx, $pager} = this.props
+		const {rootDir, files, firstIdx, $pager, friendUser} = this.props
 
 		let shuffleIndexes = null
 
@@ -145,7 +146,7 @@ $$.control.registerControl('player', {
 
 
 		function getFileUrl(idx) {
-			return filesSrv.fileUrl(rootDir + files[idx].name)
+			return filesSrv.fileUrl(rootDir + files[idx].name, friendUser)
 		}
 
 

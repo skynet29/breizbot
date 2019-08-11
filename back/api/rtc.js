@@ -33,7 +33,6 @@ router.post('/sendToClient', function(req, res) {
 	const {destId, data, type, srcId} = req.body
 
 	if (wss.sendToClient(destId, {
-		type: 'notif',
 		topic: 'breizbot.rtc.' + type,
 		srcId,
 		data})) {

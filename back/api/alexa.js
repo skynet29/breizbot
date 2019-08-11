@@ -11,7 +11,7 @@ router.post('/auth', function(req, res) {
 	delete body.state
 
 	res.sendStatus(200)
-	wss.sendToClient(destId, {type: 'notif', topic: 'breizbot.alexa.auth', data: body})
+	wss.sendToClient(destId, {topic: 'breizbot.alexa.auth', data: body})
 })
 
 module.exports = router

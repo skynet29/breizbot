@@ -84,7 +84,7 @@ module.exports = function(ctx) {
 			const percent = Math.floor(totalDownloaded/total*100)
 			if (percent != lastPercent) {
 				lastPercent = percent
-				wss.sendTo(undefined, srcId, 'breizbot.ytdl.progress', {percent})
+				wss.sendToClient(srcId, {topic: 'breizbot.ytdl.progress', data: {percent}})
 			}
 		})
 

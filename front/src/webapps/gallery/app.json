@@ -1,6 +1,6 @@
 {	
 	"iconCls": "fa fa-image fa-2x",
-	"colorCls": "w3-green",
+	"colorCls": "w3-pink",
 	"title": "Gallery",
 	"styles": ["app.css"],
 	"brainjs": ["map"]

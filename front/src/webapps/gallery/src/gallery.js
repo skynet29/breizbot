@@ -20,7 +20,7 @@ $$.control.registerControl('gallery', {
 	init: function(elt, filesSrv) {
 
 		const {rootDir, files, firstIdx, $pager, friendUser} = this.props
-		const diaporamaInterval = 20 * 1000;
+		const diaporamaInterval = 10 * 1000 // 10 sec
 
 		let timerId
 

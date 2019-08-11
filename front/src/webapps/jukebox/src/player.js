@@ -38,7 +38,7 @@ $$.control.registerControl('player', {
 			},
 			events: {
 				onLoad: function() {
-					console.log('duration', this.duration)
+					//console.log('duration', this.duration)
 					ctrl.setData({duration: Math.floor(this.duration)})
 				},
 
@@ -47,12 +47,12 @@ $$.control.registerControl('player', {
 				},
 
 				onPlaying: function() {
-					console.log('onPlaying')
+					//console.log('onPlaying')
 					ctrl.setData({playing: true})
 				},
 
 				onPaused: function() {
-					console.log('onPaused')
+					//console.log('onPaused')
 					ctrl.setData({playing: false})
 				},
 
@@ -65,15 +65,15 @@ $$.control.registerControl('player', {
 				},
 
 				onSliderChange: function(ev, value) {
-					console.log('onSliderChange', value)
+					//console.log('onSliderChange', value)
 					audio.currentTime = value
 				},
 
 				onShuffleChange: function(ev, value) {
-					console.log('onShuffleChange', value)
+					//console.log('onShuffleChange', value)
 					if (value == 'ON') {
 						shuffleIndexes = knuthShuffle(ctrl.model.nbFiles)
-						console.log('shuffleIndexes', shuffleIndexes)
+						//console.log('shuffleIndexes', shuffleIndexes)
 					}
 					else {
 						shuffleIndexes = null
@@ -103,7 +103,7 @@ $$.control.registerControl('player', {
 				}
 				return
 			}
-			
+
 			let {idx, nbFiles} = ctrl.model
 			if (idx < nbFiles - 1) {
 				setIndex(idx+1)
@@ -119,7 +119,7 @@ $$.control.registerControl('player', {
 		}
 
 		function knuthShuffle(length) {
-			console.log('knuthShuffle', length)
+			//console.log('knuthShuffle', length)
 			let arr = []
 			for(let k = 0; k < length; k++) {
 				arr.push(k)

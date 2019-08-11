@@ -1,6 +1,6 @@
 $$.control.registerControl('viewerPage', {
 
-	deps: ['app.share'],
+	deps: ['breizbot.files'],
 
 	template: {gulp_inject: './viewer.html'},
 
@@ -17,7 +17,7 @@ $$.control.registerControl('viewerPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				type: $$.util.getFileType(fullName),
-				url: files.fileUrl(userName, fullName)
+				url: files.fileUrl(fullName, userName)
 			}
 		})
 

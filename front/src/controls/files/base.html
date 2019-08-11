@@ -18,7 +18,7 @@
 				</div>
 			</div>
 			<div 
-				bn-if="!f.folder && (!f.isImage || !showThumbnail)"  
+				bn-if="!f.folder && !f.isImage"  
 				class="file item"
 				>
 				<div class="icon">
@@ -33,7 +33,7 @@
 			</div>			
 
 			<div 
-				bn-if="!f.folder && f.isImage && showThumbnail"  
+				bn-if="!f.folder && f.isImage"  
 				class="file item"
 				>
 				<div class="icon">

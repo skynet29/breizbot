@@ -1,7 +1,6 @@
 $$.control.registerControl('breizbot.fsbase', {
 	props: {
 		files: [],
-		showThumbnail: true,
 		selectMode: false
 	},
 
@@ -11,7 +10,6 @@ $$.control.registerControl('breizbot.fsbase', {
 
 		const {
 			files,
-			showThumbnail,
 			selectMode
 		} = this.props
 
@@ -22,7 +20,6 @@ $$.control.registerControl('breizbot.fsbase', {
 			data: {
 				selectMode: false,
 				files,
-				showThumbnail,
 				selectMode,
 				getSize: function(size) {
 					let unit = 'octets'
@@ -75,7 +72,7 @@ $$.control.registerControl('breizbot.fsbase', {
 				onCheckClick: function(ev) {
 					const idx = $(this).closest('.thumbnail').index()					
 					const info = ctrl.model.files[idx]
-					console.log('onCheckClick', info)
+					//console.log('onCheckClick', info)
 					elt.trigger('checkclick', [info, $(this).getValue()])
 
 				},

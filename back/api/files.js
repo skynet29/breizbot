@@ -13,8 +13,11 @@ router.post('/list', function(req, res) {
 	console.log('params', req.body)
 	const options = req.body.options || {}
 	const user = req.session.user
-	const destPath = req.body.path
-	const rootPath = path.join(cloudPath, user, destPath)
+	const {destPath, friendUser} = req.body
+	let rootPath = path.join(cloudPath, user, destPath)
+	if (friendUser != undefined && friendUser != '') {
+		rootPath = path.join(cloudPath, friendUser, 'share', destPath)
+	}
 
 	fs.readdir(rootPath)
 	.then(function(files) {
@@ -22,7 +25,7 @@ router.post('/list', function(req, res) {
 		const promises = files.map((file) => {
 			const filePath = path.join(rootPath, file)
 			return fs.lstat(filePath).then((statInfo) => {	
-				console.log('statInfo', statInfo)
+				//console.log('statInfo', statInfo)
 				const ret = {
 					name: file, 
 					folder: statInfo.isDirectory(),
@@ -236,17 +239,29 @@ router.post('/copy', function(req, res) {
 
 router.get('/load', function(req, res) {
 	//console.log('load req', req.query)
-	const fileName = req.query.fileName
+	const {fileName, friendUser} = req.query
 	const user = req.session.user
-	
-	res.sendFile(path.join(cloudPath, user, fileName))
+
+	if (friendUser != undefined && friendUser != '') {
+		res.sendFile(path.join(cloudPath, friendUser, 'share', fileName))		
+	}
+	else {
+		res.sendFile(path.join(cloudPath, user, fileName))	
+	}
 })
 
 router.get('/loadThumbnail', function(req, res) {
 	//console.log('load req', req.query)
-	const {fileName, size} = req.query
+	const {fileName, size, friendUser} = req.query
 	const user = req.session.user
-	genThumbnail(path.join(cloudPath, user, fileName), res, size)
+
+	if (friendUser != undefined && friendUser != '') {
+		genThumbnail(path.join(cloudPath, friendUser, 'share', fileName), res, size)		
+	}
+	else {
+		genThumbnail(path.join(cloudPath, user, fileName), res, size)	
+	}	
+	
 })
 
 module.exports = router

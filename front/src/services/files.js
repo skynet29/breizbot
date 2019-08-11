@@ -6,18 +6,18 @@ $$.service.registerService('breizbot.files', {
 		const http = resource('/api/files')
 		
 		return {
-			list: function(path, options) {
-				console.log('[FileService] list', path)
+			list: function(destPath, options, friendUser) {
+				console.log('[FileService] list', destPath)
 
-				return http.post('/list', {path, options})
+				return http.post('/list', {destPath, options, friendUser})
 			},
 
-			fileUrl: function(fileName) {
-				return $$.util.getUrlParams('/api/files/load', {fileName})
+			fileUrl: function(fileName, friendUser) {
+				return $$.util.getUrlParams('/api/files/load', {fileName, friendUser})
 			},
 
-			fileThumbnailUrl: function(fileName, size) {
-				return $$.util.getUrlParams('/api/files/loadThumbnail', {fileName, size})
+			fileThumbnailUrl: function(fileName, size, friendUser) {
+				return $$.util.getUrlParams('/api/files/loadThumbnail', {fileName, size, friendUser})
 			},
 
 			uploadFile: function(blob, saveAsfileName, destPath) {

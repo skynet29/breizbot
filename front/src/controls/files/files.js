@@ -5,30 +5,31 @@ $$.control.registerControl('breizbot.files', {
 		showToolbar: false,
 		imageOnly: false,
 		filterExtension: undefined,
-		showThumbnail: false,
-		thumbnailSize: '100x?',
-		maxUploadSize: 2*1024*2014 // 2 Mo		
+		friendUser: ''
 	},
 
 	template: {gulp_inject: './files.html'},
 
 	init: function(elt, srvFiles) {
 
-		const {
+		const thumbnailSize = '100x?'
+		const maxUploadSize = 2*1024*2014 // 2 Mo
+
+		let {
 			$pager,
 			showToolbar,
-			maxUploadSize,
 			filterExtension,
-			imageOnly,
-			thumbnailSize,
-			showThumbnail
+			friendUser,
+			imageOnly
 		} = this.props
+
+		if (friendUser != '') {
+			showToolbar = false
+		}
 
 		const ctrl = $$.viewController(elt, {
 			
 			data: {
-				showThumbnail,
-				thumbnailSize,
 				showToolbar,
 				rootDir: '/',
 				selectMode: false,
@@ -130,7 +131,7 @@ $$.control.registerControl('breizbot.files', {
 				onFolderClick: function(ev, info) {
 
 					const dirName = info.name
-					console.log('onFolderClick', dirName)
+					//console.log('onFolderClick', dirName)
 					if (dirName == '..') {
 						const split = ctrl.model.rootDir.split('/')						
 						split.pop()
@@ -299,12 +300,12 @@ $$.control.registerControl('breizbot.files', {
 			if (rootDir == undefined) {
 				rootDir = ctrl.model.rootDir
 			}
-			srvFiles.list(rootDir, {filterExtension, imageOnly}).then(function(files) {
+			srvFiles.list(rootDir, {filterExtension, imageOnly}, friendUser).then(function(files) {
 				//console.log('files', files)
 				files.forEach((f) => {
 					f.items = {}
 					if (f.isImage) {
-						f.thumbnailUrl = srvFiles.fileThumbnailUrl(rootDir + f.name, thumbnailSize)
+						f.thumbnailUrl = srvFiles.fileThumbnailUrl(rootDir + f.name, thumbnailSize, friendUser)
 					}
 					if (showToolbar) {
 						f.items.rename = {name: 'Rename'}

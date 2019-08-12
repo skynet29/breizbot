@@ -64,20 +64,27 @@ $$.service.registerService('breizbot.files', {
 			resizeImage: function(filePath, fileName, resizeFormat) {
 				console.log('[FileService] resizeImage', filePath, fileName, resizeFormat)
 				return http.post('/resizeImage', {filePath, fileName, resizeFormat})
+			},
+			convertToMP3: function(filePath, fileName) {
+				console.log('[FileService] convertToMP3', filePath, fileName)
+				return http.post('/convertToMP3', {filePath, fileName})
 			}
 
 		}
 	},
 
 	$iface: `
-		list(path, options):Promise;
-		fileUrl(fileName):string;
-		fileThumbnailUrl(fileName, size):string;
+		list(path, options, friendUser):Promise;
+		fileUrl(fileName, friendUser):string;
+		fileThumbnailUrl(fileName, size, friendUser):string;
 		uploadFile(blob, saveAsfileName, destPath):Promise;
 		removeFiles(fileNames):Promise;
 		mkdir(fileName):Promise;
 		moveFiles(fileNames, destPath):Promise;
-		copyFiles(fileNames, destPath):Promise			
+		copyFiles(fileNames, destPath):Promise;
+		renameFile(filePath, oldFileName, newFileName):Promise;
+		resizeImage(filePath, fileName, resizeFormat):Promise;
+		convertToMP3(filePath, fileName):Promise
 	`
 
 });

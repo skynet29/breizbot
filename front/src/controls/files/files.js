@@ -96,6 +96,27 @@ $$.control.registerControl('breizbot.files', {
 							})								
 						})
 					}
+
+					if (cmd == 'convertToMP3') {
+						srvFiles.convertToMP3(rootDir, info.name)
+						.then(function(resp) {
+							console.log('resp', resp)
+							loadData()
+						})
+						.catch(function(resp) {
+							console.log('resp', resp)
+							$$.ui.showAlert({
+								content: resp.responseText,
+								title: 'Error'
+							})
+						})								
+					}
+
+					if (cmd == 'delete') {
+						deleteFiles([rootDir + info.name])
+					}
+
+					
 				},
 
 				onFileClick: function(ev, info) {
@@ -180,23 +201,8 @@ $$.control.registerControl('breizbot.files', {
 						return
 					}
 
-					$$.ui.showConfirm({
-						content: 'Are you sure ?',
-						title: 'Delete files'
-					}, function() {
-						srvFiles.removeFiles(selFiles)
-						.then(function(resp) {
-							console.log('resp', resp)
-							loadData()
-						})
-						.catch(function(resp) {
-							console.log('resp', resp)
-							$$.ui.showAlert({
-								content: resp.responseText,
-								title: 'Error'
-							})
-						})					
-					})					
+					deleteFiles(selFiles)
+
 				},
 				onCutFiles: function(ev) {
 					console.log('onCutFiles')
@@ -281,6 +287,26 @@ $$.control.registerControl('breizbot.files', {
 
 		})
 
+		function deleteFiles(fileNames) {
+			$$.ui.showConfirm({
+				content: 'Are you sure ?',
+				title: 'Delete files'
+			}, function() {
+				srvFiles.removeFiles(fileNames)
+				.then(function(resp) {
+					console.log('resp', resp)
+					loadData()
+				})
+				.catch(function(resp) {
+					console.log('resp', resp)
+					$$.ui.showAlert({
+						content: resp.responseText,
+						title: 'Error'
+					})
+				})					
+			})				
+		}
+
 		function setSelMode(selMode) {
 			if (selMode == false) {
 				ctrl.model.nbSelection = 0
@@ -303,7 +329,9 @@ $$.control.registerControl('breizbot.files', {
 			srvFiles.list(rootDir, {filterExtension, imageOnly}, friendUser).then(function(files) {
 				//console.log('files', files)
 				files.forEach((f) => {
-					f.items = {}
+					f.items = {
+						delete: {name: 'Delete', icon: 'fas fa-trash'}
+					}
 					if (f.isImage) {
 						f.thumbnailUrl = srvFiles.fileThumbnailUrl(rootDir + f.name, thumbnailSize, friendUser)
 					}
@@ -314,6 +342,9 @@ $$.control.registerControl('breizbot.files', {
 						}
 						if (!f.folder) {
 							f.items.download = {name: 'Download', icon: 'fas fa-download'}
+						}
+						if (f.name.endsWith('.mp4')) {
+							f.items.convertToMP3 = {name: 'Convert to MP3'}
 						}
 
 					}

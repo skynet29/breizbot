@@ -1,7 +1,7 @@
 const path = require('path')
 const fs = require('fs-extra')
 const config = require('../lib/config')
-const {imageSize, genThumbnail, isImage, resizeImage} = require('../lib/util')
+const {imageSize, genThumbnail, isImage, resizeImage, convertToMP3} = require('../lib/util')
 
 
 const cloudPath = config.CLOUD_HOME
@@ -9,8 +9,8 @@ const cloudPath = config.CLOUD_HOME
 const router = require('express').Router()
 
 router.post('/list', function(req, res) {
-	console.log('list req', req.session.user)
-	console.log('params', req.body)
+	//console.log('list req', req.session.user)
+	//console.log('params', req.body)
 	const options = req.body.options || {}
 	const user = req.session.user
 	const {destPath, friendUser} = req.body
@@ -36,7 +36,7 @@ router.post('/list', function(req, res) {
 
 				if (ret.isImage) {
 					return imageSize(filePath).then((dimension) => {
-						console.log('dimension', dimension)
+						//console.log('dimension', dimension)
 						ret.dimension = dimension
 						return ret
 					})
@@ -65,7 +65,7 @@ router.post('/list', function(req, res) {
 				return info.folder === true || isImage(info.name)
 			})			
 		}
-		console.log('ret', ret)
+		//console.log('ret', ret)
 
 		res.json(ret)
 	})		
@@ -203,6 +203,24 @@ router.post('/resizeImage', function(req, res) {
 	resizeImage(fullPath, fileName, resizeFormat)
 	.then(function() {
 		res.status(200).send('File resized!')
+	})
+	.catch(function(e) {
+		console.log('error', e)
+		res.status(400).send(e.message)
+	})			
+})
+
+router.post('/convertToMP3', function(req, res) {
+	console.log('convertToMP3', req.body)
+	const {filePath, fileName} = req.body
+
+	var user = req.session.user
+
+	const fullPath = path.join(cloudPath, user, filePath)
+
+	convertToMP3(fullPath, fileName)
+	.then(function() {
+		res.status(200).send('File converted!')
 	})
 	.catch(function(e) {
 		console.log('error', e)

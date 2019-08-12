@@ -36,7 +36,7 @@ module.exports = function(app) {
 
 		}
 		else {
-			res.redirect('/')
+			res.render('error', {message: 'Your session has expired'})
 		}
 	})	
 }

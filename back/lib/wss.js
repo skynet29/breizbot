@@ -385,7 +385,7 @@ function sendFriends(userName, isConnected) {
 }
 
 function sendToClient(destId, msg) {
-	console.log('sendToClient', destId, msg)
+	//console.log('sendToClient', destId, msg)
 	msg.type = 'notif'
 	const dest = wss.connections.find((client) => {
 		return client.clientId == destId

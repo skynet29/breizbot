@@ -76,6 +76,7 @@ $$.control.registerControl('rootPage', {
 
 
 				avs.sendAudio(accessToken, blob).then((resp) => {
+					console.log('resp', resp)
 					avs.decodeDirectives(resp, audioPlayer)					
 				})
 				.catch((err) => {

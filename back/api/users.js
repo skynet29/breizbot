@@ -84,7 +84,7 @@ router.post('/sendNotif', function(req, res) {
 	})
 	.then((notifCount) => {
 		console.log('notifCount', notifCount)
-		wss.sendMessage(to, 'breizbot.notifCount', notifCount)
+		wss.sendTopic(to, 'breizbot.notifCount', notifCount)
 		res.sendStatus(200)		
 	})	
 	.catch(() => {
@@ -105,7 +105,7 @@ router.delete('/removeNotif/:id', function(req, res) {
 	})
 	.then((notifCount) => {
 		console.log('notifCount', notifCount)
-		wss.sendMessage(to, 'breizbot.notifCount', notifCount)
+		wss.sendTopic(to, 'breizbot.notifCount', notifCount)
 		res.sendStatus(200)		
 	})	
 	.catch(() => {

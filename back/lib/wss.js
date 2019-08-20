@@ -149,6 +149,9 @@ function getHmiClients(userName) {
 function sendToUser(userName, msg) {
 	//console.log('sendToUser', userName, msg)
 
+	msg.time = Date.now()
+	msg.type = 'notif'
+
 	const clients = getHmiClients(userName)
 	if (clients.length == 0) {
 		//console.log(`user '${userName}' is not connected yet`.yellow)
@@ -156,7 +159,6 @@ function sendToUser(userName, msg) {
 		return false
 	}
 
-	msg.time = Date.now()
 	const text = JSON.stringify(msg)
 
 	clients.forEach((client) => {
@@ -173,7 +175,7 @@ function sendToUser(userName, msg) {
 }
 
 function sendTopic(userName, topic, data) {
-	return sendToUser(userName, {type: 'notif', topic, data})
+	return sendToUser(userName, {topic, data})
 }
 
 function addHmiClient(client, userName) {
@@ -408,6 +410,7 @@ module.exports = {
 	isUserConnected,
 	sendToUser,
 	sendToClient,
+	sendTopic,
 	getClients,
 	callService
 }

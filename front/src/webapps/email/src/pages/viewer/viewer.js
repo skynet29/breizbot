@@ -2,10 +2,9 @@ $$.control.registerControl('viewerPage', {
 
 	template: {gulp_inject: './viewer.html'},
 
-	deps: ['app.mails'],
+	deps: ['app.mails', 'breizbot.pager'],
 
 	props: {
-		$pager: null,
 		info: '',
 		currentAccount: '',
 		mailboxName: '',
@@ -16,9 +15,9 @@ $$.control.registerControl('viewerPage', {
 		{name: 'save', icon: 'fa fa-save'}
 	],	
 
-	init: function(elt, srvMail) {
+	init: function(elt, srvMail, pager) {
 
-		const {$pager, info, currentAccount, mailboxName, seqno} = this.props
+		const {info, currentAccount, mailboxName, seqno} = this.props
 		const {partID, type, subtype} = info
 
 		const ctrl = $$.viewController(elt, {
@@ -42,7 +41,7 @@ $$.control.registerControl('viewerPage', {
 			console.log('onAction', action)
 			if (action == 'save') {
 				ctrl.scope.viewer.save('/apps/email', info.name, () => {
-					$pager.popPage()
+					pager.popPage()
 				})
 			}
 		}

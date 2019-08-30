@@ -1,6 +1,8 @@
 $$.control.registerControl('filesPage', {
+
+	deps: ['breizbot.pager'],
+
 	props: {
-		$pager: null,
 		userName: '',
 	},
 
@@ -10,12 +12,9 @@ $$.control.registerControl('filesPage', {
 		{name: 'reload', icon: 'fa fa-sync-alt'}
 	],
 
-	init: function(elt) {
+	init: function(elt, pager) {
 
-		const {
-			$pager,
-			userName,
-		} = this.props
+		const {userName} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			
@@ -32,7 +31,7 @@ $$.control.registerControl('filesPage', {
 
 					const type = $$.util.getFileType(info.fileName)
 					if (type != undefined) {
-						$pager.pushPage('viewerPage', {
+						pager.pushPage('viewerPage', {
 							title: info.name,
 							props: {
 								fullName,

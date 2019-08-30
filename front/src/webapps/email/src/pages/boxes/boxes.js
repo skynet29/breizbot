@@ -2,10 +2,9 @@ $$.control.registerControl('boxesPage', {
 
 	template: {gulp_inject: './boxes.html'},
 
-	deps: ['app.mails'],
+	deps: ['app.mails', 'breizbot.pager'],
 
 	props: {
-		$pager: null,
 		currentAccount: '',
 		showForm: false
 	},
@@ -14,9 +13,9 @@ $$.control.registerControl('boxesPage', {
 		{name: 'apply', icon: 'fa fa-check'}
 	],
 	
-	init: function(elt, srvMail) {
+	init: function(elt, srvMail, pager) {
 
-		const {$pager, currentAccount, showForm} = this.props
+		const {currentAccount, showForm} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -43,7 +42,7 @@ $$.control.registerControl('boxesPage', {
 					//console.log('targetName', targetName)
 
 
-					$pager.popPage(targetName)					
+					pager.popPage(targetName)					
 				}
 			}
 		})
@@ -91,7 +90,7 @@ $$.control.registerControl('boxesPage', {
 				}
 				const targetName = tree.getNodePath(node)
 
-				$pager.popPage(targetName)
+				pager.popPage(targetName)
 			}
 		}
 

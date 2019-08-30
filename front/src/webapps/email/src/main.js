@@ -2,15 +2,10 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
-	deps: ['app.mails'],
+	deps: ['app.mails', 'breizbot.pager'],
 
-	props: {
-		$pager: null
-	},
 
-	init: function(elt, srvMail) {
-
-		const {$pager} = this.props
+	init: function(elt, srvMail, pager) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -37,13 +32,13 @@ $$.control.registerControl('rootPage', {
 				onMenu: function(ev, data) {
 					console.log('onMenu', data)
 					if (data.cmd == 'add') {
-						$pager.pushPage('accountPage', {
+						pager.pushPage('accountPage', {
 							title: 'Add Mail Account',
 							onReturn: loadAccount
 						})						
 					}
 					if (data.cmd == 'new') {
-						$pager.pushPage('writeMailPage', {
+						pager.pushPage('writeMailPage', {
 							title: 'New Message',
 							props: {
 								accountName: ctrl.model.currentAccount
@@ -52,7 +47,7 @@ $$.control.registerControl('rootPage', {
 					}
 					if (data.cmd == 'edit') {
 						srvMail.getMailAccount(ctrl.model.currentAccount).then((data) => {
-							$pager.pushPage('accountPage', {
+							pager.pushPage('accountPage', {
 								title: 'Edit Mail Account',
 								props: {
 									data
@@ -62,7 +57,7 @@ $$.control.registerControl('rootPage', {
 						})
 					}
 					if (data.cmd == 'newFolder') {
-						$pager.pushPage('boxesPage', {
+						pager.pushPage('boxesPage', {
 							title: 'Add new folder',
 							props: {
 								currentAccount: ctrl.model.currentAccount,
@@ -94,7 +89,7 @@ $$.control.registerControl('rootPage', {
 					const mailboxName = tree.getNodePath(node)					
 					console.log('mailboxName', mailboxName)
 					const {currentAccount} = ctrl.model
-					$pager.pushPage('mailboxPage', {
+					pager.pushPage('mailboxPage', {
 						title: node.title,
 						props: {
 							currentAccount,

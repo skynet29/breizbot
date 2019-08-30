@@ -2,10 +2,9 @@ $$.control.registerControl('addContactPage', {
 
 	template: {gulp_inject: './addContact.html'},
 
-	deps: ['breizbot.users'],
+	deps: ['breizbot.users', 'breizbot.pager'],
 
 	props: {
-		$pager: null,
 		from: {}
 	},
 
@@ -13,9 +12,9 @@ $$.control.registerControl('addContactPage', {
 		{name: 'add', icon: 'fa fa-user-plus'}
 	],	
 
-	init: function(elt, users) {
+	init: function(elt, users, pager) {
 
-		const {$pager, from} = this.props
+		const {from} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -28,7 +27,7 @@ $$.control.registerControl('addContactPage', {
 					console.log('data', data)
 					users.addContact(data.name, data.email).then(() => {
 						console.log('contact added !')
-						$pager.popPage()
+						pager.popPage()
 					})
 					.catch((err) => {
 						$$.ui.showAlert({title: 'Error', content: err.responseText})

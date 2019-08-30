@@ -1,16 +1,10 @@
 $$.control.registerControl('rootPage', {
 
-	deps: ['breizbot.broker', 'breizbot.appData'],
+	deps: ['breizbot.broker', 'breizbot.appData', 'breizbot.pager'],
 
 	template: {gulp_inject: './main.html'},
 
-	props: {
-		$pager: null
-	},
-
-	init: function(elt, broker, appData) {
-
-		const {$pager} = this.props
+	init: function(elt, broker, appData, pager) {
 
 		const {zoom, center} = appData.getData()
 
@@ -23,7 +17,7 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onSearch: function() {
 					console.log('onSearch')
-					$pager.pushPage('searchPage', {
+					pager.pushPage('searchPage', {
 						title: 'Search City',
 						onReturn: function(coord) {
 							console.log('onReturn', coord)

@@ -2,15 +2,16 @@ $$.control.registerControl('files', {
 
 	template: {gulp_inject: './files.html'},
 
+	deps: ['breizbot.pager'],
+
 	props: {
-		$pager: null,
 		friendUser: ''
 	},
 
 
-	init: function(elt) {
+	init: function(elt, pager) {
 
-		const {$pager, friendUser} = this.props
+		const {friendUser} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -24,7 +25,7 @@ $$.control.registerControl('files', {
 					//console.log('files', files)
 					const firstIdx = files.findIndex((f) => f.name == fileName)
 					//console.log('firstIdx', firstIdx)
-					$pager.pushPage('player', {
+					pager.pushPage('player', {
 						title: 'Diaporama',
 						props: {
 							firstIdx,

@@ -2,15 +2,10 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
-	deps: ['breizbot.files'],
+	deps: ['breizbot.files', 'breizbot.pager'],
 
-	props: {
-		$pager: null
-	},
+	init: function(elt, files, pager) {
 
-	init: function(elt, files) {
-
-		const {$pager} = this.props
 		let range
 
 		const ctrl = $$.viewController(elt, {
@@ -38,7 +33,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onOpenFile: function(ev) {
 					console.log('onOpenFile')
-					$pager.pushPage('breizbot.files', {
+					pager.pushPage('breizbot.files', {
 						title: 'Open File',
 						props: {
 							filterExtension: '.doc'
@@ -56,7 +51,7 @@ $$.control.registerControl('rootPage', {
 				onInsertImage: function(ev) {
 					console.log('onInsertImage')
 
-					$pager.pushPage('breizbot.files', {
+					pager.pushPage('breizbot.files', {
 						title: 'Insert Image',
 						props: {
 							imageOnly: true,

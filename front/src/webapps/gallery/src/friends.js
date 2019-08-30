@@ -2,13 +2,9 @@ $$.control.registerControl('friends', {
 
 	template: {gulp_inject: './friends.html'},
 
-	props: {
-		$pager: null
-	},
+	deps: ['breizbot.pager'],
 
-	init: function(elt) {
-
-		const {$pager} = this.props
+	init: function(elt, pager) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -17,7 +13,7 @@ $$.control.registerControl('friends', {
 				onSelectFriend: function(ev, data) {
 					console.log('onSelectFriend', data)
 					const {userName} = data
-					$pager.pushPage('files', {
+					pager.pushPage('files', {
 						title: userName,
 						props: {
 							friendUser: userName

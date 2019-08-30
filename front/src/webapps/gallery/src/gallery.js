@@ -2,14 +2,13 @@ $$.control.registerControl('gallery', {
 
 	template: {gulp_inject: './gallery.html'},
 
-	deps: ['breizbot.files'],
+	deps: ['breizbot.files', 'breizbot.pager'],
 
 	props: {
 		rootDir: '',
 		files: [],
 		firstIdx: 0,
-		friendUser: '',
-		$pager: null
+		friendUser: ''
 	},
 
 	buttons: [
@@ -17,9 +16,9 @@ $$.control.registerControl('gallery', {
 		{name: 'pause', icon: 'fa fa-pause', title: 'Pause', visible: false}
 	],	
 
-	init: function(elt, filesSrv) {
+	init: function(elt, filesSrv, pager) {
 
-		const {rootDir, files, firstIdx, $pager, friendUser} = this.props
+		const {rootDir, files, firstIdx, friendUser} = this.props
 		const diaporamaInterval = 10 * 1000 // 10 sec
 
 		let timerId
@@ -81,7 +80,7 @@ $$.control.registerControl('gallery', {
 		function stopDiaporama() {
 			//console.log('stopDiaporama')
 			clearInterval(timerId)
-			$pager.setButtonVisible({play: true, pause: false})
+			pager.setButtonVisible({play: true, pause: false})
 			ctrl.setData({showButtons: true})
 			ctrl.scope.image.enableHandlers(true)
 			ctrl.scope.image.invalidateSize()
@@ -89,7 +88,7 @@ $$.control.registerControl('gallery', {
 		}
 
 		function startDiaporama() {
-			$pager.setButtonVisible({play: false, pause: true})
+			pager.setButtonVisible({play: false, pause: true})
 			ctrl.setData({showButtons: false})
 			ctrl.scope.image.enableHandlers(false)
 			ctrl.scope.image.invalidateSize()

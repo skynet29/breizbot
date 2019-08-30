@@ -5,14 +5,13 @@ $$.control.registerControl('viewerPage', {
 	template: {gulp_inject: './viewer.html'},
 
 	props: {
-		$pager: null,
 		fullName: '',
 		userName: ''
 	},
 	
 	init: function(elt, files) {
 
-		const {$pager, fullName, userName} = this.props
+		const {fullName, userName} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {

@@ -2,13 +2,10 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
-	props: {
-		$pager: null
-	},
+	deps: ['breizbot.pager'],
 
-	init: function(elt) {
 
-		const {$pager} = this.props
+	init: function(elt, pager) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -21,7 +18,7 @@ $$.control.registerControl('rootPage', {
 
 					const type = $$.util.getFileType(fileName)
 					if (type != undefined) {
-						$pager.pushPage('viewerPage', {
+						pager.pushPage('viewerPage', {
 							title: fileName,
 							props: {
 								fullName

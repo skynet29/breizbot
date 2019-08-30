@@ -1,18 +1,13 @@
 $$.control.registerControl('rootPage', {
 
-	deps: ['breizbot.files'],
+	deps: ['breizbot.files', 'breizbot.pager'],
 
 	template: {gulp_inject: './main.html'},
 
-	props: {
-		$pager: null
-	},
 
-	init: function(elt, srvFiles) {
+	init: function(elt, srvFiles, pager) {
 
 		const audio = new Audio('/webapps/camera/assets/camera_shutter.mp3')
-
-		const {$pager} = this.props
 
 
 		const ctrl = $$.viewController(elt, {
@@ -30,7 +25,7 @@ $$.control.registerControl('rootPage', {
 				onTakePicture: function(ev) {
 					audio.play()
 					const url = ctrl.scope.camera.takePicture()
-					$pager.pushPage('snapPage', {
+					pager.pushPage('snapPage', {
 						title: 'Snapshot', 
 						props: {url}
 					})					

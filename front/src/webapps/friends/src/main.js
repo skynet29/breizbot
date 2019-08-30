@@ -2,13 +2,9 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
-	props: {
-		$pager: null
-	},
+	deps: ['breizbot.pager'],
 
-	init: function(elt) {
-
-		const {$pager} = this.props
+	init: function(elt, pager) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -16,7 +12,7 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onAddFriend: function(ev) {
 					console.log('onAddFriend')
-					$pager.pushPage('addFriendPage', {
+					pager.pushPage('addFriendPage', {
 						title: 'Add Friend',
 						props: {
 							friends: ctrl.scope.friends.getFriends()

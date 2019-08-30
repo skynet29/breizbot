@@ -2,10 +2,9 @@ $$.control.registerControl('accountPage', {
 
 	template: {gulp_inject: './account.html'},
 
-	deps: ['app.mails'],
+	deps: ['app.mails', 'breizbot.pager'],
 
 	props: {
-		$pager: null,
 		data: null
 	},
 
@@ -13,9 +12,9 @@ $$.control.registerControl('accountPage', {
 		{name: 'create', icon: 'fa fa-check'}
 	],
 
-	init: function(elt, srvMail) {
+	init: function(elt, srvMail, pager) {
 
-		const {$pager, data} = this.props
+		const {data} = this.props
 
 		const map = {
 			'Gmail': {
@@ -71,12 +70,12 @@ $$.control.registerControl('accountPage', {
 					console.log('formData', formData)
 					if (data == null) {
 						srvMail.createMailAccount(formData).then(() => {
-							$pager.popPage()
+							pager.popPage()
 						})						
 					}
 					else {
 						srvMail.updateMailAccount(formData).then(() => {
-							$pager.popPage()
+							pager.popPage()
 						})												
 					}
 

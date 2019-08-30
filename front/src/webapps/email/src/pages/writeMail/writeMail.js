@@ -2,10 +2,9 @@ $$.control.registerControl('writeMailPage', {
 
 	template: {gulp_inject: './writeMail.html'},
 
-	deps: ['app.mails'],
+	deps: ['app.mails', 'breizbot.pager'],
 
 	props: {
-		$pager: null,
 		accountName: '',
 		data: {}
 	},
@@ -15,9 +14,9 @@ $$.control.registerControl('writeMailPage', {
 		{name: 'send', icon: 'fa fa-paper-plane'}
 	],	
 
-	init: function(elt, srvMail) {
+	init: function(elt, srvMail, pager) {
 
-		const {$pager, accountName, data} = this.props
+		const {accountName, data} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -36,7 +35,7 @@ $$.control.registerControl('writeMailPage', {
 
 					srvMail.sendMail(accountName, data)
 					.then(() => {
-						$pager.popPage()
+						pager.popPage()
 					})
 					.catch((e) => {
 						$$.ui.showAlert({title: 'Error', content: e.responseText})
@@ -45,7 +44,7 @@ $$.control.registerControl('writeMailPage', {
 				},
 				openContact: function() {
 					console.log('openContact')
-					$pager.pushPage('contactsPage', {
+					pager.pushPage('contactsPage', {
 						title: 'Select a contact',
 						onReturn: function(friends) {
 							const contacts = friends.map((a) => a.contactEmail)
@@ -83,7 +82,7 @@ $$.control.registerControl('writeMailPage', {
 				ctrl.scope.submit.click()
 			}
 			if( action == 'attachment') {
-				$pager.pushPage('breizbot.files', {
+				pager.pushPage('breizbot.files', {
 					title: 'Select a file to attach',
 					props: {
 						showThumbnail: true

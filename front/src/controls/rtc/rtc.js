@@ -1,6 +1,6 @@
 $$.control.registerControl('breizbot.rtc', {
 
-	deps: ['breizbot.rtc'],
+	deps: ['breizbot.rtc', 'breizbot.pager'],
 
 	props: {
 		appName: '',
@@ -10,9 +10,8 @@ $$.control.registerControl('breizbot.rtc', {
 
 	//template: {gulp_inject: './rtc.html'},
 
-	init: function(elt, rtc) {
+	init: function(elt, rtc, pager) {
 
-		const $pager = elt.closest('.brainjs-pager').iface()
 		const {appName, iconCls, title} = this.props
 
 		const $children = elt.children().remove()
@@ -33,7 +32,7 @@ $$.control.registerControl('breizbot.rtc', {
 				onCall: function(ev) {
 					console.log('onCall')
 
-					$pager.pushPage('breizbot.friendsPage', {
+					pager.pushPage('breizbot.friendsPage', {
 						title,
 						onReturn: function(userName) {
 							rtc.call(userName, appName, iconCls)					

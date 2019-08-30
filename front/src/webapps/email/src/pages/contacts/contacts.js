@@ -2,17 +2,13 @@ $$.control.registerControl('contactsPage', {
 
 	template: {gulp_inject: './contacts.html'},
 
-	props: {
-		$pager: null,
-	},
+	deps: ['breizbot.pager'],
 
 	buttons: [
 		{name: 'ok', icon: 'fa fa-check'}
 	],
 	
-	init: function(elt) {
-
-		const {$pager} = this.props
+	init: function(elt, pager) {
 
 		const ctrl = $$.viewController(elt)
 
@@ -20,7 +16,7 @@ $$.control.registerControl('contactsPage', {
 		this.onAction = function(action) {
 			console.log('onAction', action)
 			if (action == 'ok') {
-				$pager.popPage(ctrl.scope.contacts.getSelection())
+				pager.popPage(ctrl.scope.contacts.getSelection())
 			}
 		}
 	}

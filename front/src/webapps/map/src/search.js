@@ -2,14 +2,9 @@ $$.control.registerControl('searchPage', {
 
 	template: {gulp_inject: './search.html'},
 
-	deps: ['breizbot.cities'],
+	deps: ['breizbot.cities', 'breizbot.pager'],
 
-	props: {
-		$pager: null
-	},
-
-	init: function(elt, srvCities) {
-		const {$pager} = this.props
+	init: function(elt, srvCities, pager) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -39,7 +34,7 @@ $$.control.registerControl('searchPage', {
 					const idx = $(this).index()
 					const info = ctrl.model.cities[idx]
 					console.log('onItemClick', info)
-					$pager.popPage(info.coord)
+					pager.popPage(info.coord)
 
 				}
 			}

@@ -2,10 +2,9 @@ $$.control.registerControl('messagePage', {
 
 	template: {gulp_inject: './message.html'},
 
-	deps: ['app.mails', 'breizbot.users', 'breizbot.scheduler'],
+	deps: ['app.mails', 'breizbot.users', 'breizbot.scheduler', 'breizbot.pager'],
 
 	props: {
-		$pager: null,
 		currentAccount: '',
 		mailboxName: '',
 		item: null
@@ -16,9 +15,9 @@ $$.control.registerControl('messagePage', {
 		{name: 'replyAll', icon: 'fa fa-reply-all'}
 	],	
 
-	init: function(elt, srvMail, users, scheduler) {
+	init: function(elt, srvMail, users, scheduler, pager) {
 
-		const {$pager, currentAccount, mailboxName, item} = this.props
+		const {currentAccount, mailboxName, item} = this.props
 
 
 		const ctrl = $$.viewController(elt, {
@@ -52,7 +51,7 @@ $$.control.registerControl('messagePage', {
 						mailboxName,
 						seqno: item.seqno
 					}
-					$pager.pushPage('viewerPage', {
+					pager.pushPage('viewerPage', {
 						title: info.name,
 						props
 					})						
@@ -109,7 +108,7 @@ $$.control.registerControl('messagePage', {
 					console.log('onAddContact')
 					ev.preventDefault()
 					const from = $(this).data('addr')
-					$pager.pushPage('addContactPage', {
+					pager.pushPage('addContactPage', {
 						title: 'Add Contact',
 						props: {
 							from
@@ -146,7 +145,7 @@ $$.control.registerControl('messagePage', {
 
 		function replyMessage(text, to) {
 			//console.log('replyMessage', text)
-			$pager.pushPage('writeMailPage', {
+			pager.pushPage('writeMailPage', {
 				title: 'Reply message',
 				props: {
 					accountName: currentAccount,

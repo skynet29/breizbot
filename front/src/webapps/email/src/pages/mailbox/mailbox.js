@@ -2,10 +2,9 @@ $$.control.registerControl('mailboxPage', {
 
 	template: {gulp_inject: './mailbox.html'},
 
-	deps: ['app.mails'],
+	deps: ['app.mails', 'breizbot.pager'],
 
 	props: {
-		$pager: null,
 		currentAccount: '',
 		mailboxName: ''
 	},
@@ -18,9 +17,9 @@ $$.control.registerControl('mailboxPage', {
 	
 	],	
 
-	init: function(elt, srvMail) {
+	init: function(elt, srvMail, pager) {
 
-		const {$pager, currentAccount, mailboxName} = this.props
+		const {currentAccount, mailboxName} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -54,7 +53,7 @@ $$.control.registerControl('mailboxPage', {
 					// $(this).closest('tbody').find('tr').removeClass('w3-blue')
 					// $(this).addClass('w3-blue')
 					const item = $(this).closest('tr').data('item')
-					$pager.pushPage('messagePage', {
+					pager.pushPage('messagePage', {
 						title: `Message #${ctrl.model.nbMsg - item.seqno + 1}`,
 						props: {
 							currentAccount,
@@ -140,7 +139,7 @@ $$.control.registerControl('mailboxPage', {
 				seqNos.push(data.seqno)
 			})
 			console.log('seqNos', seqNos)
-			$pager.pushPage('boxesPage', {
+			pager.pushPage('boxesPage', {
 				title: 'Select target mailbox',
 				props: {
 					currentAccount
@@ -166,7 +165,7 @@ $$.control.registerControl('mailboxPage', {
 		load(1)
 
 		function newMessage() {
-			$pager.pushPage('writeMailPage', {
+			pager.pushPage('writeMailPage', {
 				title: 'New Message',
 				props: {
 					accountName: currentAccount

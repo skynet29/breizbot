@@ -1,11 +1,10 @@
 $$.control.registerControl('viewerPage', {
 
-	deps: ['breizbot.files'],
+	deps: ['breizbot.files', 'breizbot.pager'],
 
 	template: {gulp_inject: './viewer.html'},
 
 	props: {
-		$pager: null,
 		fullName: '',
 	},
 
@@ -13,9 +12,9 @@ $$.control.registerControl('viewerPage', {
 		{name: 'del', icon: 'fa fa-trash'}
 	],
 	
-	init: function(elt, files) {
+	init: function(elt, files, pager) {
 
-		const {$pager, fullName} = this.props
+		const {fullName} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -29,7 +28,7 @@ $$.control.registerControl('viewerPage', {
 			console.log('onAction', action)
 			if (action == 'del') {
 				ctrl.scope.viewer.remove(fullName, function(){
-					$pager.popPage('reload')
+					pager.popPage('reload')
 				})
 			}
 

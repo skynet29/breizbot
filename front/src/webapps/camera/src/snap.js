@@ -1,11 +1,10 @@
 $$.control.registerControl('snapPage', {
 
-	deps: ['breizbot.files'],
+	deps: ['breizbot.files', 'breizbot.pager'],
 
 	template: {gulp_inject: './snap.html'},
 
 	props: {
-		$pager: null,
 		url: null
 	},
 
@@ -13,9 +12,9 @@ $$.control.registerControl('snapPage', {
 		{label: 'Save', icon: 'fa fa-save'}
 	],	
 
-	init: function(elt, files) {
+	init: function(elt, files, pager) {
 
-		const {url, $pager} = this.props
+		const {url} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -30,7 +29,7 @@ $$.control.registerControl('snapPage', {
 			const blob = $$.util.dataURLtoBlob(url)
 			files.uploadFile(blob, fileName, '/apps/camera').then(function(resp) {
 				console.log('resp', resp)
-				$pager.popPage()
+				pager.popPage()
 			})	
 			.catch(function(resp) {
 				$$.ui.showAlert({

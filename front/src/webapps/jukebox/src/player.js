@@ -2,19 +2,18 @@ $$.control.registerControl('player', {
 
 	template: {gulp_inject: './player.html'},
 
-	deps: ['breizbot.files'],
+	deps: ['breizbot.files', 'breizbot.pager'],
 
 	props: {
 		rootDir: '',
 		files: [],
 		firstIdx: 0,
-		$pager: null,
 		friendUser: ''
 	},
 
-	init: function(elt, filesSrv) {
+	init: function(elt, filesSrv, pager) {
 
-		const {rootDir, files, firstIdx, $pager, friendUser} = this.props
+		const {rootDir, files, firstIdx, friendUser} = this.props
 
 		let shuffleIndexes = null
 

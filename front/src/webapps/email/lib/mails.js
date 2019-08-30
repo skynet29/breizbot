@@ -92,6 +92,7 @@ module.exports = function(ctx) {
     if (headers.from != undefined && headers.from[0] != undefined) {
       addr = addrs.parseOneAddress(headers.from[0])
       if (addr == null) {
+        console.log('headers', headers.from[0])
         addr = {name: 'decoded error', address: ''}
       }
     }

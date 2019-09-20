@@ -136,7 +136,7 @@ $$.control.registerControl('breizbot.files', {
 					}
 				},
 				onCheckClick: function(ev, info, value) {
-					console.log('onCheckClick', info, value)
+					//console.log('onCheckClick', info, value)
 
 					//console.log('info', info)
 					if (info.name == 'share' && ctrl.model.rootDir == '/') {

@@ -115,7 +115,7 @@ $$.control.registerControl('breizbot.fsbase', {
 			}
 			if (selectMode != undefined && selectMode != ctrl.model.selectMode) {
 				ctrl.model.selectMode = selectMode
-				ctrl.forceUpdate('files')
+				elt.find('.check').setVisible(selectMode)
 			}
 			if (showThumbnail != undefined && showThumbnail != ctrl.model.showThumbnail) {
 				ctrl.setData({showThumbnail})
@@ -130,7 +130,7 @@ $$.control.registerControl('breizbot.fsbase', {
 				
 				selFiles.push(info)
 			})
-			console.log('selFiles', selFiles)	
+			//console.log('selFiles', selFiles)	
 			return selFiles		
 		}
 

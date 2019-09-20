@@ -1,20 +1,26 @@
-<div 
-	class="image" 
-	bn-control="brainjs.image" 
-	bn-data="{src: url}" 
-	bn-if="type == 'image'"
-	style="height: 100%">
+<div bn-if="type == 'image'">
+	<div 
+		class="image" 
+		bn-control="brainjs.image" 
+		bn-data="{src: url}" 
 		
-	</div>
+		style="height: 100%">
+			
+		</div>
+	
+</div>
 
-<div 
-	class="pdf" 
-	bn-control="breizbot.pdf" 
-	bn-data="{url}" 
-	bn-if="type == 'pdf'"
-	style="height: 100%">
+
+<div bn-if="type == 'pdf'">
+	<div 
+		class="pdf" 
+		bn-control="breizbot.pdf" 
+		bn-data="{url}" 
 		
-	</div>	
+		style="height: 100%">
+			
+		</div>		
+</div>
 
 <div bn-if="type == 'audio'" class="audio">
 	<audio bn-attr="{src: url}" controls="" controlsList=nodownload></audio>

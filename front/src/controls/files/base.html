@@ -6,7 +6,7 @@
 	
 	<div class="thumbnail w3-card-2" bn-control="brainjs.contextmenu" bn-data="{items: f.items || {}}">	
 
-			<span bn-if="f.name != '..'">
+			<span bn-if="if1">
 				<input type="checkbox" bn-show="selectMode" class="check w3-check">						
 			</span>
 			<div bn-if="f.folder" class="folder item">
@@ -16,26 +16,26 @@
 				
 				<div class="info">
 					<strong bn-text="f.name"></strong>		
-					<span bn-text="getDate(f.mtime)" bn-if="f.name != '..'"></span>										
+					<span bn-text="getDate" bn-if="if1"></span>										
 				</div>
 			</div>
 			<div 
-				bn-if="!f.folder && !f.isImage"  
+				bn-if="if2"  
 				class="file item"
 				>
 				<div class="icon">
-					<i bn-attr="{class: `fa fa-4x w3-text-blue-grey ${getIconClass(f.name)}`}"></i>
+					<i bn-attr="attr1"></i>
 				</div>
 				
 				<div class="info">
 					<strong bn-text="f.name"></strong>
-					<span bn-text="getDate(f.mtime)"></span>							
-					<span bn-text="getSize(f.size)"></span>	
+					<span bn-text="getDate"></span>							
+					<span bn-text="getSize"></span>	
 				</div>
 			</div>			
 
 			<div 
-				bn-if="!f.folder && f.isImage"  
+				bn-if="if3"  
 				class="file item"
 				>
 				<div class="icon">
@@ -44,9 +44,9 @@
 				
 				<div class="info">
 					<strong bn-text="f.name"></strong>
-					<span bn-text="getDate(f.mtime)"></span>
-					<span bn-text="getSize(f.size)"></span>						
-					<span bn-text="getDimension(f.dimension)"></span>					
+					<span bn-text="getDate"></span>
+					<span bn-text="getSize"></span>						
+					<span bn-text="getDimension"></span>					
 				</div>
 			</div>	
 		

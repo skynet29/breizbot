@@ -16,7 +16,20 @@ $$.control.registerControl('breizbot.viewer', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				url,
-				type
+				type,
+				if1: function() {
+					return this.type == 'image'
+				},
+				if2: function() {
+					return this.type == 'pdf'
+				},
+				if3: function() {
+					return this.type == 'audio'
+				},
+				if4: function() {
+					return this.type == 'video'
+				}
+
 			}
 		})
 

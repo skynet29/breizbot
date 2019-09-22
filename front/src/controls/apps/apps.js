@@ -16,7 +16,16 @@ $$.control.registerControl('breizbot.apps', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				apps,
-				showActivated
+				showActivated,
+				show1: function() {
+					return this.showActivated && this.app.activated
+				},
+				class1: function() {
+					return {class: `tile w3-btn ${this.app.props.colorCls}`}
+				},
+				show2: function() {
+					return typeof this.app.props.iconCls == 'string'
+				}
 			},
 			events: {
 				onTileClick: function(ev) {

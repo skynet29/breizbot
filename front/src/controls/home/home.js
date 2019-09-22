@@ -61,8 +61,35 @@ $$.control.registerControl('breizbot.home', {
 				callInfo: null,
 				fullScreen: false,
 				connected: false,
+				hasNotif: function() {
+					return this.nbNotif > 0
+				},
+				data1: function() {
+					return {
+								trigger: 'left', 
+								title: (this.callInfo && this.callInfo.from) || '' ,
+								items: {
+									accept: {name: 'Accept'},
+									deny: {name: 'Decline'},
+								}
+							}	
+				},
+				attr1: function() {
+					return {class: this.callInfo && this.callInfo.iconCls}
+				},
+				data2: function() {
+					return {
+						items: {
+							pwd: {name: 'Change password', icon: 'fas fa-lock'},
+							apps: {name: 'Applications', icon: 'fas fa-th'},
+							sep: '------',
+							logout: {name: 'Logout', icon: 'fas fa-power-off'}
+						},
+						title: userName
+					}
+				},			
 				getMyApps: function() {
-					return apps.filter((a) => a.activated)
+					return this.apps.filter((a) => a.activated)
 				}
 
 			},

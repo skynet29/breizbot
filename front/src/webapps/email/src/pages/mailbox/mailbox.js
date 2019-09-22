@@ -30,21 +30,33 @@ $$.control.registerControl('mailboxPage', {
 				check: false,
 				loading: false,
 				mailboxName,
+				show1: function() {
+					return !this.loading && this.nbMsg > 0
+				},
+				text1: function() {
+					return `${this.pageNo} / ${this.nbPage}`
+				},
+				text2: function() {
+					return this.$i.to[0] && this.$i.to[0].name
+				},
+				attr1: function() {
+					return {title: this.$i.to[0] && this.$i.to[0].email}
+				},
 
-
-				getDate: function(date) {
+				getDate: function() {
 					//console.log('getDate', date)
+					const date = this.$i.date
 					const d = new Date(date)
 					//console.log('d', d)
 					return d.toLocaleDateString('fr-FR')
 				},
 
-				isSeen: function(flags) {
-					return flags.includes('\\Seen')
+				isSeen: function() {
+					return this.$i.flags.includes('\\Seen')
 				},
 
-				isSentBox: function(mailboxName) {
-					return mailboxName == 'Sent'
+				isSentBox: function() {
+					return this.mailboxName == 'Sent'
 				}
 
 			},

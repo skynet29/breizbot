@@ -12,8 +12,14 @@ $$.control.registerControl('rootPage', {
 				accounts: [],
 				currentAccount: '',
 				mailboxes: [],
+				show1: function() {
+					return this.accounts.length == 0
+				},
+				show2: function() {
+					return this.accounts.length > 0
+				},
 				getItems: function() {
-					if (accounts.length == 0) {
+					if (this.accounts.length == 0) {
 						return {
 							add: {name: 'Add Account', icon: 'fas fa-plus'},
 						}

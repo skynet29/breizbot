@@ -1,3 +1,12 @@
+(function() {
+
+function getTime(duration) {
+	const d = new Date(duration * 1000)
+	const v = d.getMinutes() + d.getSeconds()/100
+	return v.toFixed(2).replace('.', ':')
+}
+
+
 $$.control.registerControl('player', {
 
 	template: {gulp_inject: './player.html'},
@@ -26,13 +35,14 @@ $$.control.registerControl('player', {
 				duration: 0,
 				curTime: 0,
 				playing: false,
-				getTime :function(duration) {
-					const d = new Date(duration * 1000)
-					const v = d.getMinutes() + d.getSeconds()/100
-					return v.toFixed(2).replace('.', ':')
+				prop1: function() {
+					return {disabled: !(this.idx > 0)}
+				},
+				prop2: function() {
+					return {disabled: !(this.idx < this.nbFiles - 1)}
 				},
 				getTimeInfo: function() {
-					return `${getTime(curTime)} / ${getTime(duration)}`
+					return `${getTime(this.curTime)} / ${getTime(this.duration)}`
 				}
 
 			},
@@ -155,6 +165,7 @@ $$.control.registerControl('player', {
 
 });
 
+})();
 
 
 

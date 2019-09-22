@@ -30,7 +30,13 @@ $$.control.registerControl('gallery', {
 				src: getFileUrl(firstIdx),
 				thumbnails: getThumbnailsUrl(),
 				width: getThumbnailWidth() + 'px',
-				showButtons: true
+				showButtons: true,
+				show1: function() {
+					return this.idx > 0
+				},
+				show2: function() {
+					return this.idx < this.nbImages - 1
+				}
 			},
 			events: {
 				onPrevImage: function() {

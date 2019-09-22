@@ -1,4 +1,4 @@
-<form bn-event="submit: onSubmit" bn-show="countries.length > 0">
+<form bn-event="submit: onSubmit" bn-show="show1">
 	<div class="inputgroup">
 		<label>Country:</label>
 		<span 
@@ -28,11 +28,11 @@
 	<i class="fa fa-spinner fa-pulse"></i> Running...
 </div>
 
-<div class="scrollPanel" bn-show="countries.length > 0 && cities.length > 0">
+<div class="scrollPanel" bn-show="show2">
 	<ul class="w3-ul w3-border w3-white" 
 		bn-event="click.w3-bar: onItemClick"
 		bn-each="cities"
-		bn-show="cities.length > 0"
+		bn-show="show3"
 		>
 		<li class="w3-bar">
 

@@ -1,7 +1,7 @@
 <div class="toolbar">
 	<div>
-		<div bn-show="!loading && nbMsg > 0">
-			<span >Page: <span bn-text="`${pageNo} / ${nbPage}`"></span></span>
+		<div bn-show="show1">
+			<span >Page: <span bn-text="text1"></span></span>
 			<button class="w3-button" title="previous page" bn-event="click: onPrevPage">
 				<i class="fa fa-angle-left"></i>
 			</button>			
@@ -22,21 +22,21 @@
 		<thead>
 			<tr class="w3-green">
 				<th><input type="checkbox" bn-event="click: onMainCheckBoxClick" bn-val="check" bn-update="click"></th>
-				<th bn-show="!isSentBox(mailboxName)">From</th>
-				<th bn-show="isSentBox(mailboxName)">To</th>
+				<th bn-show="!isSentBox">From</th>
+				<th bn-show="isSentBox">To</th>
 				<th>Subject</th>
 				<th title="nb Attachments"><i class="fa fa-paperclip"></i></th>
 				<th>Date</th>
 			</tr>
 		</thead>
 		<tbody bn-each="messages" bn-event="click.item: onItemClick">
-			<tr bn-data="{item: $i}" bn-class="{unseen: !isSeen($i.flags)}">
+			<tr bn-data="{item: $i}" bn-class="{unseen: !isSeen}">
 				<th><input type="checkbox" class="check" ></th>
-				<td bn-text="$i.from.name" bn-attr="{title: $i.from.email}" bn-show="!isSentBox(mailboxName)"></td>
-				<td bn-text="$i.to[0] && $i.to[0].name" bn-attr="{title: $i.to[0] && $i.to[0].email}" bn-show="isSentBox(mailboxName)"></td>
+				<td bn-text="$i.from.name" bn-attr="{title: $i.from.email}" bn-show="!isSentBox"></td>
+				<td bn-text="text2" bn-attr="attr1" bn-show="isSentBox"></td>
 				<td bn-text="$i.subject" class="item" ></td>
 				<td bn-text="$i.nbAttachments"></td>
-				<td bn-text="getDate($i.date)"></td>
+				<td bn-text="getDate"></td>
 			</tr>
 		</tbody>
 	</table>

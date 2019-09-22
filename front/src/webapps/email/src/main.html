@@ -1,7 +1,7 @@
 <div class="toolbar">
 	<div class="info">
-		<span bn-show="accounts.length == 0">You have no email account</span>
-		<div bn-show="accounts.length > 0" class="account">
+		<span bn-show="show1">You have no email account</span>
+		<div bn-show="show2" class="account">
 			<span>Account:&nbsp;</span> 
 			<div 
 				bn-control="brainjs.selectmenu" 
@@ -14,9 +14,7 @@
 	</div>
 	<div>
 		<div bn-control="brainjs.contextmenu" 
-			bn-data="{
-				items: getItems()
-			}" 
+			bn-data="{items: getItems}" 
 			data-trigger="left" 
 			class="w3-button w3-blue" 
 			bn-event="contextmenuchange: onMenu"

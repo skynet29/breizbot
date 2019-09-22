@@ -2,12 +2,7 @@
 	style="height: 100%"
 	bn-iface="map"
 	class="map" 
-	bn-data="{
-		center,
-		zoom,
-		scale: true,
-		coordinates: true
-	}"
+	bn-data="{center, zoom, scale: true, coordinates: true}"
 	></div>	
 <div class="toolbar">
 	<div class="location">
@@ -22,7 +17,7 @@
 		</div>		
 	</div>
 
-	<div bn-show="watchID == null">
+	<div bn-show="show1">
 		<button class="w3-button w3-blue" bn-event="click: onSearch" title="Search city">
 			<i class="fa fa-search-location"></i>
 		</button>		

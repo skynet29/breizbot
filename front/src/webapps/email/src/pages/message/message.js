@@ -28,7 +28,23 @@ $$.control.registerControl('messagePage', {
 				text: '',
 				item,
 				attachments: [],
-				getSize: function(size) {
+				show1: function() {
+					return this.item.to.length > 0
+				},
+				show2: function() {
+					return this.attachments.length > 0
+				},
+				show3: function() {
+					return this.embeddedImages.length > 0
+				},
+				show4: function() {
+					return !this.loading && this.isHtml
+				},
+				show5: function() {
+					return !this.loading && !this.isHtml
+				},
+				getSize: function() {
+					let size = this.$i.size
 					//console.log('getSize', size)
 					size /= 1024
 					let unit = 'Ko'

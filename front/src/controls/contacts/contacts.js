@@ -17,7 +17,13 @@ $$.control.registerControl('breizbot.contacts', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				contacts: [],
-				showDeleteButton
+				showDeleteButton,
+				show1: function() {
+					return this.contacts.length > 0
+				},
+				show2: function() {
+					return this.contacts.length == 0
+				}
 			},
 			events: {
 				onItemClick: function() {

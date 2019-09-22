@@ -1,16 +1,12 @@
 <ul class="w3-ul w3-border w3-white" 
-	bn-each="friends" bn-show="friends.length > 0" bn-event="click.w3-bar: onItemClick, click.notif: onSendMessage">
+	bn-each="friends" bn-show="show1" bn-event="click.w3-bar: onItemClick, click.notif: onSendMessage">
 	<li class="w3-bar" bn-data="{item: $i}" style="cursor: pointer;">
 		<span class="w3-button w3-right notif w3-blue" title="Send Message" bn-show="showSendMessage"><i class="fa fa-envelope"></i></span>
 
 		<div class="w3-bar-item">
-			<i class="fa fa-user" bn-class="{
-				'w3-text-green': $i.isConnected && showConnectionState,
-				'w3-text-red': !$i.isConnected && showConnectionState,
-				'w3-text-blue': !showConnectionState
-			}"></i>
+			<i class="fa fa-user" bn-class="class1"></i>
 			<span bn-text="$i.friendUserName"></span>
 		</div>
 	</li>
 </ul>	
-<p bn-show="friends.length == 0">You have no friends</p>
+<p bn-show="show2">You have no friends</p>

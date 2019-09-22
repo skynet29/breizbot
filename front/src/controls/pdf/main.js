@@ -17,7 +17,10 @@ $$.control.registerControl('breizbot.pdf', {
 				numPages: 0,
 				title: '',
 				currentPage: 1,
-				wait: false
+				wait: false,
+				show1: function() {
+					return this.numPages > 1 && !this.wait
+				}
 			},
 			events: {
 				onNextPage: function(ev) {

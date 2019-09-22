@@ -18,7 +18,22 @@ $$.control.registerControl('breizbot.friends', {
 			data: {
 				friends: [],
 				showSendMessage,
-				showConnectionState
+				showConnectionState,
+				show1: function() {
+					return this.friends.length > 0
+				},
+				show2: function() {
+					return this.friends.length == 0
+				},
+				class1: function() {
+					const $i = this.$i
+					const showConnectionState = this.showConnectionState
+					return {
+						'w3-text-green': $i.isConnected && showConnectionState,
+						'w3-text-red': !$i.isConnected && showConnectionState,
+						'w3-text-blue': !showConnectionState
+					}
+				}
 			},
 			events: {
 				onItemClick: function() {

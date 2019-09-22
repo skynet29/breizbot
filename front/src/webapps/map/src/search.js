@@ -12,7 +12,16 @@ $$.control.registerControl('searchPage', {
 				currentCountry: '',
 				cities: [],
 				message: '',
-				running: false
+				running: false,
+				show1: function() {
+					return this.countries.length > 0
+				},
+				show2: function() {
+					return this.countries.length > 0 && this.cities.length > 0
+				},
+				show3: function() {
+					return this.cities.length > 0
+				}
 			},
 			events: {
 				onSubmit: function(ev) {

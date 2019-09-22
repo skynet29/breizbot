@@ -1,3 +1,21 @@
+(function(){
+
+function getIconClass(name) {
+	if (name.endsWith('.pdf')) {
+		return 'fa-file-pdf'
+	}
+	if (name.endsWith('.doc')) {
+		return 'fa-file-word'
+	}
+	if (name.endsWith('.ogg') || name.endsWith('.mp3')) {
+		return 'fa-file-audio'
+	}
+	if (name.endsWith('.mp4')) {
+		return 'fa-file-video'
+	}
+	return 'fa-file'
+}
+
 $$.control.registerControl('breizbot.fsbase', {
 	props: {
 		files: [],
@@ -21,7 +39,20 @@ $$.control.registerControl('breizbot.fsbase', {
 				selectMode: false,
 				files,
 				selectMode,
-				getSize: function(size) {
+				if1: function() {
+					return this.f.name != '..'
+				},
+				if2: function() {
+					return !this.f.folder && !this.f.isImage
+				},
+				if3: function() {
+					return !this.f.folder && this.f.isImage
+				},
+				attr1: function() {
+					return {class: `fa fa-4x w3-text-blue-grey ${getIconClass(this.f.name)}`}
+				},
+				getSize: function() {
+					let size = this.f.size
 					let unit = 'octets'
 					if (size > 1024) {
 						unit = 'Ko'
@@ -37,27 +68,14 @@ $$.control.registerControl('breizbot.fsbase', {
 					return 'Size: ' + size + ' ' + unit
 				},
 
-				getDimension: function(d) {
+				getDimension: function() {
+					const d = this.f.dimension
 					return `Dimension: ${d.width}x${d.height}`
 				},
 
-				getIconClass: function(name) {
-					if (name.endsWith('.pdf')) {
-						return 'fa-file-pdf'
-					}
-					if (name.endsWith('.doc')) {
-						return 'fa-file-word'
-					}
-					if (name.endsWith('.ogg') || name.endsWith('.mp3')) {
-						return 'fa-file-audio'
-					}
-					if (name.endsWith('.mp4')) {
-						return 'fa-file-video'
-					}
-					return 'fa-file'
-				},
-				getDate: function(timeMs) {
-					const date = new Date(timeMs).toLocaleDateString()
+
+				getDate: function() {
+					const date = new Date(this.f.mtime).toLocaleDateString()
 					return 'Last Modif: ' + date
 
 				}
@@ -141,3 +159,6 @@ $$.control.registerControl('breizbot.fsbase', {
 	$events: 'fileclick'
 
 });
+
+})();
+

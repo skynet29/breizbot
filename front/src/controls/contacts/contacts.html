@@ -1,8 +1,8 @@
-<p bn-show="contacts.length == 0">You have no contacts</p>
+<p bn-show="show2">You have no contacts</p>
 <ul class="w3-ul w3-border w3-white" 
 	bn-event="click.w3-bar: onItemClick, click.delete: onDeleteItem"
 	bn-each="contacts"
-	bn-show="contacts.length > 0"
+	bn-show="show1"
 	>
 	<li class="w3-bar" bn-data="{item: $i}">
 		<span class="w3-button w3-right delete" title="Delete" bn-show="showDeleteButton"><i class="fa fa-trash"></i></span>

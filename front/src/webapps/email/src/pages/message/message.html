@@ -5,7 +5,7 @@
 <div class="header w3-blue" bn-show="!loading">
 	<div class="from"><strong>From:</strong><a href="#" bn-text="item.from.name" bn-event="click: onAddContact" bn-data="{addr: item.from}"></a></div>
 	<div class="subject"><strong>Subject:</strong><span bn-text="item.subject" ></span></div>
-	<div bn-show="item.to.length > 0" class="to">
+	<div bn-show="show1" class="to">
 		<strong bn-event="click: onToggleDiv"><i class="fa fa-caret-down fa-fw"></i>
 		To</strong>
 		<ul bn-each="item.to">
@@ -14,29 +14,29 @@
 			</li>
 		</ul>
 	</div>
-	<div class="attachments" bn-show="attachments.length > 0">
+	<div class="attachments" bn-show="show2">
 		<strong bn-event="click: onToggleDiv"><i class="fa fa-caret-down fa-fw"></i>
 		Attachments</strong>
 		<ul  bn-each="attachments" bn-event="click.item: onItemClick">
 			<li bn-show="$i.canOpen">
 				<a href="#" bn-text="$i.name" class="item" bn-data="{item: $i}"></a>
-				<span bn-text="getSize($i.size)"></span></li>
+				<span bn-text="getSize"></span></li>
 			<li bn-show="!$i.canOpen">
 				<span bn-text="$i.name"></span>
-				<span bn-text="getSize($i.size)"></span></li>				
+				<span bn-text="getSize"></span></li>				
 			</li>
 		</ul>
 	</div>
 	
 </div>
 
-<div class="mainHtml" bn-show="!loading && isHtml">
-	<div bn-show="embeddedImages.length > 0" class="embeddedImages w3-pale-yellow">
+<div class="mainHtml" bn-show="show4">
+	<div bn-show="show3" class="embeddedImages w3-pale-yellow">
 		<a href="#" bn-event="click: onEmbeddedImages">Download embedded images</a>
 	</div>
 	<iframe bn-attr="{srcdoc:text}" bn-bind="iframe" bn-event="load: onFrameLoaded"></iframe>
 </div>
 
-<div class="mainText" bn-show="!loading && !isHtml">
+<div class="mainText" bn-show="show5">
  	<pre bn-text="text"></pre>
 </div>

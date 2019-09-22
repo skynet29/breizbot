@@ -7,12 +7,16 @@ $$.control.registerControl('rootPage', {
 	init: function(elt, broker, appData, pager) {
 
 		const {zoom, center} = appData.getData()
+		console.log('center', center)
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				center: center || {lat: 48.39, lng: -4.486},
 				zoom: zoom || 13,
-				watchID: null
+				watchID: null,
+				show1: function() {
+					return this.watchID == null
+				}
 			},
 			events: {
 				onSearch: function() {
@@ -107,6 +111,7 @@ $$.control.registerControl('rootPage', {
 		})
 
 		this.onAppExit = function() {
+			console.log('[map] onAppExit')
 			const {map} = ctrl.scope
 			return appData.saveData({zoom: map.getZoom(), center: map.getCenter()})
 		}

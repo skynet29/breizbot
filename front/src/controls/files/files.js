@@ -37,7 +37,16 @@ $$.control.registerControl('breizbot.files', {
 				selectedFiles: [],
 				operation: 'none',
 				nbSelection: 0,
-				isShareSelected: false
+				isShareSelected: false,
+				prop1: function() {
+					return {disabled: this.nbSelection == 0}
+				},
+				prop2: function() {
+					return {disabled: this.nbSelection == 0 || this.rootDir.startsWith('/share/') || this.isShareSelected}
+				},
+				prop3: function() {
+					return {disabled:  this.selectedFiles.length == 0}
+				}
 
 			},
 			events: {

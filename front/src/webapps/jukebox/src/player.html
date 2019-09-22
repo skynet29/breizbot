@@ -12,11 +12,11 @@
 			<i class="fa fa-pause"></i>
 		</button>
 		
-		<button bn-prop="{disabled: !(idx > 0)}" bn-event="click: onPrev">
+		<button bn-prop="prop1" bn-event="click: onPrev">
 			<i class="fa fa-step-backward"></i>
 		</button>
 		
-		<button bn-prop="{disabled: !(idx < nbFiles - 1)}" bn-event="click: onNext">
+		<button bn-prop="prop2" bn-event="click: onNext">
 			<i class="fa fa-step-forward"></i>
 		</button>		
 	</div>
@@ -38,7 +38,7 @@
 </div>
 
 <div class="slider">
-	<span bn-text="getTimeInfo()"></span>
+	<span bn-text="getTimeInfo"></span>
 	<div bn-control="brainjs.slider" 
 		bn-data="{max: duration}"
 		bn-event="input: onSliderChange" 		 

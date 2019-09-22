@@ -30,26 +30,26 @@
 		<div bn-control="brainjs.controlgroup">
 			<button title="Delete"
 				bn-event="click: onDeleteFiles"
-				bn-prop="{disabled: nbSelection == 0}"
+				bn-prop="prop1"
 			><i class="fa fa-trash"></i></button>
 
 			<button title="Cut"
-				bn-prop="{disabled: nbSelection == 0}"
+				bn-prop="prop1"
 				bn-event="click: onCutFiles"
 			><i class="fa fa-cut"></i></button>	
 
 			<button title="Copy"
-				bn-prop="{disabled: nbSelection == 0}"
+				bn-prop="prop1"
 				bn-event="click: onCopyFiles"
 				><i class="fa fa-copy"></i></button>
 
 			<button title="Share"
-				bn-prop="{disabled: nbSelection == 0 || rootDir.startsWith('/share/') || isShareSelected}"
+				bn-prop="prop2"
 				bn-event="click: onShareFiles"
 				><i class="fa fa-share-alt"></i></button>
 
 			<button title="Paste"
-				bn-prop="{disabled:  selectedFiles.length == 0}"
+				bn-prop="prop3"
 				bn-event="click: onPasteFiles"
 			><i class="fa fa-paste"></i></button>		
 		</div>

@@ -15,7 +15,10 @@ $$.control.registerControl('rootPage', {
 				ready: false,
 				videoDevices: [],
 				constraints: {video: true},
-				showMessage: false
+				showMessage: false,
+				show1: function() {
+					return this.videoDevices.length > 1
+				}
 			},
 			events: {
 				onCameraReady: function() {

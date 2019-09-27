@@ -9,7 +9,9 @@ $$.control.registerControl('rootPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				sphereRotation: [0, 0, 0],
-				boxPosition: [-1, 0, -3]
+				boxPosition: [-1, 0, -3],
+				position: function() {return this.boxPosition.join(' ')},
+				rotation: function() {return this.sphereRotation.join(' ')}
 				
 			},
 			events: {

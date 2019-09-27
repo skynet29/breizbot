@@ -26,7 +26,13 @@ $$.control.registerControl('breizbot.rtc', {
 			data: {
 				status: 'ready',
 				distant: '',
-				hasChildren: $children.length > 0
+				hasChildren: $children.length > 0,
+				show1: function() { 
+					return ['ready', 'disconnected', 'refused', 'canceled'].includes(this.status)
+				},
+				show2: function() {return this.status == 'calling'},
+				show3: function() {return this.status == 'connected'},
+				show4: function() {return this.status == 'connected' && this.hasChildren}
 			},
 			events: {
 				onCall: function(ev) {

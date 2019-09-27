@@ -15,7 +15,14 @@ $$.control.registerControl('rootPage', {
 				percent: 0,
 				results: [],
 				showInfo: true,
-				videoUrl: ''
+				videoUrl: '',
+				show1: function() {return this.showInfo && this.percent != 0},
+				show2: function() {return this.showInfo && this.results.length > 0},
+				show3: function() {return this.showInfo && this.title != ''},
+				show4: function() {return this.percent == 0},
+				text1: function() {
+					return new Date(this.length_seconds*1000).toLocaleTimeString('fr-FR', {timeZone: 'UTC'})
+				}
 			},
 			events: {
 				onStart: function(ev) {

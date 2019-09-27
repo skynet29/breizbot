@@ -13,7 +13,8 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				status: 'ready'
+				status: 'ready',
+				isConnected: function() {return this.status == 'connected'}
 			},
 			events: {
 				onHangup: function(ev) {

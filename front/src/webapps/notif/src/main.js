@@ -7,7 +7,14 @@ $$.control.registerControl('rootPage', {
 	init: function(elt, users, broker) {
 
 		const ctrl = $$.viewController(elt, {
-			data: {notifs: []},
+			data: {
+				notifs: [],
+				show1: function() {return typeof this.n.notif.text === 'string'},
+				show2: function() {return this.n.notif.reply === true},
+				text1: function() {return new Date(this.n.date).toLocaleDateString()},
+				text2: function() {return new Date(this.n.date).toLocaleTimeString()},
+				isInvit: function() {return this.n.notif.type === 'invit'}
+			},
 			events: {
 				onDelete: function() {
 					const item = $(this).closest('li').data('item')

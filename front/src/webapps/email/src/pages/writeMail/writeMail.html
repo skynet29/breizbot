@@ -4,7 +4,7 @@
 			<div class="openContactPanel">
 				<button class="w3-button w3-blue" type="button" bn-event="click: openContact">To:</button>
 			</div>
-			<input type="email" multiple="true" name="to" bn-prop="{autofocus: data.text == undefined}" required="" bn-bind="to">		
+			<input type="email" multiple="true" name="to" bn-prop="prop1" required="" bn-bind="to">		
 		</div>
 
 		<div bn-control="brainjs.inputgroup">
@@ -12,7 +12,7 @@
 			<input type="text" name="subject" required="">		
 		</div>	
 
-		<div bn-show="attachments.length > 0" class="attachments">
+		<div bn-show="show1" class="attachments">
 			<label><i class="fa fa-paperclip"></i></label>			
 			<ul bn-each="attachments" bn-event="click.delete: onRemoveAttachment">
 				<li>

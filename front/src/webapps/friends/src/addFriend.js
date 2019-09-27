@@ -14,7 +14,8 @@ $$.control.registerControl('addFriendPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				friends: []
+				friends: [],
+				show1: function() {return this.friends.length == 0}
 			},
 			events: {
 				onSearch: function(ev) {

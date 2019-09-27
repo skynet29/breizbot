@@ -9,8 +9,8 @@
 </div>
 <div class="video">
 
-	  <video bn-bind="localVideo" autoplay muted playsinline bn-class="{reduced: status == 'connected'}"></video>
-	  <video bn-bind="remoteVideo" autoplay playsinline bn-show="status == 'connected'"></video>	
+	  <video bn-bind="localVideo" autoplay muted playsinline bn-class="{reduced: isConnected}"></video>
+	  <video bn-bind="remoteVideo" autoplay playsinline bn-show="isConnected"></video>	
 </div>		
 
 

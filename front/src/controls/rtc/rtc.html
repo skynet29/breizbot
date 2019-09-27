@@ -9,21 +9,21 @@
 			<button 
 				title="Call a friend" 
 				bn-event="click: onCall"
-				bn-show="['ready', 'disconnected', 'refused', 'canceled'].includes(status)"
+				bn-show="show1"
 				class="w3-btn w3-green"><i class="fa fa-user"></i></button>
 
 			<button 
 				bn-event="click: onCancel"
-				bn-show="status == 'calling'"
+				bn-show="show2"
 				class="w3-btn w3-blue">Cancel</button>
 
 			<button 
 				title="Hangup" 
 				bn-event="click: onHangup"
-				bn-show="status == 'connected'"
+				bn-show="show3"
 				class="w3-btn w3-red">Stop</button>			
 		</div>
 
 
 </div>
-<div bn-show="status == 'connected' && hasChildren" bn-bind="panel" class="panel"></div>
+<div bn-show="show4" bn-bind="panel" class="panel"></div>

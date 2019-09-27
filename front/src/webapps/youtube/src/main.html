@@ -5,19 +5,19 @@
 	<button class="w3-button w3-blue" type="submit"><i class="fa fa-search"></i></button>
 </form>
 
-<div bn-show="showInfo && percent != 0" bn-control="brainjs.progressbar" bn-val="percent" bn-data="{showPercent: true}">
+<div bn-show="show1" bn-control="brainjs.progressbar" bn-val="percent" bn-data="{showPercent: true}">
 </div>
 
-<div bn-show="showInfo && results.length > 0">
+<div bn-show="show2">
 	<button class="w3-button w3-blue" title="Back to list" bn-event="click: onBackToList">
 		<i class="fa fa-chevron-left"></i>
 	</button>
 </div>	
 
-<div class="info" bn-show="showInfo && title != ''">
+<div class="info" bn-show="show3">
 	<div class="thumbnail">
 		<img bn-attr="{src: thumbnail_url}">
-		<div class="download" bn-show="percent == 0">
+		<div class="download" bn-show="show4">
 			<div>
 				<button 
 					class="w3-button w3-green" 
@@ -40,7 +40,7 @@
 			<strong>Title: </strong> <span bn-text="title"></span>				
 		</div>
 		<div>
-			<strong>Length: </strong><span bn-text="new Date(length_seconds*1000).toLocaleTimeString('fr-FR', {timeZone: 'UTC'})"></span>	
+			<strong>Length: </strong><span bn-text="text1"></span>	
 		</div>
 		<div class="description">
 			<strong>Description: </strong><textarea bn-text="description"></textarea>	

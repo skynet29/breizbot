@@ -33,19 +33,19 @@
 
 	
 
-		<div bn-control="brainjs.inputgroup" bn-show="provider == 'Other'">
+		<div bn-control="brainjs.inputgroup" bn-show="show1">
 			<label>IMAP Server</label>
 			<input type="text" name="imapHost" required="">			
 		</div>		
 
-		<div bn-control="brainjs.inputgroup"  bn-show="provider == 'Other'">
+		<div bn-control="brainjs.inputgroup"  bn-show="show1">
 			<label>SMTP Server</label>
 			<input type="text" name="smtpHost" required="">			
 		</div>		
 
 		<div class="copySent">
 			<label>Make a copy of sent mail in Sent folder</label>
-			<div bn-control="brainjs.flipswitch" bn-data="{height: 25, width: 100, texts: {left: 'YES', right: 'NO'}}" name="makeCopy"></div>
+			<div bn-control="brainjs.flipswitch" bn-data="data1" name="makeCopy"></div>
 		</div>
 
 		<input type="submit" hidden="" bn-bind="submit">

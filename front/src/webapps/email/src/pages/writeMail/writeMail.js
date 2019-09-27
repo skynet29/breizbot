@@ -21,7 +21,9 @@ $$.control.registerControl('writeMailPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				data,
-				attachments: []
+				attachments: [],
+				show1: function() {return this.attachments.length > 0},
+				prop1: function() {return {autofocus: this.data.text == undefined}}
 			},
 			events: {
 				onSend: function(ev) {

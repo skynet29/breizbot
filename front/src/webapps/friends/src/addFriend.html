@@ -3,11 +3,11 @@
 	<button class="w3-btn w3-blue" title="Search" type="submit"><i class="fa fa-search"></i></button>
 </form>
 <div class="scrollPanel">
-	<p bn-show="friends.length == 0">No results</p>
+	<p bn-show="show1">No results</p>
 	<ul class="w3-ul w3-border w3-white" 
 		bn-event="click.invit: onInvit"
 		bn-each="friends"
-		bn-show="friends.length > 0"
+		bn-show="!show1"
 		>
 		<li class="w3-bar">
 			<span class="w3-button w3-right invit" title="Invit" bn-data="{username: $i.username}"><i class="fa fa-plus"></i></span>

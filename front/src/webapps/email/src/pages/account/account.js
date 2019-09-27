@@ -61,7 +61,11 @@ $$.control.registerControl('accountPage', {
 				provider: (data != null) ? getProvider(data) : 'Gmail',
 				providers: Object.keys(map),
 				data,
-				isEdit: data != null
+				isEdit: data != null,
+				show1: function() {return this.provider == 'Other'},
+				data1: function() {
+					return {height: 25, width: 100, texts: {left: 'YES', right: 'NO'}}
+				}
 			},
 			events: {
 				onSubmit: function(ev) {

@@ -39,6 +39,7 @@ $$.control.registerControl('breizbot.fsbase', {
 				selectMode: false,
 				files,
 				selectMode,
+				data1: function() {return {items: this.f.items || {}}},
 				if1: function() {
 					return this.f.name != '..'
 				},

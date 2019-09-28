@@ -30,7 +30,8 @@ $$.control.registerControl('breizbot.apps', {
 			events: {
 				onTileClick: function(ev) {
 					//console.log('onTileClick', $(this).data('item'))
-					elt.trigger('appclick', $(this).data('item'))
+					const idx = $(this).index()
+					elt.trigger('appclick', ctrl.model.apps[idx])
 				}
 			}
 		})

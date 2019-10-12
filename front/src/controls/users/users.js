@@ -44,14 +44,15 @@ $$.control.registerControl('breizbot.users', {
 					const idx = $(this).closest('tr').index()
 					const {username} = ctrl.model.data[idx]
 					$$.ui.showConfirm({title: 'Delete User', content: 'Are you sure ?'}, function() {
-						users.remove(data.username).then(getUsers)
+						users.remove(username).then(getUsers)
 					})
 				},
 				onNotif: function(ev) {
 					const idx = $(this).closest('tr').index()
 					const {username} = ctrl.model.data[idx]
+					console.log('username', username)
 					$$.ui.showPrompt({title: 'Send Notification', label: 'Message'}, function(text) {
-						users.sendNotif(data.username, {text})
+						users.sendNotif(username, {text})
 					})
 				},
 				onUpdate: function() {

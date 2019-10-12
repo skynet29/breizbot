@@ -27,14 +27,14 @@
 				<td bn-text="$i.location"></td>
 				<td bn-text="$i.email"></td>
 				<td >
-					<span bn-text="new Date($i.createDate).toLocaleDateString('fr-FR')" bn-show="$i.createDate != undefined"></span>
+					<span bn-text="text1" bn-show="show1"></span>
 				</td>
 				<td>
-					<span bn-show="$i.lastLoginDate != undefined && $i.lastLoginDate != 0">
+					<span bn-show="show2">
 
-						<span bn-text="new Date($i.lastLoginDate).toLocaleDateString('fr-FR')"></span><br>
+						<span bn-text="text2"></span><br>
 						at 
-						<span bn-text="new Date($i.lastLoginDate).toLocaleTimeString('fr-FR')"></span>
+						<span bn-text="text3"></span>
 					</span>
 				</td>
 				<td>

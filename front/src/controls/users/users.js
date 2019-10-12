@@ -13,7 +13,22 @@ $$.control.registerControl('breizbot.users', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				data: []
+				data: [],
+				text1: function() {
+					return new Date(this.$i.createDate).toLocaleDateString('fr-FR')
+				},
+				text2: function() {
+					return new Date(this.$i.lastLoginDate).toLocaleDateString('fr-FR')
+				},
+				text3: function() {
+					return new Date(this.$i.lastLoginDate).toLocaleTimeString('fr-FR')
+				},
+				show1: function() {
+					return this.$i.createDate != undefined
+				},
+				show2: function() {
+					return this.$i.lastLoginDate != undefined && this.$i.lastLoginDate != 0
+				}
 			},
 			events: {
 				onAddUser: function(ev) {
@@ -26,14 +41,15 @@ $$.control.registerControl('breizbot.users', {
 					})
 				},
 				onDelete: function(ev) {
-					const data = $(this).closest('tr').data('item')
+					const idx = $(this).closest('tr').index()
+					const {username} = ctrl.model.data[idx]
 					$$.ui.showConfirm({title: 'Delete User', content: 'Are you sure ?'}, function() {
 						users.remove(data.username).then(getUsers)
 					})
 				},
 				onNotif: function(ev) {
-					const data = $(this).closest('tr').data('item')
-					console.log('onNotif', data)
+					const idx = $(this).closest('tr').index()
+					const {username} = ctrl.model.data[idx]
 					$$.ui.showPrompt({title: 'Send Notification', label: 'Message'}, function(text) {
 						users.sendNotif(data.username, {text})
 					})

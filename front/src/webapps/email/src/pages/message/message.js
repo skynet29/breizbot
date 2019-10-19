@@ -11,8 +11,8 @@ $$.control.registerControl('messagePage', {
 	},
 
 	buttons: [
-		{name: 'reply', icon: 'fa fa-reply'},
-		{name: 'replyAll', icon: 'fa fa-reply-all'}
+		{name: 'reply', icon: 'fa fa-reply', title: 'Reply'},
+		{name: 'replyAll', icon: 'fa fa-reply-all', title: 'Reply All'}
 	],	
 
 	init: function(elt, srvMail, users, scheduler, pager) {

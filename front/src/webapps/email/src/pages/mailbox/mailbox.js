@@ -10,10 +10,10 @@ $$.control.registerControl('mailboxPage', {
 	},
 
 	buttons: [
-		{name: 'reload', icon: 'fa fa-sync-alt'},
-		{name: 'newMail', icon: 'fa fa-envelope'},
-		{name: 'move', icon: 'fa fa-file-export'},
-		{name: 'delete', icon: 'fa fa-trash'}
+		{name: 'reload', icon: 'fa fa-sync-alt', title: 'Update'},
+		{name: 'newMail', icon: 'fa fa-envelope', title: 'New Message'},
+		{name: 'move', icon: 'fa fa-file-export', title: 'Move selected messages'},
+		{name: 'delete', icon: 'fa fa-trash', title: 'Delete selected messages'}
 	
 	],	
 

@@ -17,13 +17,10 @@
 	<div class="attachments" bn-show="show2">
 		<strong bn-event="click: onToggleDiv"><i class="fa fa-caret-down fa-fw"></i>
 		Attachments</strong>
-		<ul  bn-each="attachments" bn-event="click.item: onItemClick">
-			<li bn-show="$i.canOpen">
+		<ul  bn-each="attachments" bn-event="click.item: openAttachment">
+			<li>
 				<a href="#" bn-text="$i.name" class="item" bn-data="{item: $i}"></a>
-				<span bn-text="getSize"></span></li>
-			<li bn-show="!$i.canOpen">
-				<span bn-text="$i.name"></span>
-				<span bn-text="getSize"></span></li>				
+				<span bn-text="getSize"></span>
 			</li>
 		</ul>
 	</div>

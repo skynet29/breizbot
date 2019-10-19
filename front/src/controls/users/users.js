@@ -50,7 +50,6 @@ $$.control.registerControl('breizbot.users', {
 				onNotif: function(ev) {
 					const idx = $(this).closest('tr').index()
 					const {username} = ctrl.model.data[idx]
-					console.log('username', username)
 					$$.ui.showPrompt({title: 'Send Notification', label: 'Message'}, function(text) {
 						users.sendNotif(username, {text})
 					})
@@ -73,9 +72,6 @@ $$.control.registerControl('breizbot.users', {
 
 
 
-	},
+	}
 
-	$iface: `
-		onReturn(formData)
-	`
 });

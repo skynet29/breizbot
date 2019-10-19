@@ -20,6 +20,14 @@ $$.control.registerControl('messagePage', {
 		const {currentAccount, mailboxName, item} = this.props
 
 
+		const waitDlg = $$.dialogController({
+			title: 'Loading ...',
+			template: `<div class="w3-center w3-padding-16"><i class="fa fa-redo-alt fa-2x fa-pulse w3-text-blue"></i></div>`,
+			width: 100,
+			canClose: false
+		})
+
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				embeddedImages: [],
@@ -57,20 +65,48 @@ $$.control.registerControl('messagePage', {
 				}
 			},
 			events: {
-				onItemClick: function(ev) {
+				openAttachment: function(ev) {
 					ev.preventDefault()
-					const info = $(this).data('item')
-					console.log('onItemClick', info)
-					const props = {
-						info,
-						currentAccount,
-						mailboxName,
-						seqno: item.seqno
+					const idx = $(this).closest('li').index()
+					const info = ctrl.model.attachments[idx]
+
+					console.log('openAttachments', info)
+
+					if (info.canOpen) {
+						const props = {
+							info,
+							currentAccount,
+							mailboxName,
+							seqno: item.seqno
+						}
+						pager.pushPage('viewerPage', {
+							title: info.name,
+							props
+						})												
 					}
-					pager.pushPage('viewerPage', {
-						title: info.name,
-						props
-					})						
+					else {
+						$$.ui.showConfirm({
+							title: 'Open Attachment', 
+							okText: 'YES',
+							cancelText: 'NO',
+							content: `This attachment cannot be open with NetOS<br>
+								Do you want to download it ?`
+							},
+							function() {
+								console.log('OK')
+								const {partID, type, subtype} = info
+								waitDlg.show()
+								srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID).then((message) => {
+									//console.log('message', message)
+									waitDlg.hide()
+									const url = `data:${type}/${subtype};base64,` + message.data
+									$$.util.downloadUrl(url, info.name)
+
+								})
+
+							}
+						)
+					}
 
 				},
 				onToggleDiv: function(ev) {

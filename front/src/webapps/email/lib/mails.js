@@ -159,7 +159,7 @@ module.exports = function(ctx) {
   }
 
   function parseStruct(struct, parts) {
-    //console.log('getInfo', struct)
+    //console.log('parseStruct', struct)
 
     const info = struct.shift()
 
@@ -188,7 +188,7 @@ module.exports = function(ctx) {
     const ret = []
     parts.forEach((p) => {
       const {disposition, type, subtype, size, partID, encoding} = p
-      if (disposition == null || disposition.type.toUpperCase() != 'ATTACHMENT') {
+      if (disposition == null || (disposition.type.toUpperCase() != 'ATTACHMENT' && disposition.type.toUpperCase() != 'INLINE')) {
         return
       }
 

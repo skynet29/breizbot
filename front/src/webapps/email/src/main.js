@@ -125,6 +125,8 @@ $$.control.registerControl('rootPage', {
 				console.log('currentAccount', currentAccount)
 				ctrl.setData({accounts, currentAccount})
 				loadMailboxes()
+			}).catch((err) => {
+				$$.ui.showAlert({title: 'Error', content: err})
 			})			
 		}
 

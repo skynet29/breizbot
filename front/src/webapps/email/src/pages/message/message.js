@@ -12,7 +12,8 @@ $$.control.registerControl('messagePage', {
 
 	buttons: [
 		{name: 'reply', icon: 'fa fa-reply', title: 'Reply'},
-		{name: 'replyAll', icon: 'fa fa-reply-all', title: 'Reply All'}
+		{name: 'replyAll', icon: 'fa fa-reply-all', title: 'Reply All'},
+		{name: 'forward', icon: 'fa fa-share-square', title: 'Forward'}
 	],	
 
 	init: function(elt, srvMail, users, scheduler, pager) {
@@ -204,7 +205,21 @@ $$.control.registerControl('messagePage', {
 					data: {
 						to,
 						subject: 'Re: ' + item.subject,
-						text
+						html: `<pre>${text}</pre>`
+					}
+				}
+			})			
+		}
+
+		function forwardMessage(text) {
+			//console.log('replyMessage', text)
+			pager.pushPage('writeMailPage', {
+				title: 'Forward message',
+				props: {
+					accountName: currentAccount,
+					data: {
+						subject: 'Fwd: ' + item.subject,
+						html: `<pre>${text}</pre>`
 					}
 				}
 			})			
@@ -212,9 +227,10 @@ $$.control.registerControl('messagePage', {
 
 		this.onAction = function(action) {
 			console.log('onAction', action, item)
-			const HEADER = '\n\n----- Original mail -----\n'
 
 			if (action == 'reply' || action == 'replyAll') {
+
+				const HEADER = '\n\n----- Original mail -----\n'
 
 				let to = item.from.email
 
@@ -234,7 +250,24 @@ $$.control.registerControl('messagePage', {
 				else {
 					replyMessage('', to)
 				}
+			}
 
+			if (action == 'forward') {
+				const HEADER = '\n\n----- Forwarded mail -----\n'
+
+
+				if (ctrl.model.isHtml && item.partID.text != false) {
+					srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID.text).then((message) => {
+						forwardMessage(HEADER + message.text)
+					})						
+				}
+
+				else if (!ctrl.model.isHtml) {
+					forwardMessage(HEADER + ctrl.model.text)
+				}
+				else {
+					forwardMessage('', to)
+				}
 
 			}
 		}

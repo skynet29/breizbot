@@ -55,8 +55,11 @@
 		}
 	}
 
-	textarea {
+	.content{
 		flex: 1;
+	}
+
+	textarea {
 		resize: none;
 		padding: 5px;
 	}

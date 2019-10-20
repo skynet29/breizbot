@@ -17,19 +17,21 @@ $$.control.registerControl('writeMailPage', {
 	init: function(elt, srvMail, pager) {
 
 		const {accountName, data} = this.props
+		console.log('data', data)
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				data,
 				attachments: [],
 				show1: function() {return this.attachments.length > 0},
-				prop1: function() {return {autofocus: this.data.text == undefined}}
+				prop1: function() {return {autofocus: this.data.html == undefined}}
 			},
 			events: {
 				onSend: function(ev) {
 					console.log('onSend')
 					ev.preventDefault()
 					const data = $(this).getFormData()
+					console.log('data', data)
 					const {attachments} = ctrl.model
 					if (attachments.length > 0) {
 						data.attachments = attachments.map((a) => a.rootDir + a.fileName)
@@ -72,10 +74,8 @@ $$.control.registerControl('writeMailPage', {
 
 		})
 
-		if (data.text != undefined) {
-			const content = ctrl.scope.content.get(0)
-			content.focus()
-			content.setSelectionRange(0, 0)
+		if (data.html != undefined) {
+			ctrl.scope.content.focus()
 		}		
 
 		this.onAction = function(action) {

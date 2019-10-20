@@ -2,7 +2,7 @@
 	<div class="header">
 		<div bn-control="brainjs.inputgroup">
 			<div class="openContactPanel">
-				<button class="w3-button w3-blue" type="button" bn-event="click: openContact">To:</button>
+				<a bn-event="click: openContact" href="#" class="w3-text-indigo">To:</a>
 			</div>
 			<input type="email" multiple="true" name="to" bn-prop="prop1" required="" bn-bind="to">		
 		</div>
@@ -22,6 +22,7 @@
 			</ul>
 		</div>
 	</div>
-	<textarea name="text" bn-bind="content"></textarea>	
-	<input type="submit" hidden="" bn-bind="submit">
+	<div bn-control="brainjs.htmleditor" class="content" name="html" bn-iface="content"></div>
+<!-- 	<textarea name="text" bn-bind="content"></textarea>	
+ -->	<input type="submit" hidden="" bn-bind="submit">
 </form>

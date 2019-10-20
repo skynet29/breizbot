@@ -600,15 +600,21 @@ module.exports = function(ctx) {
             body: []
           })
 
-          const plainEntity = mimemessage.factory({
-            body: data.text.replace(/\n/g, '\r\n')
-          })      
+          const htmlEntity = mimemessage.factory({
+              contentType: 'text/html;charset=utf-8',
+              body: data.html.replace(/\n/g, '\r\n')
+          })
+
+          // const plainEntity = mimemessage.factory({
+          //   body: data.text.replace(/\n/g, '\r\n')
+          // })      
 
           msg.header('To', data.to)
           msg.header('Subject', data.subject)
           msg.header('From', data.from)
           msg.header('Date', new Date().toString())
-          msg.body.push(plainEntity)
+          //msg.body.push(plainEntity)
+          msg.body.push(htmlEntity)
 
           console.log('message', msg.toString())
 

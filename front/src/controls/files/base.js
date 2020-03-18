@@ -33,10 +33,11 @@ $$.control.registerControl('breizbot.fsbase', {
 
 		elt.addClass('w3-light-grey')
 
+		let selected = false
+
 		const ctrl = $$.viewController(elt, {
 			
 			data: {
-				selectMode: false,
 				files,
 				selectMode,
 				data1: function() {return {items: this.f.items || {}}},
@@ -124,6 +125,12 @@ $$.control.registerControl('breizbot.fsbase', {
 			})			
 		}
 
+
+		this.toggleSelection = function() {
+			selected = !selected
+			elt.find('.check').prop('checked', selected)
+		}
+
 		this.setData = function(data) {
 			//console.log('[fsbase] setData', data)
 
@@ -151,6 +158,10 @@ $$.control.registerControl('breizbot.fsbase', {
 			})
 			//console.log('selFiles', selFiles)	
 			return selFiles		
+		}
+
+		this.getNbSelFiles = function() {
+			return elt.find('.check:checked').length
 		}
 
 

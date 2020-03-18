@@ -32,7 +32,6 @@ $$.control.registerControl('breizbot.files', {
 			data: {
 				showToolbar,
 				rootDir: '/',
-				selectMode: false,
 				files: [],
 				selectedFiles: [],
 				operation: 'none',
@@ -151,12 +150,8 @@ $$.control.registerControl('breizbot.files', {
 					if (info.name == 'share' && ctrl.model.rootDir == '/') {
 						ctrl.model.isShareSelected = value
 					}
-					//console.log('isShareSelected', ctrl.model.isShareSelected)
-					
-					const checked = ctrl.scope.files.getSelFiles()
-					const nbSelection = checked.length
 
-					ctrl.setData({nbSelection})
+					ctrl.setData({nbSelection: ctrl.scope.files.getNbSelFiles()})
 				},
 				onFolderClick: function(ev, info) {
 
@@ -192,10 +187,10 @@ $$.control.registerControl('breizbot.files', {
 						})	
 					})
 				},
-				onToggleSelMode: function()	{
-					console.log('onToggleSelMode')
-
-					setSelMode(!ctrl.model.selectMode)
+				onTogleSelection: function()	{
+					console.log('onSelectAll')
+					ctrl.scope.files.toggleSelection()
+					ctrl.setData({nbSelection: ctrl.scope.files.getNbSelFiles()})
 				},
 
 				onDeleteFiles: function(ev) {
@@ -219,7 +214,6 @@ $$.control.registerControl('breizbot.files', {
 						selectedFiles: getSelFiles(),
 						operation: 'cut'
 					})
-					setSelMode(false)
 				},
 
 				onCopyFiles: function(ev) {
@@ -229,7 +223,6 @@ $$.control.registerControl('breizbot.files', {
 						operation: 'copy'
 					})
 					
-					setSelMode(false)
 				},
 
 				onShareFiles: function(ev) {
@@ -316,14 +309,6 @@ $$.control.registerControl('breizbot.files', {
 			})				
 		}
 
-		function setSelMode(selMode) {
-			if (selMode == false) {
-				ctrl.model.nbSelection = 0
-			}
-			ctrl.model.selectMode = selMode
-			ctrl.update()
-		}
-
 		function getSelFiles() {
 			const selFiles = ctrl.scope.files.getSelFiles()
 			console.log('selFiles', selFiles)
@@ -338,14 +323,14 @@ $$.control.registerControl('breizbot.files', {
 			srvFiles.list(rootDir, {filterExtension, imageOnly}, friendUser).then(function(files) {
 				//console.log('files', files)
 				files.forEach((f) => {
-					f.items = {
-						delete: {name: 'Delete', icon: 'fas fa-trash'}
-					}
 					if (f.isImage) {
 						f.thumbnailUrl = srvFiles.fileThumbnailUrl(rootDir + f.name, thumbnailSize, friendUser)
 					}
 					if (showToolbar) {
-						f.items.rename = {name: 'Rename'}
+						f.items = {
+							delete: {name: 'Delete', icon: 'fas fa-trash'},
+							rename: {name: 'Rename'}
+						}
 						if (f.isImage) {
 							f.items.makeResizedCopy = {name: 'Make resized copy', icon: 'fas fa-compress-arrows-alt'}
 						}
@@ -366,8 +351,6 @@ $$.control.registerControl('breizbot.files', {
 				ctrl.setData({
 					files, 
 					rootDir, 
-					selectMode: false, 
-					hasSelection: false, 
 					nbSelection: 0,
 					isShareSelected: false
 				})

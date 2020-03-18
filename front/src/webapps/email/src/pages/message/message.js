@@ -88,8 +88,8 @@ $$.control.registerControl('messagePage', {
 					else {
 						$$.ui.showConfirm({
 							title: 'Open Attachment', 
-							okText: 'YES',
-							cancelText: 'NO',
+							okText: 'Yes',
+							cancelText: 'No',
 							content: `This attachment cannot be open with NetOS<br>
 								Do you want to download it ?`
 							},
@@ -266,7 +266,7 @@ $$.control.registerControl('messagePage', {
 					forwardMessage(HEADER + ctrl.model.text)
 				}
 				else {
-					forwardMessage('', to)
+					forwardMessage('')
 				}
 
 			}

@@ -17,9 +17,10 @@
 
 		<div bn-control="brainjs.controlgroup">
 			<button 
-				title="Toggle Select Mode"
-				bn-event="click: onToggleSelMode"
+				title="Toggle Selection"
+				bn-event="click: onTogleSelection"
 			><i class="fa fa-check"></i></button>
+
 
 			<button 
 				title="Reload"
@@ -62,7 +63,7 @@
 
 	<div 
 		bn-control="breizbot.fsbase" 
-		bn-data="{files, selectMode}"
+		bn-data="{files, selectMode: showToolbar}"
 		bn-iface="files"
 		bn-event="folderclick: onFolderClick, fileclick: onFileClick, checkclick: onCheckClick, itemcontextmenu: onContextMenu"
 		></div>

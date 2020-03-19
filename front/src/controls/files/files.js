@@ -1,3 +1,33 @@
+(function(){
+
+function getIconClass(name) {
+	if (name.endsWith('.pdf')) {
+		return 'fa-file-pdf'
+	}
+	if (name.endsWith('.doc')) {
+		return 'fa-file-word'
+	}
+	if (name.endsWith('.ogg') || name.endsWith('.mp3')) {
+		return 'fa-file-audio'
+	}
+	if (name.endsWith('.mp4')) {
+		return 'fa-file-video'
+	}
+	return 'fa-file'
+}
+
+function sortFiles(files) {
+	files.sort((a, b) => {
+	  if (a.folder && !b.folder) {
+	    return -1
+	  }
+	  if (!a.folder && b.folder) {
+	    return 1
+	  }
+	  return a.name.localeCompare(b.name)
+	})			
+}
+
 $$.control.registerControl('breizbot.files', {
 	deps: ['breizbot.files'], 
 	props: {
@@ -15,6 +45,8 @@ $$.control.registerControl('breizbot.files', {
 		const thumbnailSize = '100x?'
 		const maxUploadSize = 2*1024*2014 // 2 Mo
 
+		let selected = false
+
 		let {
 			$pager,
 			showToolbar,
@@ -27,6 +59,27 @@ $$.control.registerControl('breizbot.files', {
 			showToolbar = false
 		}
 
+		function getSelFiles() {
+			const selFiles = []
+			elt.find('.check:checked').each(function() {
+				const idx = $(this).closest('.thumbnail').index()					
+				const info = ctrl.model.files[idx]
+				
+				selFiles.push(info)
+			})
+			//console.log('selFiles', selFiles)	
+			return selFiles		
+		}
+
+		function getNbSelFiles() {
+			return elt.find('.check:checked').length
+		}
+
+		function toggleSelection() {
+			selected = !selected
+			elt.find('.check').prop('checked', selected)
+		}		
+
 		const ctrl = $$.viewController(elt, {
 			
 			data: {
@@ -37,6 +90,64 @@ $$.control.registerControl('breizbot.files', {
 				operation: 'none',
 				nbSelection: 0,
 				isShareSelected: false,
+				getPath: function() {
+					const tab = ('/home' + this.rootDir).split('/')
+					tab.shift()
+					tab.pop()
+					return tab
+				},
+				isLast: function() {
+					return this.idx == this.getPath().length-1
+				},
+				isFirst: function() {
+					return this.idx == 0
+				},
+				getPathInfo: function() {
+					return this.getPath().slice(1, this.idx+1).join('/')
+				},
+
+				data1: function() {return {items: this.f.items || {}}},
+				if1: function() {
+					return this.f.name != '..'
+				},
+				if2: function() {
+					return !this.f.folder && !this.f.isImage
+				},
+				if3: function() {
+					return !this.f.folder && this.f.isImage
+				},
+				attr1: function() {
+					return {class: `fa fa-4x w3-text-blue-grey ${getIconClass(this.f.name)}`}
+				},
+				getSize: function() {
+					let size = this.f.size
+					let unit = 'octets'
+					if (size > 1024) {
+						unit = 'Ko'
+						size /= 1024
+					}
+
+					if (size > 1024) {
+						unit = 'Mo'
+						size /= 1024
+					}
+
+					size = Math.floor(size*10)/10
+					return 'Size: ' + size + ' ' + unit
+				},
+
+				getDimension: function() {
+					const d = this.f.dimension
+					return `Dimension: ${d.width}x${d.height}`
+				},
+
+
+				getDate: function() {
+					const date = new Date(this.f.mtime).toLocaleDateString()
+					return 'Last Modif: ' + date
+
+				},
+
 				prop1: function() {
 					return {disabled: this.nbSelection == 0}
 				},
@@ -49,12 +160,21 @@ $$.control.registerControl('breizbot.files', {
 
 			},
 			events: {
+				onPathItem: function(ev) {
+					const pathItem = $(this).data('info')
+					console.log('onPathItem', pathItem)
+					ev.preventDefault()
+
+					loadData(pathItem == '' ? '/' : '/' + pathItem + '/')
+				},
 				onReload: function(ev) {
 					loadData()
 				},
 
-				onContextMenu: function(ev, cmd, info) {
-					console.log('onContextMenu', cmd, info)
+				onContextMenu: function(ev, data) {
+					const idx = $(this).closest('.thumbnail').index()					
+					const info = ctrl.model.files[idx]
+					const {cmd} = data
 
 					const {rootDir} = ctrl.model
 
@@ -127,8 +247,10 @@ $$.control.registerControl('breizbot.files', {
 					
 				},
 
-				onFileClick: function(ev, info) {
-					//console.log('onFileClick', info)
+				onFileClick: function(ev) {
+					const idx = $(this).closest('.thumbnail').index()					
+					const info = ctrl.model.files[idx]
+
 					ev.stopPropagation()
 					const data = {
 						fileName: info.name,
@@ -143,17 +265,20 @@ $$.control.registerControl('breizbot.files', {
 						elt.trigger('fileclick', data)
 					}
 				},
-				onCheckClick: function(ev, info, value) {
-					//console.log('onCheckClick', info, value)
+				onCheckClick: function(ev) {
+					const idx = $(this).closest('.thumbnail').index()					
+					const info = ctrl.model.files[idx]
 
-					//console.log('info', info)
 					if (info.name == 'share' && ctrl.model.rootDir == '/') {
-						ctrl.model.isShareSelected = value
+						ctrl.model.isShareSelected = $(this).getValue()
 					}
 
-					ctrl.setData({nbSelection: ctrl.scope.files.getNbSelFiles()})
+					ctrl.setData({nbSelection: getNbSelFiles()})
 				},
-				onFolderClick: function(ev, info) {
+				onFolderClick: function(ev) {
+
+					const idx = $(this).closest('.thumbnail').index()					
+					const info = ctrl.model.files[idx]
 
 					const dirName = info.name
 					//console.log('onFolderClick', dirName)
@@ -188,9 +313,8 @@ $$.control.registerControl('breizbot.files', {
 					})
 				},
 				onTogleSelection: function()	{
-					console.log('onSelectAll')
-					ctrl.scope.files.toggleSelection()
-					ctrl.setData({nbSelection: ctrl.scope.files.getNbSelFiles()})
+					toggleSelection()
+					ctrl.setData({nbSelection: getNbSelFiles()})
 				},
 
 				onDeleteFiles: function(ev) {
@@ -316,10 +440,10 @@ $$.control.registerControl('breizbot.files', {
 		}
 
 		function loadData(rootDir) {
-			//console.log('loadData', rootDir)
 			if (rootDir == undefined) {
 				rootDir = ctrl.model.rootDir
 			}
+			console.log('loadData', rootDir)
 			srvFiles.list(rootDir, {filterExtension, imageOnly}, friendUser).then(function(files) {
 				//console.log('files', files)
 				files.forEach((f) => {
@@ -348,6 +472,8 @@ $$.control.registerControl('breizbot.files', {
 					files.unshift({name: '..', folder: true})
 				}
 
+				sortFiles(files)
+
 				ctrl.setData({
 					files, 
 					rootDir, 
@@ -374,3 +500,5 @@ $$.control.registerControl('breizbot.files', {
 	$events: 'fileclick'
 
 });
+
+})();

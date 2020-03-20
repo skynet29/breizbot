@@ -65,11 +65,12 @@ $$.control.registerControl('breizbot.files', {
 				const idx = $(this).closest('.thumbnail').index()					
 				const info = ctrl.model.files[idx]
 				
-				selFiles.push(info)
+				selFiles.push(ctrl.model.rootDir + info.name)
 			})
 			//console.log('selFiles', selFiles)	
 			return selFiles		
 		}
+
 
 		function getNbSelFiles() {
 			return elt.find('.check:checked').length
@@ -433,11 +434,6 @@ $$.control.registerControl('breizbot.files', {
 			})				
 		}
 
-		function getSelFiles() {
-			const selFiles = ctrl.scope.files.getSelFiles()
-			console.log('selFiles', selFiles)
-			return selFiles.map((f) => ctrl.model.rootDir + f.name)
-		}
 
 		function loadData(rootDir) {
 			if (rootDir == undefined) {

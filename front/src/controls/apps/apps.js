@@ -17,14 +17,14 @@ $$.control.registerControl('breizbot.apps', {
 			data: {
 				apps,
 				showActivated,
-				show1: function() {
-					return this.showActivated && this.app.activated
+				show1: function(scope) {
+					return this.showActivated && scope.app.activated
 				},
-				class1: function() {
-					return {class: `tile w3-btn ${this.app.props.colorCls}`}
+				class1: function(scope) {
+					return {class: `tile w3-btn ${scope.app.props.colorCls}`}
 				},
-				show2: function() {
-					return typeof this.app.props.iconCls == 'string'
+				show2: function(scope) {
+					return typeof scope.app.props.iconCls == 'string'
 				}
 			},
 			events: {

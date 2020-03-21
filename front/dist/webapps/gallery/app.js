@@ -1,1 +1,260 @@
-$$.control.registerControl("files",{template:'<div \n\tbn-control="breizbot.files" \n\tbn-data="{imageOnly: true, friendUser}"\n\tbn-event="fileclick: onFileClick"\n\tbn-iface="files"\n\t></div>',deps:["breizbot.pager"],props:{friendUser:""},init:function(t,e){const{friendUser:n}=this.props,i=$$.viewController(t,{data:{friendUser:n},events:{onFileClick:function(t,s){const{rootDir:o,fileName:l}=s,a=i.scope.files.getFiles(),r=a.findIndex(t=>t.name==l);e.pushPage("gallery",{title:"Diaporama",props:{firstIdx:r,files:a,rootDir:o,friendUser:n}})}}})}}),$$.control.registerControl("friends",{template:'<p>Select a friends</p>\n<div \n\tbn-control="breizbot.friends" \n\tbn-event="friendclick: onSelectFriend"\n\tbn-data="{showConnectionState: false}"\n\t></div>',deps:["breizbot.pager"],init:function(t,e){$$.viewController(t,{data:{},events:{onSelectFriend:function(t,n){console.log("onSelectFriend",n);const{userName:i}=n;e.pushPage("files",{title:i,props:{friendUser:i}})}}})}}),$$.control.registerControl("gallery",{template:'<div class="content">\n\t<div bn-control="brainjs.image" bn-data="{src}" bn-iface="image"></div>\n\t<div class="buttons" bn-show="showButtons">\n\t\t<div>\n\t\t\t<button \n\t\t\t\tclass="w3-button w3-circle w3-blue-grey" \n\t\t\t\tbn-show="show1"\n\t\t\t\tbn-event="click: onPrevImage"\n\t\t\t\t><i class="fa fa-angle-left"></i>\n\t\t\t</button>\t\t\n\t\t</div>\n\t\t<div>\n\t\t\t<button \n\t\t\t\tclass="w3-button w3-circle w3-blue-grey"  \n\t\t\t\tbn-show="show2"\n\t\t\t\tbn-event="click: onNextImage"\n\t\t\t\t>\n\t\t\t\t<i class="fa fa-angle-right"></i>\n\t\t\t</button>\t\n\t\t</div>\n\n\t</div>\t\n</div>\n<div class="band w3-blue-grey" bn-bind="band" bn-show="showButtons">\n\t<div bn-each="thumbnails" bn-event="click.image: onImageClick" bn-style="{width}">\n\t\t<img bn-attr="{src: $i}" class="image">\t\t\t\n\t</div>\n</div>\n',deps:["breizbot.files","breizbot.pager"],props:{rootDir:"",files:[],firstIdx:0,friendUser:""},buttons:[{name:"play",icon:"fa fa-play",title:"Play"},{name:"pause",icon:"fa fa-pause",title:"Pause",visible:!1}],init:function(t,e,n){const{rootDir:i,files:s,firstIdx:o,friendUser:l}=this.props,a=1e4;let r;const d=$$.viewController(t,{data:{idx:o,nbImages:s.length,src:f(o),thumbnails:s.map(t=>e.fileThumbnailUrl(i+t.name,"?x50",l)),width:s.reduce((t,e)=>{const{width:n,height:i}=e.dimension;return t+50*n/i+5},0)+"px",showButtons:!0,show1:function(){return this.idx>0},show2:function(){return this.idx<this.nbImages-1}},events:{onPrevImage:function(){d.model.idx--,c()},onNextImage:function(){d.model.idx++,c()},onImageClick:function(){const t=$(this).index();d.model.idx=t,c()}}});function c(){d.setData({src:f(d.model.idx)}),d.scope.band.find("img.selected").removeClass("selected");const t=d.scope.band.find("img").eq(d.model.idx);t.addClass("selected"),t.get(0).scrollIntoView()}function f(t){return e.fileUrl(i+s[t].name,l)}function b(){clearInterval(r),n.setButtonVisible({play:!0,pause:!1}),d.setData({showButtons:!0}),d.scope.image.enableHandlers(!0),d.scope.image.invalidateSize(),r=void 0}c(),this.onAction=function(t){"play"==t&&(n.setButtonVisible({play:!1,pause:!0}),d.setData({showButtons:!1}),d.scope.image.enableHandlers(!1),d.scope.image.invalidateSize(),d.model.idx==d.model.nbImages-1&&(d.model.idx=0,c()),r=setInterval(()=>{d.model.idx==d.model.nbImages-1?b():(d.model.idx++,c())},a)),"pause"==t&&b()},this.dispose=function(){null!=r&&clearInterval(r)}}}),$$.control.registerControl("rootPage",{template:'<p>Select a file system</p>\n<ul class="w3-ul w3-border w3-white">\n\t<li class="w3-bar" bn-event="click: onHome">\n\t\t<div class="w3-bar-item">\n\t\t\t<i class="fa fa-home fa-2x fa-fw w3-text-blue"></i>\n\t\t\t<span>Your home files</span>\n\t\t</div>\n\t</li>\n\n\t<li class="w3-bar" bn-event="click: onShare">\n\t\t<div class="w3-bar-item">\n\t\t\t<i class="fa fa-share-alt fa-2x fa-fw w3-text-blue"></i>\n\t\t\t<span>Files shared by your friends</span>\n\t\t</div>\n\t</li>\n</ul>\t',deps:["breizbot.pager"],init:function(t,e){$$.viewController(t,{data:{},events:{onHome:function(){console.log("onHome"),e.pushPage("files",{title:"Home files"})},onShare:function(){console.log("onShare"),e.pushPage("friends",{title:"Shared files"})}}})}});
+$$.control.registerControl('files', {
+
+	template: "<div \n	bn-control=\"breizbot.files\" \n	bn-data=\"{imageOnly: true, friendUser}\"\n	bn-event=\"fileclick: onFileClick\"\n	bn-iface=\"files\"\n	></div>",
+
+	deps: ['breizbot.pager'],
+
+	props: {
+		friendUser: ''
+	},
+
+
+	init: function(elt, pager) {
+
+		const {friendUser} = this.props
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+				friendUser
+			},
+			events: {
+				onFileClick: function(ev, data) {
+					//console.log('onFileClick', data)
+					const {rootDir, fileName } = data
+					const files = ctrl.scope.files.getFiles()
+					//console.log('files', files)
+					const firstIdx = files.findIndex((f) => f.name == fileName)
+					//console.log('firstIdx', firstIdx)
+					pager.pushPage('gallery', {
+						title: 'Diaporama',
+						props: {
+							firstIdx,
+							files,
+							rootDir,
+							friendUser
+						}
+					})
+
+				}
+			}
+		})
+
+	}
+
+
+});
+
+
+
+
+
+$$.control.registerControl('friends', {
+
+	template: "<p>Select a friends</p>\n<div \n	bn-control=\"breizbot.friends\" \n	bn-event=\"friendclick: onSelectFriend\"\n	bn-data=\"{showConnectionState: false}\"\n	></div>",
+
+	deps: ['breizbot.pager'],
+
+	init: function(elt, pager) {
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+			},
+			events: {
+				onSelectFriend: function(ev, data) {
+					console.log('onSelectFriend', data)
+					const {userName} = data
+					pager.pushPage('files', {
+						title: userName,
+						props: {
+							friendUser: userName
+						}
+					})
+				}				
+			}
+		})	
+
+	}
+});
+$$.control.registerControl('gallery', {
+
+	template: "<div class=\"content\">\n	<div bn-control=\"brainjs.image\" bn-data=\"{src}\" bn-iface=\"image\"></div>\n	<div class=\"buttons\" bn-show=\"showButtons\">\n		<div>\n			<button \n				class=\"w3-button w3-circle w3-blue-grey\" \n				bn-show=\"show1\"\n				bn-event=\"click: onPrevImage\"\n				><i class=\"fa fa-angle-left\"></i>\n			</button>		\n		</div>\n		<div>\n			<button \n				class=\"w3-button w3-circle w3-blue-grey\"  \n				bn-show=\"show2\"\n				bn-event=\"click: onNextImage\"\n				>\n				<i class=\"fa fa-angle-right\"></i>\n			</button>	\n		</div>\n\n	</div>	\n</div>\n<div class=\"band w3-blue-grey\" bn-bind=\"band\" bn-show=\"showButtons\">\n	<div bn-each=\"thumbnails\" bn-event=\"click.image: onImageClick\" bn-style=\"{width}\">\n		<img bn-attr=\"{src: $scope.$i}\" class=\"image\">			\n	</div>\n</div>\n",
+
+	deps: ['breizbot.files', 'breizbot.pager'],
+
+	props: {
+		rootDir: '',
+		files: [],
+		firstIdx: 0,
+		friendUser: ''
+	},
+
+	buttons: [
+		{name: 'play', icon: 'fa fa-play', title: 'Play'},
+		{name: 'pause', icon: 'fa fa-pause', title: 'Pause', visible: false}
+	],	
+
+	init: function(elt, filesSrv, pager) {
+
+		const {rootDir, files, firstIdx, friendUser} = this.props
+		const diaporamaInterval = 10 * 1000 // 10 sec
+
+		let timerId
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+				idx: firstIdx,
+				nbImages: files.length,
+				src: getFileUrl(firstIdx),
+				thumbnails: getThumbnailsUrl(),
+				width: getThumbnailWidth() + 'px',
+				showButtons: true,
+				show1: function() {
+					return this.idx > 0
+				},
+				show2: function() {
+					return this.idx < this.nbImages - 1
+				}
+			},
+			events: {
+				onPrevImage: function() {
+					//console.log('onPrevImage')
+					ctrl.model.idx--;
+					updateSelection()
+				},
+				onNextImage: function() {
+					//console.log('onNextImage')
+					ctrl.model.idx++;
+					updateSelection()
+				},
+				onImageClick: function() {
+					const idx = $(this).index()
+					//console.log('onImageClick', idx)
+					ctrl.model.idx = idx;
+					updateSelection()
+				}
+			}
+		})
+
+		updateSelection()
+
+		function updateSelection() {
+			ctrl.setData({src: getFileUrl(ctrl.model.idx)})
+			ctrl.scope.band.find('img.selected').removeClass('selected')
+			const $img = ctrl.scope.band.find('img').eq(ctrl.model.idx)
+			$img.addClass('selected')
+			$img.get(0).scrollIntoView()
+		}
+
+		function getFileUrl(idx) {
+			return filesSrv.fileUrl(rootDir + files[idx].name, friendUser)
+		}
+
+		function getThumbnailsUrl() {
+			return files.map((f) => filesSrv.fileThumbnailUrl(rootDir + f.name, '?x50', friendUser))
+		}
+
+		function getThumbnailWidth() {
+			return files.reduce((total, f) => {
+				const {width, height} = f.dimension
+				return total + (width * 50 / height) + 5
+			}, 0)
+		}
+
+		function stopDiaporama() {
+			//console.log('stopDiaporama')
+			clearInterval(timerId)
+			pager.setButtonVisible({play: true, pause: false})
+			ctrl.setData({showButtons: true})
+			ctrl.scope.image.enableHandlers(true)
+			ctrl.scope.image.invalidateSize()
+			timerId = undefined			
+		}
+
+		function startDiaporama() {
+			pager.setButtonVisible({play: false, pause: true})
+			ctrl.setData({showButtons: false})
+			ctrl.scope.image.enableHandlers(false)
+			ctrl.scope.image.invalidateSize()
+			if (ctrl.model.idx == ctrl.model.nbImages - 1) {
+				ctrl.model.idx = 0
+				updateSelection()
+			}
+
+			timerId = setInterval(() => {
+				if (ctrl.model.idx == ctrl.model.nbImages - 1) {
+					stopDiaporama()
+				}
+				else {
+					ctrl.model.idx++
+					updateSelection()
+				}
+
+			}, diaporamaInterval)
+
+		}
+
+		this.onAction = function(action) {
+			//console.log('onAction', action)
+			if (action == 'play') {
+				startDiaporama()
+			}
+
+			if (action == 'pause') {
+				stopDiaporama()
+			}
+		}
+
+		this.dispose = function() {
+			//console.log('dispose')
+			if (timerId != undefined) {
+				clearInterval(timerId)
+			}
+		}
+
+	}
+
+
+});
+
+
+
+
+
+$$.control.registerControl('rootPage', {
+
+	template: "<p>Select a file system</p>\n<ul class=\"w3-ul w3-border w3-white\">\n	<li class=\"w3-bar\" bn-event=\"click: onHome\">\n		<div class=\"w3-bar-item\">\n			<i class=\"fa fa-home fa-2x fa-fw w3-text-blue\"></i>\n			<span>Your home files</span>\n		</div>\n	</li>\n\n	<li class=\"w3-bar\" bn-event=\"click: onShare\">\n		<div class=\"w3-bar-item\">\n			<i class=\"fa fa-share-alt fa-2x fa-fw w3-text-blue\"></i>\n			<span>Files shared by your friends</span>\n		</div>\n	</li>\n</ul>	",
+
+	deps: ['breizbot.pager'],
+
+	init: function(elt, pager) {
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+			},
+			events: {
+				onHome: function() {
+					console.log('onHome')
+					pager.pushPage('files', {
+						title: 'Home files'					
+					})
+				},
+				onShare: function() {
+					console.log('onShare')
+					pager.pushPage('friends', {
+						title: 'Shared files'					
+					})
+				}
+
+			}
+		})
+
+	}
+
+
+});
+
+
+
+
+
+//# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbImZpbGVzLmpzIiwiZnJpZW5kcy5qcyIsImdhbGxlcnkuanMiLCJtYWluLmpzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiJBQUFBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUNqREE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FDMUJBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FDaEpBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBIiwiZmlsZSI6ImFwcC5qcyIsInNvdXJjZXNDb250ZW50IjpbIiQkLmNvbnRyb2wucmVnaXN0ZXJDb250cm9sKCdmaWxlcycsIHtcblxuXHR0ZW1wbGF0ZTogXCI8ZGl2IFxcblx0Ym4tY29udHJvbD1cXFwiYnJlaXpib3QuZmlsZXNcXFwiIFxcblx0Ym4tZGF0YT1cXFwie2ltYWdlT25seTogdHJ1ZSwgZnJpZW5kVXNlcn1cXFwiXFxuXHRibi1ldmVudD1cXFwiZmlsZWNsaWNrOiBvbkZpbGVDbGlja1xcXCJcXG5cdGJuLWlmYWNlPVxcXCJmaWxlc1xcXCJcXG5cdD48L2Rpdj5cIixcblxuXHRkZXBzOiBbJ2JyZWl6Ym90LnBhZ2VyJ10sXG5cblx0cHJvcHM6IHtcblx0XHRmcmllbmRVc2VyOiAnJ1xuXHR9LFxuXG5cblx0aW5pdDogZnVuY3Rpb24oZWx0LCBwYWdlcikge1xuXG5cdFx0Y29uc3Qge2ZyaWVuZFVzZXJ9ID0gdGhpcy5wcm9wc1xuXG5cdFx0Y29uc3QgY3RybCA9ICQkLnZpZXdDb250cm9sbGVyKGVsdCwge1xuXHRcdFx0ZGF0YToge1xuXHRcdFx0XHRmcmllbmRVc2VyXG5cdFx0XHR9LFxuXHRcdFx0ZXZlbnRzOiB7XG5cdFx0XHRcdG9uRmlsZUNsaWNrOiBmdW5jdGlvbihldiwgZGF0YSkge1xuXHRcdFx0XHRcdC8vY29uc29sZS5sb2coJ29uRmlsZUNsaWNrJywgZGF0YSlcblx0XHRcdFx0XHRjb25zdCB7cm9vdERpciwgZmlsZU5hbWUgfSA9IGRhdGFcblx0XHRcdFx0XHRjb25zdCBmaWxlcyA9IGN0cmwuc2NvcGUuZmlsZXMuZ2V0RmlsZXMoKVxuXHRcdFx0XHRcdC8vY29uc29sZS5sb2coJ2ZpbGVzJywgZmlsZXMpXG5cdFx0XHRcdFx0Y29uc3QgZmlyc3RJZHggPSBmaWxlcy5maW5kSW5kZXgoKGYpID0+IGYubmFtZSA9PSBmaWxlTmFtZSlcblx0XHRcdFx0XHQvL2NvbnNvbGUubG9nKCdmaXJzdElkeCcsIGZpcnN0SWR4KVxuXHRcdFx0XHRcdHBhZ2VyLnB1c2hQYWdlKCdnYWxsZXJ5Jywge1xuXHRcdFx0XHRcdFx0dGl0bGU6ICdEaWFwb3JhbWEnLFxuXHRcdFx0XHRcdFx0cHJvcHM6IHtcblx0XHRcdFx0XHRcdFx0Zmlyc3RJZHgsXG5cdFx0XHRcdFx0XHRcdGZpbGVzLFxuXHRcdFx0XHRcdFx0XHRyb290RGlyLFxuXHRcdFx0XHRcdFx0XHRmcmllbmRVc2VyXG5cdFx0XHRcdFx0XHR9XG5cdFx0XHRcdFx0fSlcblxuXHRcdFx0XHR9XG5cdFx0XHR9XG5cdFx0fSlcblxuXHR9XG5cblxufSk7XG5cblxuXG5cbiIsIiQkLmNvbnRyb2wucmVnaXN0ZXJDb250cm9sKCdmcmllbmRzJywge1xuXG5cdHRlbXBsYXRlOiBcIjxwPlNlbGVjdCBhIGZyaWVuZHM8L3A+XFxuPGRpdiBcXG5cdGJuLWNvbnRyb2w9XFxcImJyZWl6Ym90LmZyaWVuZHNcXFwiIFxcblx0Ym4tZXZlbnQ9XFxcImZyaWVuZGNsaWNrOiBvblNlbGVjdEZyaWVuZFxcXCJcXG5cdGJuLWRhdGE9XFxcIntzaG93Q29ubmVjdGlvblN0YXRlOiBmYWxzZX1cXFwiXFxuXHQ+PC9kaXY+XCIsXG5cblx0ZGVwczogWydicmVpemJvdC5wYWdlciddLFxuXG5cdGluaXQ6IGZ1bmN0aW9uKGVsdCwgcGFnZXIpIHtcblxuXHRcdGNvbnN0IGN0cmwgPSAkJC52aWV3Q29udHJvbGxlcihlbHQsIHtcblx0XHRcdGRhdGE6IHtcblx0XHRcdH0sXG5cdFx0XHRldmVudHM6IHtcblx0XHRcdFx0b25TZWxlY3RGcmllbmQ6IGZ1bmN0aW9uKGV2LCBkYXRhKSB7XG5cdFx0XHRcdFx0Y29uc29sZS5sb2coJ29uU2VsZWN0RnJpZW5kJywgZGF0YSlcblx0XHRcdFx0XHRjb25zdCB7dXNlck5hbWV9ID0gZGF0YVxuXHRcdFx0XHRcdHBhZ2VyLnB1c2hQYWdlKCdmaWxlcycsIHtcblx0XHRcdFx0XHRcdHRpdGxlOiB1c2VyTmFtZSxcblx0XHRcdFx0XHRcdHByb3BzOiB7XG5cdFx0XHRcdFx0XHRcdGZyaWVuZFVzZXI6IHVzZXJOYW1lXG5cdFx0XHRcdFx0XHR9XG5cdFx0XHRcdFx0fSlcblx0XHRcdFx0fVx0XHRcdFx0XG5cdFx0XHR9XG5cdFx0fSlcdFxuXG5cdH1cbn0pOyIsIiQkLmNvbnRyb2wucmVnaXN0ZXJDb250cm9sKCdnYWxsZXJ5Jywge1xuXG5cdHRlbXBsYXRlOiBcIjxkaXYgY2xhc3M9XFxcImNvbnRlbnRcXFwiPlxcblx0PGRpdiBibi1jb250cm9sPVxcXCJicmFpbmpzLmltYWdlXFxcIiBibi1kYXRhPVxcXCJ7c3JjfVxcXCIgYm4taWZhY2U9XFxcImltYWdlXFxcIj48L2Rpdj5cXG5cdDxkaXYgY2xhc3M9XFxcImJ1dHRvbnNcXFwiIGJuLXNob3c9XFxcInNob3dCdXR0b25zXFxcIj5cXG5cdFx0PGRpdj5cXG5cdFx0XHQ8YnV0dG9uIFxcblx0XHRcdFx0Y2xhc3M9XFxcInczLWJ1dHRvbiB3My1jaXJjbGUgdzMtYmx1ZS1ncmV5XFxcIiBcXG5cdFx0XHRcdGJuLXNob3c9XFxcInNob3cxXFxcIlxcblx0XHRcdFx0Ym4tZXZlbnQ9XFxcImNsaWNrOiBvblByZXZJbWFnZVxcXCJcXG5cdFx0XHRcdD48aSBjbGFzcz1cXFwiZmEgZmEtYW5nbGUtbGVmdFxcXCI+PC9pPlxcblx0XHRcdDwvYnV0dG9uPlx0XHRcXG5cdFx0PC9kaXY+XFxuXHRcdDxkaXY+XFxuXHRcdFx0PGJ1dHRvbiBcXG5cdFx0XHRcdGNsYXNzPVxcXCJ3My1idXR0b24gdzMtY2lyY2xlIHczLWJsdWUtZ3JleVxcXCIgIFxcblx0XHRcdFx0Ym4tc2hvdz1cXFwic2hvdzJcXFwiXFxuXHRcdFx0XHRibi1ldmVudD1cXFwiY2xpY2s6IG9uTmV4dEltYWdlXFxcIlxcblx0XHRcdFx0Plxcblx0XHRcdFx0PGkgY2xhc3M9XFxcImZhIGZhLWFuZ2xlLXJpZ2h0XFxcIj48L2k+XFxuXHRcdFx0PC9idXR0b24+XHRcXG5cdFx0PC9kaXY+XFxuXFxuXHQ8L2Rpdj5cdFxcbjwvZGl2PlxcbjxkaXYgY2xhc3M9XFxcImJhbmQgdzMtYmx1ZS1ncmV5XFxcIiBibi1iaW5kPVxcXCJiYW5kXFxcIiBibi1zaG93PVxcXCJzaG93QnV0dG9uc1xcXCI+XFxuXHQ8ZGl2IGJuLWVhY2g9XFxcInRodW1ibmFpbHNcXFwiIGJuLWV2ZW50PVxcXCJjbGljay5pbWFnZTogb25JbWFnZUNsaWNrXFxcIiBibi1zdHlsZT1cXFwie3dpZHRofVxcXCI+XFxuXHRcdDxpbWcgYm4tYXR0cj1cXFwie3NyYzogJHNjb3BlLiRpfVxcXCIgY2xhc3M9XFxcImltYWdlXFxcIj5cdFx0XHRcXG5cdDwvZGl2PlxcbjwvZGl2PlxcblwiLFxuXG5cdGRlcHM6IFsnYnJlaXpib3QuZmlsZXMnLCAnYnJlaXpib3QucGFnZXInXSxcblxuXHRwcm9wczoge1xuXHRcdHJvb3REaXI6ICcnLFxuXHRcdGZpbGVzOiBbXSxcblx0XHRmaXJzdElkeDogMCxcblx0XHRmcmllbmRVc2VyOiAnJ1xuXHR9LFxuXG5cdGJ1dHRvbnM6IFtcblx0XHR7bmFtZTogJ3BsYXknLCBpY29uOiAnZmEgZmEtcGxheScsIHRpdGxlOiAnUGxheSd9LFxuXHRcdHtuYW1lOiAncGF1c2UnLCBpY29uOiAnZmEgZmEtcGF1c2UnLCB0aXRsZTogJ1BhdXNlJywgdmlzaWJsZTogZmFsc2V9XG5cdF0sXHRcblxuXHRpbml0OiBmdW5jdGlvbihlbHQsIGZpbGVzU3J2LCBwYWdlcikge1xuXG5cdFx0Y29uc3Qge3Jvb3REaXIsIGZpbGVzLCBmaXJzdElkeCwgZnJpZW5kVXNlcn0gPSB0aGlzLnByb3BzXG5cdFx0Y29uc3QgZGlhcG9yYW1hSW50ZXJ2YWwgPSAxMCAqIDEwMDAgLy8gMTAgc2VjXG5cblx0XHRsZXQgdGltZXJJZFxuXG5cdFx0Y29uc3QgY3RybCA9ICQkLnZpZXdDb250cm9sbGVyKGVsdCwge1xuXHRcdFx0ZGF0YToge1xuXHRcdFx0XHRpZHg6IGZpcnN0SWR4LFxuXHRcdFx0XHRuYkltYWdlczogZmlsZXMubGVuZ3RoLFxuXHRcdFx0XHRzcmM6IGdldEZpbGVVcmwoZmlyc3RJZHgpLFxuXHRcdFx0XHR0aHVtYm5haWxzOiBnZXRUaHVtYm5haWxzVXJsKCksXG5cdFx0XHRcdHdpZHRoOiBnZXRUaHVtYm5haWxXaWR0aCgpICsgJ3B4Jyxcblx0XHRcdFx0c2hvd0J1dHRvbnM6IHRydWUsXG5cdFx0XHRcdHNob3cxOiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHRyZXR1cm4gdGhpcy5pZHggPiAwXG5cdFx0XHRcdH0sXG5cdFx0XHRcdHNob3cyOiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHRyZXR1cm4gdGhpcy5pZHggPCB0aGlzLm5iSW1hZ2VzIC0gMVxuXHRcdFx0XHR9XG5cdFx0XHR9LFxuXHRcdFx0ZXZlbnRzOiB7XG5cdFx0XHRcdG9uUHJldkltYWdlOiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHQvL2NvbnNvbGUubG9nKCdvblByZXZJbWFnZScpXG5cdFx0XHRcdFx0Y3RybC5tb2RlbC5pZHgtLTtcblx0XHRcdFx0XHR1cGRhdGVTZWxlY3Rpb24oKVxuXHRcdFx0XHR9LFxuXHRcdFx0XHRvbk5leHRJbWFnZTogZnVuY3Rpb24oKSB7XG5cdFx0XHRcdFx0Ly9jb25zb2xlLmxvZygnb25OZXh0SW1hZ2UnKVxuXHRcdFx0XHRcdGN0cmwubW9kZWwuaWR4Kys7XG5cdFx0XHRcdFx0dXBkYXRlU2VsZWN0aW9uKClcblx0XHRcdFx0fSxcblx0XHRcdFx0b25JbWFnZUNsaWNrOiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHRjb25zdCBpZHggPSAkKHRoaXMpLmluZGV4KClcblx0XHRcdFx0XHQvL2NvbnNvbGUubG9nKCdvbkltYWdlQ2xpY2snLCBpZHgpXG5cdFx0XHRcdFx0Y3RybC5tb2RlbC5pZHggPSBpZHg7XG5cdFx0XHRcdFx0dXBkYXRlU2VsZWN0aW9uKClcblx0XHRcdFx0fVxuXHRcdFx0fVxuXHRcdH0pXG5cblx0XHR1cGRhdGVTZWxlY3Rpb24oKVxuXG5cdFx0ZnVuY3Rpb24gdXBkYXRlU2VsZWN0aW9uKCkge1xuXHRcdFx0Y3RybC5zZXREYXRhKHtzcmM6IGdldEZpbGVVcmwoY3RybC5tb2RlbC5pZHgpfSlcblx0XHRcdGN0cmwuc2NvcGUuYmFuZC5maW5kKCdpbWcuc2VsZWN0ZWQnKS5yZW1vdmVDbGFzcygnc2VsZWN0ZWQnKVxuXHRcdFx0Y29uc3QgJGltZyA9IGN0cmwuc2NvcGUuYmFuZC5maW5kKCdpbWcnKS5lcShjdHJsLm1vZGVsLmlkeClcblx0XHRcdCRpbWcuYWRkQ2xhc3MoJ3NlbGVjdGVkJylcblx0XHRcdCRpbWcuZ2V0KDApLnNjcm9sbEludG9WaWV3KClcblx0XHR9XG5cblx0XHRmdW5jdGlvbiBnZXRGaWxlVXJsKGlkeCkge1xuXHRcdFx0cmV0dXJuIGZpbGVzU3J2LmZpbGVVcmwocm9vdERpciArIGZpbGVzW2lkeF0ubmFtZSwgZnJpZW5kVXNlcilcblx0XHR9XG5cblx0XHRmdW5jdGlvbiBnZXRUaHVtYm5haWxzVXJsKCkge1xuXHRcdFx0cmV0dXJuIGZpbGVzLm1hcCgoZikgPT4gZmlsZXNTcnYuZmlsZVRodW1ibmFpbFVybChyb290RGlyICsgZi5uYW1lLCAnP3g1MCcsIGZyaWVuZFVzZXIpKVxuXHRcdH1cblxuXHRcdGZ1bmN0aW9uIGdldFRodW1ibmFpbFdpZHRoKCkge1xuXHRcdFx0cmV0dXJuIGZpbGVzLnJlZHVjZSgodG90YWwsIGYpID0+IHtcblx0XHRcdFx0Y29uc3Qge3dpZHRoLCBoZWlnaHR9ID0gZi5kaW1lbnNpb25cblx0XHRcdFx0cmV0dXJuIHRvdGFsICsgKHdpZHRoICogNTAgLyBoZWlnaHQpICsgNVxuXHRcdFx0fSwgMClcblx0XHR9XG5cblx0XHRmdW5jdGlvbiBzdG9wRGlhcG9yYW1hKCkge1xuXHRcdFx0Ly9jb25zb2xlLmxvZygnc3RvcERpYXBvcmFtYScpXG5cdFx0XHRjbGVhckludGVydmFsKHRpbWVySWQpXG5cdFx0XHRwYWdlci5zZXRCdXR0b25WaXNpYmxlKHtwbGF5OiB0cnVlLCBwYXVzZTogZmFsc2V9KVxuXHRcdFx0Y3RybC5zZXREYXRhKHtzaG93QnV0dG9uczogdHJ1ZX0pXG5cdFx0XHRjdHJsLnNjb3BlLmltYWdlLmVuYWJsZUhhbmRsZXJzKHRydWUpXG5cdFx0XHRjdHJsLnNjb3BlLmltYWdlLmludmFsaWRhdGVTaXplKClcblx0XHRcdHRpbWVySWQgPSB1bmRlZmluZWRcdFx0XHRcblx0XHR9XG5cblx0XHRmdW5jdGlvbiBzdGFydERpYXBvcmFtYSgpIHtcblx0XHRcdHBhZ2VyLnNldEJ1dHRvblZpc2libGUoe3BsYXk6IGZhbHNlLCBwYXVzZTogdHJ1ZX0pXG5cdFx0XHRjdHJsLnNldERhdGEoe3Nob3dCdXR0b25zOiBmYWxzZX0pXG5cdFx0XHRjdHJsLnNjb3BlLmltYWdlLmVuYWJsZUhhbmRsZXJzKGZhbHNlKVxuXHRcdFx0Y3RybC5zY29wZS5pbWFnZS5pbnZhbGlkYXRlU2l6ZSgpXG5cdFx0XHRpZiAoY3RybC5tb2RlbC5pZHggPT0gY3RybC5tb2RlbC5uYkltYWdlcyAtIDEpIHtcblx0XHRcdFx0Y3RybC5tb2RlbC5pZHggPSAwXG5cdFx0XHRcdHVwZGF0ZVNlbGVjdGlvbigpXG5cdFx0XHR9XG5cblx0XHRcdHRpbWVySWQgPSBzZXRJbnRlcnZhbCgoKSA9PiB7XG5cdFx0XHRcdGlmIChjdHJsLm1vZGVsLmlkeCA9PSBjdHJsLm1vZGVsLm5iSW1hZ2VzIC0gMSkge1xuXHRcdFx0XHRcdHN0b3BEaWFwb3JhbWEoKVxuXHRcdFx0XHR9XG5cdFx0XHRcdGVsc2Uge1xuXHRcdFx0XHRcdGN0cmwubW9kZWwuaWR4Kytcblx0XHRcdFx0XHR1cGRhdGVTZWxlY3Rpb24oKVxuXHRcdFx0XHR9XG5cblx0XHRcdH0sIGRpYXBvcmFtYUludGVydmFsKVxuXG5cdFx0fVxuXG5cdFx0dGhpcy5vbkFjdGlvbiA9IGZ1bmN0aW9uKGFjdGlvbikge1xuXHRcdFx0Ly9jb25zb2xlLmxvZygnb25BY3Rpb24nLCBhY3Rpb24pXG5cdFx0XHRpZiAoYWN0aW9uID09ICdwbGF5Jykge1xuXHRcdFx0XHRzdGFydERpYXBvcmFtYSgpXG5cdFx0XHR9XG5cblx0XHRcdGlmIChhY3Rpb24gPT0gJ3BhdXNlJykge1xuXHRcdFx0XHRzdG9wRGlhcG9yYW1hKClcblx0XHRcdH1cblx0XHR9XG5cblx0XHR0aGlzLmRpc3Bvc2UgPSBmdW5jdGlvbigpIHtcblx0XHRcdC8vY29uc29sZS5sb2coJ2Rpc3Bvc2UnKVxuXHRcdFx0aWYgKHRpbWVySWQgIT0gdW5kZWZpbmVkKSB7XG5cdFx0XHRcdGNsZWFySW50ZXJ2YWwodGltZXJJZClcblx0XHRcdH1cblx0XHR9XG5cblx0fVxuXG5cbn0pO1xuXG5cblxuXG4iLCIkJC5jb250cm9sLnJlZ2lzdGVyQ29udHJvbCgncm9vdFBhZ2UnLCB7XG5cblx0dGVtcGxhdGU6IFwiPHA+U2VsZWN0IGEgZmlsZSBzeXN0ZW08L3A+XFxuPHVsIGNsYXNzPVxcXCJ3My11bCB3My1ib3JkZXIgdzMtd2hpdGVcXFwiPlxcblx0PGxpIGNsYXNzPVxcXCJ3My1iYXJcXFwiIGJuLWV2ZW50PVxcXCJjbGljazogb25Ib21lXFxcIj5cXG5cdFx0PGRpdiBjbGFzcz1cXFwidzMtYmFyLWl0ZW1cXFwiPlxcblx0XHRcdDxpIGNsYXNzPVxcXCJmYSBmYS1ob21lIGZhLTJ4IGZhLWZ3IHczLXRleHQtYmx1ZVxcXCI+PC9pPlxcblx0XHRcdDxzcGFuPllvdXIgaG9tZSBmaWxlczwvc3Bhbj5cXG5cdFx0PC9kaXY+XFxuXHQ8L2xpPlxcblxcblx0PGxpIGNsYXNzPVxcXCJ3My1iYXJcXFwiIGJuLWV2ZW50PVxcXCJjbGljazogb25TaGFyZVxcXCI+XFxuXHRcdDxkaXYgY2xhc3M9XFxcInczLWJhci1pdGVtXFxcIj5cXG5cdFx0XHQ8aSBjbGFzcz1cXFwiZmEgZmEtc2hhcmUtYWx0IGZhLTJ4IGZhLWZ3IHczLXRleHQtYmx1ZVxcXCI+PC9pPlxcblx0XHRcdDxzcGFuPkZpbGVzIHNoYXJlZCBieSB5b3VyIGZyaWVuZHM8L3NwYW4+XFxuXHRcdDwvZGl2Plxcblx0PC9saT5cXG48L3VsPlx0XCIsXG5cblx0ZGVwczogWydicmVpemJvdC5wYWdlciddLFxuXG5cdGluaXQ6IGZ1bmN0aW9uKGVsdCwgcGFnZXIpIHtcblxuXHRcdGNvbnN0IGN0cmwgPSAkJC52aWV3Q29udHJvbGxlcihlbHQsIHtcblx0XHRcdGRhdGE6IHtcblx0XHRcdH0sXG5cdFx0XHRldmVudHM6IHtcblx0XHRcdFx0b25Ib21lOiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHRjb25zb2xlLmxvZygnb25Ib21lJylcblx0XHRcdFx0XHRwYWdlci5wdXNoUGFnZSgnZmlsZXMnLCB7XG5cdFx0XHRcdFx0XHR0aXRsZTogJ0hvbWUgZmlsZXMnXHRcdFx0XHRcdFxuXHRcdFx0XHRcdH0pXG5cdFx0XHRcdH0sXG5cdFx0XHRcdG9uU2hhcmU6IGZ1bmN0aW9uKCkge1xuXHRcdFx0XHRcdGNvbnNvbGUubG9nKCdvblNoYXJlJylcblx0XHRcdFx0XHRwYWdlci5wdXNoUGFnZSgnZnJpZW5kcycsIHtcblx0XHRcdFx0XHRcdHRpdGxlOiAnU2hhcmVkIGZpbGVzJ1x0XHRcdFx0XHRcblx0XHRcdFx0XHR9KVxuXHRcdFx0XHR9XG5cblx0XHRcdH1cblx0XHR9KVxuXG5cdH1cblxuXG59KTtcblxuXG5cblxuIl19

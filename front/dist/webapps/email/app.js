@@ -1,1 +1,1202 @@
-$$.control.registerControl("rootPage",{template:'<div class="toolbar">\n\t<div class="info">\n\t\t<span bn-show="show1">You have no email account</span>\n\t\t<div bn-show="show2" class="account">\n\t\t\t<span>Account:&nbsp;</span> \n\t\t\t<div \n\t\t\t\tbn-control="brainjs.selectmenu" \n\t\t\t\tbn-data="{items: accounts}" \n\t\t\t\tbn-val="currentAccount"\n\t\t\t\tbn-event="selectmenuchange: onAccountChange">\n\t\t\t</div>\n\t\t</div>\n\t\t\n\t</div>\n\t<div>\n\t\t<div bn-control="brainjs.contextmenu" \n\t\t\tbn-data="{items: getItems}" \n\t\t\tdata-trigger="left" \n\t\t\tclass="w3-button w3-blue" \n\t\t\tbn-event="contextmenuchange: onMenu"\n\t\t\t>\n\t\t\t\t<i class="fa fa-ellipsis-v"></i>\n    \t\n\t\t</div>\t\t\n\t\t\n\t</div>\n\t\n</div>\n\n<div>\n\tSelect folder to open:\n</div>\n\n<div class="scrollPanelTree">\n\t<div \n\t\tclass="tree" \n\t\tbn-control="brainjs.tree"\n\t\tbn-data="{source: mailboxes}"\n\t\tbn-event="treeactivate: onTreeActivate"\n\t\tbn-iface="tree"\n\t></div>\n</div>\n\n\n',deps:["app.mails","breizbot.pager"],init:function(t,e,n){const o=$$.viewController(t,{data:{accounts:[],currentAccount:"",mailboxes:[],show1:function(){return 0==this.accounts.length},show2:function(){return this.accounts.length>0},getItems:function(){return 0==this.accounts.length?{add:{name:"Add Account",icon:"fas fa-plus"}}:{add:{name:"Add Account",icon:"fas fa-plus"},edit:{name:"Edit Selected Account",icon:"fas fa-edit"},sep2:"------",newFolder:{name:"New Folder",icon:"fas fa-folder-plus"},sep:"------",new:{name:"New Message",icon:"fas fa-envelope"}}}},events:{onMenu:function(t,s){console.log("onMenu",s),"add"==s.cmd&&n.pushPage("accountPage",{title:"Add Mail Account",onReturn:a}),"new"==s.cmd&&n.pushPage("writeMailPage",{title:"New Message",props:{accountName:o.model.currentAccount}}),"edit"==s.cmd&&e.getMailAccount(o.model.currentAccount).then(t=>{n.pushPage("accountPage",{title:"Edit Mail Account",props:{data:t}})}),"newFolder"==s.cmd&&n.pushPage("boxesPage",{title:"Add new folder",props:{currentAccount:o.model.currentAccount,showForm:!0},onReturn:function(t){console.log("onReturn",t),e.addMailbox(o.model.currentAccount,t).then(()=>{i()})}})},onAccountChange:function(){console.log("onAccountChange",$(this).getValue()),o.setData({currentAccount:$(this).getValue()}),i()},onTreeActivate:function(){console.log("onTreeActivate");const t=$(this).iface(),e=t.getActiveNode(),a=t.getNodePath(e);console.log("mailboxName",a);const{currentAccount:i}=o.model;n.pushPage("mailboxPage",{title:e.title,props:{currentAccount:i,mailboxName:a},onBack:function(){const t=o.scope.tree.getActiveNode();null!=t&&t.setActive(!1)}})}}});function a(){console.log("loadAccount"),e.getMailAccounts().then(t=>{if(console.log("accounts",t),0==t.length)return;const e=t[0];console.log("currentAccount",e),o.setData({accounts:t,currentAccount:e}),i()}).catch(t=>{$$.ui.showAlert({title:"Error",content:t})})}function i(){console.log("loadMailboxes");const{currentAccount:t}=o.model;e.getMailboxes(t).then(t=>{console.log("mailboxes",t),o.setData({mailboxes:t})})}a()}}),$$.service.registerService("app.mails",{deps:["breizbot.http"],init:function(t,e){return{getMailAccounts:function(){return e.get("/getMailAccounts")},getMailAccount:function(t){return e.post("/getMailAccount",{name:t})},createMailAccount:function(t){return e.post("/createMailAccount",t)},updateMailAccount:function(t){return e.post("/updateMailAccount",t)},getMailboxes:function(t){return e.post("/getMailboxes",{name:t})},addMailbox:function(t,n){return e.post("/addMailbox",{name:t,mailboxName:n})},openMailbox:function(t,n,o){return e.post("/openMailbox",{name:t,mailboxName:n,pageNo:o})},openMessage:function(t,n,o,a){return e.post("/openMessage",{name:t,mailboxName:n,seqNo:o,partID:a})},openAttachment:function(t,n,o,a){return e.post("/openAttachment",{name:t,mailboxName:n,seqNo:o,partID:a})},deleteMessage:function(t,n,o){return e.post("/deleteMessage",{name:t,mailboxName:n,seqNos:o})},moveMessage:function(t,n,o,a){return e.post("/moveMessage",{name:t,mailboxName:n,targetName:o,seqNos:a})},sendMail:function(t,n){return e.post("/sendMail",{accountName:t,data:n})}}},$iface:"\n\t\tgetMailAccount():Promise;\n\t\tcreateMaiAccount(data):Promise;\n\t\tgetMailboxes(name):Promise;\n\t\topenMailbox(name, mailboxName, pageNo):Promise;\n\t\topenMessage(name, mailboxName, seqNo, partID):Promise;\n\t\topenAttachment(name, mailboxName, seqNo, partID):Promise;\n\t\tdeleteMessage(name, mailboxName, seqNos):Promise;\n\t\tmoveMessage(name, mailboxName, targetName, seqNos):Promise\n\t\t"}),$$.control.registerControl("accountPage",{template:'<div class="main">\n\t<form bn-event="submit: onSubmit" bn-bind="form" bn-form="data">\n\n\t\t<div bn-control="brainjs.inputgroup">\n\t\t\t<label>Provider</label>\n\t\t\t<span bn-control="brainjs.selectmenu" \n\t\t\t\tbn-event="selectmenuchange: onProviderChange" bn-val="provider"\n\t\t\t\tbn-data="{items: providers}"\n\t\t\t\tbn-prop="{disabled: isEdit}"\n\t\t\t>\n\t\t\t</span>\t\t\n\t\t</div>\t\t\t\n\n\t\t<div bn-control="brainjs.inputgroup">\n\t\t\t<label>Account Name</label>\n\t\t\t<input type="text" name="name" required="" autofocus="" bn-prop="{disabled: isEdit}">\t\t\t\n\t\t</div>\n\n\t\t<div bn-control="brainjs.inputgroup">\n\t\t\t<label>User</label>\n\t\t\t<input type="text" name="user" required="">\t\t\t\n\t\t</div>\n\n\t\t<div bn-control="brainjs.inputgroup">\n\t\t\t<label>Password</label>\n\t\t\t<input type="password" name="pwd" required="">\t\t\t\n\t\t</div>\n\n\t\t<div bn-control="brainjs.inputgroup">\n\t\t\t<label>Email</label>\n\t\t\t<input type="email" name="email" required="">\t\t\t\n\t\t</div>\n\n\t\n\n\t\t<div bn-control="brainjs.inputgroup" bn-show="show1">\n\t\t\t<label>IMAP Server</label>\n\t\t\t<input type="text" name="imapHost" required="">\t\t\t\n\t\t</div>\t\t\n\n\t\t<div bn-control="brainjs.inputgroup"  bn-show="show1">\n\t\t\t<label>SMTP Server</label>\n\t\t\t<input type="text" name="smtpHost" required="">\t\t\t\n\t\t</div>\t\t\n\n\t\t<div class="copySent">\n\t\t\t<label>Make a copy of sent mail in Sent folder</label>\n\t\t\t<div bn-control="brainjs.flipswitch" bn-data="data1" name="makeCopy"></div>\n\t\t</div>\n\n\t\t<input type="submit" hidden="" bn-bind="submit">\n\t</form>\n\n</div>',deps:["app.mails","breizbot.pager"],props:{data:null},buttons:[{name:"create",icon:"fa fa-check"}],init:function(t,e,n){const{data:o}=this.props,a={Gmail:{imapHost:"imap.gmail.com",smtpHost:"smtp.gmail.com"},Outlook:{imapHost:"imap.outlook.com",smtpHost:"smtp.outlook.com"},Free:{imapHost:"imap.free.fr",smtpHost:"smtp.free.fr"},SFR:{imapHost:"imap.sfr.fr",smtpHost:"smtp.sfr.fr"},Orange:{imapHost:"imap.orange.fr",smtpHost:"smtp.orange.fr"},"Bouygues Telecom":{imapHost:"imap.bbox.fr",smtpHost:"smtp.bbox.fr"},Other:{imapHost:"",smtpHost:""}};const i=$$.viewController(t,{data:{provider:null!=o?function(t){for(let e in a)if(a[e].imapHost==t.imapHost)return e;return"Other"}(o):"Gmail",providers:Object.keys(a),data:o,isEdit:null!=o,show1:function(){return"Other"==this.provider},data1:function(){return{height:25,width:100,texts:{left:"YES",right:"NO"}}}},events:{onSubmit:function(t){t.preventDefault();const a=$(this).getFormData();console.log("formData",a),null==o?e.createMailAccount(a).then(()=>{n.popPage()}):e.updateMailAccount(a).then(()=>{n.popPage()})},onProviderChange:function(){const t=$(this).getValue();console.log("onProviderChange",t),i.setData({provider:t}),i.scope.form.setFormData(a[t])}}});i.scope.form.setFormData(a[i.model.provider]),this.onAction=function(t){i.scope.submit.click()}}}),$$.control.registerControl("addContactPage",{template:'<form bn-event="submit: onSubmit" bn-form="from">\n\t<div bn-control="brainjs.inputgroup">\n\t\t<label>Name:</label><br>\n\t\t<input type="text" name="name" style="min-width: 300px" required="">\t\n\t</div>\n\t<br>\n\n\t<div bn-control="brainjs.inputgroup">\n\t\t<label>Email:</label><br>\n\t\t<input type="email" name="email" style="min-width: 300px" required="">\t\n\t</div>\t\n\n\t<input type="submit" bn-bind="submit" hidden="">\n</form>\n',deps:["breizbot.users","breizbot.pager"],props:{from:{}},buttons:[{name:"add",icon:"fa fa-user-plus"}],init:function(t,e,n){const{from:o}=this.props,a=$$.viewController(t,{data:{from:o},events:{onSubmit:function(t){t.preventDefault();const o=$(this).getFormData();console.log("data",o),e.addContact(o.name,o.email).then(()=>{console.log("contact added !"),n.popPage("addContact")}).catch(t=>{$$.ui.showAlert({title:"Error",content:t.responseText})})}}});this.onAction=function(t){console.log("onAction",t),a.scope.submit.click()}}}),$$.control.registerControl("boxesPage",{template:'<div bn-show="showForm">\n\t<form bn-event="submit: onSubmit">\n\t\t<div bn-control="brainjs.inputgroup">\n\t\t\t<label>Name:</label>\n\t\t\t<input type="text" name="name" required="" autofocus="">\t\t\t\n\t\t</div>\n\t\t<input type="submit" hidden="" bn-bind="submit">\n\t</form>\n\n\t<p>Select target folder:</p>\n</div>\n\n<div class="scrollPanelTree">\n\t<div \n\t\tclass="tree" \n\t\tbn-control="brainjs.tree"\n\t\tbn-data="{source: mailboxes}"\n\t\tbn-iface="tree"\n\t></div>\n</div>\n\n\n',deps:["app.mails","breizbot.pager"],props:{currentAccount:"",showForm:!1},buttons:[{name:"apply",icon:"fa fa-check"}],init:function(t,e,n){const{currentAccount:o,showForm:a}=this.props,i=$$.viewController(t,{data:{mailboxes:[],showForm:a},events:{onSubmit:function(t){t.preventDefault();const{name:e}=$(this).getFormData(),{tree:o}=i.scope,a=o.getActiveNode();if(null==a)return void $$.ui.showAlert({title:"Warning",content:"Please select a target mailbox"});let s=o.getNodePath(a)+"/"+e;const c=s.split("/");c.shift(),s=c.join("/"),n.popPage(s)}}});console.log("loadMailboxes"),e.getMailboxes(o).then(t=>{console.log("mailboxes",t),a?i.setData({mailboxes:[{title:"Folders",folder:!0,children:t,expanded:!0}]}):i.setData({mailboxes:t})}),this.onAction=function(t){if(console.log("onAction",t),"apply"==t){if(a)return void i.scope.submit.click();const{tree:t}=i.scope,e=t.getActiveNode();if(null==e)return void $$.ui.showAlert({title:"Select Target Mailbox",content:"Please select a target mailbox"});const o=t.getNodePath(e);n.popPage(o)}}}}),$$.control.registerControl("contactsPage",{template:'<div class="scrollPanel">\n\t<div bn-control="breizbot.contacts" data-show-selection="true" bn-iface="contacts"></div>\n\t\n</div>\n\n\n',deps:["breizbot.pager"],buttons:[{name:"ok",icon:"fa fa-check"}],init:function(t,e){const n=$$.viewController(t);this.onAction=function(t){console.log("onAction",t),"ok"==t&&e.popPage(n.scope.contacts.getSelection())}}}),$$.control.registerControl("mailboxPage",{template:'<div class="toolbar">\n\t<div>\n\t\t<div bn-show="show1">\n\t\t\t<span >Page: <span bn-text="text1"></span></span>\n\t\t\t<button class="w3-button" title="previous page" bn-event="click: onPrevPage">\n\t\t\t\t<i class="fa fa-angle-left"></i>\n\t\t\t</button>\t\t\t\n\t\t\t<button class="w3-button" title="next page" bn-event="click: onNextPage">\n\t\t\t\t<i class="fa fa-angle-right"></i>\n\t\t\t</button>\t\t\t\n\t\t</div>\n\t\t<div bn-show="loading" class="loading">\n\t\t\t<i class="fa fa-spinner fa-pulse"></i>\n\t\t\tloading ...\n\t\t</div>\n\t</div>\n\t<div class="nbMsg"><strong bn-text="nbMsg"></strong>&nbsp;Messages</div>\t\t\n</div>\n\n<div class="scrollPanelTable">\n\t<table class="w3-table-all w3-hoverable w3-small">\n\t\t<thead>\n\t\t\t<tr class="w3-green">\n\t\t\t\t<th><input type="checkbox" bn-event="click: onMainCheckBoxClick" bn-val="check" bn-update="click"></th>\n\t\t\t\t<th bn-show="!isSentBox">From</th>\n\t\t\t\t<th bn-show="isSentBox">To</th>\n\t\t\t\t<th>Subject</th>\n\t\t\t\t<th title="nb Attachments"><i class="fa fa-paperclip"></i></th>\n\t\t\t\t<th>Date</th>\n\t\t\t</tr>\n\t\t</thead>\n\t\t<tbody bn-each="messages" bn-event="click.item: onItemClick">\n\t\t\t<tr bn-data="{item: $i}" bn-class="{unseen: !isSeen}">\n\t\t\t\t<th><input type="checkbox" class="check" ></th>\n\t\t\t\t<td bn-text="$i.from.name" bn-attr="{title: $i.from.email}" bn-show="!isSentBox"></td>\n\t\t\t\t<td bn-text="text2" bn-attr="attr1" bn-show="isSentBox"></td>\n\t\t\t\t<td bn-text="$i.subject" class="item" ></td>\n\t\t\t\t<td bn-text="$i.nbAttachments"></td>\n\t\t\t\t<td bn-text="getDate"></td>\n\t\t\t</tr>\n\t\t</tbody>\n\t</table>\n</div>\n\n\n',deps:["app.mails","breizbot.pager"],props:{currentAccount:"",mailboxName:""},buttons:[{name:"reload",icon:"fa fa-sync-alt",title:"Update"},{name:"newMail",icon:"fa fa-envelope",title:"New Message"},{name:"move",icon:"fa fa-file-export",title:"Move selected messages"},{name:"delete",icon:"fa fa-trash",title:"Delete selected messages"}],init:function(t,e,n){const{currentAccount:o,mailboxName:a}=this.props,i=$$.viewController(t,{data:{messages:[],nbMsg:0,pageNo:0,nbPage:0,check:!1,loading:!1,mailboxName:a,show1:function(){return!this.loading&&this.nbMsg>0},text1:function(){return`${this.pageNo} / ${this.nbPage}`},text2:function(){return this.$i.to[0]&&this.$i.to[0].name},attr1:function(){return{title:this.$i.to[0]&&this.$i.to[0].email}},getDate:function(){const t=this.$i.date;return new Date(t).toLocaleDateString("fr-FR")},isSeen:function(){return this.$i.flags.includes("\\Seen")},isSentBox:function(){return"Sent"==this.mailboxName}},events:{onItemClick:function(t){const e=$(this).closest("tr").data("item");n.pushPage("messagePage",{title:`Message #${i.model.nbMsg-e.seqno+1}`,props:{currentAccount:o,mailboxName:a,item:e},onBack:s})},onMainCheckBoxClick:function(e){t.find(".check").prop("checked",$(this).prop("checked"))},onPrevPage:function(t){const{nbPage:e,pageNo:n}=i.model;n>1&&s(n-1)},onNextPage:function(t){const{nbPage:e,pageNo:n}=i.model;n<e&&s(n+1)}}});function s(t){null==t&&(t=i.model.pageNo),i.setData({loading:!0}),e.openMailbox(o,a,t).then(e=>{console.log("data",e);const{messages:n,nbMsg:o}=e;i.setData({loading:!1,check:!1,pageNo:t,nbPage:Math.ceil(o/20),nbMsg:o,messages:n.reverse()})})}s(1),this.onAction=function(i){console.log("onAction",i),"reload"==i&&s(1),"delete"==i&&function(){const n=t.find(".check:checked");if(console.log("deleteMessage",n.length),0==n.length)return void $$.ui.showAlert({title:"Delete Message",content:"Please select one or severall messages !"});const i=[];n.each(function(){const t=$(this).closest("tr").data("item");i.push(t.seqno)}),console.log("seqNos",i),e.deleteMessage(o,a,i).then(()=>{console.log("Messages deleted"),s()})}(),"move"==i&&function(){const i=t.find(".check:checked");if(console.log("deleteMessage",i.length),0==i.length)return void $$.ui.showAlert({title:"Move Message",content:"Please select one or severall messages !"});const c=[];i.each(function(){const t=$(this).closest("tr").data("item");c.push(t.seqno)}),console.log("seqNos",c),n.pushPage("boxesPage",{title:"Select target mailbox",props:{currentAccount:o},onReturn:function(t){t!=a?e.moveMessage(o,a,t,c).then(()=>{s()}):$$.ui.showAlert({title:"Select Target Mailbox",content:"Target mailbox must be different from current mailbox"})}})}(),"newMail"==i&&n.pushPage("writeMailPage",{title:"New Message",props:{accountName:o},onReturn:function(){"Sent"==a&&s()}})}}}),$$.control.registerControl("messagePage",{template:'<div bn-show="loading" class="loading">\n\t<i class="fa fa-spinner fa-pulse"></i>\n\tloading ...\n</div>\n<div class="header w3-blue" bn-show="!loading">\n\t<div class="from"><strong>From:</strong><a href="#" bn-text="item.from.name" bn-event="click: onAddContact" bn-data="{addr: item.from}"></a></div>\n\t<div class="subject"><strong>Subject:</strong><span bn-text="item.subject" ></span></div>\n\t<div bn-show="show1" class="to">\n\t\t<strong bn-event="click: onToggleDiv"><i class="fa fa-caret-down fa-fw"></i>\n\t\tTo</strong>\n\t\t<ul bn-each="item.to">\n\t\t\t<li>\n\t\t\t\t<a href="#" bn-text="$i.name" bn-data="{addr: $i}" bn-event="click: onAddContact"></a>\t\t\t\t\n\t\t\t</li>\n\t\t</ul>\n\t</div>\n\t<div class="attachments" bn-show="show2">\n\t\t<strong bn-event="click: onToggleDiv"><i class="fa fa-caret-down fa-fw"></i>\n\t\tAttachments</strong>\n\t\t<ul  bn-each="attachments" bn-event="click.item: openAttachment">\n\t\t\t<li>\n\t\t\t\t<a href="#" bn-text="$i.name" class="item" bn-data="{item: $i}"></a>\n\t\t\t\t<span bn-text="getSize"></span>\n\t\t\t</li>\n\t\t</ul>\n\t</div>\n\t\n</div>\n\n<div class="mainHtml" bn-show="show4">\n\t<div bn-show="show3" class="embeddedImages w3-pale-yellow">\n\t\t<a href="#" bn-event="click: onEmbeddedImages">Download embedded images</a>\n\t</div>\n\t<iframe bn-attr="{srcdoc:text}" bn-bind="iframe" bn-event="load: onFrameLoaded"></iframe>\n</div>\n\n<div class="mainText" bn-show="show5">\n \t<pre bn-text="text"></pre>\n</div>',deps:["app.mails","breizbot.users","breizbot.scheduler","breizbot.pager"],props:{currentAccount:"",mailboxName:"",item:null},buttons:[{name:"reply",icon:"fa fa-reply",title:"Reply"},{name:"replyAll",icon:"fa fa-reply-all",title:"Reply All"},{name:"forward",icon:"fa fa-share-square",title:"Forward"}],init:function(t,e,n,o,a){const{currentAccount:i,mailboxName:s,item:c}=this.props,l=$$.dialogController({title:"Loading ...",template:'<div class="w3-center w3-padding-16"><i class="fa fa-redo-alt fa-2x fa-pulse w3-text-blue"></i></div>',width:100,canClose:!1}),r=$$.viewController(t,{data:{embeddedImages:[],isHtml:!1,loading:!0,text:"",item:c,attachments:[],show1:function(){return this.item.to.length>0},show2:function(){return this.attachments.length>0},show3:function(){return this.embeddedImages.length>0},show4:function(){return!this.loading&&this.isHtml},show5:function(){return!this.loading&&!this.isHtml},getSize:function(){let t=this.$i.size,e="Ko";return(t/=1024)>1024&&(t/=1024,e="Mo"),` (${t.toFixed(1)} ${e})`}},events:{openAttachment:function(t){t.preventDefault();const n=$(this).closest("li").index(),o=r.model.attachments[n];if(console.log("openAttachments",o),o.canOpen){const t={info:o,currentAccount:i,mailboxName:s,seqno:c.seqno};a.pushPage("viewerPage",{title:o.name,props:t})}else $$.ui.showConfirm({title:"Open Attachment",okText:"Yes",cancelText:"No",content:"This attachment cannot be open with NetOS<br>\n\t\t\t\t\t\t\t\tDo you want to download it ?"},function(){console.log("OK");const{partID:t,type:n,subtype:a}=o;l.show(),e.openAttachment(i,s,c.seqno,t).then(t=>{l.hide();const e=`data:${n}/${a};base64,`+t.data;$$.util.downloadUrl(e,o.name)})})},onToggleDiv:function(t){console.log("onAttachClick");const e=$(this).find("i"),n=$(this).siblings("ul");e.hasClass("fa-caret-right")?(e.removeClass("fa-caret-right").addClass("fa-caret-down"),n.slideDown()):(e.removeClass("fa-caret-down").addClass("fa-caret-right"),n.slideUp())},onEmbeddedImages:function(t){t.preventDefault();const n=$(r.scope.iframe.get(0).contentWindow.document),{embeddedImages:o}=r.model;r.setData({embeddedImages:[]}),o.forEach(t=>{const{type:o,subtype:a,partID:l,cid:r}=t;e.openAttachment(i,s,c.seqno,l).then(t=>{const e=`data:${o}/${a};base64,`+t.data;n.find(`img[src="cid:${r}"]`).attr("src",e)})})},onFrameLoaded:function(t){console.log("onFrameLoaded"),$(this.contentWindow.document).find("a").attr("target","_blank").on("click",function(t){const e=$(this).attr("href");e.startsWith("https://youtu.be/")&&(t.preventDefault(),o.openApp("youtube",{url:e}))})},onAddContact:function(t){console.log("onAddContact"),t.preventDefault();const e=$(this).data("addr");a.pushPage("addContactPage",{title:"Add Contact",props:{from:e}})}}});let d=c.partID.html,m=!0;function u(t,e){a.pushPage("writeMailPage",{title:"Reply message",props:{accountName:i,data:{to:e,subject:"Re: "+c.subject,html:`<pre>${t}</pre>`}}})}function p(t){a.pushPage("writeMailPage",{title:"Forward message",props:{accountName:i,data:{subject:"Fwd: "+c.subject,html:`<pre>${t}</pre>`}}})}0==d&&(d=c.partID.text,m=!1),console.log("isHtml",m),e.openMessage(i,s,c.seqno,d).then(t=>{console.log("message",t);const{text:e,attachments:n,embeddedImages:o}=t;n.forEach(t=>{t.canOpen=null!=$$.util.getFileType(t.name)&&"BASE64"==t.encoding.toUpperCase()}),r.setData({text:e,attachments:n,embeddedImages:o,loading:!1,isHtml:m})}),this.onAction=function(t){if(console.log("onAction",t,c),"reply"==t||"replyAll"==t){const n="\n\n----- Original mail -----\n";let o=c.from.email;"replyAll"==t&&c.to.length>0&&(o+=","+c.to.map(t=>t.email).join(",")),r.model.isHtml&&0!=c.partID.text?e.openMessage(i,s,c.seqno,c.partID.text).then(t=>{u(n+t.text,o)}):r.model.isHtml?u("",o):u(n+r.model.text,o)}if("forward"==t){const t="\n\n----- Forwarded mail -----\n";r.model.isHtml&&0!=c.partID.text?e.openMessage(i,s,c.seqno,c.partID.text).then(e=>{p(t+e.text)}):r.model.isHtml?p(""):p(t+r.model.text)}}}}),$$.control.registerControl("viewerPage",{template:'<div style="height: 100%; position: relative; text-align: center;">\n\t<span bn-show="wait" class="w3-text-blue" style="position: relative; top: 50%;"><i class="fa fa-redo-alt fa-2x fa-pulse"></i></span>\n\n\t<div \n\t\tbn-show="!wait"\n\t\tbn-control="breizbot.viewer" \n\t\tbn-data="{type, url}" \n\t\tstyle="height: 100%" \n\t\tbn-iface="viewer">\n\t\t\t\n\t\t</div>\t\n\n</div>\t',deps:["app.mails","breizbot.pager"],props:{info:"",currentAccount:"",mailboxName:"",seqno:""},buttons:[{name:"save",icon:"fa fa-save"}],init:function(t,e,n){const{info:o,currentAccount:a,mailboxName:i,seqno:s}=this.props,{partID:c,type:l,subtype:r}=o,d=$$.viewController(t,{data:{url:"",wait:!0,type:$$.util.getFileType(o.name)},events:{}});e.openAttachment(a,i,s,c).then(t=>{const e=`data:${l}/${r};base64,`+t.data;d.setData({wait:!1,url:e})}),this.onAction=function(t){console.log("onAction",t),"save"==t&&d.scope.viewer.save("/apps/email",o.name,()=>{n.popPage()})}}}),$$.control.registerControl("writeMailPage",{template:'<form bn-event="submit: onSend" bn-form="data">\n\t<div class="header">\n\t\t<div bn-control="brainjs.inputgroup">\n\t\t\t<div class="openContactPanel">\n\t\t\t\t<a bn-event="click: openContact" href="#" class="w3-text-indigo">To:</a>\n\t\t\t</div>\n\t\t\t<input type="email" multiple="true" name="to" bn-prop="prop1" required="" bn-bind="to">\t\t\n\t\t</div>\n\n\t\t<div bn-control="brainjs.inputgroup">\n\t\t\t<label>Subject:</label>\n\t\t\t<input type="text" name="subject" required="">\t\t\n\t\t</div>\t\n\n\t\t<div bn-show="show1" class="attachments">\n\t\t\t<label><i class="fa fa-paperclip"></i></label>\t\t\t\n\t\t\t<ul bn-each="attachments" bn-event="click.delete: onRemoveAttachment">\n\t\t\t\t<li>\n\t\t\t\t\t<span bn-text="$i.fileName"></span>\n\t\t\t\t\t<i class="fa fa-times delete"></i>\n\t\t\t\t</li>\n\t\t\t</ul>\n\t\t</div>\n\t</div>\n\t<div bn-control="brainjs.htmleditor" class="content" name="html" bn-iface="content"></div>\n\x3c!-- \t<textarea name="text" bn-bind="content"></textarea>\t\n --\x3e\t<input type="submit" hidden="" bn-bind="submit">\n</form>\n',deps:["app.mails","breizbot.pager"],props:{accountName:"",data:{}},buttons:[{name:"attachment",icon:"fa fa-paperclip",title:"Add attachment"},{name:"send",icon:"fa fa-paper-plane",title:"Send Message"}],init:function(t,e,n){const{accountName:o,data:a}=this.props;console.log("data",a);const i=$$.viewController(t,{data:{data:a,attachments:[],show1:function(){return this.attachments.length>0},prop1:function(){return{autofocus:null==this.data.html}}},events:{onSend:function(t){console.log("onSend"),t.preventDefault();const a=$(this).getFormData();console.log("data",a);const{attachments:s}=i.model;s.length>0&&(a.attachments=s.map(t=>t.rootDir+t.fileName)),e.sendMail(o,a).then(()=>{n.popPage()}).catch(t=>{$$.ui.showAlert({title:"Error",content:t.responseText})})},openContact:function(){console.log("openContact"),n.pushPage("contactsPage",{title:"Select a contact",onReturn:function(t){const e=t.map(t=>t.contactEmail);console.log("contacts",e);const n=i.scope.to.val();console.log("to",n),""!=n&&e.unshift(n),i.setData({data:{to:e.join(",")}})}})},onRemoveAttachment:function(t){const e=$(this).closest("li").index();console.log("onRemoveAttachment",e),i.model.attachments.splice(e,1),i.update()}}});null!=a.html&&i.scope.content.focus(),this.onAction=function(t){console.log("onAction",t),"send"==t&&i.scope.submit.click(),"attachment"==t&&n.pushPage("breizbot.files",{title:"Select a file to attach",props:{showThumbnail:!0},onReturn:function(t){const{fileName:e,rootDir:n}=t;i.model.attachments.push({fileName:e,rootDir:n}),i.update()}})}}});
+$$.control.registerControl('rootPage', {
+
+	template: "<div class=\"toolbar\">\n	<div class=\"info\">\n		<span bn-show=\"show1\">You have no email account</span>\n		<div bn-show=\"show2\" class=\"account\">\n			<span>Account:&nbsp;</span> \n			<div \n				bn-control=\"brainjs.selectmenu\" \n				bn-data=\"{items: accounts}\" \n				bn-val=\"currentAccount\"\n				bn-event=\"selectmenuchange: onAccountChange\">\n			</div>\n		</div>\n		\n	</div>\n	<div>\n		<div bn-control=\"brainjs.contextmenu\" \n			bn-data=\"{items: getItems}\" \n			data-trigger=\"left\" \n			class=\"w3-button w3-blue\" \n			bn-event=\"contextmenuchange: onMenu\"\n			>\n				<i class=\"fa fa-ellipsis-v\"></i>\n    	\n		</div>		\n		\n	</div>\n	\n</div>\n\n<div>\n	Select folder to open:\n</div>\n\n<div class=\"scrollPanelTree\">\n	<div \n		class=\"tree\" \n		bn-control=\"brainjs.tree\"\n		bn-data=\"{source: mailboxes}\"\n		bn-event=\"treeactivate: onTreeActivate\"\n		bn-iface=\"tree\"\n	></div>\n</div>\n\n\n",
+
+	deps: ['app.mails', 'breizbot.pager'],
+
+
+	init: function(elt, srvMail, pager) {
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+				accounts: [],
+				currentAccount: '',
+				mailboxes: [],
+				show1: function() {
+					return this.accounts.length == 0
+				},
+				show2: function() {
+					return this.accounts.length > 0
+				},
+				getItems: function() {
+					if (this.accounts.length == 0) {
+						return {
+							add: {name: 'Add Account', icon: 'fas fa-plus'},
+						}
+					}
+					return {
+						add: {name: 'Add Account', icon: 'fas fa-plus'},
+						edit: {name: 'Edit Selected Account', icon: 'fas fa-edit'},
+						sep2: '------',
+						newFolder: {name: 'New Folder', icon: 'fas fa-folder-plus'},
+						sep: '------',
+						new: {name: 'New Message', icon: 'fas fa-envelope'}					
+					}
+				}
+			},
+			events: {
+				onMenu: function(ev, data) {
+					console.log('onMenu', data)
+					if (data.cmd == 'add') {
+						pager.pushPage('accountPage', {
+							title: 'Add Mail Account',
+							onReturn: loadAccount
+						})						
+					}
+					if (data.cmd == 'new') {
+						pager.pushPage('writeMailPage', {
+							title: 'New Message',
+							props: {
+								accountName: ctrl.model.currentAccount
+							}
+						})						
+					}
+					if (data.cmd == 'edit') {
+						srvMail.getMailAccount(ctrl.model.currentAccount).then((data) => {
+							pager.pushPage('accountPage', {
+								title: 'Edit Mail Account',
+								props: {
+									data
+								}
+							})						
+
+						})
+					}
+					if (data.cmd == 'newFolder') {
+						pager.pushPage('boxesPage', {
+							title: 'Add new folder',
+							props: {
+								currentAccount: ctrl.model.currentAccount,
+								showForm: true
+							},
+							onReturn: function(targetName) {
+								console.log('onReturn', targetName)
+								srvMail.addMailbox(ctrl.model.currentAccount, targetName).then(() => {
+									loadMailboxes()
+								})
+
+							}
+						})
+					}
+				},
+
+				onAccountChange: function() {
+					console.log('onAccountChange', $(this).getValue())
+					ctrl.setData({currentAccount: $(this).getValue()})
+					loadMailboxes()
+				},
+
+				onTreeActivate: function() {
+					console.log('onTreeActivate')
+					const tree = $(this).iface()
+
+					const node =  tree.getActiveNode()
+
+					const mailboxName = tree.getNodePath(node)					
+					console.log('mailboxName', mailboxName)
+					const {currentAccount} = ctrl.model
+					pager.pushPage('mailboxPage', {
+						title: node.title,
+						props: {
+							currentAccount,
+							mailboxName
+						},
+						onBack: function() {
+							const activeNode = ctrl.scope.tree.getActiveNode()
+							if (activeNode != null) {
+								activeNode.setActive(false)
+							}
+						}
+					})
+				}
+
+			}
+		})
+
+
+		function loadAccount() {
+			console.log('loadAccount')
+			srvMail.getMailAccounts().then((accounts) => {
+				console.log('accounts', accounts)
+				if (accounts.length == 0) {
+					return
+				}
+				const currentAccount = accounts[0]
+				console.log('currentAccount', currentAccount)
+				ctrl.setData({accounts, currentAccount})
+				loadMailboxes()
+			}).catch((err) => {
+				$$.ui.showAlert({title: 'Error', content: err})
+			})			
+		}
+
+		function loadMailboxes() {
+			console.log('loadMailboxes')
+			const {currentAccount} = ctrl.model
+			srvMail.getMailboxes(currentAccount).then((mailboxes) => {
+				console.log('mailboxes', mailboxes)
+
+				ctrl.setData({
+					mailboxes
+				})
+			})
+		}
+
+		loadAccount()
+
+	}
+
+
+});
+
+
+
+
+
+$$.service.registerService('app.mails', {
+
+	deps: ['breizbot.http'],
+
+	init: function(config, http) {
+
+		return {
+			getMailAccounts: function() {
+				return http.get('/getMailAccounts')
+			},
+
+			getMailAccount: function(name) {
+				return http.post('/getMailAccount', {name})
+			},
+
+			createMailAccount: function(data) {
+				return http.post('/createMailAccount', data)
+			},
+
+			updateMailAccount: function(data) {
+				return http.post('/updateMailAccount', data)
+			},
+
+			getMailboxes: function(name) {
+				return http.post(`/getMailboxes`, {name})
+			},
+
+			addMailbox: function(name, mailboxName) {
+				return http.post(`/addMailbox`, {name, mailboxName})
+			},
+
+			openMailbox: function(name, mailboxName, pageNo) {
+				return http.post(`/openMailbox`, {name, mailboxName, pageNo})
+			},
+
+			openMessage: function(name, mailboxName, seqNo, partID)	{
+				return http.post(`/openMessage`, {name, mailboxName, seqNo, partID})
+			},
+
+			openAttachment: function(name, mailboxName, seqNo, partID)	{
+				return http.post(`/openAttachment`, {name, mailboxName, seqNo, partID})
+			},
+
+			deleteMessage: function(name, mailboxName, seqNos)	{
+				return http.post(`/deleteMessage`, {name, mailboxName, seqNos})
+			},	
+
+			moveMessage: function(name, mailboxName, targetName, seqNos)	{
+				return http.post(`/moveMessage`, {name, mailboxName, targetName, seqNos})
+			},						
+					
+
+			sendMail: function(accountName, data) {
+				return http.post(`/sendMail`, {accountName, data})
+			}
+		}
+	},
+
+	$iface: `
+		getMailAccount():Promise;
+		createMaiAccount(data):Promise;
+		getMailboxes(name):Promise;
+		openMailbox(name, mailboxName, pageNo):Promise;
+		openMessage(name, mailboxName, seqNo, partID):Promise;
+		openAttachment(name, mailboxName, seqNo, partID):Promise;
+		deleteMessage(name, mailboxName, seqNos):Promise;
+		moveMessage(name, mailboxName, targetName, seqNos):Promise
+		`
+});
+
+$$.control.registerControl('accountPage', {
+
+	template: "<div class=\"main\">\n	<form bn-event=\"submit: onSubmit\" bn-bind=\"form\" bn-form=\"data\">\n\n		<div bn-control=\"brainjs.inputgroup\">\n			<label>Provider</label>\n			<span bn-control=\"brainjs.selectmenu\" \n				bn-event=\"selectmenuchange: onProviderChange\" bn-val=\"provider\"\n				bn-data=\"{items: providers}\"\n				bn-prop=\"{disabled: isEdit}\"\n			>\n			</span>		\n		</div>			\n\n		<div bn-control=\"brainjs.inputgroup\">\n			<label>Account Name</label>\n			<input type=\"text\" name=\"name\" required=\"\" autofocus=\"\" bn-prop=\"{disabled: isEdit}\">			\n		</div>\n\n		<div bn-control=\"brainjs.inputgroup\">\n			<label>User</label>\n			<input type=\"text\" name=\"user\" required=\"\">			\n		</div>\n\n		<div bn-control=\"brainjs.inputgroup\">\n			<label>Password</label>\n			<input type=\"password\" name=\"pwd\" required=\"\">			\n		</div>\n\n		<div bn-control=\"brainjs.inputgroup\">\n			<label>Email</label>\n			<input type=\"email\" name=\"email\" required=\"\">			\n		</div>\n\n	\n\n		<div bn-control=\"brainjs.inputgroup\" bn-show=\"show1\">\n			<label>IMAP Server</label>\n			<input type=\"text\" name=\"imapHost\" required=\"\">			\n		</div>		\n\n		<div bn-control=\"brainjs.inputgroup\"  bn-show=\"show1\">\n			<label>SMTP Server</label>\n			<input type=\"text\" name=\"smtpHost\" required=\"\">			\n		</div>		\n\n		<div class=\"copySent\">\n			<label>Make a copy of sent mail in Sent folder</label>\n			<div bn-control=\"brainjs.flipswitch\" bn-data=\"data1\" name=\"makeCopy\"></div>\n		</div>\n\n		<input type=\"submit\" hidden=\"\" bn-bind=\"submit\">\n	</form>\n\n</div>",
+
+	deps: ['app.mails', 'breizbot.pager'],
+
+	props: {
+		data: null
+	},
+
+	buttons: [
+		{name: 'create', icon: 'fa fa-check'}
+	],
+
+	init: function(elt, srvMail, pager) {
+
+		const {data} = this.props
+
+		const map = {
+			'Gmail': {
+				imapHost: 'imap.gmail.com',
+				smtpHost: 'smtp.gmail.com'
+			},
+			'Outlook': {
+				imapHost: 'imap.outlook.com',
+				smtpHost: 'smtp.outlook.com'
+			},
+			'Free': {
+				imapHost: 'imap.free.fr',
+				smtpHost: 'smtp.free.fr'
+			},
+			'SFR': {
+				imapHost: 'imap.sfr.fr',
+				smtpHost: 'smtp.sfr.fr'
+			},
+			'Orange': {
+				imapHost: 'imap.orange.fr',
+				smtpHost: 'smtp.orange.fr'
+			},
+			'Bouygues Telecom': {
+				imapHost: 'imap.bbox.fr',
+				smtpHost: 'smtp.bbox.fr'
+			},
+			'Other': {
+				imapHost: '',
+				smtpHost: ''
+			},
+		}
+
+		function getProvider(info) {
+			for(let k in map) {
+				if (map[k].imapHost == info.imapHost) {
+					return k
+				}
+			}
+			return 'Other'
+		}
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+				provider: (data != null) ? getProvider(data) : 'Gmail',
+				providers: Object.keys(map),
+				data,
+				isEdit: data != null,
+				show1: function() {return this.provider == 'Other'},
+				data1: function() {
+					return {height: 25, width: 100, texts: {left: 'YES', right: 'NO'}}
+				}
+			},
+			events: {
+				onSubmit: function(ev) {
+					ev.preventDefault()
+					const formData = $(this).getFormData()
+					console.log('formData', formData)
+					if (data == null) {
+						srvMail.createMailAccount(formData).then(() => {
+							pager.popPage()
+						})						
+					}
+					else {
+						srvMail.updateMailAccount(formData).then(() => {
+							pager.popPage()
+						})												
+					}
+
+				},
+				onProviderChange: function() {
+					const provider = $(this).getValue()
+					console.log('onProviderChange', provider)
+					ctrl.setData({provider})
+
+					ctrl.scope.form.setFormData(map[provider])
+				}
+			}
+		})
+
+		ctrl.scope.form.setFormData(map[ctrl.model.provider])
+
+		this.onAction = function(cmd) {
+			ctrl.scope.submit.click()
+		}
+
+
+
+	}
+
+
+});
+
+
+
+
+
+$$.control.registerControl('addContactPage', {
+
+	template: "<form bn-event=\"submit: onSubmit\" bn-form=\"from\">\n	<div bn-control=\"brainjs.inputgroup\">\n		<label>Name:</label><br>\n		<input type=\"text\" name=\"name\" style=\"min-width: 300px\" required=\"\">	\n	</div>\n	<br>\n\n	<div bn-control=\"brainjs.inputgroup\">\n		<label>Email:</label><br>\n		<input type=\"email\" name=\"email\" style=\"min-width: 300px\" required=\"\">	\n	</div>	\n\n	<input type=\"submit\" bn-bind=\"submit\" hidden=\"\">\n</form>\n",
+
+	deps: ['breizbot.users', 'breizbot.pager'],
+
+	props: {
+		from: {}
+	},
+
+	buttons: [
+		{name: 'add', icon: 'fa fa-user-plus'}
+	],	
+
+	init: function(elt, users, pager) {
+
+		const {from} = this.props
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+				from
+			},
+			events: {
+				onSubmit: function(ev) {
+					ev.preventDefault()
+					const data = $(this).getFormData()
+					console.log('data', data)
+					users.addContact(data.name, data.email).then(() => {
+						console.log('contact added !')
+						pager.popPage('addContact')
+					})
+					.catch((err) => {
+						$$.ui.showAlert({title: 'Error', content: err.responseText})
+					})
+				}
+
+			}
+		})
+
+		this.onAction = function(cmd) {
+			console.log('onAction', cmd)
+			ctrl.scope.submit.click()
+		}
+
+
+
+	}
+
+
+});
+
+
+
+
+
+$$.control.registerControl('boxesPage', {
+
+	template: "<div bn-show=\"showForm\">\n	<form bn-event=\"submit: onSubmit\">\n		<div bn-control=\"brainjs.inputgroup\">\n			<label>Name:</label>\n			<input type=\"text\" name=\"name\" required=\"\" autofocus=\"\">			\n		</div>\n		<input type=\"submit\" hidden=\"\" bn-bind=\"submit\">\n	</form>\n\n	<p>Select target folder:</p>\n</div>\n\n<div class=\"scrollPanelTree\">\n	<div \n		class=\"tree\" \n		bn-control=\"brainjs.tree\"\n		bn-data=\"{source: mailboxes}\"\n		bn-iface=\"tree\"\n	></div>\n</div>\n\n\n",
+
+	deps: ['app.mails', 'breizbot.pager'],
+
+	props: {
+		currentAccount: '',
+		showForm: false
+	},
+
+	buttons: [
+		{name: 'apply', icon: 'fa fa-check'}
+	],
+	
+	init: function(elt, srvMail, pager) {
+
+		const {currentAccount, showForm} = this.props
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+				mailboxes: [],
+				showForm
+			},
+			events: {
+				onSubmit: function(ev) {
+					ev.preventDefault()
+					const {name} = $(this).getFormData()
+					//console.log('onSubmit', name)
+
+					const {tree} = ctrl.scope
+					const node = tree.getActiveNode()
+					if (node == null) {
+						$$.ui.showAlert({title: 'Warning', content: 'Please select a target mailbox'})
+						return
+					}
+					let targetName = tree.getNodePath(node) + '/' + name
+					//console.log('targetName', targetName)
+					const token = targetName.split('/')
+					token.shift()
+					targetName = token.join('/')
+					//console.log('targetName', targetName)
+
+
+					pager.popPage(targetName)					
+				}
+			}
+		})
+
+
+		function loadMailboxes() {
+			console.log('loadMailboxes')
+			srvMail.getMailboxes(currentAccount).then((mailboxes) => {
+				console.log('mailboxes', mailboxes)
+				if (showForm) {
+					ctrl.setData({
+						mailboxes: [{
+							title: 'Folders',
+							folder: true,
+							children: mailboxes,
+							expanded: true
+						}]
+					})
+				}
+				else {
+					ctrl.setData({
+						mailboxes
+					})
+				}
+			})
+		}
+
+		loadMailboxes()
+
+
+		this.onAction = function(action) {
+			console.log('onAction', action)
+			if (action == 'apply') {
+
+				if (showForm) {
+					ctrl.scope.submit.click()
+					return
+				}
+
+				const {tree} = ctrl.scope
+				const node = tree.getActiveNode()
+				if (node == null) {
+					$$.ui.showAlert({title: 'Select Target Mailbox', content: 'Please select a target mailbox'})
+					return
+				}
+				const targetName = tree.getNodePath(node)
+
+				pager.popPage(targetName)
+			}
+		}
+
+	}
+
+
+});
+
+
+
+
+
+$$.control.registerControl('contactsPage', {
+
+	template: "<div class=\"scrollPanel\">\n	<div bn-control=\"breizbot.contacts\" data-show-selection=\"true\" bn-iface=\"contacts\"></div>\n	\n</div>\n\n\n",
+
+	deps: ['breizbot.pager'],
+
+	buttons: [
+		{name: 'ok', icon: 'fa fa-check'}
+	],
+	
+	init: function(elt, pager) {
+
+		const ctrl = $$.viewController(elt)
+
+
+		this.onAction = function(action) {
+			console.log('onAction', action)
+			if (action == 'ok') {
+				pager.popPage(ctrl.scope.contacts.getSelection())
+			}
+		}
+	}
+
+
+});
+
+
+
+
+
+$$.control.registerControl('mailboxPage', {
+
+	template: "<div class=\"toolbar\">\n	<div>\n		<div bn-show=\"show1\">\n			<span >Page: <span bn-text=\"text1\"></span></span>\n			<button class=\"w3-button\" title=\"previous page\" bn-event=\"click: onPrevPage\">\n				<i class=\"fa fa-angle-left\"></i>\n			</button>			\n			<button class=\"w3-button\" title=\"next page\" bn-event=\"click: onNextPage\">\n				<i class=\"fa fa-angle-right\"></i>\n			</button>			\n		</div>\n		<div bn-show=\"loading\" class=\"loading\">\n			<i class=\"fa fa-spinner fa-pulse\"></i>\n			loading ...\n		</div>\n	</div>\n	<div class=\"nbMsg\"><strong bn-text=\"nbMsg\"></strong>&nbsp;Messages</div>		\n</div>\n\n<div class=\"scrollPanelTable\">\n	<table class=\"w3-table-all w3-hoverable w3-small\">\n		<thead>\n			<tr class=\"w3-green\">\n				<th><input type=\"checkbox\" bn-event=\"click: onMainCheckBoxClick\" bn-val=\"check\" bn-update=\"click\"></th>\n				<th bn-show=\"!isSentBox\">From</th>\n				<th bn-show=\"isSentBox\">To</th>\n				<th>Subject</th>\n				<th title=\"nb Attachments\"><i class=\"fa fa-paperclip\"></i></th>\n				<th>Date</th>\n			</tr>\n		</thead>\n		<tbody bn-each=\"messages\" bn-event=\"click.item: onItemClick\">\n			<tr bn-class=\"{unseen: !isSeen}\">\n				<th><input type=\"checkbox\" class=\"check\" ></th>\n				<td bn-text=\"$scope.$i.from.name\" bn-attr=\"{title: $scope.$i.from.email}\" bn-show=\"!isSentBox\"></td>\n				<td bn-text=\"text2\" bn-attr=\"attr1\" bn-show=\"isSentBox\"></td>\n				<td bn-text=\"$scope.$i.subject\" class=\"item\" ></td>\n				<td bn-text=\"$scope.$i.nbAttachments\"></td>\n				<td bn-text=\"getDate\"></td>\n			</tr>\n		</tbody>\n	</table>\n</div>\n\n\n",
+
+	deps: ['app.mails', 'breizbot.pager'],
+
+	props: {
+		currentAccount: '',
+		mailboxName: ''
+	},
+
+	buttons: [
+		{name: 'reload', icon: 'fa fa-sync-alt', title: 'Update'},
+		{name: 'newMail', icon: 'fa fa-envelope', title: 'New Message'},
+		{name: 'move', icon: 'fa fa-file-export', title: 'Move selected messages'},
+		{name: 'delete', icon: 'fa fa-trash', title: 'Delete selected messages'}
+	
+	],	
+
+	init: function(elt, srvMail, pager) {
+
+		const {currentAccount, mailboxName} = this.props
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+				messages: [],
+				nbMsg: 0,
+				pageNo: 0,
+				nbPage: 0,
+				check: false,
+				loading: false,
+				mailboxName,
+				show1: function() {
+					return !this.loading && this.nbMsg > 0
+				},
+				text1: function() {
+					return `${this.pageNo} / ${this.nbPage}`
+				},
+				text2: function(scope) {
+					return scope.$i.to[0] && scope.$i.to[0].name
+				},
+				attr1: function(scope) {
+					return {title: scope.$i.to[0] && scope.$i.to[0].email}
+				},
+
+				getDate: function(scope) {
+					//console.log('getDate', date)
+					const date = scope.$i.date
+					const d = new Date(date)
+					//console.log('d', d)
+					return d.toLocaleDateString('fr-FR')
+				},
+
+				isSeen: function(scope) {
+					return scope.$i.flags.includes('\\Seen')
+				},
+
+				isSentBox: function() {
+					return this.mailboxName == 'Sent'
+				}
+
+			},
+			events: {
+				onItemClick: function(ev) {
+					// $(this).closest('tbody').find('tr').removeClass('w3-blue')
+					// $(this).addClass('w3-blue')
+					const idx = $(this).closest('tr').index()
+					const item = ctrl.model.messages[idx]
+					pager.pushPage('messagePage', {
+						title: `Message #${ctrl.model.nbMsg - item.seqno + 1}`,
+						props: {
+							currentAccount,
+							mailboxName,
+							item							
+						},
+						onBack: load
+					})
+				},
+
+				onMainCheckBoxClick: function(ev) {
+					elt.find('.check').prop('checked', $(this).prop('checked'))
+				},
+
+				onPrevPage: function(ev) {
+					const {nbPage, pageNo} = ctrl.model
+
+					if (pageNo > 1) {
+						load(pageNo - 1)
+					}					
+				},
+
+				onNextPage: function(ev) {
+					const {nbPage, pageNo} = ctrl.model
+
+					if (pageNo < nbPage) {
+						load(pageNo + 1)
+					}				
+				}				
+			}
+		})
+
+		function load(pageNo) {
+			if (pageNo == undefined) {
+				pageNo = ctrl.model.pageNo
+			}
+
+			ctrl.setData({loading: true})
+
+			srvMail.openMailbox(currentAccount, mailboxName, pageNo).then((data) => {
+				console.log('data', data)
+				const {messages, nbMsg} = data
+				ctrl.setData({
+					loading: false,
+					check: false,
+					pageNo,
+					nbPage: Math.ceil(nbMsg / 20),
+					nbMsg,
+					messages: messages.reverse()
+				})
+			})			
+		}
+
+		function deleteMessage() {
+			const items = elt.find('.check:checked')
+			console.log('deleteMessage', items.length)
+			if (items.length == 0) {
+				$$.ui.showAlert({title: 'Delete Message', content: 'Please select one or severall messages !'})
+				return
+			}
+			const seqNos = []
+			items.each(function() {
+				const data = $(this).closest('tr').data('item')
+				seqNos.push(data.seqno)
+			})
+			console.log('seqNos', seqNos)
+			srvMail.deleteMessage(currentAccount, mailboxName, seqNos).then(() => {
+				console.log('Messages deleted')
+				load()
+			})
+		}
+
+		function moveMessage() {
+			const items = elt.find('.check:checked')
+			console.log('deleteMessage', items.length)
+			if (items.length == 0) {
+				$$.ui.showAlert({title: 'Move Message', content: 'Please select one or severall messages !'})
+				return
+			}
+			const seqNos = []
+			items.each(function() {
+				const data = $(this).closest('tr').data('item')
+				seqNos.push(data.seqno)
+			})
+			console.log('seqNos', seqNos)
+			pager.pushPage('boxesPage', {
+				title: 'Select target mailbox',
+				props: {
+					currentAccount
+				},
+				onReturn: function(targetName) {
+					if (targetName == mailboxName) {
+						$$.ui.showAlert({title: 'Select Target Mailbox', content: 'Target mailbox must be different from current mailbox'})
+						return
+					}
+
+					srvMail.moveMessage(currentAccount, mailboxName, targetName, seqNos)
+					.then(() => {
+						load()
+					})
+				}
+			})
+			// srvMail.deleteMessage(currentAccount, mailboxName, seqNos).then(() => {
+			// 	console.log('Messages deleted')
+			// 	load()
+			// })
+		}		
+
+		load(1)
+
+		function newMessage() {
+			pager.pushPage('writeMailPage', {
+				title: 'New Message',
+				props: {
+					accountName: currentAccount
+				},
+				onReturn: function() {
+					if (mailboxName == 'Sent') {
+						load()
+					}
+				}
+			})			
+		}
+
+
+		this.onAction = function(action) {
+			console.log('onAction', action)
+			if (action == 'reload') {
+				load(1)
+			}
+
+			if (action == 'delete') {
+				deleteMessage()
+			}
+
+			if (action == 'move') {
+				moveMessage()
+			}
+
+			if (action == 'newMail') {
+				newMessage()
+			}			
+		}
+
+
+	}
+
+
+});
+
+
+
+
+
+$$.control.registerControl('messagePage', {
+
+	template: "<div bn-show=\"loading\" class=\"loading\">\n	<i class=\"fa fa-spinner fa-pulse\"></i>\n	loading ...\n</div>\n<div class=\"header w3-blue\" bn-show=\"!loading\">\n	<div class=\"from\"><strong>From:</strong><a href=\"#\" bn-text=\"item.from.name\" bn-event=\"click: onAddContact\" bn-data=\"{addr: item.from}\"></a></div>\n	<div class=\"subject\"><strong>Subject:</strong><span bn-text=\"item.subject\" ></span></div>\n	<div bn-show=\"show1\" class=\"to\">\n		<strong bn-event=\"click: onToggleDiv\"><i class=\"fa fa-caret-down fa-fw\"></i>\n		To</strong>\n		<ul bn-each=\"item.to\" bn-event=\"click.contact: onAddContact\">\n			<li>\n				<a href=\"#\" bn-text=\"$scope.$i.name\" class=\"contact\"></a>				\n			</li>\n		</ul>\n	</div>\n	<div class=\"attachments\" bn-show=\"show2\">\n		<strong bn-event=\"click: onToggleDiv\"><i class=\"fa fa-caret-down fa-fw\"></i>\n		Attachments</strong>\n		<ul  bn-each=\"attachments\" bn-event=\"click.item: openAttachment\">\n			<li>\n				<a href=\"#\" bn-text=\"$scope.$i.name\" class=\"item\"></a>\n				<span bn-text=\"getSize\"></span>\n			</li>\n		</ul>\n	</div>\n	\n</div>\n\n<div class=\"mainHtml\" bn-show=\"show4\">\n	<div bn-show=\"show3\" class=\"embeddedImages w3-pale-yellow\">\n		<a href=\"#\" bn-event=\"click: onEmbeddedImages\">Download embedded images</a>\n	</div>\n	<iframe bn-attr=\"{srcdoc:text}\" bn-bind=\"iframe\" bn-event=\"load: onFrameLoaded\"></iframe>\n</div>\n\n<div class=\"mainText\" bn-show=\"show5\">\n 	<pre bn-text=\"text\"></pre>\n</div>",
+
+	deps: ['app.mails', 'breizbot.users', 'breizbot.scheduler', 'breizbot.pager'],
+
+	props: {
+		currentAccount: '',
+		mailboxName: '',
+		item: null
+	},
+
+	buttons: [
+		{name: 'reply', icon: 'fa fa-reply', title: 'Reply'},
+		{name: 'replyAll', icon: 'fa fa-reply-all', title: 'Reply All'},
+		{name: 'forward', icon: 'fa fa-share-square', title: 'Forward'}
+	],	
+
+	init: function(elt, srvMail, users, scheduler, pager) {
+
+		const {currentAccount, mailboxName, item} = this.props
+
+
+		const waitDlg = $$.dialogController({
+			title: 'Loading ...',
+			template: `<div class="w3-center w3-padding-16"><i class="fa fa-redo-alt fa-2x fa-pulse w3-text-blue"></i></div>`,
+			width: 100,
+			canClose: false
+		})
+
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+				embeddedImages: [],
+				isHtml: false,
+				loading: true,
+				text: '',
+				item,
+				attachments: [],
+				show1: function() {
+					return this.item.to.length > 0
+				},
+				show2: function() {
+					return this.attachments.length > 0
+				},
+				show3: function() {
+					return this.embeddedImages.length > 0
+				},
+				show4: function() {
+					return !this.loading && this.isHtml
+				},
+				show5: function() {
+					return !this.loading && !this.isHtml
+				},
+				getSize: function(scope) {
+					let size = scope.$i.size
+					//console.log('getSize', size)
+					size /= 1024
+					let unit = 'Ko'
+					if (size > 1024) {
+						size /= 1024
+						unit = 'Mo'
+					}
+
+					return ` (${size.toFixed(1)} ${unit})`
+				}
+			},
+			events: {
+				openAttachment: function(ev) {
+					ev.preventDefault()
+					const idx = $(this).closest('li').index()
+					const info = ctrl.model.attachments[idx]
+
+					console.log('openAttachments', info)
+
+					if (info.canOpen) {
+						const props = {
+							info,
+							currentAccount,
+							mailboxName,
+							seqno: item.seqno
+						}
+						pager.pushPage('viewerPage', {
+							title: info.name,
+							props
+						})												
+					}
+					else {
+						$$.ui.showConfirm({
+							title: 'Open Attachment', 
+							okText: 'Yes',
+							cancelText: 'No',
+							content: `This attachment cannot be open with NetOS<br>
+								Do you want to download it ?`
+							},
+							function() {
+								console.log('OK')
+								const {partID, type, subtype} = info
+								waitDlg.show()
+								srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID).then((message) => {
+									//console.log('message', message)
+									waitDlg.hide()
+									const url = `data:${type}/${subtype};base64,` + message.data
+									$$.util.downloadUrl(url, info.name)
+
+								})
+
+							}
+						)
+					}
+
+				},
+				onToggleDiv: function(ev) {
+					console.log('onAttachClick')
+					const $i = $(this).find('i')
+					const $ul = $(this).siblings('ul')
+					if ($i.hasClass('fa-caret-right')) {
+						$i.removeClass('fa-caret-right').addClass('fa-caret-down')
+						$ul.slideDown()
+					}
+					else {
+						$i.removeClass('fa-caret-down').addClass('fa-caret-right')						
+						$ul.slideUp()
+					}
+				},
+				onEmbeddedImages: function(ev) {
+					ev.preventDefault()
+					//ctrl.setData({embeddedImages: []})
+					const $iframe = $(ctrl.scope.iframe.get(0).contentWindow.document)
+
+					const {embeddedImages} = ctrl.model
+					ctrl.setData({embeddedImages: []})
+
+					embeddedImages.forEach((e) => {
+						const {type, subtype, partID, cid} = e
+						srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID).then((message) => {
+							const url = `data:${type}/${subtype};base64,` + message.data
+							const $img = $iframe.find(`img[src="cid:${cid}"]`)
+							$img.attr('src', url)
+
+						})					
+
+					})
+
+				},
+				onFrameLoaded: function(ev) {
+					console.log('onFrameLoaded')
+					const $iframe = $(this.contentWindow.document)
+					$iframe.find('a')
+					.attr('target', '_blank')
+					.on('click', function(ev) {
+						const href = $(this).attr('href')
+						if (href.startsWith('https://youtu.be/')) {
+							ev.preventDefault()
+							scheduler.openApp('youtube', {url: href})
+						}
+					})
+
+				},
+				onAddContact: function(ev) {
+					console.log('onAddContact')
+					ev.preventDefault()
+					const idx = $(this).closest('li').index()
+					const from = ctrl.model.item.to[idx]
+					pager.pushPage('addContactPage', {
+						title: 'Add Contact',
+						props: {
+							from
+						}
+					})
+				}
+			}
+		})
+
+		let partID = item.partID.html
+		let isHtml = true
+		if (partID == false) {
+			partID = item.partID.text
+			isHtml = false
+		}
+		console.log('isHtml', isHtml)
+
+
+		srvMail.openMessage(currentAccount, mailboxName, item.seqno, partID).then((message) => {
+			console.log('message', message)
+
+
+			const {text, attachments, embeddedImages} = message
+
+			attachments.forEach((a) => {
+				a.canOpen = $$.util.getFileType(a.name) != undefined && a.encoding.toUpperCase() == 'BASE64'
+
+			})
+
+
+			ctrl.setData({text, attachments, embeddedImages, loading:false, isHtml})
+
+		})
+
+		function replyMessage(text, to) {
+			//console.log('replyMessage', text)
+			pager.pushPage('writeMailPage', {
+				title: 'Reply message',
+				props: {
+					accountName: currentAccount,
+					data: {
+						to,
+						subject: 'Re: ' + item.subject,
+						html: `<pre>${text}</pre>`
+					}
+				}
+			})			
+		}
+
+		function forwardMessage(text) {
+			//console.log('replyMessage', text)
+			pager.pushPage('writeMailPage', {
+				title: 'Forward message',
+				props: {
+					accountName: currentAccount,
+					data: {
+						subject: 'Fwd: ' + item.subject,
+						html: `<pre>${text}</pre>`
+					}
+				}
+			})			
+		}
+
+		this.onAction = function(action) {
+			console.log('onAction', action, item)
+
+			if (action == 'reply' || action == 'replyAll') {
+
+				const HEADER = '\n\n----- Original mail -----\n'
+
+				let to = item.from.email
+
+				if (action == 'replyAll' && item.to.length > 0) {					
+					to += ',' + item.to.map((a) => a.email).join(',')
+				}
+
+				if (ctrl.model.isHtml && item.partID.text != false) {
+					srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID.text).then((message) => {
+						replyMessage(HEADER + message.text, to)
+					})						
+				}
+
+				else if (!ctrl.model.isHtml) {
+					replyMessage(HEADER + ctrl.model.text, to)
+				}
+				else {
+					replyMessage('', to)
+				}
+			}
+
+			if (action == 'forward') {
+				const HEADER = '\n\n----- Forwarded mail -----\n'
+
+
+				if (ctrl.model.isHtml && item.partID.text != false) {
+					srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID.text).then((message) => {
+						forwardMessage(HEADER + message.text)
+					})						
+				}
+
+				else if (!ctrl.model.isHtml) {
+					forwardMessage(HEADER + ctrl.model.text)
+				}
+				else {
+					forwardMessage('')
+				}
+
+			}
+		}
+
+
+	}
+
+
+});
+
+
+
+
+
+$$.control.registerControl('viewerPage', {
+
+	template: "<div style=\"height: 100%; position: relative; text-align: center;\">\n	<span bn-show=\"wait\" class=\"w3-text-blue\" style=\"position: relative; top: 50%;\"><i class=\"fa fa-redo-alt fa-2x fa-pulse\"></i></span>\n\n	<div \n		bn-show=\"!wait\"\n		bn-control=\"breizbot.viewer\" \n		bn-data=\"{type, url}\" \n		style=\"height: 100%\" \n		bn-iface=\"viewer\">\n			\n		</div>	\n\n</div>	",
+
+	deps: ['app.mails', 'breizbot.pager'],
+
+	props: {
+		info: '',
+		currentAccount: '',
+		mailboxName: '',
+		seqno: ''
+	},
+
+	buttons: [
+		{name: 'save', icon: 'fa fa-save'}
+	],	
+
+	init: function(elt, srvMail, pager) {
+
+		const {info, currentAccount, mailboxName, seqno} = this.props
+		const {partID, type, subtype} = info
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+				url: '',
+				wait: true,
+				type: $$.util.getFileType(info.name)
+			},
+			events: {
+			}
+		})
+
+		srvMail.openAttachment(currentAccount, mailboxName, seqno, partID).then((message) => {
+			//console.log('message', message)
+			const url = `data:${type}/${subtype};base64,` + message.data
+			ctrl.setData({wait:false, url})
+
+		})
+
+		this.onAction = function(action) {
+			console.log('onAction', action)
+			if (action == 'save') {
+				ctrl.scope.viewer.save('/apps/email', info.name, () => {
+					pager.popPage()
+				})
+			}
+		}
+	}
+
+
+});
+
+
+
+
+
+
+
+
+
+
+
+
+$$.control.registerControl('writeMailPage', {
+
+	template: "<form bn-event=\"submit: onSend\" bn-form=\"data\">\n	<div class=\"header\">\n		<div bn-control=\"brainjs.inputgroup\">\n			<div class=\"openContactPanel\">\n				<a bn-event=\"click: openContact\" href=\"#\" class=\"w3-text-indigo\">To:</a>\n			</div>\n			<input type=\"email\" multiple=\"true\" name=\"to\" bn-prop=\"prop1\" required=\"\" bn-bind=\"to\">		\n		</div>\n\n		<div bn-control=\"brainjs.inputgroup\">\n			<label>Subject:</label>\n			<input type=\"text\" name=\"subject\" required=\"\">		\n		</div>	\n\n		<div bn-show=\"show1\" class=\"attachments\">\n			<label><i class=\"fa fa-paperclip\"></i></label>			\n			<ul bn-each=\"attachments\" bn-event=\"click.delete: onRemoveAttachment\">\n				<li>\n					<span bn-text=\"$i.fileName\"></span>\n					<i class=\"fa fa-times delete\"></i>\n				</li>\n			</ul>\n		</div>\n	</div>\n	<div bn-control=\"brainjs.htmleditor\" class=\"content\" name=\"html\" bn-iface=\"content\"></div>\n<!-- 	<textarea name=\"text\" bn-bind=\"content\"></textarea>	\n -->	<input type=\"submit\" hidden=\"\" bn-bind=\"submit\">\n</form>\n",
+
+	deps: ['app.mails', 'breizbot.pager'],
+
+	props: {
+		accountName: '',
+		data: {}
+	},
+
+	buttons: [
+		{name: 'attachment', icon: 'fa fa-paperclip', title: 'Add attachment'},
+		{name: 'send', icon: 'fa fa-paper-plane', title: 'Send Message'}
+	],	
+
+	init: function(elt, srvMail, pager) {
+
+		const {accountName, data} = this.props
+		console.log('data', data)
+
+		const ctrl = $$.viewController(elt, {
+			data: {
+				data,
+				attachments: [],
+				show1: function() {return this.attachments.length > 0},
+				prop1: function() {return {autofocus: this.data.html == undefined}}
+			},
+			events: {
+				onSend: function(ev) {
+					console.log('onSend')
+					ev.preventDefault()
+					const data = $(this).getFormData()
+					console.log('data', data)
+					const {attachments} = ctrl.model
+					if (attachments.length > 0) {
+						data.attachments = attachments.map((a) => a.rootDir + a.fileName)
+					}
+
+					srvMail.sendMail(accountName, data)
+					.then(() => {
+						pager.popPage()
+					})
+					.catch((e) => {
+						$$.ui.showAlert({title: 'Error', content: e.responseText})
+					})
+
+				},
+				openContact: function() {
+					console.log('openContact')
+					pager.pushPage('contactsPage', {
+						title: 'Select a contact',
+						onReturn: function(friends) {
+							const contacts = friends.map((a) => a.contactEmail)
+							console.log('contacts', contacts)
+							const to = ctrl.scope.to.val()
+							console.log('to', to)
+
+							if (to != '') {
+								contacts.unshift(to)
+							}
+							ctrl.setData({data: {to: contacts.join(',')}})							
+						}
+					})
+				},
+				onRemoveAttachment: function(ev) {
+					const idx = $(this).closest('li').index()
+					console.log('onRemoveAttachment', idx)
+					ctrl.model.attachments.splice(idx, 1)
+					ctrl.update()
+
+				}
+			}
+
+		})
+
+		if (data.html != undefined) {
+			ctrl.scope.content.focus()
+		}		
+
+		this.onAction = function(action) {
+			console.log('onAction', action)
+			if (action == 'send') {
+				ctrl.scope.submit.click()
+			}
+			if( action == 'attachment') {
+				pager.pushPage('breizbot.files', {
+					title: 'Select a file to attach',
+					props: {
+						showThumbnail: true
+					},
+					onReturn: function(data) {
+						const {fileName, rootDir} = data
+						ctrl.model.attachments.push({fileName, rootDir})
+						ctrl.update()						
+					}
+				})
+			}
+		}
+
+	}
+})
+//# sourceMappingURL=data:application/json;charset=utf8;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIm1haW4uanMiLCJzZXJ2aWNlcy9tYWlscy5qcyIsInBhZ2VzL2FjY291bnQvYWNjb3VudC5qcyIsInBhZ2VzL2FkZENvbnRhY3QvYWRkQ29udGFjdC5qcyIsInBhZ2VzL2JveGVzL2JveGVzLmpzIiwicGFnZXMvY29udGFjdHMvY29udGFjdHMuanMiLCJwYWdlcy9tYWlsYm94L21haWxib3guanMiLCJwYWdlcy9tZXNzYWdlL21lc3NhZ2UuanMiLCJwYWdlcy92aWV3ZXIvdmlld2VyLmpzIiwicGFnZXMvd3JpdGVNYWlsL3dyaXRlTWFpbC5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiQUFBQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FDMUpBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FDckVBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUNoSEE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUN0REE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FDeEdBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQzdCQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQzlOQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUM1UkE7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FDOURBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQTtBQUNBO0FBQ0E7QUFDQSIsImZpbGUiOiJhcHAuanMiLCJzb3VyY2VzQ29udGVudCI6WyIkJC5jb250cm9sLnJlZ2lzdGVyQ29udHJvbCgncm9vdFBhZ2UnLCB7XG5cblx0dGVtcGxhdGU6IFwiPGRpdiBjbGFzcz1cXFwidG9vbGJhclxcXCI+XFxuXHQ8ZGl2IGNsYXNzPVxcXCJpbmZvXFxcIj5cXG5cdFx0PHNwYW4gYm4tc2hvdz1cXFwic2hvdzFcXFwiPllvdSBoYXZlIG5vIGVtYWlsIGFjY291bnQ8L3NwYW4+XFxuXHRcdDxkaXYgYm4tc2hvdz1cXFwic2hvdzJcXFwiIGNsYXNzPVxcXCJhY2NvdW50XFxcIj5cXG5cdFx0XHQ8c3Bhbj5BY2NvdW50OiZuYnNwOzwvc3Bhbj4gXFxuXHRcdFx0PGRpdiBcXG5cdFx0XHRcdGJuLWNvbnRyb2w9XFxcImJyYWluanMuc2VsZWN0bWVudVxcXCIgXFxuXHRcdFx0XHRibi1kYXRhPVxcXCJ7aXRlbXM6IGFjY291bnRzfVxcXCIgXFxuXHRcdFx0XHRibi12YWw9XFxcImN1cnJlbnRBY2NvdW50XFxcIlxcblx0XHRcdFx0Ym4tZXZlbnQ9XFxcInNlbGVjdG1lbnVjaGFuZ2U6IG9uQWNjb3VudENoYW5nZVxcXCI+XFxuXHRcdFx0PC9kaXY+XFxuXHRcdDwvZGl2Plxcblx0XHRcXG5cdDwvZGl2Plxcblx0PGRpdj5cXG5cdFx0PGRpdiBibi1jb250cm9sPVxcXCJicmFpbmpzLmNvbnRleHRtZW51XFxcIiBcXG5cdFx0XHRibi1kYXRhPVxcXCJ7aXRlbXM6IGdldEl0ZW1zfVxcXCIgXFxuXHRcdFx0ZGF0YS10cmlnZ2VyPVxcXCJsZWZ0XFxcIiBcXG5cdFx0XHRjbGFzcz1cXFwidzMtYnV0dG9uIHczLWJsdWVcXFwiIFxcblx0XHRcdGJuLWV2ZW50PVxcXCJjb250ZXh0bWVudWNoYW5nZTogb25NZW51XFxcIlxcblx0XHRcdD5cXG5cdFx0XHRcdDxpIGNsYXNzPVxcXCJmYSBmYS1lbGxpcHNpcy12XFxcIj48L2k+XFxuICAgIFx0XFxuXHRcdDwvZGl2Plx0XHRcXG5cdFx0XFxuXHQ8L2Rpdj5cXG5cdFxcbjwvZGl2PlxcblxcbjxkaXY+XFxuXHRTZWxlY3QgZm9sZGVyIHRvIG9wZW46XFxuPC9kaXY+XFxuXFxuPGRpdiBjbGFzcz1cXFwic2Nyb2xsUGFuZWxUcmVlXFxcIj5cXG5cdDxkaXYgXFxuXHRcdGNsYXNzPVxcXCJ0cmVlXFxcIiBcXG5cdFx0Ym4tY29udHJvbD1cXFwiYnJhaW5qcy50cmVlXFxcIlxcblx0XHRibi1kYXRhPVxcXCJ7c291cmNlOiBtYWlsYm94ZXN9XFxcIlxcblx0XHRibi1ldmVudD1cXFwidHJlZWFjdGl2YXRlOiBvblRyZWVBY3RpdmF0ZVxcXCJcXG5cdFx0Ym4taWZhY2U9XFxcInRyZWVcXFwiXFxuXHQ+PC9kaXY+XFxuPC9kaXY+XFxuXFxuXFxuXCIsXG5cblx0ZGVwczogWydhcHAubWFpbHMnLCAnYnJlaXpib3QucGFnZXInXSxcblxuXG5cdGluaXQ6IGZ1bmN0aW9uKGVsdCwgc3J2TWFpbCwgcGFnZXIpIHtcblxuXHRcdGNvbnN0IGN0cmwgPSAkJC52aWV3Q29udHJvbGxlcihlbHQsIHtcblx0XHRcdGRhdGE6IHtcblx0XHRcdFx0YWNjb3VudHM6IFtdLFxuXHRcdFx0XHRjdXJyZW50QWNjb3VudDogJycsXG5cdFx0XHRcdG1haWxib3hlczogW10sXG5cdFx0XHRcdHNob3cxOiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHRyZXR1cm4gdGhpcy5hY2NvdW50cy5sZW5ndGggPT0gMFxuXHRcdFx0XHR9LFxuXHRcdFx0XHRzaG93MjogZnVuY3Rpb24oKSB7XG5cdFx0XHRcdFx0cmV0dXJuIHRoaXMuYWNjb3VudHMubGVuZ3RoID4gMFxuXHRcdFx0XHR9LFxuXHRcdFx0XHRnZXRJdGVtczogZnVuY3Rpb24oKSB7XG5cdFx0XHRcdFx0aWYgKHRoaXMuYWNjb3VudHMubGVuZ3RoID09IDApIHtcblx0XHRcdFx0XHRcdHJldHVybiB7XG5cdFx0XHRcdFx0XHRcdGFkZDoge25hbWU6ICdBZGQgQWNjb3VudCcsIGljb246ICdmYXMgZmEtcGx1cyd9LFxuXHRcdFx0XHRcdFx0fVxuXHRcdFx0XHRcdH1cblx0XHRcdFx0XHRyZXR1cm4ge1xuXHRcdFx0XHRcdFx0YWRkOiB7bmFtZTogJ0FkZCBBY2NvdW50JywgaWNvbjogJ2ZhcyBmYS1wbHVzJ30sXG5cdFx0XHRcdFx0XHRlZGl0OiB7bmFtZTogJ0VkaXQgU2VsZWN0ZWQgQWNjb3VudCcsIGljb246ICdmYXMgZmEtZWRpdCd9LFxuXHRcdFx0XHRcdFx0c2VwMjogJy0tLS0tLScsXG5cdFx0XHRcdFx0XHRuZXdGb2xkZXI6IHtuYW1lOiAnTmV3IEZvbGRlcicsIGljb246ICdmYXMgZmEtZm9sZGVyLXBsdXMnfSxcblx0XHRcdFx0XHRcdHNlcDogJy0tLS0tLScsXG5cdFx0XHRcdFx0XHRuZXc6IHtuYW1lOiAnTmV3IE1lc3NhZ2UnLCBpY29uOiAnZmFzIGZhLWVudmVsb3BlJ31cdFx0XHRcdFx0XG5cdFx0XHRcdFx0fVxuXHRcdFx0XHR9XG5cdFx0XHR9LFxuXHRcdFx0ZXZlbnRzOiB7XG5cdFx0XHRcdG9uTWVudTogZnVuY3Rpb24oZXYsIGRhdGEpIHtcblx0XHRcdFx0XHRjb25zb2xlLmxvZygnb25NZW51JywgZGF0YSlcblx0XHRcdFx0XHRpZiAoZGF0YS5jbWQgPT0gJ2FkZCcpIHtcblx0XHRcdFx0XHRcdHBhZ2VyLnB1c2hQYWdlKCdhY2NvdW50UGFnZScsIHtcblx0XHRcdFx0XHRcdFx0dGl0bGU6ICdBZGQgTWFpbCBBY2NvdW50Jyxcblx0XHRcdFx0XHRcdFx0b25SZXR1cm46IGxvYWRBY2NvdW50XG5cdFx0XHRcdFx0XHR9KVx0XHRcdFx0XHRcdFxuXHRcdFx0XHRcdH1cblx0XHRcdFx0XHRpZiAoZGF0YS5jbWQgPT0gJ25ldycpIHtcblx0XHRcdFx0XHRcdHBhZ2VyLnB1c2hQYWdlKCd3cml0ZU1haWxQYWdlJywge1xuXHRcdFx0XHRcdFx0XHR0aXRsZTogJ05ldyBNZXNzYWdlJyxcblx0XHRcdFx0XHRcdFx0cHJvcHM6IHtcblx0XHRcdFx0XHRcdFx0XHRhY2NvdW50TmFtZTogY3RybC5tb2RlbC5jdXJyZW50QWNjb3VudFxuXHRcdFx0XHRcdFx0XHR9XG5cdFx0XHRcdFx0XHR9KVx0XHRcdFx0XHRcdFxuXHRcdFx0XHRcdH1cblx0XHRcdFx0XHRpZiAoZGF0YS5jbWQgPT0gJ2VkaXQnKSB7XG5cdFx0XHRcdFx0XHRzcnZNYWlsLmdldE1haWxBY2NvdW50KGN0cmwubW9kZWwuY3VycmVudEFjY291bnQpLnRoZW4oKGRhdGEpID0+IHtcblx0XHRcdFx0XHRcdFx0cGFnZXIucHVzaFBhZ2UoJ2FjY291bnRQYWdlJywge1xuXHRcdFx0XHRcdFx0XHRcdHRpdGxlOiAnRWRpdCBNYWlsIEFjY291bnQnLFxuXHRcdFx0XHRcdFx0XHRcdHByb3BzOiB7XG5cdFx0XHRcdFx0XHRcdFx0XHRkYXRhXG5cdFx0XHRcdFx0XHRcdFx0fVxuXHRcdFx0XHRcdFx0XHR9KVx0XHRcdFx0XHRcdFxuXG5cdFx0XHRcdFx0XHR9KVxuXHRcdFx0XHRcdH1cblx0XHRcdFx0XHRpZiAoZGF0YS5jbWQgPT0gJ25ld0ZvbGRlcicpIHtcblx0XHRcdFx0XHRcdHBhZ2VyLnB1c2hQYWdlKCdib3hlc1BhZ2UnLCB7XG5cdFx0XHRcdFx0XHRcdHRpdGxlOiAnQWRkIG5ldyBmb2xkZXInLFxuXHRcdFx0XHRcdFx0XHRwcm9wczoge1xuXHRcdFx0XHRcdFx0XHRcdGN1cnJlbnRBY2NvdW50OiBjdHJsLm1vZGVsLmN1cnJlbnRBY2NvdW50LFxuXHRcdFx0XHRcdFx0XHRcdHNob3dGb3JtOiB0cnVlXG5cdFx0XHRcdFx0XHRcdH0sXG5cdFx0XHRcdFx0XHRcdG9uUmV0dXJuOiBmdW5jdGlvbih0YXJnZXROYW1lKSB7XG5cdFx0XHRcdFx0XHRcdFx0Y29uc29sZS5sb2coJ29uUmV0dXJuJywgdGFyZ2V0TmFtZSlcblx0XHRcdFx0XHRcdFx0XHRzcnZNYWlsLmFkZE1haWxib3goY3RybC5tb2RlbC5jdXJyZW50QWNjb3VudCwgdGFyZ2V0TmFtZSkudGhlbigoKSA9PiB7XG5cdFx0XHRcdFx0XHRcdFx0XHRsb2FkTWFpbGJveGVzKClcblx0XHRcdFx0XHRcdFx0XHR9KVxuXG5cdFx0XHRcdFx0XHRcdH1cblx0XHRcdFx0XHRcdH0pXG5cdFx0XHRcdFx0fVxuXHRcdFx0XHR9LFxuXG5cdFx0XHRcdG9uQWNjb3VudENoYW5nZTogZnVuY3Rpb24oKSB7XG5cdFx0XHRcdFx0Y29uc29sZS5sb2coJ29uQWNjb3VudENoYW5nZScsICQodGhpcykuZ2V0VmFsdWUoKSlcblx0XHRcdFx0XHRjdHJsLnNldERhdGEoe2N1cnJlbnRBY2NvdW50OiAkKHRoaXMpLmdldFZhbHVlKCl9KVxuXHRcdFx0XHRcdGxvYWRNYWlsYm94ZXMoKVxuXHRcdFx0XHR9LFxuXG5cdFx0XHRcdG9uVHJlZUFjdGl2YXRlOiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHRjb25zb2xlLmxvZygnb25UcmVlQWN0aXZhdGUnKVxuXHRcdFx0XHRcdGNvbnN0IHRyZWUgPSAkKHRoaXMpLmlmYWNlKClcblxuXHRcdFx0XHRcdGNvbnN0IG5vZGUgPSAgdHJlZS5nZXRBY3RpdmVOb2RlKClcblxuXHRcdFx0XHRcdGNvbnN0IG1haWxib3hOYW1lID0gdHJlZS5nZXROb2RlUGF0aChub2RlKVx0XHRcdFx0XHRcblx0XHRcdFx0XHRjb25zb2xlLmxvZygnbWFpbGJveE5hbWUnLCBtYWlsYm94TmFtZSlcblx0XHRcdFx0XHRjb25zdCB7Y3VycmVudEFjY291bnR9ID0gY3RybC5tb2RlbFxuXHRcdFx0XHRcdHBhZ2VyLnB1c2hQYWdlKCdtYWlsYm94UGFnZScsIHtcblx0XHRcdFx0XHRcdHRpdGxlOiBub2RlLnRpdGxlLFxuXHRcdFx0XHRcdFx0cHJvcHM6IHtcblx0XHRcdFx0XHRcdFx0Y3VycmVudEFjY291bnQsXG5cdFx0XHRcdFx0XHRcdG1haWxib3hOYW1lXG5cdFx0XHRcdFx0XHR9LFxuXHRcdFx0XHRcdFx0b25CYWNrOiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHRcdFx0Y29uc3QgYWN0aXZlTm9kZSA9IGN0cmwuc2NvcGUudHJlZS5nZXRBY3RpdmVOb2RlKClcblx0XHRcdFx0XHRcdFx0aWYgKGFjdGl2ZU5vZGUgIT0gbnVsbCkge1xuXHRcdFx0XHRcdFx0XHRcdGFjdGl2ZU5vZGUuc2V0QWN0aXZlKGZhbHNlKVxuXHRcdFx0XHRcdFx0XHR9XG5cdFx0XHRcdFx0XHR9XG5cdFx0XHRcdFx0fSlcblx0XHRcdFx0fVxuXG5cdFx0XHR9XG5cdFx0fSlcblxuXG5cdFx0ZnVuY3Rpb24gbG9hZEFjY291bnQoKSB7XG5cdFx0XHRjb25zb2xlLmxvZygnbG9hZEFjY291bnQnKVxuXHRcdFx0c3J2TWFpbC5nZXRNYWlsQWNjb3VudHMoKS50aGVuKChhY2NvdW50cykgPT4ge1xuXHRcdFx0XHRjb25zb2xlLmxvZygnYWNjb3VudHMnLCBhY2NvdW50cylcblx0XHRcdFx0aWYgKGFjY291bnRzLmxlbmd0aCA9PSAwKSB7XG5cdFx0XHRcdFx0cmV0dXJuXG5cdFx0XHRcdH1cblx0XHRcdFx0Y29uc3QgY3VycmVudEFjY291bnQgPSBhY2NvdW50c1swXVxuXHRcdFx0XHRjb25zb2xlLmxvZygnY3VycmVudEFjY291bnQnLCBjdXJyZW50QWNjb3VudClcblx0XHRcdFx0Y3RybC5zZXREYXRhKHthY2NvdW50cywgY3VycmVudEFjY291bnR9KVxuXHRcdFx0XHRsb2FkTWFpbGJveGVzKClcblx0XHRcdH0pLmNhdGNoKChlcnIpID0+IHtcblx0XHRcdFx0JCQudWkuc2hvd0FsZXJ0KHt0aXRsZTogJ0Vycm9yJywgY29udGVudDogZXJyfSlcblx0XHRcdH0pXHRcdFx0XG5cdFx0fVxuXG5cdFx0ZnVuY3Rpb24gbG9hZE1haWxib3hlcygpIHtcblx0XHRcdGNvbnNvbGUubG9nKCdsb2FkTWFpbGJveGVzJylcblx0XHRcdGNvbnN0IHtjdXJyZW50QWNjb3VudH0gPSBjdHJsLm1vZGVsXG5cdFx0XHRzcnZNYWlsLmdldE1haWxib3hlcyhjdXJyZW50QWNjb3VudCkudGhlbigobWFpbGJveGVzKSA9PiB7XG5cdFx0XHRcdGNvbnNvbGUubG9nKCdtYWlsYm94ZXMnLCBtYWlsYm94ZXMpXG5cblx0XHRcdFx0Y3RybC5zZXREYXRhKHtcblx0XHRcdFx0XHRtYWlsYm94ZXNcblx0XHRcdFx0fSlcblx0XHRcdH0pXG5cdFx0fVxuXG5cdFx0bG9hZEFjY291bnQoKVxuXG5cdH1cblxuXG59KTtcblxuXG5cblxuIiwiJCQuc2VydmljZS5yZWdpc3RlclNlcnZpY2UoJ2FwcC5tYWlscycsIHtcblxuXHRkZXBzOiBbJ2JyZWl6Ym90Lmh0dHAnXSxcblxuXHRpbml0OiBmdW5jdGlvbihjb25maWcsIGh0dHApIHtcblxuXHRcdHJldHVybiB7XG5cdFx0XHRnZXRNYWlsQWNjb3VudHM6IGZ1bmN0aW9uKCkge1xuXHRcdFx0XHRyZXR1cm4gaHR0cC5nZXQoJy9nZXRNYWlsQWNjb3VudHMnKVxuXHRcdFx0fSxcblxuXHRcdFx0Z2V0TWFpbEFjY291bnQ6IGZ1bmN0aW9uKG5hbWUpIHtcblx0XHRcdFx0cmV0dXJuIGh0dHAucG9zdCgnL2dldE1haWxBY2NvdW50Jywge25hbWV9KVxuXHRcdFx0fSxcblxuXHRcdFx0Y3JlYXRlTWFpbEFjY291bnQ6IGZ1bmN0aW9uKGRhdGEpIHtcblx0XHRcdFx0cmV0dXJuIGh0dHAucG9zdCgnL2NyZWF0ZU1haWxBY2NvdW50JywgZGF0YSlcblx0XHRcdH0sXG5cblx0XHRcdHVwZGF0ZU1haWxBY2NvdW50OiBmdW5jdGlvbihkYXRhKSB7XG5cdFx0XHRcdHJldHVybiBodHRwLnBvc3QoJy91cGRhdGVNYWlsQWNjb3VudCcsIGRhdGEpXG5cdFx0XHR9LFxuXG5cdFx0XHRnZXRNYWlsYm94ZXM6IGZ1bmN0aW9uKG5hbWUpIHtcblx0XHRcdFx0cmV0dXJuIGh0dHAucG9zdChgL2dldE1haWxib3hlc2AsIHtuYW1lfSlcblx0XHRcdH0sXG5cblx0XHRcdGFkZE1haWxib3g6IGZ1bmN0aW9uKG5hbWUsIG1haWxib3hOYW1lKSB7XG5cdFx0XHRcdHJldHVybiBodHRwLnBvc3QoYC9hZGRNYWlsYm94YCwge25hbWUsIG1haWxib3hOYW1lfSlcblx0XHRcdH0sXG5cblx0XHRcdG9wZW5NYWlsYm94OiBmdW5jdGlvbihuYW1lLCBtYWlsYm94TmFtZSwgcGFnZU5vKSB7XG5cdFx0XHRcdHJldHVybiBodHRwLnBvc3QoYC9vcGVuTWFpbGJveGAsIHtuYW1lLCBtYWlsYm94TmFtZSwgcGFnZU5vfSlcblx0XHRcdH0sXG5cblx0XHRcdG9wZW5NZXNzYWdlOiBmdW5jdGlvbihuYW1lLCBtYWlsYm94TmFtZSwgc2VxTm8sIHBhcnRJRClcdHtcblx0XHRcdFx0cmV0dXJuIGh0dHAucG9zdChgL29wZW5NZXNzYWdlYCwge25hbWUsIG1haWxib3hOYW1lLCBzZXFObywgcGFydElEfSlcblx0XHRcdH0sXG5cblx0XHRcdG9wZW5BdHRhY2htZW50OiBmdW5jdGlvbihuYW1lLCBtYWlsYm94TmFtZSwgc2VxTm8sIHBhcnRJRClcdHtcblx0XHRcdFx0cmV0dXJuIGh0dHAucG9zdChgL29wZW5BdHRhY2htZW50YCwge25hbWUsIG1haWxib3hOYW1lLCBzZXFObywgcGFydElEfSlcblx0XHRcdH0sXG5cblx0XHRcdGRlbGV0ZU1lc3NhZ2U6IGZ1bmN0aW9uKG5hbWUsIG1haWxib3hOYW1lLCBzZXFOb3MpXHR7XG5cdFx0XHRcdHJldHVybiBodHRwLnBvc3QoYC9kZWxldGVNZXNzYWdlYCwge25hbWUsIG1haWxib3hOYW1lLCBzZXFOb3N9KVxuXHRcdFx0fSxcdFxuXG5cdFx0XHRtb3ZlTWVzc2FnZTogZnVuY3Rpb24obmFtZSwgbWFpbGJveE5hbWUsIHRhcmdldE5hbWUsIHNlcU5vcylcdHtcblx0XHRcdFx0cmV0dXJuIGh0dHAucG9zdChgL21vdmVNZXNzYWdlYCwge25hbWUsIG1haWxib3hOYW1lLCB0YXJnZXROYW1lLCBzZXFOb3N9KVxuXHRcdFx0fSxcdFx0XHRcdFx0XHRcblx0XHRcdFx0XHRcblxuXHRcdFx0c2VuZE1haWw6IGZ1bmN0aW9uKGFjY291bnROYW1lLCBkYXRhKSB7XG5cdFx0XHRcdHJldHVybiBodHRwLnBvc3QoYC9zZW5kTWFpbGAsIHthY2NvdW50TmFtZSwgZGF0YX0pXG5cdFx0XHR9XG5cdFx0fVxuXHR9LFxuXG5cdCRpZmFjZTogYFxuXHRcdGdldE1haWxBY2NvdW50KCk6UHJvbWlzZTtcblx0XHRjcmVhdGVNYWlBY2NvdW50KGRhdGEpOlByb21pc2U7XG5cdFx0Z2V0TWFpbGJveGVzKG5hbWUpOlByb21pc2U7XG5cdFx0b3Blbk1haWxib3gobmFtZSwgbWFpbGJveE5hbWUsIHBhZ2VObyk6UHJvbWlzZTtcblx0XHRvcGVuTWVzc2FnZShuYW1lLCBtYWlsYm94TmFtZSwgc2VxTm8sIHBhcnRJRCk6UHJvbWlzZTtcblx0XHRvcGVuQXR0YWNobWVudChuYW1lLCBtYWlsYm94TmFtZSwgc2VxTm8sIHBhcnRJRCk6UHJvbWlzZTtcblx0XHRkZWxldGVNZXNzYWdlKG5hbWUsIG1haWxib3hOYW1lLCBzZXFOb3MpOlByb21pc2U7XG5cdFx0bW92ZU1lc3NhZ2UobmFtZSwgbWFpbGJveE5hbWUsIHRhcmdldE5hbWUsIHNlcU5vcyk6UHJvbWlzZVxuXHRcdGBcbn0pO1xuIiwiJCQuY29udHJvbC5yZWdpc3RlckNvbnRyb2woJ2FjY291bnRQYWdlJywge1xuXG5cdHRlbXBsYXRlOiBcIjxkaXYgY2xhc3M9XFxcIm1haW5cXFwiPlxcblx0PGZvcm0gYm4tZXZlbnQ9XFxcInN1Ym1pdDogb25TdWJtaXRcXFwiIGJuLWJpbmQ9XFxcImZvcm1cXFwiIGJuLWZvcm09XFxcImRhdGFcXFwiPlxcblxcblx0XHQ8ZGl2IGJuLWNvbnRyb2w9XFxcImJyYWluanMuaW5wdXRncm91cFxcXCI+XFxuXHRcdFx0PGxhYmVsPlByb3ZpZGVyPC9sYWJlbD5cXG5cdFx0XHQ8c3BhbiBibi1jb250cm9sPVxcXCJicmFpbmpzLnNlbGVjdG1lbnVcXFwiIFxcblx0XHRcdFx0Ym4tZXZlbnQ9XFxcInNlbGVjdG1lbnVjaGFuZ2U6IG9uUHJvdmlkZXJDaGFuZ2VcXFwiIGJuLXZhbD1cXFwicHJvdmlkZXJcXFwiXFxuXHRcdFx0XHRibi1kYXRhPVxcXCJ7aXRlbXM6IHByb3ZpZGVyc31cXFwiXFxuXHRcdFx0XHRibi1wcm9wPVxcXCJ7ZGlzYWJsZWQ6IGlzRWRpdH1cXFwiXFxuXHRcdFx0Plxcblx0XHRcdDwvc3Bhbj5cdFx0XFxuXHRcdDwvZGl2Plx0XHRcdFxcblxcblx0XHQ8ZGl2IGJuLWNvbnRyb2w9XFxcImJyYWluanMuaW5wdXRncm91cFxcXCI+XFxuXHRcdFx0PGxhYmVsPkFjY291bnQgTmFtZTwvbGFiZWw+XFxuXHRcdFx0PGlucHV0IHR5cGU9XFxcInRleHRcXFwiIG5hbWU9XFxcIm5hbWVcXFwiIHJlcXVpcmVkPVxcXCJcXFwiIGF1dG9mb2N1cz1cXFwiXFxcIiBibi1wcm9wPVxcXCJ7ZGlzYWJsZWQ6IGlzRWRpdH1cXFwiPlx0XHRcdFxcblx0XHQ8L2Rpdj5cXG5cXG5cdFx0PGRpdiBibi1jb250cm9sPVxcXCJicmFpbmpzLmlucHV0Z3JvdXBcXFwiPlxcblx0XHRcdDxsYWJlbD5Vc2VyPC9sYWJlbD5cXG5cdFx0XHQ8aW5wdXQgdHlwZT1cXFwidGV4dFxcXCIgbmFtZT1cXFwidXNlclxcXCIgcmVxdWlyZWQ9XFxcIlxcXCI+XHRcdFx0XFxuXHRcdDwvZGl2Plxcblxcblx0XHQ8ZGl2IGJuLWNvbnRyb2w9XFxcImJyYWluanMuaW5wdXRncm91cFxcXCI+XFxuXHRcdFx0PGxhYmVsPlBhc3N3b3JkPC9sYWJlbD5cXG5cdFx0XHQ8aW5wdXQgdHlwZT1cXFwicGFzc3dvcmRcXFwiIG5hbWU9XFxcInB3ZFxcXCIgcmVxdWlyZWQ9XFxcIlxcXCI+XHRcdFx0XFxuXHRcdDwvZGl2Plxcblxcblx0XHQ8ZGl2IGJuLWNvbnRyb2w9XFxcImJyYWluanMuaW5wdXRncm91cFxcXCI+XFxuXHRcdFx0PGxhYmVsPkVtYWlsPC9sYWJlbD5cXG5cdFx0XHQ8aW5wdXQgdHlwZT1cXFwiZW1haWxcXFwiIG5hbWU9XFxcImVtYWlsXFxcIiByZXF1aXJlZD1cXFwiXFxcIj5cdFx0XHRcXG5cdFx0PC9kaXY+XFxuXFxuXHRcXG5cXG5cdFx0PGRpdiBibi1jb250cm9sPVxcXCJicmFpbmpzLmlucHV0Z3JvdXBcXFwiIGJuLXNob3c9XFxcInNob3cxXFxcIj5cXG5cdFx0XHQ8bGFiZWw+SU1BUCBTZXJ2ZXI8L2xhYmVsPlxcblx0XHRcdDxpbnB1dCB0eXBlPVxcXCJ0ZXh0XFxcIiBuYW1lPVxcXCJpbWFwSG9zdFxcXCIgcmVxdWlyZWQ9XFxcIlxcXCI+XHRcdFx0XFxuXHRcdDwvZGl2Plx0XHRcXG5cXG5cdFx0PGRpdiBibi1jb250cm9sPVxcXCJicmFpbmpzLmlucHV0Z3JvdXBcXFwiICBibi1zaG93PVxcXCJzaG93MVxcXCI+XFxuXHRcdFx0PGxhYmVsPlNNVFAgU2VydmVyPC9sYWJlbD5cXG5cdFx0XHQ8aW5wdXQgdHlwZT1cXFwidGV4dFxcXCIgbmFtZT1cXFwic210cEhvc3RcXFwiIHJlcXVpcmVkPVxcXCJcXFwiPlx0XHRcdFxcblx0XHQ8L2Rpdj5cdFx0XFxuXFxuXHRcdDxkaXYgY2xhc3M9XFxcImNvcHlTZW50XFxcIj5cXG5cdFx0XHQ8bGFiZWw+TWFrZSBhIGNvcHkgb2Ygc2VudCBtYWlsIGluIFNlbnQgZm9sZGVyPC9sYWJlbD5cXG5cdFx0XHQ8ZGl2IGJuLWNvbnRyb2w9XFxcImJyYWluanMuZmxpcHN3aXRjaFxcXCIgYm4tZGF0YT1cXFwiZGF0YTFcXFwiIG5hbWU9XFxcIm1ha2VDb3B5XFxcIj48L2Rpdj5cXG5cdFx0PC9kaXY+XFxuXFxuXHRcdDxpbnB1dCB0eXBlPVxcXCJzdWJtaXRcXFwiIGhpZGRlbj1cXFwiXFxcIiBibi1iaW5kPVxcXCJzdWJtaXRcXFwiPlxcblx0PC9mb3JtPlxcblxcbjwvZGl2PlwiLFxuXG5cdGRlcHM6IFsnYXBwLm1haWxzJywgJ2JyZWl6Ym90LnBhZ2VyJ10sXG5cblx0cHJvcHM6IHtcblx0XHRkYXRhOiBudWxsXG5cdH0sXG5cblx0YnV0dG9uczogW1xuXHRcdHtuYW1lOiAnY3JlYXRlJywgaWNvbjogJ2ZhIGZhLWNoZWNrJ31cblx0XSxcblxuXHRpbml0OiBmdW5jdGlvbihlbHQsIHNydk1haWwsIHBhZ2VyKSB7XG5cblx0XHRjb25zdCB7ZGF0YX0gPSB0aGlzLnByb3BzXG5cblx0XHRjb25zdCBtYXAgPSB7XG5cdFx0XHQnR21haWwnOiB7XG5cdFx0XHRcdGltYXBIb3N0OiAnaW1hcC5nbWFpbC5jb20nLFxuXHRcdFx0XHRzbXRwSG9zdDogJ3NtdHAuZ21haWwuY29tJ1xuXHRcdFx0fSxcblx0XHRcdCdPdXRsb29rJzoge1xuXHRcdFx0XHRpbWFwSG9zdDogJ2ltYXAub3V0bG9vay5jb20nLFxuXHRcdFx0XHRzbXRwSG9zdDogJ3NtdHAub3V0bG9vay5jb20nXG5cdFx0XHR9LFxuXHRcdFx0J0ZyZWUnOiB7XG5cdFx0XHRcdGltYXBIb3N0OiAnaW1hcC5mcmVlLmZyJyxcblx0XHRcdFx0c210cEhvc3Q6ICdzbXRwLmZyZWUuZnInXG5cdFx0XHR9LFxuXHRcdFx0J1NGUic6IHtcblx0XHRcdFx0aW1hcEhvc3Q6ICdpbWFwLnNmci5mcicsXG5cdFx0XHRcdHNtdHBIb3N0OiAnc210cC5zZnIuZnInXG5cdFx0XHR9LFxuXHRcdFx0J09yYW5nZSc6IHtcblx0XHRcdFx0aW1hcEhvc3Q6ICdpbWFwLm9yYW5nZS5mcicsXG5cdFx0XHRcdHNtdHBIb3N0OiAnc210cC5vcmFuZ2UuZnInXG5cdFx0XHR9LFxuXHRcdFx0J0JvdXlndWVzIFRlbGVjb20nOiB7XG5cdFx0XHRcdGltYXBIb3N0OiAnaW1hcC5iYm94LmZyJyxcblx0XHRcdFx0c210cEhvc3Q6ICdzbXRwLmJib3guZnInXG5cdFx0XHR9LFxuXHRcdFx0J090aGVyJzoge1xuXHRcdFx0XHRpbWFwSG9zdDogJycsXG5cdFx0XHRcdHNtdHBIb3N0OiAnJ1xuXHRcdFx0fSxcblx0XHR9XG5cblx0XHRmdW5jdGlvbiBnZXRQcm92aWRlcihpbmZvKSB7XG5cdFx0XHRmb3IobGV0IGsgaW4gbWFwKSB7XG5cdFx0XHRcdGlmIChtYXBba10uaW1hcEhvc3QgPT0gaW5mby5pbWFwSG9zdCkge1xuXHRcdFx0XHRcdHJldHVybiBrXG5cdFx0XHRcdH1cblx0XHRcdH1cblx0XHRcdHJldHVybiAnT3RoZXInXG5cdFx0fVxuXG5cdFx0Y29uc3QgY3RybCA9ICQkLnZpZXdDb250cm9sbGVyKGVsdCwge1xuXHRcdFx0ZGF0YToge1xuXHRcdFx0XHRwcm92aWRlcjogKGRhdGEgIT0gbnVsbCkgPyBnZXRQcm92aWRlcihkYXRhKSA6ICdHbWFpbCcsXG5cdFx0XHRcdHByb3ZpZGVyczogT2JqZWN0LmtleXMobWFwKSxcblx0XHRcdFx0ZGF0YSxcblx0XHRcdFx0aXNFZGl0OiBkYXRhICE9IG51bGwsXG5cdFx0XHRcdHNob3cxOiBmdW5jdGlvbigpIHtyZXR1cm4gdGhpcy5wcm92aWRlciA9PSAnT3RoZXInfSxcblx0XHRcdFx0ZGF0YTE6IGZ1bmN0aW9uKCkge1xuXHRcdFx0XHRcdHJldHVybiB7aGVpZ2h0OiAyNSwgd2lkdGg6IDEwMCwgdGV4dHM6IHtsZWZ0OiAnWUVTJywgcmlnaHQ6ICdOTyd9fVxuXHRcdFx0XHR9XG5cdFx0XHR9LFxuXHRcdFx0ZXZlbnRzOiB7XG5cdFx0XHRcdG9uU3VibWl0OiBmdW5jdGlvbihldikge1xuXHRcdFx0XHRcdGV2LnByZXZlbnREZWZhdWx0KClcblx0XHRcdFx0XHRjb25zdCBmb3JtRGF0YSA9ICQodGhpcykuZ2V0Rm9ybURhdGEoKVxuXHRcdFx0XHRcdGNvbnNvbGUubG9nKCdmb3JtRGF0YScsIGZvcm1EYXRhKVxuXHRcdFx0XHRcdGlmIChkYXRhID09IG51bGwpIHtcblx0XHRcdFx0XHRcdHNydk1haWwuY3JlYXRlTWFpbEFjY291bnQoZm9ybURhdGEpLnRoZW4oKCkgPT4ge1xuXHRcdFx0XHRcdFx0XHRwYWdlci5wb3BQYWdlKClcblx0XHRcdFx0XHRcdH0pXHRcdFx0XHRcdFx0XG5cdFx0XHRcdFx0fVxuXHRcdFx0XHRcdGVsc2Uge1xuXHRcdFx0XHRcdFx0c3J2TWFpbC51cGRhdGVNYWlsQWNjb3VudChmb3JtRGF0YSkudGhlbigoKSA9PiB7XG5cdFx0XHRcdFx0XHRcdHBhZ2VyLnBvcFBhZ2UoKVxuXHRcdFx0XHRcdFx0fSlcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XHRcblx0XHRcdFx0XHR9XG5cblx0XHRcdFx0fSxcblx0XHRcdFx0b25Qcm92aWRlckNoYW5nZTogZnVuY3Rpb24oKSB7XG5cdFx0XHRcdFx0Y29uc3QgcHJvdmlkZXIgPSAkKHRoaXMpLmdldFZhbHVlKClcblx0XHRcdFx0XHRjb25zb2xlLmxvZygnb25Qcm92aWRlckNoYW5nZScsIHByb3ZpZGVyKVxuXHRcdFx0XHRcdGN0cmwuc2V0RGF0YSh7cHJvdmlkZXJ9KVxuXG5cdFx0XHRcdFx0Y3RybC5zY29wZS5mb3JtLnNldEZvcm1EYXRhKG1hcFtwcm92aWRlcl0pXG5cdFx0XHRcdH1cblx0XHRcdH1cblx0XHR9KVxuXG5cdFx0Y3RybC5zY29wZS5mb3JtLnNldEZvcm1EYXRhKG1hcFtjdHJsLm1vZGVsLnByb3ZpZGVyXSlcblxuXHRcdHRoaXMub25BY3Rpb24gPSBmdW5jdGlvbihjbWQpIHtcblx0XHRcdGN0cmwuc2NvcGUuc3VibWl0LmNsaWNrKClcblx0XHR9XG5cblxuXG5cdH1cblxuXG59KTtcblxuXG5cblxuIiwiJCQuY29udHJvbC5yZWdpc3RlckNvbnRyb2woJ2FkZENvbnRhY3RQYWdlJywge1xuXG5cdHRlbXBsYXRlOiBcIjxmb3JtIGJuLWV2ZW50PVxcXCJzdWJtaXQ6IG9uU3VibWl0XFxcIiBibi1mb3JtPVxcXCJmcm9tXFxcIj5cXG5cdDxkaXYgYm4tY29udHJvbD1cXFwiYnJhaW5qcy5pbnB1dGdyb3VwXFxcIj5cXG5cdFx0PGxhYmVsPk5hbWU6PC9sYWJlbD48YnI+XFxuXHRcdDxpbnB1dCB0eXBlPVxcXCJ0ZXh0XFxcIiBuYW1lPVxcXCJuYW1lXFxcIiBzdHlsZT1cXFwibWluLXdpZHRoOiAzMDBweFxcXCIgcmVxdWlyZWQ9XFxcIlxcXCI+XHRcXG5cdDwvZGl2Plxcblx0PGJyPlxcblxcblx0PGRpdiBibi1jb250cm9sPVxcXCJicmFpbmpzLmlucHV0Z3JvdXBcXFwiPlxcblx0XHQ8bGFiZWw+RW1haWw6PC9sYWJlbD48YnI+XFxuXHRcdDxpbnB1dCB0eXBlPVxcXCJlbWFpbFxcXCIgbmFtZT1cXFwiZW1haWxcXFwiIHN0eWxlPVxcXCJtaW4td2lkdGg6IDMwMHB4XFxcIiByZXF1aXJlZD1cXFwiXFxcIj5cdFxcblx0PC9kaXY+XHRcXG5cXG5cdDxpbnB1dCB0eXBlPVxcXCJzdWJtaXRcXFwiIGJuLWJpbmQ9XFxcInN1Ym1pdFxcXCIgaGlkZGVuPVxcXCJcXFwiPlxcbjwvZm9ybT5cXG5cIixcblxuXHRkZXBzOiBbJ2JyZWl6Ym90LnVzZXJzJywgJ2JyZWl6Ym90LnBhZ2VyJ10sXG5cblx0cHJvcHM6IHtcblx0XHRmcm9tOiB7fVxuXHR9LFxuXG5cdGJ1dHRvbnM6IFtcblx0XHR7bmFtZTogJ2FkZCcsIGljb246ICdmYSBmYS11c2VyLXBsdXMnfVxuXHRdLFx0XG5cblx0aW5pdDogZnVuY3Rpb24oZWx0LCB1c2VycywgcGFnZXIpIHtcblxuXHRcdGNvbnN0IHtmcm9tfSA9IHRoaXMucHJvcHNcblxuXHRcdGNvbnN0IGN0cmwgPSAkJC52aWV3Q29udHJvbGxlcihlbHQsIHtcblx0XHRcdGRhdGE6IHtcblx0XHRcdFx0ZnJvbVxuXHRcdFx0fSxcblx0XHRcdGV2ZW50czoge1xuXHRcdFx0XHRvblN1Ym1pdDogZnVuY3Rpb24oZXYpIHtcblx0XHRcdFx0XHRldi5wcmV2ZW50RGVmYXVsdCgpXG5cdFx0XHRcdFx0Y29uc3QgZGF0YSA9ICQodGhpcykuZ2V0Rm9ybURhdGEoKVxuXHRcdFx0XHRcdGNvbnNvbGUubG9nKCdkYXRhJywgZGF0YSlcblx0XHRcdFx0XHR1c2Vycy5hZGRDb250YWN0KGRhdGEubmFtZSwgZGF0YS5lbWFpbCkudGhlbigoKSA9PiB7XG5cdFx0XHRcdFx0XHRjb25zb2xlLmxvZygnY29udGFjdCBhZGRlZCAhJylcblx0XHRcdFx0XHRcdHBhZ2VyLnBvcFBhZ2UoJ2FkZENvbnRhY3QnKVxuXHRcdFx0XHRcdH0pXG5cdFx0XHRcdFx0LmNhdGNoKChlcnIpID0+IHtcblx0XHRcdFx0XHRcdCQkLnVpLnNob3dBbGVydCh7dGl0bGU6ICdFcnJvcicsIGNvbnRlbnQ6IGVyci5yZXNwb25zZVRleHR9KVxuXHRcdFx0XHRcdH0pXG5cdFx0XHRcdH1cblxuXHRcdFx0fVxuXHRcdH0pXG5cblx0XHR0aGlzLm9uQWN0aW9uID0gZnVuY3Rpb24oY21kKSB7XG5cdFx0XHRjb25zb2xlLmxvZygnb25BY3Rpb24nLCBjbWQpXG5cdFx0XHRjdHJsLnNjb3BlLnN1Ym1pdC5jbGljaygpXG5cdFx0fVxuXG5cblxuXHR9XG5cblxufSk7XG5cblxuXG5cbiIsIiQkLmNvbnRyb2wucmVnaXN0ZXJDb250cm9sKCdib3hlc1BhZ2UnLCB7XG5cblx0dGVtcGxhdGU6IFwiPGRpdiBibi1zaG93PVxcXCJzaG93Rm9ybVxcXCI+XFxuXHQ8Zm9ybSBibi1ldmVudD1cXFwic3VibWl0OiBvblN1Ym1pdFxcXCI+XFxuXHRcdDxkaXYgYm4tY29udHJvbD1cXFwiYnJhaW5qcy5pbnB1dGdyb3VwXFxcIj5cXG5cdFx0XHQ8bGFiZWw+TmFtZTo8L2xhYmVsPlxcblx0XHRcdDxpbnB1dCB0eXBlPVxcXCJ0ZXh0XFxcIiBuYW1lPVxcXCJuYW1lXFxcIiByZXF1aXJlZD1cXFwiXFxcIiBhdXRvZm9jdXM9XFxcIlxcXCI+XHRcdFx0XFxuXHRcdDwvZGl2Plxcblx0XHQ8aW5wdXQgdHlwZT1cXFwic3VibWl0XFxcIiBoaWRkZW49XFxcIlxcXCIgYm4tYmluZD1cXFwic3VibWl0XFxcIj5cXG5cdDwvZm9ybT5cXG5cXG5cdDxwPlNlbGVjdCB0YXJnZXQgZm9sZGVyOjwvcD5cXG48L2Rpdj5cXG5cXG48ZGl2IGNsYXNzPVxcXCJzY3JvbGxQYW5lbFRyZWVcXFwiPlxcblx0PGRpdiBcXG5cdFx0Y2xhc3M9XFxcInRyZWVcXFwiIFxcblx0XHRibi1jb250cm9sPVxcXCJicmFpbmpzLnRyZWVcXFwiXFxuXHRcdGJuLWRhdGE9XFxcIntzb3VyY2U6IG1haWxib3hlc31cXFwiXFxuXHRcdGJuLWlmYWNlPVxcXCJ0cmVlXFxcIlxcblx0PjwvZGl2PlxcbjwvZGl2PlxcblxcblxcblwiLFxuXG5cdGRlcHM6IFsnYXBwLm1haWxzJywgJ2JyZWl6Ym90LnBhZ2VyJ10sXG5cblx0cHJvcHM6IHtcblx0XHRjdXJyZW50QWNjb3VudDogJycsXG5cdFx0c2hvd0Zvcm06IGZhbHNlXG5cdH0sXG5cblx0YnV0dG9uczogW1xuXHRcdHtuYW1lOiAnYXBwbHknLCBpY29uOiAnZmEgZmEtY2hlY2snfVxuXHRdLFxuXHRcblx0aW5pdDogZnVuY3Rpb24oZWx0LCBzcnZNYWlsLCBwYWdlcikge1xuXG5cdFx0Y29uc3Qge2N1cnJlbnRBY2NvdW50LCBzaG93Rm9ybX0gPSB0aGlzLnByb3BzXG5cblx0XHRjb25zdCBjdHJsID0gJCQudmlld0NvbnRyb2xsZXIoZWx0LCB7XG5cdFx0XHRkYXRhOiB7XG5cdFx0XHRcdG1haWxib3hlczogW10sXG5cdFx0XHRcdHNob3dGb3JtXG5cdFx0XHR9LFxuXHRcdFx0ZXZlbnRzOiB7XG5cdFx0XHRcdG9uU3VibWl0OiBmdW5jdGlvbihldikge1xuXHRcdFx0XHRcdGV2LnByZXZlbnREZWZhdWx0KClcblx0XHRcdFx0XHRjb25zdCB7bmFtZX0gPSAkKHRoaXMpLmdldEZvcm1EYXRhKClcblx0XHRcdFx0XHQvL2NvbnNvbGUubG9nKCdvblN1Ym1pdCcsIG5hbWUpXG5cblx0XHRcdFx0XHRjb25zdCB7dHJlZX0gPSBjdHJsLnNjb3BlXG5cdFx0XHRcdFx0Y29uc3Qgbm9kZSA9IHRyZWUuZ2V0QWN0aXZlTm9kZSgpXG5cdFx0XHRcdFx0aWYgKG5vZGUgPT0gbnVsbCkge1xuXHRcdFx0XHRcdFx0JCQudWkuc2hvd0FsZXJ0KHt0aXRsZTogJ1dhcm5pbmcnLCBjb250ZW50OiAnUGxlYXNlIHNlbGVjdCBhIHRhcmdldCBtYWlsYm94J30pXG5cdFx0XHRcdFx0XHRyZXR1cm5cblx0XHRcdFx0XHR9XG5cdFx0XHRcdFx0bGV0IHRhcmdldE5hbWUgPSB0cmVlLmdldE5vZGVQYXRoKG5vZGUpICsgJy8nICsgbmFtZVxuXHRcdFx0XHRcdC8vY29uc29sZS5sb2coJ3RhcmdldE5hbWUnLCB0YXJnZXROYW1lKVxuXHRcdFx0XHRcdGNvbnN0IHRva2VuID0gdGFyZ2V0TmFtZS5zcGxpdCgnLycpXG5cdFx0XHRcdFx0dG9rZW4uc2hpZnQoKVxuXHRcdFx0XHRcdHRhcmdldE5hbWUgPSB0b2tlbi5qb2luKCcvJylcblx0XHRcdFx0XHQvL2NvbnNvbGUubG9nKCd0YXJnZXROYW1lJywgdGFyZ2V0TmFtZSlcblxuXG5cdFx0XHRcdFx0cGFnZXIucG9wUGFnZSh0YXJnZXROYW1lKVx0XHRcdFx0XHRcblx0XHRcdFx0fVxuXHRcdFx0fVxuXHRcdH0pXG5cblxuXHRcdGZ1bmN0aW9uIGxvYWRNYWlsYm94ZXMoKSB7XG5cdFx0XHRjb25zb2xlLmxvZygnbG9hZE1haWxib3hlcycpXG5cdFx0XHRzcnZNYWlsLmdldE1haWxib3hlcyhjdXJyZW50QWNjb3VudCkudGhlbigobWFpbGJveGVzKSA9PiB7XG5cdFx0XHRcdGNvbnNvbGUubG9nKCdtYWlsYm94ZXMnLCBtYWlsYm94ZXMpXG5cdFx0XHRcdGlmIChzaG93Rm9ybSkge1xuXHRcdFx0XHRcdGN0cmwuc2V0RGF0YSh7XG5cdFx0XHRcdFx0XHRtYWlsYm94ZXM6IFt7XG5cdFx0XHRcdFx0XHRcdHRpdGxlOiAnRm9sZGVycycsXG5cdFx0XHRcdFx0XHRcdGZvbGRlcjogdHJ1ZSxcblx0XHRcdFx0XHRcdFx0Y2hpbGRyZW46IG1haWxib3hlcyxcblx0XHRcdFx0XHRcdFx0ZXhwYW5kZWQ6IHRydWVcblx0XHRcdFx0XHRcdH1dXG5cdFx0XHRcdFx0fSlcblx0XHRcdFx0fVxuXHRcdFx0XHRlbHNlIHtcblx0XHRcdFx0XHRjdHJsLnNldERhdGEoe1xuXHRcdFx0XHRcdFx0bWFpbGJveGVzXG5cdFx0XHRcdFx0fSlcblx0XHRcdFx0fVxuXHRcdFx0fSlcblx0XHR9XG5cblx0XHRsb2FkTWFpbGJveGVzKClcblxuXG5cdFx0dGhpcy5vbkFjdGlvbiA9IGZ1bmN0aW9uKGFjdGlvbikge1xuXHRcdFx0Y29uc29sZS5sb2coJ29uQWN0aW9uJywgYWN0aW9uKVxuXHRcdFx0aWYgKGFjdGlvbiA9PSAnYXBwbHknKSB7XG5cblx0XHRcdFx0aWYgKHNob3dGb3JtKSB7XG5cdFx0XHRcdFx0Y3RybC5zY29wZS5zdWJtaXQuY2xpY2soKVxuXHRcdFx0XHRcdHJldHVyblxuXHRcdFx0XHR9XG5cblx0XHRcdFx0Y29uc3Qge3RyZWV9ID0gY3RybC5zY29wZVxuXHRcdFx0XHRjb25zdCBub2RlID0gdHJlZS5nZXRBY3RpdmVOb2RlKClcblx0XHRcdFx0aWYgKG5vZGUgPT0gbnVsbCkge1xuXHRcdFx0XHRcdCQkLnVpLnNob3dBbGVydCh7dGl0bGU6ICdTZWxlY3QgVGFyZ2V0IE1haWxib3gnLCBjb250ZW50OiAnUGxlYXNlIHNlbGVjdCBhIHRhcmdldCBtYWlsYm94J30pXG5cdFx0XHRcdFx0cmV0dXJuXG5cdFx0XHRcdH1cblx0XHRcdFx0Y29uc3QgdGFyZ2V0TmFtZSA9IHRyZWUuZ2V0Tm9kZVBhdGgobm9kZSlcblxuXHRcdFx0XHRwYWdlci5wb3BQYWdlKHRhcmdldE5hbWUpXG5cdFx0XHR9XG5cdFx0fVxuXG5cdH1cblxuXG59KTtcblxuXG5cblxuIiwiJCQuY29udHJvbC5yZWdpc3RlckNvbnRyb2woJ2NvbnRhY3RzUGFnZScsIHtcblxuXHR0ZW1wbGF0ZTogXCI8ZGl2IGNsYXNzPVxcXCJzY3JvbGxQYW5lbFxcXCI+XFxuXHQ8ZGl2IGJuLWNvbnRyb2w9XFxcImJyZWl6Ym90LmNvbnRhY3RzXFxcIiBkYXRhLXNob3ctc2VsZWN0aW9uPVxcXCJ0cnVlXFxcIiBibi1pZmFjZT1cXFwiY29udGFjdHNcXFwiPjwvZGl2Plxcblx0XFxuPC9kaXY+XFxuXFxuXFxuXCIsXG5cblx0ZGVwczogWydicmVpemJvdC5wYWdlciddLFxuXG5cdGJ1dHRvbnM6IFtcblx0XHR7bmFtZTogJ29rJywgaWNvbjogJ2ZhIGZhLWNoZWNrJ31cblx0XSxcblx0XG5cdGluaXQ6IGZ1bmN0aW9uKGVsdCwgcGFnZXIpIHtcblxuXHRcdGNvbnN0IGN0cmwgPSAkJC52aWV3Q29udHJvbGxlcihlbHQpXG5cblxuXHRcdHRoaXMub25BY3Rpb24gPSBmdW5jdGlvbihhY3Rpb24pIHtcblx0XHRcdGNvbnNvbGUubG9nKCdvbkFjdGlvbicsIGFjdGlvbilcblx0XHRcdGlmIChhY3Rpb24gPT0gJ29rJykge1xuXHRcdFx0XHRwYWdlci5wb3BQYWdlKGN0cmwuc2NvcGUuY29udGFjdHMuZ2V0U2VsZWN0aW9uKCkpXG5cdFx0XHR9XG5cdFx0fVxuXHR9XG5cblxufSk7XG5cblxuXG5cbiIsIiQkLmNvbnRyb2wucmVnaXN0ZXJDb250cm9sKCdtYWlsYm94UGFnZScsIHtcblxuXHR0ZW1wbGF0ZTogXCI8ZGl2IGNsYXNzPVxcXCJ0b29sYmFyXFxcIj5cXG5cdDxkaXY+XFxuXHRcdDxkaXYgYm4tc2hvdz1cXFwic2hvdzFcXFwiPlxcblx0XHRcdDxzcGFuID5QYWdlOiA8c3BhbiBibi10ZXh0PVxcXCJ0ZXh0MVxcXCI+PC9zcGFuPjwvc3Bhbj5cXG5cdFx0XHQ8YnV0dG9uIGNsYXNzPVxcXCJ3My1idXR0b25cXFwiIHRpdGxlPVxcXCJwcmV2aW91cyBwYWdlXFxcIiBibi1ldmVudD1cXFwiY2xpY2s6IG9uUHJldlBhZ2VcXFwiPlxcblx0XHRcdFx0PGkgY2xhc3M9XFxcImZhIGZhLWFuZ2xlLWxlZnRcXFwiPjwvaT5cXG5cdFx0XHQ8L2J1dHRvbj5cdFx0XHRcXG5cdFx0XHQ8YnV0dG9uIGNsYXNzPVxcXCJ3My1idXR0b25cXFwiIHRpdGxlPVxcXCJuZXh0IHBhZ2VcXFwiIGJuLWV2ZW50PVxcXCJjbGljazogb25OZXh0UGFnZVxcXCI+XFxuXHRcdFx0XHQ8aSBjbGFzcz1cXFwiZmEgZmEtYW5nbGUtcmlnaHRcXFwiPjwvaT5cXG5cdFx0XHQ8L2J1dHRvbj5cdFx0XHRcXG5cdFx0PC9kaXY+XFxuXHRcdDxkaXYgYm4tc2hvdz1cXFwibG9hZGluZ1xcXCIgY2xhc3M9XFxcImxvYWRpbmdcXFwiPlxcblx0XHRcdDxpIGNsYXNzPVxcXCJmYSBmYS1zcGlubmVyIGZhLXB1bHNlXFxcIj48L2k+XFxuXHRcdFx0bG9hZGluZyAuLi5cXG5cdFx0PC9kaXY+XFxuXHQ8L2Rpdj5cXG5cdDxkaXYgY2xhc3M9XFxcIm5iTXNnXFxcIj48c3Ryb25nIGJuLXRleHQ9XFxcIm5iTXNnXFxcIj48L3N0cm9uZz4mbmJzcDtNZXNzYWdlczwvZGl2Plx0XHRcXG48L2Rpdj5cXG5cXG48ZGl2IGNsYXNzPVxcXCJzY3JvbGxQYW5lbFRhYmxlXFxcIj5cXG5cdDx0YWJsZSBjbGFzcz1cXFwidzMtdGFibGUtYWxsIHczLWhvdmVyYWJsZSB3My1zbWFsbFxcXCI+XFxuXHRcdDx0aGVhZD5cXG5cdFx0XHQ8dHIgY2xhc3M9XFxcInczLWdyZWVuXFxcIj5cXG5cdFx0XHRcdDx0aD48aW5wdXQgdHlwZT1cXFwiY2hlY2tib3hcXFwiIGJuLWV2ZW50PVxcXCJjbGljazogb25NYWluQ2hlY2tCb3hDbGlja1xcXCIgYm4tdmFsPVxcXCJjaGVja1xcXCIgYm4tdXBkYXRlPVxcXCJjbGlja1xcXCI+PC90aD5cXG5cdFx0XHRcdDx0aCBibi1zaG93PVxcXCIhaXNTZW50Qm94XFxcIj5Gcm9tPC90aD5cXG5cdFx0XHRcdDx0aCBibi1zaG93PVxcXCJpc1NlbnRCb3hcXFwiPlRvPC90aD5cXG5cdFx0XHRcdDx0aD5TdWJqZWN0PC90aD5cXG5cdFx0XHRcdDx0aCB0aXRsZT1cXFwibmIgQXR0YWNobWVudHNcXFwiPjxpIGNsYXNzPVxcXCJmYSBmYS1wYXBlcmNsaXBcXFwiPjwvaT48L3RoPlxcblx0XHRcdFx0PHRoPkRhdGU8L3RoPlxcblx0XHRcdDwvdHI+XFxuXHRcdDwvdGhlYWQ+XFxuXHRcdDx0Ym9keSBibi1lYWNoPVxcXCJtZXNzYWdlc1xcXCIgYm4tZXZlbnQ9XFxcImNsaWNrLml0ZW06IG9uSXRlbUNsaWNrXFxcIj5cXG5cdFx0XHQ8dHIgYm4tY2xhc3M9XFxcInt1bnNlZW46ICFpc1NlZW59XFxcIj5cXG5cdFx0XHRcdDx0aD48aW5wdXQgdHlwZT1cXFwiY2hlY2tib3hcXFwiIGNsYXNzPVxcXCJjaGVja1xcXCIgPjwvdGg+XFxuXHRcdFx0XHQ8dGQgYm4tdGV4dD1cXFwiJHNjb3BlLiRpLmZyb20ubmFtZVxcXCIgYm4tYXR0cj1cXFwie3RpdGxlOiAkc2NvcGUuJGkuZnJvbS5lbWFpbH1cXFwiIGJuLXNob3c9XFxcIiFpc1NlbnRCb3hcXFwiPjwvdGQ+XFxuXHRcdFx0XHQ8dGQgYm4tdGV4dD1cXFwidGV4dDJcXFwiIGJuLWF0dHI9XFxcImF0dHIxXFxcIiBibi1zaG93PVxcXCJpc1NlbnRCb3hcXFwiPjwvdGQ+XFxuXHRcdFx0XHQ8dGQgYm4tdGV4dD1cXFwiJHNjb3BlLiRpLnN1YmplY3RcXFwiIGNsYXNzPVxcXCJpdGVtXFxcIiA+PC90ZD5cXG5cdFx0XHRcdDx0ZCBibi10ZXh0PVxcXCIkc2NvcGUuJGkubmJBdHRhY2htZW50c1xcXCI+PC90ZD5cXG5cdFx0XHRcdDx0ZCBibi10ZXh0PVxcXCJnZXREYXRlXFxcIj48L3RkPlxcblx0XHRcdDwvdHI+XFxuXHRcdDwvdGJvZHk+XFxuXHQ8L3RhYmxlPlxcbjwvZGl2PlxcblxcblxcblwiLFxuXG5cdGRlcHM6IFsnYXBwLm1haWxzJywgJ2JyZWl6Ym90LnBhZ2VyJ10sXG5cblx0cHJvcHM6IHtcblx0XHRjdXJyZW50QWNjb3VudDogJycsXG5cdFx0bWFpbGJveE5hbWU6ICcnXG5cdH0sXG5cblx0YnV0dG9uczogW1xuXHRcdHtuYW1lOiAncmVsb2FkJywgaWNvbjogJ2ZhIGZhLXN5bmMtYWx0JywgdGl0bGU6ICdVcGRhdGUnfSxcblx0XHR7bmFtZTogJ25ld01haWwnLCBpY29uOiAnZmEgZmEtZW52ZWxvcGUnLCB0aXRsZTogJ05ldyBNZXNzYWdlJ30sXG5cdFx0e25hbWU6ICdtb3ZlJywgaWNvbjogJ2ZhIGZhLWZpbGUtZXhwb3J0JywgdGl0bGU6ICdNb3ZlIHNlbGVjdGVkIG1lc3NhZ2VzJ30sXG5cdFx0e25hbWU6ICdkZWxldGUnLCBpY29uOiAnZmEgZmEtdHJhc2gnLCB0aXRsZTogJ0RlbGV0ZSBzZWxlY3RlZCBtZXNzYWdlcyd9XG5cdFxuXHRdLFx0XG5cblx0aW5pdDogZnVuY3Rpb24oZWx0LCBzcnZNYWlsLCBwYWdlcikge1xuXG5cdFx0Y29uc3Qge2N1cnJlbnRBY2NvdW50LCBtYWlsYm94TmFtZX0gPSB0aGlzLnByb3BzXG5cblx0XHRjb25zdCBjdHJsID0gJCQudmlld0NvbnRyb2xsZXIoZWx0LCB7XG5cdFx0XHRkYXRhOiB7XG5cdFx0XHRcdG1lc3NhZ2VzOiBbXSxcblx0XHRcdFx0bmJNc2c6IDAsXG5cdFx0XHRcdHBhZ2VObzogMCxcblx0XHRcdFx0bmJQYWdlOiAwLFxuXHRcdFx0XHRjaGVjazogZmFsc2UsXG5cdFx0XHRcdGxvYWRpbmc6IGZhbHNlLFxuXHRcdFx0XHRtYWlsYm94TmFtZSxcblx0XHRcdFx0c2hvdzE6IGZ1bmN0aW9uKCkge1xuXHRcdFx0XHRcdHJldHVybiAhdGhpcy5sb2FkaW5nICYmIHRoaXMubmJNc2cgPiAwXG5cdFx0XHRcdH0sXG5cdFx0XHRcdHRleHQxOiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHRyZXR1cm4gYCR7dGhpcy5wYWdlTm99IC8gJHt0aGlzLm5iUGFnZX1gXG5cdFx0XHRcdH0sXG5cdFx0XHRcdHRleHQyOiBmdW5jdGlvbihzY29wZSkge1xuXHRcdFx0XHRcdHJldHVybiBzY29wZS4kaS50b1swXSAmJiBzY29wZS4kaS50b1swXS5uYW1lXG5cdFx0XHRcdH0sXG5cdFx0XHRcdGF0dHIxOiBmdW5jdGlvbihzY29wZSkge1xuXHRcdFx0XHRcdHJldHVybiB7dGl0bGU6IHNjb3BlLiRpLnRvWzBdICYmIHNjb3BlLiRpLnRvWzBdLmVtYWlsfVxuXHRcdFx0XHR9LFxuXG5cdFx0XHRcdGdldERhdGU6IGZ1bmN0aW9uKHNjb3BlKSB7XG5cdFx0XHRcdFx0Ly9jb25zb2xlLmxvZygnZ2V0RGF0ZScsIGRhdGUpXG5cdFx0XHRcdFx0Y29uc3QgZGF0ZSA9IHNjb3BlLiRpLmRhdGVcblx0XHRcdFx0XHRjb25zdCBkID0gbmV3IERhdGUoZGF0ZSlcblx0XHRcdFx0XHQvL2NvbnNvbGUubG9nKCdkJywgZClcblx0XHRcdFx0XHRyZXR1cm4gZC50b0xvY2FsZURhdGVTdHJpbmcoJ2ZyLUZSJylcblx0XHRcdFx0fSxcblxuXHRcdFx0XHRpc1NlZW46IGZ1bmN0aW9uKHNjb3BlKSB7XG5cdFx0XHRcdFx0cmV0dXJuIHNjb3BlLiRpLmZsYWdzLmluY2x1ZGVzKCdcXFxcU2VlbicpXG5cdFx0XHRcdH0sXG5cblx0XHRcdFx0aXNTZW50Qm94OiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHRyZXR1cm4gdGhpcy5tYWlsYm94TmFtZSA9PSAnU2VudCdcblx0XHRcdFx0fVxuXG5cdFx0XHR9LFxuXHRcdFx0ZXZlbnRzOiB7XG5cdFx0XHRcdG9uSXRlbUNsaWNrOiBmdW5jdGlvbihldikge1xuXHRcdFx0XHRcdC8vICQodGhpcykuY2xvc2VzdCgndGJvZHknKS5maW5kKCd0cicpLnJlbW92ZUNsYXNzKCd3My1ibHVlJylcblx0XHRcdFx0XHQvLyAkKHRoaXMpLmFkZENsYXNzKCd3My1ibHVlJylcblx0XHRcdFx0XHRjb25zdCBpZHggPSAkKHRoaXMpLmNsb3Nlc3QoJ3RyJykuaW5kZXgoKVxuXHRcdFx0XHRcdGNvbnN0IGl0ZW0gPSBjdHJsLm1vZGVsLm1lc3NhZ2VzW2lkeF1cblx0XHRcdFx0XHRwYWdlci5wdXNoUGFnZSgnbWVzc2FnZVBhZ2UnLCB7XG5cdFx0XHRcdFx0XHR0aXRsZTogYE1lc3NhZ2UgIyR7Y3RybC5tb2RlbC5uYk1zZyAtIGl0ZW0uc2Vxbm8gKyAxfWAsXG5cdFx0XHRcdFx0XHRwcm9wczoge1xuXHRcdFx0XHRcdFx0XHRjdXJyZW50QWNjb3VudCxcblx0XHRcdFx0XHRcdFx0bWFpbGJveE5hbWUsXG5cdFx0XHRcdFx0XHRcdGl0ZW1cdFx0XHRcdFx0XHRcdFxuXHRcdFx0XHRcdFx0fSxcblx0XHRcdFx0XHRcdG9uQmFjazogbG9hZFxuXHRcdFx0XHRcdH0pXG5cdFx0XHRcdH0sXG5cblx0XHRcdFx0b25NYWluQ2hlY2tCb3hDbGljazogZnVuY3Rpb24oZXYpIHtcblx0XHRcdFx0XHRlbHQuZmluZCgnLmNoZWNrJykucHJvcCgnY2hlY2tlZCcsICQodGhpcykucHJvcCgnY2hlY2tlZCcpKVxuXHRcdFx0XHR9LFxuXG5cdFx0XHRcdG9uUHJldlBhZ2U6IGZ1bmN0aW9uKGV2KSB7XG5cdFx0XHRcdFx0Y29uc3Qge25iUGFnZSwgcGFnZU5vfSA9IGN0cmwubW9kZWxcblxuXHRcdFx0XHRcdGlmIChwYWdlTm8gPiAxKSB7XG5cdFx0XHRcdFx0XHRsb2FkKHBhZ2VObyAtIDEpXG5cdFx0XHRcdFx0fVx0XHRcdFx0XHRcblx0XHRcdFx0fSxcblxuXHRcdFx0XHRvbk5leHRQYWdlOiBmdW5jdGlvbihldikge1xuXHRcdFx0XHRcdGNvbnN0IHtuYlBhZ2UsIHBhZ2VOb30gPSBjdHJsLm1vZGVsXG5cblx0XHRcdFx0XHRpZiAocGFnZU5vIDwgbmJQYWdlKSB7XG5cdFx0XHRcdFx0XHRsb2FkKHBhZ2VObyArIDEpXG5cdFx0XHRcdFx0fVx0XHRcdFx0XG5cdFx0XHRcdH1cdFx0XHRcdFxuXHRcdFx0fVxuXHRcdH0pXG5cblx0XHRmdW5jdGlvbiBsb2FkKHBhZ2VObykge1xuXHRcdFx0aWYgKHBhZ2VObyA9PSB1bmRlZmluZWQpIHtcblx0XHRcdFx0cGFnZU5vID0gY3RybC5tb2RlbC5wYWdlTm9cblx0XHRcdH1cblxuXHRcdFx0Y3RybC5zZXREYXRhKHtsb2FkaW5nOiB0cnVlfSlcblxuXHRcdFx0c3J2TWFpbC5vcGVuTWFpbGJveChjdXJyZW50QWNjb3VudCwgbWFpbGJveE5hbWUsIHBhZ2VObykudGhlbigoZGF0YSkgPT4ge1xuXHRcdFx0XHRjb25zb2xlLmxvZygnZGF0YScsIGRhdGEpXG5cdFx0XHRcdGNvbnN0IHttZXNzYWdlcywgbmJNc2d9ID0gZGF0YVxuXHRcdFx0XHRjdHJsLnNldERhdGEoe1xuXHRcdFx0XHRcdGxvYWRpbmc6IGZhbHNlLFxuXHRcdFx0XHRcdGNoZWNrOiBmYWxzZSxcblx0XHRcdFx0XHRwYWdlTm8sXG5cdFx0XHRcdFx0bmJQYWdlOiBNYXRoLmNlaWwobmJNc2cgLyAyMCksXG5cdFx0XHRcdFx0bmJNc2csXG5cdFx0XHRcdFx0bWVzc2FnZXM6IG1lc3NhZ2VzLnJldmVyc2UoKVxuXHRcdFx0XHR9KVxuXHRcdFx0fSlcdFx0XHRcblx0XHR9XG5cblx0XHRmdW5jdGlvbiBkZWxldGVNZXNzYWdlKCkge1xuXHRcdFx0Y29uc3QgaXRlbXMgPSBlbHQuZmluZCgnLmNoZWNrOmNoZWNrZWQnKVxuXHRcdFx0Y29uc29sZS5sb2coJ2RlbGV0ZU1lc3NhZ2UnLCBpdGVtcy5sZW5ndGgpXG5cdFx0XHRpZiAoaXRlbXMubGVuZ3RoID09IDApIHtcblx0XHRcdFx0JCQudWkuc2hvd0FsZXJ0KHt0aXRsZTogJ0RlbGV0ZSBNZXNzYWdlJywgY29udGVudDogJ1BsZWFzZSBzZWxlY3Qgb25lIG9yIHNldmVyYWxsIG1lc3NhZ2VzICEnfSlcblx0XHRcdFx0cmV0dXJuXG5cdFx0XHR9XG5cdFx0XHRjb25zdCBzZXFOb3MgPSBbXVxuXHRcdFx0aXRlbXMuZWFjaChmdW5jdGlvbigpIHtcblx0XHRcdFx0Y29uc3QgZGF0YSA9ICQodGhpcykuY2xvc2VzdCgndHInKS5kYXRhKCdpdGVtJylcblx0XHRcdFx0c2VxTm9zLnB1c2goZGF0YS5zZXFubylcblx0XHRcdH0pXG5cdFx0XHRjb25zb2xlLmxvZygnc2VxTm9zJywgc2VxTm9zKVxuXHRcdFx0c3J2TWFpbC5kZWxldGVNZXNzYWdlKGN1cnJlbnRBY2NvdW50LCBtYWlsYm94TmFtZSwgc2VxTm9zKS50aGVuKCgpID0+IHtcblx0XHRcdFx0Y29uc29sZS5sb2coJ01lc3NhZ2VzIGRlbGV0ZWQnKVxuXHRcdFx0XHRsb2FkKClcblx0XHRcdH0pXG5cdFx0fVxuXG5cdFx0ZnVuY3Rpb24gbW92ZU1lc3NhZ2UoKSB7XG5cdFx0XHRjb25zdCBpdGVtcyA9IGVsdC5maW5kKCcuY2hlY2s6Y2hlY2tlZCcpXG5cdFx0XHRjb25zb2xlLmxvZygnZGVsZXRlTWVzc2FnZScsIGl0ZW1zLmxlbmd0aClcblx0XHRcdGlmIChpdGVtcy5sZW5ndGggPT0gMCkge1xuXHRcdFx0XHQkJC51aS5zaG93QWxlcnQoe3RpdGxlOiAnTW92ZSBNZXNzYWdlJywgY29udGVudDogJ1BsZWFzZSBzZWxlY3Qgb25lIG9yIHNldmVyYWxsIG1lc3NhZ2VzICEnfSlcblx0XHRcdFx0cmV0dXJuXG5cdFx0XHR9XG5cdFx0XHRjb25zdCBzZXFOb3MgPSBbXVxuXHRcdFx0aXRlbXMuZWFjaChmdW5jdGlvbigpIHtcblx0XHRcdFx0Y29uc3QgZGF0YSA9ICQodGhpcykuY2xvc2VzdCgndHInKS5kYXRhKCdpdGVtJylcblx0XHRcdFx0c2VxTm9zLnB1c2goZGF0YS5zZXFubylcblx0XHRcdH0pXG5cdFx0XHRjb25zb2xlLmxvZygnc2VxTm9zJywgc2VxTm9zKVxuXHRcdFx0cGFnZXIucHVzaFBhZ2UoJ2JveGVzUGFnZScsIHtcblx0XHRcdFx0dGl0bGU6ICdTZWxlY3QgdGFyZ2V0IG1haWxib3gnLFxuXHRcdFx0XHRwcm9wczoge1xuXHRcdFx0XHRcdGN1cnJlbnRBY2NvdW50XG5cdFx0XHRcdH0sXG5cdFx0XHRcdG9uUmV0dXJuOiBmdW5jdGlvbih0YXJnZXROYW1lKSB7XG5cdFx0XHRcdFx0aWYgKHRhcmdldE5hbWUgPT0gbWFpbGJveE5hbWUpIHtcblx0XHRcdFx0XHRcdCQkLnVpLnNob3dBbGVydCh7dGl0bGU6ICdTZWxlY3QgVGFyZ2V0IE1haWxib3gnLCBjb250ZW50OiAnVGFyZ2V0IG1haWxib3ggbXVzdCBiZSBkaWZmZXJlbnQgZnJvbSBjdXJyZW50IG1haWxib3gnfSlcblx0XHRcdFx0XHRcdHJldHVyblxuXHRcdFx0XHRcdH1cblxuXHRcdFx0XHRcdHNydk1haWwubW92ZU1lc3NhZ2UoY3VycmVudEFjY291bnQsIG1haWxib3hOYW1lLCB0YXJnZXROYW1lLCBzZXFOb3MpXG5cdFx0XHRcdFx0LnRoZW4oKCkgPT4ge1xuXHRcdFx0XHRcdFx0bG9hZCgpXG5cdFx0XHRcdFx0fSlcblx0XHRcdFx0fVxuXHRcdFx0fSlcblx0XHRcdC8vIHNydk1haWwuZGVsZXRlTWVzc2FnZShjdXJyZW50QWNjb3VudCwgbWFpbGJveE5hbWUsIHNlcU5vcykudGhlbigoKSA9PiB7XG5cdFx0XHQvLyBcdGNvbnNvbGUubG9nKCdNZXNzYWdlcyBkZWxldGVkJylcblx0XHRcdC8vIFx0bG9hZCgpXG5cdFx0XHQvLyB9KVxuXHRcdH1cdFx0XG5cblx0XHRsb2FkKDEpXG5cblx0XHRmdW5jdGlvbiBuZXdNZXNzYWdlKCkge1xuXHRcdFx0cGFnZXIucHVzaFBhZ2UoJ3dyaXRlTWFpbFBhZ2UnLCB7XG5cdFx0XHRcdHRpdGxlOiAnTmV3IE1lc3NhZ2UnLFxuXHRcdFx0XHRwcm9wczoge1xuXHRcdFx0XHRcdGFjY291bnROYW1lOiBjdXJyZW50QWNjb3VudFxuXHRcdFx0XHR9LFxuXHRcdFx0XHRvblJldHVybjogZnVuY3Rpb24oKSB7XG5cdFx0XHRcdFx0aWYgKG1haWxib3hOYW1lID09ICdTZW50Jykge1xuXHRcdFx0XHRcdFx0bG9hZCgpXG5cdFx0XHRcdFx0fVxuXHRcdFx0XHR9XG5cdFx0XHR9KVx0XHRcdFxuXHRcdH1cblxuXG5cdFx0dGhpcy5vbkFjdGlvbiA9IGZ1bmN0aW9uKGFjdGlvbikge1xuXHRcdFx0Y29uc29sZS5sb2coJ29uQWN0aW9uJywgYWN0aW9uKVxuXHRcdFx0aWYgKGFjdGlvbiA9PSAncmVsb2FkJykge1xuXHRcdFx0XHRsb2FkKDEpXG5cdFx0XHR9XG5cblx0XHRcdGlmIChhY3Rpb24gPT0gJ2RlbGV0ZScpIHtcblx0XHRcdFx0ZGVsZXRlTWVzc2FnZSgpXG5cdFx0XHR9XG5cblx0XHRcdGlmIChhY3Rpb24gPT0gJ21vdmUnKSB7XG5cdFx0XHRcdG1vdmVNZXNzYWdlKClcblx0XHRcdH1cblxuXHRcdFx0aWYgKGFjdGlvbiA9PSAnbmV3TWFpbCcpIHtcblx0XHRcdFx0bmV3TWVzc2FnZSgpXG5cdFx0XHR9XHRcdFx0XG5cdFx0fVxuXG5cblx0fVxuXG5cbn0pO1xuXG5cblxuXG4iLCIkJC5jb250cm9sLnJlZ2lzdGVyQ29udHJvbCgnbWVzc2FnZVBhZ2UnLCB7XG5cblx0dGVtcGxhdGU6IFwiPGRpdiBibi1zaG93PVxcXCJsb2FkaW5nXFxcIiBjbGFzcz1cXFwibG9hZGluZ1xcXCI+XFxuXHQ8aSBjbGFzcz1cXFwiZmEgZmEtc3Bpbm5lciBmYS1wdWxzZVxcXCI+PC9pPlxcblx0bG9hZGluZyAuLi5cXG48L2Rpdj5cXG48ZGl2IGNsYXNzPVxcXCJoZWFkZXIgdzMtYmx1ZVxcXCIgYm4tc2hvdz1cXFwiIWxvYWRpbmdcXFwiPlxcblx0PGRpdiBjbGFzcz1cXFwiZnJvbVxcXCI+PHN0cm9uZz5Gcm9tOjwvc3Ryb25nPjxhIGhyZWY9XFxcIiNcXFwiIGJuLXRleHQ9XFxcIml0ZW0uZnJvbS5uYW1lXFxcIiBibi1ldmVudD1cXFwiY2xpY2s6IG9uQWRkQ29udGFjdFxcXCIgYm4tZGF0YT1cXFwie2FkZHI6IGl0ZW0uZnJvbX1cXFwiPjwvYT48L2Rpdj5cXG5cdDxkaXYgY2xhc3M9XFxcInN1YmplY3RcXFwiPjxzdHJvbmc+U3ViamVjdDo8L3N0cm9uZz48c3BhbiBibi10ZXh0PVxcXCJpdGVtLnN1YmplY3RcXFwiID48L3NwYW4+PC9kaXY+XFxuXHQ8ZGl2IGJuLXNob3c9XFxcInNob3cxXFxcIiBjbGFzcz1cXFwidG9cXFwiPlxcblx0XHQ8c3Ryb25nIGJuLWV2ZW50PVxcXCJjbGljazogb25Ub2dnbGVEaXZcXFwiPjxpIGNsYXNzPVxcXCJmYSBmYS1jYXJldC1kb3duIGZhLWZ3XFxcIj48L2k+XFxuXHRcdFRvPC9zdHJvbmc+XFxuXHRcdDx1bCBibi1lYWNoPVxcXCJpdGVtLnRvXFxcIiBibi1ldmVudD1cXFwiY2xpY2suY29udGFjdDogb25BZGRDb250YWN0XFxcIj5cXG5cdFx0XHQ8bGk+XFxuXHRcdFx0XHQ8YSBocmVmPVxcXCIjXFxcIiBibi10ZXh0PVxcXCIkc2NvcGUuJGkubmFtZVxcXCIgY2xhc3M9XFxcImNvbnRhY3RcXFwiPjwvYT5cdFx0XHRcdFxcblx0XHRcdDwvbGk+XFxuXHRcdDwvdWw+XFxuXHQ8L2Rpdj5cXG5cdDxkaXYgY2xhc3M9XFxcImF0dGFjaG1lbnRzXFxcIiBibi1zaG93PVxcXCJzaG93MlxcXCI+XFxuXHRcdDxzdHJvbmcgYm4tZXZlbnQ9XFxcImNsaWNrOiBvblRvZ2dsZURpdlxcXCI+PGkgY2xhc3M9XFxcImZhIGZhLWNhcmV0LWRvd24gZmEtZndcXFwiPjwvaT5cXG5cdFx0QXR0YWNobWVudHM8L3N0cm9uZz5cXG5cdFx0PHVsICBibi1lYWNoPVxcXCJhdHRhY2htZW50c1xcXCIgYm4tZXZlbnQ9XFxcImNsaWNrLml0ZW06IG9wZW5BdHRhY2htZW50XFxcIj5cXG5cdFx0XHQ8bGk+XFxuXHRcdFx0XHQ8YSBocmVmPVxcXCIjXFxcIiBibi10ZXh0PVxcXCIkc2NvcGUuJGkubmFtZVxcXCIgY2xhc3M9XFxcIml0ZW1cXFwiPjwvYT5cXG5cdFx0XHRcdDxzcGFuIGJuLXRleHQ9XFxcImdldFNpemVcXFwiPjwvc3Bhbj5cXG5cdFx0XHQ8L2xpPlxcblx0XHQ8L3VsPlxcblx0PC9kaXY+XFxuXHRcXG48L2Rpdj5cXG5cXG48ZGl2IGNsYXNzPVxcXCJtYWluSHRtbFxcXCIgYm4tc2hvdz1cXFwic2hvdzRcXFwiPlxcblx0PGRpdiBibi1zaG93PVxcXCJzaG93M1xcXCIgY2xhc3M9XFxcImVtYmVkZGVkSW1hZ2VzIHczLXBhbGUteWVsbG93XFxcIj5cXG5cdFx0PGEgaHJlZj1cXFwiI1xcXCIgYm4tZXZlbnQ9XFxcImNsaWNrOiBvbkVtYmVkZGVkSW1hZ2VzXFxcIj5Eb3dubG9hZCBlbWJlZGRlZCBpbWFnZXM8L2E+XFxuXHQ8L2Rpdj5cXG5cdDxpZnJhbWUgYm4tYXR0cj1cXFwie3NyY2RvYzp0ZXh0fVxcXCIgYm4tYmluZD1cXFwiaWZyYW1lXFxcIiBibi1ldmVudD1cXFwibG9hZDogb25GcmFtZUxvYWRlZFxcXCI+PC9pZnJhbWU+XFxuPC9kaXY+XFxuXFxuPGRpdiBjbGFzcz1cXFwibWFpblRleHRcXFwiIGJuLXNob3c9XFxcInNob3c1XFxcIj5cXG4gXHQ8cHJlIGJuLXRleHQ9XFxcInRleHRcXFwiPjwvcHJlPlxcbjwvZGl2PlwiLFxuXG5cdGRlcHM6IFsnYXBwLm1haWxzJywgJ2JyZWl6Ym90LnVzZXJzJywgJ2JyZWl6Ym90LnNjaGVkdWxlcicsICdicmVpemJvdC5wYWdlciddLFxuXG5cdHByb3BzOiB7XG5cdFx0Y3VycmVudEFjY291bnQ6ICcnLFxuXHRcdG1haWxib3hOYW1lOiAnJyxcblx0XHRpdGVtOiBudWxsXG5cdH0sXG5cblx0YnV0dG9uczogW1xuXHRcdHtuYW1lOiAncmVwbHknLCBpY29uOiAnZmEgZmEtcmVwbHknLCB0aXRsZTogJ1JlcGx5J30sXG5cdFx0e25hbWU6ICdyZXBseUFsbCcsIGljb246ICdmYSBmYS1yZXBseS1hbGwnLCB0aXRsZTogJ1JlcGx5IEFsbCd9LFxuXHRcdHtuYW1lOiAnZm9yd2FyZCcsIGljb246ICdmYSBmYS1zaGFyZS1zcXVhcmUnLCB0aXRsZTogJ0ZvcndhcmQnfVxuXHRdLFx0XG5cblx0aW5pdDogZnVuY3Rpb24oZWx0LCBzcnZNYWlsLCB1c2Vycywgc2NoZWR1bGVyLCBwYWdlcikge1xuXG5cdFx0Y29uc3Qge2N1cnJlbnRBY2NvdW50LCBtYWlsYm94TmFtZSwgaXRlbX0gPSB0aGlzLnByb3BzXG5cblxuXHRcdGNvbnN0IHdhaXREbGcgPSAkJC5kaWFsb2dDb250cm9sbGVyKHtcblx0XHRcdHRpdGxlOiAnTG9hZGluZyAuLi4nLFxuXHRcdFx0dGVtcGxhdGU6IGA8ZGl2IGNsYXNzPVwidzMtY2VudGVyIHczLXBhZGRpbmctMTZcIj48aSBjbGFzcz1cImZhIGZhLXJlZG8tYWx0IGZhLTJ4IGZhLXB1bHNlIHczLXRleHQtYmx1ZVwiPjwvaT48L2Rpdj5gLFxuXHRcdFx0d2lkdGg6IDEwMCxcblx0XHRcdGNhbkNsb3NlOiBmYWxzZVxuXHRcdH0pXG5cblxuXHRcdGNvbnN0IGN0cmwgPSAkJC52aWV3Q29udHJvbGxlcihlbHQsIHtcblx0XHRcdGRhdGE6IHtcblx0XHRcdFx0ZW1iZWRkZWRJbWFnZXM6IFtdLFxuXHRcdFx0XHRpc0h0bWw6IGZhbHNlLFxuXHRcdFx0XHRsb2FkaW5nOiB0cnVlLFxuXHRcdFx0XHR0ZXh0OiAnJyxcblx0XHRcdFx0aXRlbSxcblx0XHRcdFx0YXR0YWNobWVudHM6IFtdLFxuXHRcdFx0XHRzaG93MTogZnVuY3Rpb24oKSB7XG5cdFx0XHRcdFx0cmV0dXJuIHRoaXMuaXRlbS50by5sZW5ndGggPiAwXG5cdFx0XHRcdH0sXG5cdFx0XHRcdHNob3cyOiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHRyZXR1cm4gdGhpcy5hdHRhY2htZW50cy5sZW5ndGggPiAwXG5cdFx0XHRcdH0sXG5cdFx0XHRcdHNob3czOiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHRyZXR1cm4gdGhpcy5lbWJlZGRlZEltYWdlcy5sZW5ndGggPiAwXG5cdFx0XHRcdH0sXG5cdFx0XHRcdHNob3c0OiBmdW5jdGlvbigpIHtcblx0XHRcdFx0XHRyZXR1cm4gIXRoaXMubG9hZGluZyAmJiB0aGlzLmlzSHRtbFxuXHRcdFx0XHR9LFxuXHRcdFx0XHRzaG93NTogZnVuY3Rpb24oKSB7XG5cdFx0XHRcdFx0cmV0dXJuICF0aGlzLmxvYWRpbmcgJiYgIXRoaXMuaXNIdG1sXG5cdFx0XHRcdH0sXG5cdFx0XHRcdGdldFNpemU6IGZ1bmN0aW9uKHNjb3BlKSB7XG5cdFx0XHRcdFx0bGV0IHNpemUgPSBzY29wZS4kaS5zaXplXG5cdFx0XHRcdFx0Ly9jb25zb2xlLmxvZygnZ2V0U2l6ZScsIHNpemUpXG5cdFx0XHRcdFx0c2l6ZSAvPSAxMDI0XG5cdFx0XHRcdFx0bGV0IHVuaXQgPSAnS28nXG5cdFx0XHRcdFx0aWYgKHNpemUgPiAxMDI0KSB7XG5cdFx0XHRcdFx0XHRzaXplIC89IDEwMjRcblx0XHRcdFx0XHRcdHVuaXQgPSAnTW8nXG5cdFx0XHRcdFx0fVxuXG5cdFx0XHRcdFx0cmV0dXJuIGAgKCR7c2l6ZS50b0ZpeGVkKDEpfSAke3VuaXR9KWBcblx0XHRcdFx0fVxuXHRcdFx0fSxcblx0XHRcdGV2ZW50czoge1xuXHRcdFx0XHRvcGVuQXR0YWNobWVudDogZnVuY3Rpb24oZXYpIHtcblx0XHRcdFx0XHRldi5wcmV2ZW50RGVmYXVsdCgpXG5cdFx0XHRcdFx0Y29uc3QgaWR4ID0gJCh0aGlzKS5jbG9zZXN0KCdsaScpLmluZGV4KClcblx0XHRcdFx0XHRjb25zdCBpbmZvID0gY3RybC5tb2RlbC5hdHRhY2htZW50c1tpZHhdXG5cblx0XHRcdFx0XHRjb25zb2xlLmxvZygnb3BlbkF0dGFjaG1lbnRzJywgaW5mbylcblxuXHRcdFx0XHRcdGlmIChpbmZvLmNhbk9wZW4pIHtcblx0XHRcdFx0XHRcdGNvbnN0IHByb3BzID0ge1xuXHRcdFx0XHRcdFx0XHRpbmZvLFxuXHRcdFx0XHRcdFx0XHRjdXJyZW50QWNjb3VudCxcblx0XHRcdFx0XHRcdFx0bWFpbGJveE5hbWUsXG5cdFx0XHRcdFx0XHRcdHNlcW5vOiBpdGVtLnNlcW5vXG5cdFx0XHRcdFx0XHR9XG5cdFx0XHRcdFx0XHRwYWdlci5wdXNoUGFnZSgndmlld2VyUGFnZScsIHtcblx0XHRcdFx0XHRcdFx0dGl0bGU6IGluZm8ubmFtZSxcblx0XHRcdFx0XHRcdFx0cHJvcHNcblx0XHRcdFx0XHRcdH0pXHRcdFx0XHRcdFx0XHRcdFx0XHRcdFx0XG5cdFx0XHRcdFx0fVxuXHRcdFx0XHRcdGVsc2Uge1xuXHRcdFx0XHRcdFx0JCQudWkuc2hvd0NvbmZpcm0oe1xuXHRcdFx0XHRcdFx0XHR0aXRsZTogJ09wZW4gQXR0YWNobWVudCcsIFxuXHRcdFx0XHRcdFx0XHRva1RleHQ6ICdZZXMnLFxuXHRcdFx0XHRcdFx0XHRjYW5jZWxUZXh0OiAnTm8nLFxuXHRcdFx0XHRcdFx0XHRjb250ZW50OiBgVGhpcyBhdHRhY2htZW50IGNhbm5vdCBiZSBvcGVuIHdpdGggTmV0T1M8YnI+XG5cdFx0XHRcdFx0XHRcdFx0RG8geW91IHdhbnQgdG8gZG93bmxvYWQgaXQgP2Bcblx0XHRcdFx0XHRcdFx0fSxcblx0XHRcdFx0XHRcdFx0ZnVuY3Rpb24oKSB7XG5cdFx0XHRcdFx0XHRcdFx0Y29uc29sZS5sb2coJ09LJylcblx0XHRcdFx0XHRcdFx0XHRjb25zdCB7cGFydElELCB0eXBlLCBzdWJ0eXBlfSA9IGluZm9cblx0XHRcdFx0XHRcdFx0XHR3YWl0RGxnLnNob3coKVxuXHRcdFx0XHRcdFx0XHRcdHNydk1haWwub3BlbkF0dGFjaG1lbnQoY3VycmVudEFjY291bnQsIG1haWxib3hOYW1lLCBpdGVtLnNlcW5vLCBwYXJ0SUQpLnRoZW4oKG1lc3NhZ2UpID0+IHtcblx0XHRcdFx0XHRcdFx0XHRcdC8vY29uc29sZS5sb2coJ21lc3NhZ2UnLCBtZXNzYWdlKVxuXHRcdFx0XHRcdFx0XHRcdFx0d2FpdERsZy5oaWRlKClcblx0XHRcdFx0XHRcdFx0XHRcdGNvbnN0IHVybCA9IGBkYXRhOiR7dHlwZX0vJHtzdWJ0eXBlfTtiYXNlNjQsYCArIG1lc3NhZ2UuZGF0YVxuXHRcdFx0XHRcdFx0XHRcdFx0JCQudXRpbC5kb3dubG9hZFVybCh1cmwsIGluZm8ubmFtZSlcblxuXHRcdFx0XHRcdFx0XHRcdH0pXG5cblx0XHRcdFx0XHRcdFx0fVxuXHRcdFx0XHRcdFx0KVxuXHRcdFx0XHRcdH1cblxuXHRcdFx0XHR9LFxuXHRcdFx0XHRvblRvZ2dsZURpdjogZnVuY3Rpb24oZXYpIHtcblx0XHRcdFx0XHRjb25zb2xlLmxvZygnb25BdHRhY2hDbGljaycpXG5cdFx0XHRcdFx0Y29uc3QgJGkgPSAkKHRoaXMpLmZpbmQoJ2knKVxuXHRcdFx0XHRcdGNvbnN0ICR1bCA9ICQodGhpcykuc2libGluZ3MoJ3VsJylcblx0XHRcdFx0XHRpZiAoJGkuaGFzQ2xhc3MoJ2ZhLWNhcmV0LXJpZ2h0JykpIHtcblx0XHRcdFx0XHRcdCRpLnJlbW92ZUNsYXNzKCdmYS1jYXJldC1yaWdodCcpLmFkZENsYXNzKCdmYS1jYXJldC1kb3duJylcblx0XHRcdFx0XHRcdCR1bC5zbGlkZURvd24oKVxuXHRcdFx0XHRcdH1cblx0XHRcdFx0XHRlbHNlIHtcblx0XHRcdFx0XHRcdCRpLnJlbW92ZUNsYXNzKCdmYS1jYXJldC1kb3duJykuYWRkQ2xhc3MoJ2ZhLWNhcmV0LXJpZ2h0JylcdFx0XHRcdFx0XHRcblx0XHRcdFx0XHRcdCR1bC5zbGlkZVVwKClcblx0XHRcdFx0XHR9XG5cdFx0XHRcdH0sXG5cdFx0XHRcdG9uRW1iZWRkZWRJbWFnZXM6IGZ1bmN0aW9uKGV2KSB7XG5cdFx0XHRcdFx0ZXYucHJldmVudERlZmF1bHQoKVxuXHRcdFx0XHRcdC8vY3RybC5zZXREYXRhKHtlbWJlZGRlZEltYWdlczogW119KVxuXHRcdFx0XHRcdGNvbnN0ICRpZnJhbWUgPSAkKGN0cmwuc2NvcGUuaWZyYW1lLmdldCgwKS5jb250ZW50V2luZG93LmRvY3VtZW50KVxuXG5cdFx0XHRcdFx0Y29uc3Qge2VtYmVkZGVkSW1hZ2VzfSA9IGN0cmwubW9kZWxcblx0XHRcdFx0XHRjdHJsLnNldERhdGEoe2VtYmVkZGVkSW1hZ2VzOiBbXX0pXG5cblx0XHRcdFx0XHRlbWJlZGRlZEltYWdlcy5mb3JFYWNoKChlKSA9PiB7XG5cdFx0XHRcdFx0XHRjb25zdCB7dHlwZSwgc3VidHlwZSwgcGFydElELCBjaWR9ID0gZVxuXHRcdFx0XHRcdFx0c3J2TWFpbC5vcGVuQXR0YWNobWVudChjdXJyZW50QWNjb3VudCwgbWFpbGJveE5hbWUsIGl0ZW0uc2Vxbm8sIHBhcnRJRCkudGhlbigobWVzc2FnZSkgPT4ge1xuXHRcdFx0XHRcdFx0XHRjb25zdCB1cmwgPSBgZGF0YToke3R5cGV9LyR7c3VidHlwZX07YmFzZTY0LGAgKyBtZXNzYWdlLmRhdGFcblx0XHRcdFx0XHRcdFx0Y29uc3QgJGltZyA9ICRpZnJhbWUuZmluZChgaW1nW3NyYz1cImNpZDoke2NpZH1cIl1gKVxuXHRcdFx0XHRcdFx0XHQkaW1nLmF0dHIoJ3NyYycsIHVybClcblxuXHRcdFx0XHRcdFx0fSlcdFx0XHRcdFx0XG5cblx0XHRcdFx0XHR9KVxuXG5cdFx0XHRcdH0sXG5cdFx0XHRcdG9uRnJhbWVMb2FkZWQ6IGZ1bmN0aW9uKGV2KSB7XG5cdFx0XHRcdFx0Y29uc29sZS5sb2coJ29uRnJhbWVMb2FkZWQnKVxuXHRcdFx0XHRcdGNvbnN0ICRpZnJhbWUgPSAkKHRoaXMuY29udGVudFdpbmRvdy5kb2N1bWVudClcblx0XHRcdFx0XHQkaWZyYW1lLmZpbmQoJ2EnKVxuXHRcdFx0XHRcdC5hdHRyKCd0YXJnZXQnLCAnX2JsYW5rJylcblx0XHRcdFx0XHQub24oJ2NsaWNrJywgZnVuY3Rpb24oZXYpIHtcblx0XHRcdFx0XHRcdGNvbnN0IGhyZWYgPSAkKHRoaXMpLmF0dHIoJ2hyZWYnKVxuXHRcdFx0XHRcdFx0aWYgKGhyZWYuc3RhcnRzV2l0aCgnaHR0cHM6Ly95b3V0dS5iZS8nKSkge1xuXHRcdFx0XHRcdFx0XHRldi5wcmV2ZW50RGVmYXVsdCgpXG5cdFx0XHRcdFx0XHRcdHNjaGVkdWxlci5vcGVuQXBwKCd5b3V0dWJlJywge3VybDogaHJlZn0pXG5cdFx0XHRcdFx0XHR9XG5cdFx0XHRcdFx0fSlcblxuXHRcdFx0XHR9LFxuXHRcdFx0XHRvbkFkZENvbnRhY3Q6IGZ1bmN0aW9uKGV2KSB7XG5cdFx0XHRcdFx0Y29uc29sZS5sb2coJ29uQWRkQ29udGFjdCcpXG5cdFx0XHRcdFx0ZXYucHJldmVudERlZmF1bHQoKVxuXHRcdFx0XHRcdGNvbnN0IGlkeCA9ICQodGhpcykuY2xvc2VzdCgnbGknKS5pbmRleCgpXG5cdFx0XHRcdFx0Y29uc3QgZnJvbSA9IGN0cmwubW9kZWwuaXRlbS50b1tpZHhdXG5cdFx0XHRcdFx0cGFnZXIucHVzaFBhZ2UoJ2FkZENvbnRhY3RQYWdlJywge1xuXHRcdFx0XHRcdFx0dGl0bGU6ICdBZGQgQ29udGFjdCcsXG5cdFx0XHRcdFx0XHRwcm9wczoge1xuXHRcdFx0XHRcdFx0XHRmcm9tXG5cdFx0XHRcdFx0XHR9XG5cdFx0XHRcdFx0fSlcblx0XHRcdFx0fVxuXHRcdFx0fVxuXHRcdH0pXG5cblx0XHRsZXQgcGFydElEID0gaXRlbS5wYXJ0SUQuaHRtbFxuXHRcdGxldCBpc0h0bWwgPSB0cnVlXG5cdFx0aWYgKHBhcnRJRCA9PSBmYWxzZSkge1xuXHRcdFx0cGFydElEID0gaXRlbS5wYXJ0SUQudGV4dFxuXHRcdFx0aXNIdG1sID0gZmFsc2Vcblx0XHR9XG5cdFx0Y29uc29sZS5sb2coJ2lzSHRtbCcsIGlzSHRtbClcblxuXG5cdFx0c3J2TWFpbC5vcGVuTWVzc2FnZShjdXJyZW50QWNjb3VudCwgbWFpbGJveE5hbWUsIGl0ZW0uc2Vxbm8sIHBhcnRJRCkudGhlbigobWVzc2FnZSkgPT4ge1xuXHRcdFx0Y29uc29sZS5sb2coJ21lc3NhZ2UnLCBtZXNzYWdlKVxuXG5cblx0XHRcdGNvbnN0IHt0ZXh0LCBhdHRhY2htZW50cywgZW1iZWRkZWRJbWFnZXN9ID0gbWVzc2FnZVxuXG5cdFx0XHRhdHRhY2htZW50cy5mb3JFYWNoKChhKSA9PiB7XG5cdFx0XHRcdGEuY2FuT3BlbiA9ICQkLnV0aWwuZ2V0RmlsZVR5cGUoYS5uYW1lKSAhPSB1bmRlZmluZWQgJiYgYS5lbmNvZGluZy50b1VwcGVyQ2FzZSgpID09ICdCQVNFNjQnXG5cblx0XHRcdH0pXG5cblxuXHRcdFx0Y3RybC5zZXREYXRhKHt0ZXh0LCBhdHRhY2htZW50cywgZW1iZWRkZWRJbWFnZXMsIGxvYWRpbmc6ZmFsc2UsIGlzSHRtbH0pXG5cblx0XHR9KVxuXG5cdFx0ZnVuY3Rpb24gcmVwbHlNZXNzYWdlKHRleHQsIHRvKSB7XG5cdFx0XHQvL2NvbnNvbGUubG9nKCdyZXBseU1lc3NhZ2UnLCB0ZXh0KVxuXHRcdFx0cGFnZXIucHVzaFBhZ2UoJ3dyaXRlTWFpbFBhZ2UnLCB7XG5cdFx0XHRcdHRpdGxlOiAnUmVwbHkgbWVzc2FnZScsXG5cdFx0XHRcdHByb3BzOiB7XG5cdFx0XHRcdFx0YWNjb3VudE5hbWU6IGN1cnJlbnRBY2NvdW50LFxuXHRcdFx0XHRcdGRhdGE6IHtcblx0XHRcdFx0XHRcdHRvLFxuXHRcdFx0XHRcdFx0c3ViamVjdDogJ1JlOiAnICsgaXRlbS5zdWJqZWN0LFxuXHRcdFx0XHRcdFx0aHRtbDogYDxwcmU+JHt0ZXh0fTwvcHJlPmBcblx0XHRcdFx0XHR9XG5cdFx0XHRcdH1cblx0XHRcdH0pXHRcdFx0XG5cdFx0fVxuXG5cdFx0ZnVuY3Rpb24gZm9yd2FyZE1lc3NhZ2UodGV4dCkge1xuXHRcdFx0Ly9jb25zb2xlLmxvZygncmVwbHlNZXNzYWdlJywgdGV4dClcblx0XHRcdHBhZ2VyLnB1c2hQYWdlKCd3cml0ZU1haWxQYWdlJywge1xuXHRcdFx0XHR0aXRsZTogJ0ZvcndhcmQgbWVzc2FnZScsXG5cdFx0XHRcdHByb3BzOiB7XG5cdFx0XHRcdFx0YWNjb3VudE5hbWU6IGN1cnJlbnRBY2NvdW50LFxuXHRcdFx0XHRcdGRhdGE6IHtcblx0XHRcdFx0XHRcdHN1YmplY3Q6ICdGd2Q6ICcgKyBpdGVtLnN1YmplY3QsXG5cdFx0XHRcdFx0XHRodG1sOiBgPHByZT4ke3RleHR9PC9wcmU+YFxuXHRcdFx0XHRcdH1cblx0XHRcdFx0fVxuXHRcdFx0fSlcdFx0XHRcblx0XHR9XG5cblx0XHR0aGlzLm9uQWN0aW9uID0gZnVuY3Rpb24oYWN0aW9uKSB7XG5cdFx0XHRjb25zb2xlLmxvZygnb25BY3Rpb24nLCBhY3Rpb24sIGl0ZW0pXG5cblx0XHRcdGlmIChhY3Rpb24gPT0gJ3JlcGx5JyB8fCBhY3Rpb24gPT0gJ3JlcGx5QWxsJykge1xuXG5cdFx0XHRcdGNvbnN0IEhFQURFUiA9ICdcXG5cXG4tLS0tLSBPcmlnaW5hbCBtYWlsIC0tLS0tXFxuJ1xuXG5cdFx0XHRcdGxldCB0byA9IGl0ZW0uZnJvbS5lbWFpbFxuXG5cdFx0XHRcdGlmIChhY3Rpb24gPT0gJ3JlcGx5QWxsJyAmJiBpdGVtLnRvLmxlbmd0aCA+IDApIHtcdFx0XHRcdFx0XG5cdFx0XHRcdFx0dG8gKz0gJywnICsgaXRlbS50by5tYXAoKGEpID0+IGEuZW1haWwpLmpvaW4oJywnKVxuXHRcdFx0XHR9XG5cblx0XHRcdFx0aWYgKGN0cmwubW9kZWwuaXNIdG1sICYmIGl0ZW0ucGFydElELnRleHQgIT0gZmFsc2UpIHtcblx0XHRcdFx0XHRzcnZNYWlsLm9wZW5NZXNzYWdlKGN1cnJlbnRBY2NvdW50LCBtYWlsYm94TmFtZSwgaXRlbS5zZXFubywgaXRlbS5wYXJ0SUQudGV4dCkudGhlbigobWVzc2FnZSkgPT4ge1xuXHRcdFx0XHRcdFx0cmVwbHlNZXNzYWdlKEhFQURFUiArIG1lc3NhZ2UudGV4dCwgdG8pXG5cdFx0XHRcdFx0fSlcdFx0XHRcdFx0XHRcblx0XHRcdFx0fVxuXG5cdFx0XHRcdGVsc2UgaWYgKCFjdHJsLm1vZGVsLmlzSHRtbCkge1xuXHRcdFx0XHRcdHJlcGx5TWVzc2FnZShIRUFERVIgKyBjdHJsLm1vZGVsLnRleHQsIHRvKVxuXHRcdFx0XHR9XG5cdFx0XHRcdGVsc2Uge1xuXHRcdFx0XHRcdHJlcGx5TWVzc2FnZSgnJywgdG8pXG5cdFx0XHRcdH1cblx0XHRcdH1cblxuXHRcdFx0aWYgKGFjdGlvbiA9PSAnZm9yd2FyZCcpIHtcblx0XHRcdFx0Y29uc3QgSEVBREVSID0gJ1xcblxcbi0tLS0tIEZvcndhcmRlZCBtYWlsIC0tLS0tXFxuJ1xuXG5cblx0XHRcdFx0aWYgKGN0cmwubW9kZWwuaXNIdG1sICYmIGl0ZW0ucGFydElELnRleHQgIT0gZmFsc2UpIHtcblx0XHRcdFx0XHRzcnZNYWlsLm9wZW5NZXNzYWdlKGN1cnJlbnRBY2NvdW50LCBtYWlsYm94TmFtZSwgaXRlbS5zZXFubywgaXRlbS5wYXJ0SUQudGV4dCkudGhlbigobWVzc2FnZSkgPT4ge1xuXHRcdFx0XHRcdFx0Zm9yd2FyZE1lc3NhZ2UoSEVBREVSICsgbWVzc2FnZS50ZXh0KVxuXHRcdFx0XHRcdH0pXHRcdFx0XHRcdFx0XG5cdFx0XHRcdH1cblxuXHRcdFx0XHRlbHNlIGlmICghY3RybC5tb2RlbC5pc0h0bWwpIHtcblx0XHRcdFx0XHRmb3J3YXJkTWVzc2FnZShIRUFERVIgKyBjdHJsLm1vZGVsLnRleHQpXG5cdFx0XHRcdH1cblx0XHRcdFx0ZWxzZSB7XG5cdFx0XHRcdFx0Zm9yd2FyZE1lc3NhZ2UoJycpXG5cdFx0XHRcdH1cblxuXHRcdFx0fVxuXHRcdH1cblxuXG5cdH1cblxuXG59KTtcblxuXG5cblxuIiwiJCQuY29udHJvbC5yZWdpc3RlckNvbnRyb2woJ3ZpZXdlclBhZ2UnLCB7XG5cblx0dGVtcGxhdGU6IFwiPGRpdiBzdHlsZT1cXFwiaGVpZ2h0OiAxMDAlOyBwb3NpdGlvbjogcmVsYXRpdmU7IHRleHQtYWxpZ246IGNlbnRlcjtcXFwiPlxcblx0PHNwYW4gYm4tc2hvdz1cXFwid2FpdFxcXCIgY2xhc3M9XFxcInczLXRleHQtYmx1ZVxcXCIgc3R5bGU9XFxcInBvc2l0aW9uOiByZWxhdGl2ZTsgdG9wOiA1MCU7XFxcIj48aSBjbGFzcz1cXFwiZmEgZmEtcmVkby1hbHQgZmEtMnggZmEtcHVsc2VcXFwiPjwvaT48L3NwYW4+XFxuXFxuXHQ8ZGl2IFxcblx0XHRibi1zaG93PVxcXCIhd2FpdFxcXCJcXG5cdFx0Ym4tY29udHJvbD1cXFwiYnJlaXpib3Qudmlld2VyXFxcIiBcXG5cdFx0Ym4tZGF0YT1cXFwie3R5cGUsIHVybH1cXFwiIFxcblx0XHRzdHlsZT1cXFwiaGVpZ2h0OiAxMDAlXFxcIiBcXG5cdFx0Ym4taWZhY2U9XFxcInZpZXdlclxcXCI+XFxuXHRcdFx0XFxuXHRcdDwvZGl2Plx0XFxuXFxuPC9kaXY+XHRcIixcblxuXHRkZXBzOiBbJ2FwcC5tYWlscycsICdicmVpemJvdC5wYWdlciddLFxuXG5cdHByb3BzOiB7XG5cdFx0aW5mbzogJycsXG5cdFx0Y3VycmVudEFjY291bnQ6ICcnLFxuXHRcdG1haWxib3hOYW1lOiAnJyxcblx0XHRzZXFubzogJydcblx0fSxcblxuXHRidXR0b25zOiBbXG5cdFx0e25hbWU6ICdzYXZlJywgaWNvbjogJ2ZhIGZhLXNhdmUnfVxuXHRdLFx0XG5cblx0aW5pdDogZnVuY3Rpb24oZWx0LCBzcnZNYWlsLCBwYWdlcikge1xuXG5cdFx0Y29uc3Qge2luZm8sIGN1cnJlbnRBY2NvdW50LCBtYWlsYm94TmFtZSwgc2Vxbm99ID0gdGhpcy5wcm9wc1xuXHRcdGNvbnN0IHtwYXJ0SUQsIHR5cGUsIHN1YnR5cGV9ID0gaW5mb1xuXG5cdFx0Y29uc3QgY3RybCA9ICQkLnZpZXdDb250cm9sbGVyKGVsdCwge1xuXHRcdFx0ZGF0YToge1xuXHRcdFx0XHR1cmw6ICcnLFxuXHRcdFx0XHR3YWl0OiB0cnVlLFxuXHRcdFx0XHR0eXBlOiAkJC51dGlsLmdldEZpbGVUeXBlKGluZm8ubmFtZSlcblx0XHRcdH0sXG5cdFx0XHRldmVudHM6IHtcblx0XHRcdH1cblx0XHR9KVxuXG5cdFx0c3J2TWFpbC5vcGVuQXR0YWNobWVudChjdXJyZW50QWNjb3VudCwgbWFpbGJveE5hbWUsIHNlcW5vLCBwYXJ0SUQpLnRoZW4oKG1lc3NhZ2UpID0+IHtcblx0XHRcdC8vY29uc29sZS5sb2coJ21lc3NhZ2UnLCBtZXNzYWdlKVxuXHRcdFx0Y29uc3QgdXJsID0gYGRhdGE6JHt0eXBlfS8ke3N1YnR5cGV9O2Jhc2U2NCxgICsgbWVzc2FnZS5kYXRhXG5cdFx0XHRjdHJsLnNldERhdGEoe3dhaXQ6ZmFsc2UsIHVybH0pXG5cblx0XHR9KVxuXG5cdFx0dGhpcy5vbkFjdGlvbiA9IGZ1bmN0aW9uKGFjdGlvbikge1xuXHRcdFx0Y29uc29sZS5sb2coJ29uQWN0aW9uJywgYWN0aW9uKVxuXHRcdFx0aWYgKGFjdGlvbiA9PSAnc2F2ZScpIHtcblx0XHRcdFx0Y3RybC5zY29wZS52aWV3ZXIuc2F2ZSgnL2FwcHMvZW1haWwnLCBpbmZvLm5hbWUsICgpID0+IHtcblx0XHRcdFx0XHRwYWdlci5wb3BQYWdlKClcblx0XHRcdFx0fSlcblx0XHRcdH1cblx0XHR9XG5cdH1cblxuXG59KTtcblxuXG5cblxuXG5cblxuXG5cblxuXG4iLCIkJC5jb250cm9sLnJlZ2lzdGVyQ29udHJvbCgnd3JpdGVNYWlsUGFnZScsIHtcblxuXHR0ZW1wbGF0ZTogXCI8Zm9ybSBibi1ldmVudD1cXFwic3VibWl0OiBvblNlbmRcXFwiIGJuLWZvcm09XFxcImRhdGFcXFwiPlxcblx0PGRpdiBjbGFzcz1cXFwiaGVhZGVyXFxcIj5cXG5cdFx0PGRpdiBibi1jb250cm9sPVxcXCJicmFpbmpzLmlucHV0Z3JvdXBcXFwiPlxcblx0XHRcdDxkaXYgY2xhc3M9XFxcIm9wZW5Db250YWN0UGFuZWxcXFwiPlxcblx0XHRcdFx0PGEgYm4tZXZlbnQ9XFxcImNsaWNrOiBvcGVuQ29udGFjdFxcXCIgaHJlZj1cXFwiI1xcXCIgY2xhc3M9XFxcInczLXRleHQtaW5kaWdvXFxcIj5Ubzo8L2E+XFxuXHRcdFx0PC9kaXY+XFxuXHRcdFx0PGlucHV0IHR5cGU9XFxcImVtYWlsXFxcIiBtdWx0aXBsZT1cXFwidHJ1ZVxcXCIgbmFtZT1cXFwidG9cXFwiIGJuLXByb3A9XFxcInByb3AxXFxcIiByZXF1aXJlZD1cXFwiXFxcIiBibi1iaW5kPVxcXCJ0b1xcXCI+XHRcdFxcblx0XHQ8L2Rpdj5cXG5cXG5cdFx0PGRpdiBibi1jb250cm9sPVxcXCJicmFpbmpzLmlucHV0Z3JvdXBcXFwiPlxcblx0XHRcdDxsYWJlbD5TdWJqZWN0OjwvbGFiZWw+XFxuXHRcdFx0PGlucHV0IHR5cGU9XFxcInRleHRcXFwiIG5hbWU9XFxcInN1YmplY3RcXFwiIHJlcXVpcmVkPVxcXCJcXFwiPlx0XHRcXG5cdFx0PC9kaXY+XHRcXG5cXG5cdFx0PGRpdiBibi1zaG93PVxcXCJzaG93MVxcXCIgY2xhc3M9XFxcImF0dGFjaG1lbnRzXFxcIj5cXG5cdFx0XHQ8bGFiZWw+PGkgY2xhc3M9XFxcImZhIGZhLXBhcGVyY2xpcFxcXCI+PC9pPjwvbGFiZWw+XHRcdFx0XFxuXHRcdFx0PHVsIGJuLWVhY2g9XFxcImF0dGFjaG1lbnRzXFxcIiBibi1ldmVudD1cXFwiY2xpY2suZGVsZXRlOiBvblJlbW92ZUF0dGFjaG1lbnRcXFwiPlxcblx0XHRcdFx0PGxpPlxcblx0XHRcdFx0XHQ8c3BhbiBibi10ZXh0PVxcXCIkaS5maWxlTmFtZVxcXCI+PC9zcGFuPlxcblx0XHRcdFx0XHQ8aSBjbGFzcz1cXFwiZmEgZmEtdGltZXMgZGVsZXRlXFxcIj48L2k+XFxuXHRcdFx0XHQ8L2xpPlxcblx0XHRcdDwvdWw+XFxuXHRcdDwvZGl2Plxcblx0PC9kaXY+XFxuXHQ8ZGl2IGJuLWNvbnRyb2w9XFxcImJyYWluanMuaHRtbGVkaXRvclxcXCIgY2xhc3M9XFxcImNvbnRlbnRcXFwiIG5hbWU9XFxcImh0bWxcXFwiIGJuLWlmYWNlPVxcXCJjb250ZW50XFxcIj48L2Rpdj5cXG48IS0tIFx0PHRleHRhcmVhIG5hbWU9XFxcInRleHRcXFwiIGJuLWJpbmQ9XFxcImNvbnRlbnRcXFwiPjwvdGV4dGFyZWE+XHRcXG4gLS0+XHQ8aW5wdXQgdHlwZT1cXFwic3VibWl0XFxcIiBoaWRkZW49XFxcIlxcXCIgYm4tYmluZD1cXFwic3VibWl0XFxcIj5cXG48L2Zvcm0+XFxuXCIsXG5cblx0ZGVwczogWydhcHAubWFpbHMnLCAnYnJlaXpib3QucGFnZXInXSxcblxuXHRwcm9wczoge1xuXHRcdGFjY291bnROYW1lOiAnJyxcblx0XHRkYXRhOiB7fVxuXHR9LFxuXG5cdGJ1dHRvbnM6IFtcblx0XHR7bmFtZTogJ2F0dGFjaG1lbnQnLCBpY29uOiAnZmEgZmEtcGFwZXJjbGlwJywgdGl0bGU6ICdBZGQgYXR0YWNobWVudCd9LFxuXHRcdHtuYW1lOiAnc2VuZCcsIGljb246ICdmYSBmYS1wYXBlci1wbGFuZScsIHRpdGxlOiAnU2VuZCBNZXNzYWdlJ31cblx0XSxcdFxuXG5cdGluaXQ6IGZ1bmN0aW9uKGVsdCwgc3J2TWFpbCwgcGFnZXIpIHtcblxuXHRcdGNvbnN0IHthY2NvdW50TmFtZSwgZGF0YX0gPSB0aGlzLnByb3BzXG5cdFx0Y29uc29sZS5sb2coJ2RhdGEnLCBkYXRhKVxuXG5cdFx0Y29uc3QgY3RybCA9ICQkLnZpZXdDb250cm9sbGVyKGVsdCwge1xuXHRcdFx0ZGF0YToge1xuXHRcdFx0XHRkYXRhLFxuXHRcdFx0XHRhdHRhY2htZW50czogW10sXG5cdFx0XHRcdHNob3cxOiBmdW5jdGlvbigpIHtyZXR1cm4gdGhpcy5hdHRhY2htZW50cy5sZW5ndGggPiAwfSxcblx0XHRcdFx0cHJvcDE6IGZ1bmN0aW9uKCkge3JldHVybiB7YXV0b2ZvY3VzOiB0aGlzLmRhdGEuaHRtbCA9PSB1bmRlZmluZWR9fVxuXHRcdFx0fSxcblx0XHRcdGV2ZW50czoge1xuXHRcdFx0XHRvblNlbmQ6IGZ1bmN0aW9uKGV2KSB7XG5cdFx0XHRcdFx0Y29uc29sZS5sb2coJ29uU2VuZCcpXG5cdFx0XHRcdFx0ZXYucHJldmVudERlZmF1bHQoKVxuXHRcdFx0XHRcdGNvbnN0IGRhdGEgPSAkKHRoaXMpLmdldEZvcm1EYXRhKClcblx0XHRcdFx0XHRjb25zb2xlLmxvZygnZGF0YScsIGRhdGEpXG5cdFx0XHRcdFx0Y29uc3Qge2F0dGFjaG1lbnRzfSA9IGN0cmwubW9kZWxcblx0XHRcdFx0XHRpZiAoYXR0YWNobWVudHMubGVuZ3RoID4gMCkge1xuXHRcdFx0XHRcdFx0ZGF0YS5hdHRhY2htZW50cyA9IGF0dGFjaG1lbnRzLm1hcCgoYSkgPT4gYS5yb290RGlyICsgYS5maWxlTmFtZSlcblx0XHRcdFx0XHR9XG5cblx0XHRcdFx0XHRzcnZNYWlsLnNlbmRNYWlsKGFjY291bnROYW1lLCBkYXRhKVxuXHRcdFx0XHRcdC50aGVuKCgpID0+IHtcblx0XHRcdFx0XHRcdHBhZ2VyLnBvcFBhZ2UoKVxuXHRcdFx0XHRcdH0pXG5cdFx0XHRcdFx0LmNhdGNoKChlKSA9PiB7XG5cdFx0XHRcdFx0XHQkJC51aS5zaG93QWxlcnQoe3RpdGxlOiAnRXJyb3InLCBjb250ZW50OiBlLnJlc3BvbnNlVGV4dH0pXG5cdFx0XHRcdFx0fSlcblxuXHRcdFx0XHR9LFxuXHRcdFx0XHRvcGVuQ29udGFjdDogZnVuY3Rpb24oKSB7XG5cdFx0XHRcdFx0Y29uc29sZS5sb2coJ29wZW5Db250YWN0Jylcblx0XHRcdFx0XHRwYWdlci5wdXNoUGFnZSgnY29udGFjdHNQYWdlJywge1xuXHRcdFx0XHRcdFx0dGl0bGU6ICdTZWxlY3QgYSBjb250YWN0Jyxcblx0XHRcdFx0XHRcdG9uUmV0dXJuOiBmdW5jdGlvbihmcmllbmRzKSB7XG5cdFx0XHRcdFx0XHRcdGNvbnN0IGNvbnRhY3RzID0gZnJpZW5kcy5tYXAoKGEpID0+IGEuY29udGFjdEVtYWlsKVxuXHRcdFx0XHRcdFx0XHRjb25zb2xlLmxvZygnY29udGFjdHMnLCBjb250YWN0cylcblx0XHRcdFx0XHRcdFx0Y29uc3QgdG8gPSBjdHJsLnNjb3BlLnRvLnZhbCgpXG5cdFx0XHRcdFx0XHRcdGNvbnNvbGUubG9nKCd0bycsIHRvKVxuXG5cdFx0XHRcdFx0XHRcdGlmICh0byAhPSAnJykge1xuXHRcdFx0XHRcdFx0XHRcdGNvbnRhY3RzLnVuc2hpZnQodG8pXG5cdFx0XHRcdFx0XHRcdH1cblx0XHRcdFx0XHRcdFx0Y3RybC5zZXREYXRhKHtkYXRhOiB7dG86IGNvbnRhY3RzLmpvaW4oJywnKX19KVx0XHRcdFx0XHRcdFx0XG5cdFx0XHRcdFx0XHR9XG5cdFx0XHRcdFx0fSlcblx0XHRcdFx0fSxcblx0XHRcdFx0b25SZW1vdmVBdHRhY2htZW50OiBmdW5jdGlvbihldikge1xuXHRcdFx0XHRcdGNvbnN0IGlkeCA9ICQodGhpcykuY2xvc2VzdCgnbGknKS5pbmRleCgpXG5cdFx0XHRcdFx0Y29uc29sZS5sb2coJ29uUmVtb3ZlQXR0YWNobWVudCcsIGlkeClcblx0XHRcdFx0XHRjdHJsLm1vZGVsLmF0dGFjaG1lbnRzLnNwbGljZShpZHgsIDEpXG5cdFx0XHRcdFx0Y3RybC51cGRhdGUoKVxuXG5cdFx0XHRcdH1cblx0XHRcdH1cblxuXHRcdH0pXG5cblx0XHRpZiAoZGF0YS5odG1sICE9IHVuZGVmaW5lZCkge1xuXHRcdFx0Y3RybC5zY29wZS5jb250ZW50LmZvY3VzKClcblx0XHR9XHRcdFxuXG5cdFx0dGhpcy5vbkFjdGlvbiA9IGZ1bmN0aW9uKGFjdGlvbikge1xuXHRcdFx0Y29uc29sZS5sb2coJ29uQWN0aW9uJywgYWN0aW9uKVxuXHRcdFx0aWYgKGFjdGlvbiA9PSAnc2VuZCcpIHtcblx0XHRcdFx0Y3RybC5zY29wZS5zdWJtaXQuY2xpY2soKVxuXHRcdFx0fVxuXHRcdFx0aWYoIGFjdGlvbiA9PSAnYXR0YWNobWVudCcpIHtcblx0XHRcdFx0cGFnZXIucHVzaFBhZ2UoJ2JyZWl6Ym90LmZpbGVzJywge1xuXHRcdFx0XHRcdHRpdGxlOiAnU2VsZWN0IGEgZmlsZSB0byBhdHRhY2gnLFxuXHRcdFx0XHRcdHByb3BzOiB7XG5cdFx0XHRcdFx0XHRzaG93VGh1bWJuYWlsOiB0cnVlXG5cdFx0XHRcdFx0fSxcblx0XHRcdFx0XHRvblJldHVybjogZnVuY3Rpb24oZGF0YSkge1xuXHRcdFx0XHRcdFx0Y29uc3Qge2ZpbGVOYW1lLCByb290RGlyfSA9IGRhdGFcblx0XHRcdFx0XHRcdGN0cmwubW9kZWwuYXR0YWNobWVudHMucHVzaCh7ZmlsZU5hbWUsIHJvb3REaXJ9KVxuXHRcdFx0XHRcdFx0Y3RybC51cGRhdGUoKVx0XHRcdFx0XHRcdFxuXHRcdFx0XHRcdH1cblx0XHRcdFx0fSlcblx0XHRcdH1cblx0XHR9XG5cblx0fVxufSkiXX0=

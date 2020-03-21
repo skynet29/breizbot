@@ -52,8 +52,8 @@ $$.control.registerControl('messagePage', {
 				show5: function() {
 					return !this.loading && !this.isHtml
 				},
-				getSize: function() {
-					let size = this.$i.size
+				getSize: function(scope) {
+					let size = scope.$i.size
 					//console.log('getSize', size)
 					size /= 1024
 					let unit = 'Ko'
@@ -160,7 +160,8 @@ $$.control.registerControl('messagePage', {
 				onAddContact: function(ev) {
 					console.log('onAddContact')
 					ev.preventDefault()
-					const from = $(this).data('addr')
+					const idx = $(this).closest('li').index()
+					const from = ctrl.model.item.to[idx]
 					pager.pushPage('addContactPage', {
 						title: 'Add Contact',
 						props: {

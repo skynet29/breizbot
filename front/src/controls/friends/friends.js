@@ -25,8 +25,8 @@ $$.control.registerControl('breizbot.friends', {
 				show2: function() {
 					return this.friends.length == 0
 				},
-				class1: function() {
-					const $i = this.$i
+				class1: function(scope) {
+					const $i = scope.$i
 					const showConnectionState = this.showConnectionState
 					return {
 						'w3-text-green': $i.isConnected && showConnectionState,
@@ -37,7 +37,9 @@ $$.control.registerControl('breizbot.friends', {
 			},
 			events: {
 				onItemClick: function() {
-					const userName =  $(this).data('item').friendUserName
+					const idx = $(this).closest('li').index()
+
+					const userName =  ctrl.model.friends[idx].friendUserName
 					//console.log('onItemClick', userName)
 					if (showSelection) {
 						$(this).siblings('.w3-blue').removeClass('w3-blue')
@@ -47,7 +49,9 @@ $$.control.registerControl('breizbot.friends', {
 				},
 				onSendMessage: function(ev) {
 					ev.stopPropagation()
-					const userName =  $(this).closest('li').data('item').friendUserName
+					const idx = $(this).closest('li').index()
+
+					const userName =  ctrl.model.friends[idx].friendUserName
 					//console.log('onSendMessage', userName)
 					$$.ui.showPrompt({title: 'Send Message', label: 'Message:'}, function(text) {
 						users.sendNotif(userName, {text, reply: true})
@@ -70,7 +74,8 @@ $$.control.registerControl('breizbot.friends', {
 		broker.register('breizbot.friends', onUpdate)
 
 		this.getSelection = function() {
-			return elt.find('li.w3-blue').data('item')
+			const idx = elt.find('li.w3-blue').index();
+			return ctrl.model.friends[idx]
 		}
 
 		this.getFriends = function() {

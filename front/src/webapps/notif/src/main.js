@@ -9,20 +9,22 @@ $$.control.registerControl('rootPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				notifs: [],
-				show1: function() {return typeof this.n.notif.text === 'string'},
-				show2: function() {return this.n.notif.reply === true},
-				text1: function() {return new Date(this.n.date).toLocaleDateString()},
-				text2: function() {return new Date(this.n.date).toLocaleTimeString()},
-				isInvit: function() {return this.n.notif.type === 'invit'}
+				show1: function(scope) {return typeof scope.n.notif.text === 'string'},
+				show2: function(scope) {return scope.n.notif.reply === true},
+				text1: function(scope) {return new Date(scope.n.date).toLocaleDateString()},
+				text2: function(scope) {return new Date(scope.n.date).toLocaleTimeString()},
+				isInvit: function(scope) {return scope.n.notif.type === 'invit'}
 			},
 			events: {
 				onDelete: function() {
-					const item = $(this).closest('li').data('item')
+					const idx = $(this).closest('li').index()
+					const item = ctrl.model.notifs[idx]
 					console.log('onDelete', item)
 					users.removeNotif(item._id)
 				},
 				onAccept: function() {
-					const item = $(this).closest('li').data('item')
+					const idx = $(this).closest('li').index()
+					const item = ctrl.model.notifs[idx]
 					console.log('onAccept', item)
 
 					const friendUserName = item.from
@@ -33,7 +35,8 @@ $$.control.registerControl('rootPage', {
 					})
 				},
 				onDecline: function() {
-					const item = $(this).closest('li').data('item')
+					const idx = $(this).closest('li').index()
+					const item = ctrl.model.notifs[idx]
 					console.log('onDecline', item)
 					const friendUserName = item.from
 
@@ -42,7 +45,8 @@ $$.control.registerControl('rootPage', {
 					})				
 				},
 				onReply: function(ev) {
-					const item = $(this).closest('li').data('item')
+					const idx = $(this).closest('li').index()
+					const item = ctrl.model.notifs[idx]
 					console.log('onReply', item)
 					const friendUserName = item.from	
 					$$.ui.showPrompt({title: 'Reply', label: 'Message:'}, function(text) {

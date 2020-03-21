@@ -10,13 +10,13 @@
 		bn-show="!show1"
 		>
 		<li class="w3-bar">
-			<span class="w3-button w3-right invit" title="Invit" bn-data="{username: $i.username}"><i class="fa fa-plus"></i></span>
+			<span class="w3-button w3-right invit" title="Invit" bn-data="{username: $scope.$i.username}"><i class="fa fa-plus"></i></span>
 
 			<div class="w3-bar-item">
 				<i class="fa fa-user w3-text-blue"></i>
-				<span bn-text="$i.username"></span><br>
+				<span bn-text="$scope.$i.username"></span><br>
 				<i class="fa fa-map-marker-alt w3-text-blue"></i>
-				<span bn-text="$i.location"></span>
+				<span bn-text="$scope.$i.location"></span>
 			</div>
 		</li>
 	</ul>		

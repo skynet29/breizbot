@@ -3,25 +3,25 @@
 		bn-each="notifs" bn-iter="n"
 		bn-event="click.delete: onDelete, click.accept: onAccept, click.decline: onDecline, click.reply: onReply"
 		>
-		<li class="w3-bar" bn-data="{item: n}" bn-show="show1">
+		<li class="w3-bar" bn-show="show1">
 			<span class="w3-button w3-right w3-blue delete" title="Delete"><i class="fa fa-times"></i></span>
 			<span class="w3-button w3-right w3-blue reply" title="Reply" bn-show="show2"><i class="fa fa-reply"></i></span>
 
 			<div class="w3-bar-item">
-				From: <span bn-text="n.from"></span><br>
+				From: <span bn-text="$scope.n.from"></span><br>
 				Date: <span bn-text="text1"></span>
 				at <span bn-text="text2"></span>
 				<br>
-				Message: <span bn-html="n.notif.text"></span>
+				Message: <span bn-html="$scope.n.notif.text"></span>
 			</div>
 		</li>
 
-		<li class="w3-bar" bn-data="{item: n}" bn-show="isInvit">
+		<li class="w3-bar" bn-show="isInvit">
 			<span class="w3-button w3-right w3-green accept"><i class="fa fa-user-check"></i></span>
 			<span class="w3-button w3-right w3-red decline"><i class="fa fa-user-slash"></i></span>
 
 			<div class="w3-bar-item">
-				From: <span bn-text="n.from"></span><br>
+				From: <span bn-text="$scope.n.from"></span><br>
 				Date: <span bn-text="text1"></span>
 				at <span bn-text="text2"></span>
 				<br>

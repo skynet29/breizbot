@@ -14,20 +14,20 @@ $$.control.registerControl('breizbot.users', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				data: [],
-				text1: function() {
-					return new Date(this.$i.createDate).toLocaleDateString('fr-FR')
+				text1: function(scope) {
+					return new Date(scope.$i.createDate).toLocaleDateString('fr-FR')
 				},
-				text2: function() {
-					return new Date(this.$i.lastLoginDate).toLocaleDateString('fr-FR')
+				text2: function(scope) {
+					return new Date(scope.$i.lastLoginDate).toLocaleDateString('fr-FR')
 				},
-				text3: function() {
-					return new Date(this.$i.lastLoginDate).toLocaleTimeString('fr-FR')
+				text3: function(scope) {
+					return new Date(scope.$i.lastLoginDate).toLocaleTimeString('fr-FR')
 				},
-				show1: function() {
-					return this.$i.createDate != undefined
+				show1: function(scope) {
+					return scope.$i.createDate != undefined
 				},
-				show2: function() {
-					return this.$i.lastLoginDate != undefined && this.$i.lastLoginDate != 0
+				show2: function(scope) {
+					return scope.$i.lastLoginDate != undefined && scope.$i.lastLoginDate != 0
 				}
 			},
 			events: {

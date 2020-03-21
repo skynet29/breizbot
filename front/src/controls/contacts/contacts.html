@@ -4,14 +4,14 @@
 	bn-each="contacts"
 	bn-show="show1"
 	>
-	<li class="w3-bar" bn-data="{item: $i}">
+	<li class="w3-bar">
 		<span class="w3-button w3-right delete" title="Delete" bn-show="showDeleteButton"><i class="fa fa-trash"></i></span>
 
 		<div class="w3-bar-item">
 			<i class="fa fa-user w3-text-blue"></i>
-			<strong bn-text="$i.contactName"></strong><br>
+			<strong bn-text="$scope.$i.contactName"></strong><br>
 			<i class="fa fa-envelope w3-text-blue"></i>
-			<span bn-text="$i.contactEmail"></span>
+			<span bn-text="$scope.$i.contactEmail"></span>
 		</div>
 	</li>
 </ul>		

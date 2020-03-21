@@ -5,9 +5,18 @@
 		width: 100%;
 	}
 
-	.toolbar {
+	.title {
+		display: flex;
+		.span {
+			flex: 1;
+			overflow: hidden;
+		}
 		margin-top: 10px;
-		margin-bottom: 10px;
+	}
+
+	.toolbar {
+		margin-top: 20px;
+		margin-bottom: 20px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;

@@ -8,9 +8,9 @@
 	<div bn-show="show1" class="to">
 		<strong bn-event="click: onToggleDiv"><i class="fa fa-caret-down fa-fw"></i>
 		To</strong>
-		<ul bn-each="item.to">
+		<ul bn-each="item.to" bn-event="click.contact: onAddContact">
 			<li>
-				<a href="#" bn-text="$i.name" bn-data="{addr: $i}" bn-event="click: onAddContact"></a>				
+				<a href="#" bn-text="$scope.$i.name" class="contact"></a>				
 			</li>
 		</ul>
 	</div>
@@ -19,7 +19,7 @@
 		Attachments</strong>
 		<ul  bn-each="attachments" bn-event="click.item: openAttachment">
 			<li>
-				<a href="#" bn-text="$i.name" class="item" bn-data="{item: $i}"></a>
+				<a href="#" bn-text="$scope.$i.name" class="item"></a>
 				<span bn-text="getSize"></span>
 			</li>
 		</ul>

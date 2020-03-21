@@ -22,10 +22,10 @@
         </thead>
         <tbody bn-each="data" bn-event="click.delete: onDelete, click.notif: onNotif">
   			<tr>
-				<td bn-text="$i.username"></td>
-				<td bn-text="$i.pseudo"></td>
-				<td bn-text="$i.location"></td>
-				<td bn-text="$i.email"></td>
+				<td bn-text="$scope.$i.username"></td>
+				<td bn-text="$scope.$i.pseudo"></td>
+				<td bn-text="$scope.$i.location"></td>
+				<td bn-text="$scope.$i.email"></td>
 				<td >
 					<span bn-text="text1" bn-show="show1"></span>
 				</td>

@@ -19,11 +19,11 @@
 <div class="scrollPanel">
 	<div class="sound-clips" bn-each="clips" bn-event="click.delete: onDeleteClip, click.save: onSaveClip">
 		<div class="clip">
-			<audio bn-attr="{src: $i.url}" controls controlsList=nodownload></audio>
+			<audio bn-attr="{src: $scope.$i.url}" controls controlsList=nodownload></audio>
 			<div class="clip-info">
-				<span bn-text="$i.name"></span>
+				<span bn-text="$scope.$i.name"></span>
 				<div>
-					<button class="w3-button w3-blue save" title="Save clip" bn-show="!$i.saved"><i class="fa fa-save"></i></button>
+					<button class="w3-button w3-blue save" title="Save clip" bn-show="!$scope.$i.saved"><i class="fa fa-save"></i></button>
 					<button class="w3-button w3-blue delete" title="Delete clip"><i class="fa fa-trash"></i></button>
 				</div>
 				

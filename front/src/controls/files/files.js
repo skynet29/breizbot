@@ -97,31 +97,33 @@ $$.control.registerControl('breizbot.files', {
 					tab.pop()
 					return tab
 				},
-				isLast: function() {
-					return this.idx == this.getPath().length-1
+				isLast: function(scope) {
+					return scope.idx == this.getPath().length-1
 				},
-				isFirst: function() {
-					return this.idx == 0
+				isFirst: function(scope) {
+					return scope.idx == 0
 				},
-				getPathInfo: function() {
-					return this.getPath().slice(1, this.idx+1).join('/')
+				getPathInfo: function(scope) {
+					return this.getPath().slice(1, scope.idx+1).join('/')
 				},
 
-				data1: function() {return {items: this.f.items || {}}},
-				if1: function() {
-					return this.f.name != '..'
+				data1: function(scope) {
+					return {items: scope.f.items || {}}
 				},
-				if2: function() {
-					return !this.f.folder && !this.f.isImage
+				if1: function(scope) {
+					return scope.f.name != '..'
 				},
-				if3: function() {
-					return !this.f.folder && this.f.isImage
+				if2: function(scope) {
+					return !scope.f.folder && !scope.f.isImage
 				},
-				attr1: function() {
-					return {class: `fa fa-4x w3-text-blue-grey ${getIconClass(this.f.name)}`}
+				if3: function(scope) {
+					return !scope.f.folder && scope.f.isImage
 				},
-				getSize: function() {
-					let size = this.f.size
+				class1: function(scope) {
+					return `fa fa-4x w3-text-blue-grey ${getIconClass(scope.f.name)}`
+				},
+				getSize: function(scope) {
+					let size = scope.f.size
 					let unit = 'octets'
 					if (size > 1024) {
 						unit = 'Ko'
@@ -137,14 +139,14 @@ $$.control.registerControl('breizbot.files', {
 					return 'Size: ' + size + ' ' + unit
 				},
 
-				getDimension: function() {
-					const d = this.f.dimension
+				getDimension: function(scope) {
+					const d = scope.f.dimension
 					return `Dimension: ${d.width}x${d.height}`
 				},
 
 
-				getDate: function() {
-					const date = new Date(this.f.mtime).toLocaleDateString()
+				getDate: function(scope) {
+					const date = new Date(scope.f.mtime).toLocaleDateString()
 					return 'Last Modif: ' + date
 
 				},

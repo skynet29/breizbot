@@ -27,7 +27,8 @@ $$.control.registerControl('breizbot.contacts', {
 			},
 			events: {
 				onItemClick: function() {
-					const data =  $(this).data('item')
+					const idx =  $(this).index()
+					const data = ctrl.model.contacts[idx]
 					console.log('onItemClick', data)
 					if (showSelection) {
 						//$(this).siblings('.w3-blue').removeClass('w3-blue')
@@ -38,7 +39,8 @@ $$.control.registerControl('breizbot.contacts', {
 
 				onDeleteItem: function(ev) {
 					ev.stopPropagation()
-					const data =  $(this).closest('li').data('item')
+					const idx =  $(this).closest('li').index()
+					const data = ctrl.model.contacts[idx]
 					console.log('onDeleteItem', data)
 					users.removeContact(data._id).then(load)
 
@@ -61,7 +63,8 @@ $$.control.registerControl('breizbot.contacts', {
 		this.getSelection = function() {
 			const ret = []
 			elt.find('li.w3-blue').each(function() {
-				ret.push($(this).data('item'))
+				const idx =  $(this).index()
+				ret.push(ctrl.model.contacts[idx])
 			})
 			console.log('ret', ret)
 			return ret

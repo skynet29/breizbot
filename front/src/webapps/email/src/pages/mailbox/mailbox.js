@@ -36,23 +36,23 @@ $$.control.registerControl('mailboxPage', {
 				text1: function() {
 					return `${this.pageNo} / ${this.nbPage}`
 				},
-				text2: function() {
-					return this.$i.to[0] && this.$i.to[0].name
+				text2: function(scope) {
+					return scope.$i.to[0] && scope.$i.to[0].name
 				},
-				attr1: function() {
-					return {title: this.$i.to[0] && this.$i.to[0].email}
+				attr1: function(scope) {
+					return {title: scope.$i.to[0] && scope.$i.to[0].email}
 				},
 
-				getDate: function() {
+				getDate: function(scope) {
 					//console.log('getDate', date)
-					const date = this.$i.date
+					const date = scope.$i.date
 					const d = new Date(date)
 					//console.log('d', d)
 					return d.toLocaleDateString('fr-FR')
 				},
 
-				isSeen: function() {
-					return this.$i.flags.includes('\\Seen')
+				isSeen: function(scope) {
+					return scope.$i.flags.includes('\\Seen')
 				},
 
 				isSentBox: function() {
@@ -64,7 +64,8 @@ $$.control.registerControl('mailboxPage', {
 				onItemClick: function(ev) {
 					// $(this).closest('tbody').find('tr').removeClass('w3-blue')
 					// $(this).addClass('w3-blue')
-					const item = $(this).closest('tr').data('item')
+					const idx = $(this).closest('tr').index()
+					const item = ctrl.model.messages[idx]
 					pager.pushPage('messagePage', {
 						title: `Message #${ctrl.model.nbMsg - item.seqno + 1}`,
 						props: {

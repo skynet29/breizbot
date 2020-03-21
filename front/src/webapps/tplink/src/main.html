@@ -10,11 +10,11 @@
             </tr>
         </thead>
         <tbody bn-each="devices" bn-event="click.action: onAction">
-            <tr bn-data="{deviceId: $i.deviceId}">
-                <td bn-text="$i.alias"></td>
-                <td bn-text="$i.type"></td>
-                <td bn-text="$i.state"></td>
-                <td bn-each="$i.actions" bn-iter="a"> 
+            <tr bn-data="{deviceId: $scope.$i.deviceId}">
+                <td bn-text="$scope.$i.alias"></td>
+                <td bn-text="$scope.$i.type"></td>
+                <td bn-text="$scope.$i.state"></td>
+                <td bn-each="$scope.$i.actions" bn-iter="a"> 
                     <button class="action w3-btn w3-blue w3-margin-right" bn-data="{cmd: a.cmd}" bn-text="a.label"></button>
                 </td>
             </tr>       

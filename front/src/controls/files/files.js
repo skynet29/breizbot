@@ -48,7 +48,6 @@ $$.control.registerControl('breizbot.files', {
 		let selected = false
 
 		let {
-			$pager,
 			showToolbar,
 			filterExtension,
 			friendUser,
@@ -261,12 +260,7 @@ $$.control.registerControl('breizbot.files', {
 						isImage: info.isImage
 					}
 
-					if ($pager != null) {
-						$pager.popPage(data)
-					}
-					else {
-						elt.trigger('fileclick', data)
-					}
+					elt.trigger('fileclick', data)
 				},
 				onCheckClick: function(ev) {
 					const idx = $(this).closest('.thumbnail').index()					

@@ -6,20 +6,56 @@ $$.control.registerControl('rootPage', {
 
 	init: function(elt, pager) {
 
+		function openFilePage(title, friendUser) {
+			pager.pushPage('breizbot.files', {
+				title,
+				props: {
+					imageOnly: true,
+					friendUser
+				},
+				events: {
+					fileclick: function(ev, info) {
+						const {rootDir, fileName } = info
+						const files = $(this).iface().getFiles()
+						//console.log('files', files)
+						const firstIdx = files.findIndex((f) => f.name == fileName)
+						//console.log('firstIdx', firstIdx)
+						pager.pushPage('gallery', {
+							title: 'Diaporama',
+							props: {
+								firstIdx,
+								files,
+								rootDir,
+								friendUser
+							}
+						})
+	
+					}
+				}	
+			})				
+
+		}
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 			},
 			events: {
 				onHome: function() {
-					console.log('onHome')
-					pager.pushPage('files', {
-						title: 'Home files'					
-					})
+					openFilePage('Home files', '')
 				},
 				onShare: function() {
-					console.log('onShare')
-					pager.pushPage('friends', {
-						title: 'Shared files'					
+					pager.pushPage('breizbot.friends', {
+						title: 'Shared files',
+						props: {
+							showConnectionState: false
+						},
+						events: {
+							friendclick: function(ev, data) {
+								//console.log('onSelectFriend', data)
+								const {userName} = data
+								openFilePage(userName, userName)			
+							}
+						}					
 					})
 				}
 

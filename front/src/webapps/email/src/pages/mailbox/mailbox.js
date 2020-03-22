@@ -120,19 +120,24 @@ $$.control.registerControl('mailboxPage', {
 			})			
 		}
 
-		function deleteMessage() {
+		function getSeqNos() {
 			const items = elt.find('.check:checked')
-			console.log('deleteMessage', items.length)
-			if (items.length == 0) {
+			const seqNos = []
+			items.each(function() {
+				const idx = $(this).closest('tr').index()
+				seqNos.push(ctrl.model.messages[idx].seqno)
+			})
+			console.log('seqNos', seqNos)
+			return seqNos
+		}
+
+		function deleteMessage() {
+			const seqNos = getSeqNos()
+			if (seqNos.length == 0) {
 				$$.ui.showAlert({title: 'Delete Message', content: 'Please select one or severall messages !'})
 				return
 			}
-			const seqNos = []
-			items.each(function() {
-				const data = $(this).closest('tr').data('item')
-				seqNos.push(data.seqno)
-			})
-			console.log('seqNos', seqNos)
+
 			srvMail.deleteMessage(currentAccount, mailboxName, seqNos).then(() => {
 				console.log('Messages deleted')
 				load()
@@ -140,18 +145,12 @@ $$.control.registerControl('mailboxPage', {
 		}
 
 		function moveMessage() {
-			const items = elt.find('.check:checked')
-			console.log('deleteMessage', items.length)
-			if (items.length == 0) {
+			const seqNos = getSeqNos()
+			if (seqNos.length == 0) {
 				$$.ui.showAlert({title: 'Move Message', content: 'Please select one or severall messages !'})
 				return
 			}
-			const seqNos = []
-			items.each(function() {
-				const data = $(this).closest('tr').data('item')
-				seqNos.push(data.seqno)
-			})
-			console.log('seqNos', seqNos)
+
 			pager.pushPage('boxesPage', {
 				title: 'Select target mailbox',
 				props: {

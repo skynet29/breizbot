@@ -89,6 +89,11 @@ $$.control.registerControl('writeMailPage', {
 					props: {
 						showThumbnail: true
 					},
+					events: {
+						fileclick: function(ev, data) {
+							pager.popPage(data)
+						}
+					},
 					onReturn: function(data) {
 						const {fileName, rootDir} = data
 						ctrl.model.attachments.push({fileName, rootDir})

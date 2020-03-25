@@ -4,9 +4,9 @@ $$.control.registerControl('contactsPage', {
 
 	deps: ['breizbot.pager'],
 
-	buttons: [
-		{name: 'ok', icon: 'fa fa-check'}
-	],
+	buttons: {
+		ok: {title: 'Apply', icon: 'fa fa-check'}
+	},
 	
 	init: function(elt, pager) {
 

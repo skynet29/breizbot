@@ -9,9 +9,9 @@ $$.control.registerControl('boxesPage', {
 		showForm: false
 	},
 
-	buttons: [
-		{name: 'apply', icon: 'fa fa-check'}
-	],
+	buttons: {
+		apply: {title: 'Apply', icon: 'fa fa-check'}
+	},
 	
 	init: function(elt, srvMail, pager) {
 

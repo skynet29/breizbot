@@ -8,9 +8,9 @@ $$.control.registerControl('addContactPage', {
 		from: {}
 	},
 
-	buttons: [
-		{name: 'add', icon: 'fa fa-user-plus'}
-	],	
+	buttons: {
+		ad:  {title: 'Add', icon: 'fa fa-user-plus'}
+	},	
 
 	init: function(elt, users, pager) {
 

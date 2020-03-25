@@ -8,9 +8,9 @@ $$.control.registerControl('accountPage', {
 		data: null
 	},
 
-	buttons: [
-		{name: 'create', icon: 'fa fa-check'}
-	],
+	buttons: {
+		apply: {title: 'Apply', icon: 'fa fa-check'}
+	},
 
 	init: function(elt, srvMail, pager) {
 

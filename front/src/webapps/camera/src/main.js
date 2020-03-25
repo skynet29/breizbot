@@ -9,6 +9,21 @@ $$.control.registerControl('rootPage', {
 
 		const audio = new Audio('/webapps/camera/assets/camera_shutter.mp3')
 
+		function saveImage(url) {
+			const fileName = 'SNAP' + Date.now() + '.png'
+			console.log('fileName', fileName)
+			const blob = $$.util.dataURLtoBlob(url)
+			srvFiles.uploadFile(blob, fileName, '/apps/camera').then(function(resp) {
+				console.log('resp', resp)
+				pager.popPage()
+			})	
+			.catch(function(resp) {
+				$$.ui.showAlert({
+					title: 'Error',
+					content: resp.responseText
+				})
+			})			
+		}
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -28,10 +43,20 @@ $$.control.registerControl('rootPage', {
 				onTakePicture: function(ev) {
 					audio.play()
 					const url = ctrl.scope.camera.takePicture()
-					pager.pushPage('snapPage', {
+					
+					pager.pushPage('breizbot.viewer', {
 						title: 'Snapshot', 
-						props: {url}
-					})					
+						props: {url, type: 'image'},
+						buttons: {
+							save: {
+								title: 'Save',
+								icon: 'fa fa-save',
+								onClick: function() {
+									saveImage(url)
+								}
+							}
+						},	
+					})
 				},
 				onDeviceChange: function(ev, data) {
 					console.log('onDeviceChange', $(this).getValue())

@@ -9,13 +9,12 @@ $$.control.registerControl('mailboxPage', {
 		mailboxName: ''
 	},
 
-	buttons: [
-		{name: 'reload', icon: 'fa fa-sync-alt', title: 'Update'},
-		{name: 'newMail', icon: 'fa fa-envelope', title: 'New Message'},
-		{name: 'move', icon: 'fa fa-file-export', title: 'Move selected messages'},
-		{name: 'delete', icon: 'fa fa-trash', title: 'Delete selected messages'}
-	
-	],	
+	buttons: {
+		reload: {icon: 'fa fa-sync-alt', title: 'Update'},
+		newMail: {icon: 'fa fa-envelope', title: 'New Message'},
+		move: {icon: 'fa fa-file-export', title: 'Move selected messages'},
+		delete: {icon: 'fa fa-trash', title: 'Delete selected messages'}	
+	},	
 
 	init: function(elt, srvMail, pager) {
 

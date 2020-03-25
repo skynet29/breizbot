@@ -9,10 +9,10 @@ $$.control.registerControl('writeMailPage', {
 		data: {}
 	},
 
-	buttons: [
-		{name: 'attachment', icon: 'fa fa-paperclip', title: 'Add attachment'},
-		{name: 'send', icon: 'fa fa-paper-plane', title: 'Send Message'}
-	],	
+	buttons: {
+		attachment: {icon: 'fa fa-paperclip', title: 'Add attachment'},
+		send: {icon: 'fa fa-paper-plane', title: 'Send Message'}
+	},	
 
 	init: function(elt, srvMail, pager) {
 

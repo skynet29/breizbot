@@ -11,10 +11,10 @@ $$.control.registerControl('gallery', {
 		friendUser: ''
 	},
 
-	buttons: [
-		{name: 'play', icon: 'fa fa-play', title: 'Play'},
-		{name: 'pause', icon: 'fa fa-pause', title: 'Pause', visible: false}
-	],	
+	buttons: {
+		play: {icon: 'fa fa-play', title: 'Play'},
+		pause: {icon: 'fa fa-pause', title: 'Pause', visible: false}
+	},	
 
 	init: function(elt, filesSrv, pager) {
 

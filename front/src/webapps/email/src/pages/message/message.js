@@ -2,7 +2,7 @@ $$.control.registerControl('messagePage', {
 
 	template: {gulp_inject: './message.html'},
 
-	deps: ['app.mails', 'breizbot.users', 'breizbot.scheduler', 'breizbot.pager'],
+	deps: ['app.mails', 'breizbot.scheduler', 'breizbot.pager', 'breizbot.files'],
 
 	props: {
 		currentAccount: '',
@@ -10,13 +10,13 @@ $$.control.registerControl('messagePage', {
 		item: null
 	},
 
-	buttons: [
-		{name: 'reply', icon: 'fa fa-reply', title: 'Reply'},
-		{name: 'replyAll', icon: 'fa fa-reply-all', title: 'Reply All'},
-		{name: 'forward', icon: 'fa fa-share-square', title: 'Forward'}
-	],	
+	buttons: {
+		reply: {icon: 'fa fa-reply', title: 'Reply'},
+		replyAll: {icon: 'fa fa-reply-all', title: 'Reply All'},
+		forward: {icon: 'fa fa-share-square', title: 'Forward'}
+	},	
 
-	init: function(elt, srvMail, users, scheduler, pager) {
+	init: function(elt, srvMail, scheduler, pager, srvFiles) {
 
 		const {currentAccount, mailboxName, item} = this.props
 
@@ -70,20 +70,45 @@ $$.control.registerControl('messagePage', {
 					ev.preventDefault()
 					const idx = $(this).closest('li').index()
 					const info = ctrl.model.attachments[idx]
+					const {partID, type, subtype} = info
 
 					console.log('openAttachments', info)
 
 					if (info.canOpen) {
-						const props = {
-							info,
-							currentAccount,
-							mailboxName,
-							seqno: item.seqno
-						}
-						pager.pushPage('viewerPage', {
-							title: info.name,
-							props
-						})												
+						waitDlg.show()
+						srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID).then((message) => {
+							//console.log('message', message)
+							waitDlg.hide()
+							const url = `data:${type}/${subtype};base64,` + message.data
+							pager.pushPage('breizbot.viewer', {
+								title: info.name,
+								props: {
+									type: $$.util.getFileType(info.name),
+									url	
+								},
+								buttons: {
+									save: {
+										title: 'Save',
+										icon: 'fa fa-save',
+										onClick: function() {
+											const blob = $$.util.dataURLtoBlob(url)
+											srvFiles.uploadFile(blob, info.name, '/apps/email').then(function(resp) {
+												console.log('resp', resp)
+												pager.popPage()
+											})	
+											.catch(function(resp) {
+												$$.ui.showAlert({
+													title: 'Error',
+													content: resp.responseText
+												})
+											})													
+										}
+									}
+								},	
+							
+							})		
+					
+						})								
 					}
 					else {
 						$$.ui.showConfirm({
@@ -95,7 +120,6 @@ $$.control.registerControl('messagePage', {
 							},
 							function() {
 								console.log('OK')
-								const {partID, type, subtype} = info
 								waitDlg.show()
 								srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID).then((message) => {
 									//console.log('message', message)

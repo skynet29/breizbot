@@ -2,10 +2,10 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
-	deps: ['breizbot.pager'],
+	deps: ['breizbot.pager', 'breizbot.files'],
 
 
-	init: function(elt, pager) {
+	init: function(elt, pager, srvFiles) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -18,16 +18,12 @@ $$.control.registerControl('rootPage', {
 
 					const type = $$.util.getFileType(fileName)
 					if (type != undefined) {
-						pager.pushPage('viewerPage', {
+						pager.pushPage('breizbot.viewer', {
 							title: fileName,
 							props: {
-								fullName
-							},
-							onReturn: function(data) {
-								if (data === 'reload') {
-									ctrl.scope.files.update()
-								}
-							}							
+								type,
+								url: srvFiles.fileUrl(fullName)				
+							}
 						})
 					}
 													

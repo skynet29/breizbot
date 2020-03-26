@@ -43,8 +43,21 @@ $$.control.registerControl('writeMailPage', {
 				},
 				openContact: function() {
 					console.log('openContact')
-					pager.pushPage('contactsPage', {
+					pager.pushPage('breizbot.contacts', {
 						title: 'Select a contact',
+						props: {
+							showSelection: true
+						},
+						buttons: {
+							ok: {
+								title: 'Apply',
+								icon: 'fa fa-check',
+								onClick: function() {
+									pager.popPage(this.getSelection())
+			
+								}
+							}
+						},
 						onReturn: function(friends) {
 							const contacts = friends.map((a) => a.contactEmail)
 							console.log('contacts', contacts)

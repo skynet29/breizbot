@@ -9,13 +9,6 @@ $$.control.registerControl('mailboxPage', {
 		mailboxName: ''
 	},
 
-	buttons: {
-		reload: {icon: 'fa fa-sync-alt', title: 'Update'},
-		newMail: {icon: 'fa fa-envelope', title: 'New Message'},
-		move: {icon: 'fa fa-file-export', title: 'Move selected messages'},
-		delete: {icon: 'fa fa-trash', title: 'Delete selected messages'}	
-	},	
-
 	init: function(elt, srvMail, pager) {
 
 		const {currentAccount, mailboxName} = this.props
@@ -189,26 +182,33 @@ $$.control.registerControl('mailboxPage', {
 			})			
 		}
 
-
-		this.onAction = function(action) {
-			console.log('onAction', action)
-			if (action == 'reload') {
-				load(1)
-			}
-
-			if (action == 'delete') {
-				deleteMessage()
-			}
-
-			if (action == 'move') {
-				moveMessage()
-			}
-
-			if (action == 'newMail') {
-				newMessage()
-			}			
+		this.getButtons = function() {
+			return {
+				reload: {
+					icon: 'fa fa-sync-alt',
+					title: 'Update',
+					onClick: function() {
+						load(1)
+					}
+				},
+				newMail: {
+					icon: 'fa fa-envelope',
+					title: 'New Message',
+					onClick: newMessage
+				},
+				move: {
+					icon: 'fa fa-file-export',
+					title: 'Move selected messages',
+					onClick: moveMessage
+				},
+				delete: {
+					icon: 'fa fa-trash',
+					title: 'Delete selected messages',
+					onClick: deleteMessage
+				}	
+			}	
+				
 		}
-
 
 	}
 

@@ -11,11 +11,6 @@ $$.control.registerControl('gallery', {
 		friendUser: ''
 	},
 
-	buttons: {
-		play: {icon: 'fa fa-play', title: 'Play'},
-		pause: {icon: 'fa fa-pause', title: 'Pause', visible: false}
-	},	
-
 	init: function(elt, filesSrv, pager) {
 
 		const {rootDir, files, firstIdx, friendUser} = this.props
@@ -116,15 +111,20 @@ $$.control.registerControl('gallery', {
 
 		}
 
-		this.onAction = function(action) {
-			//console.log('onAction', action)
-			if (action == 'play') {
-				startDiaporama()
-			}
-
-			if (action == 'pause') {
-				stopDiaporama()
-			}
+		this.getButtons = function() {
+			return {
+				play: {
+					icon: 'fa fa-play',
+					title: 'Play',
+					onClick: startDiaporama
+				},
+				pause: {
+					icon: 'fa fa-pause',
+					title: 'Pause',
+					visible: false,
+					onClick: stopDiaporama
+				}
+			}				
 		}
 
 		this.dispose = function() {

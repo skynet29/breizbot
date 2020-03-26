@@ -55,8 +55,17 @@
 		}
 	}
 
+	.toolbar {
+		.brainjs-controlgroup {
+			margin-bottom: 5px;
+		}
+	}
+
 	.content{
 		flex: 1;
+		.scrollPanel {
+			border: 1px solid lightgray;
+		}
 	}
 
 	textarea {

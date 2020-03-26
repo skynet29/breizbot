@@ -10,12 +10,6 @@ $$.control.registerControl('messagePage', {
 		item: null
 	},
 
-	buttons: {
-		reply: {icon: 'fa fa-reply', title: 'Reply'},
-		replyAll: {icon: 'fa fa-reply-all', title: 'Reply All'},
-		forward: {icon: 'fa fa-share-square', title: 'Forward'}
-	},	
-
 	init: function(elt, srvMail, scheduler, pager, srvFiles) {
 
 		const {currentAccount, mailboxName, item} = this.props
@@ -184,8 +178,9 @@ $$.control.registerControl('messagePage', {
 				onAddContact: function(ev) {
 					console.log('onAddContact')
 					ev.preventDefault()
+					const {item} = ctrl.model
 					const idx = $(this).closest('li').index()
-					const from = ctrl.model.item.to[idx]
+					let from = (idx < 0) ? item.from : item.to[idx]
 					pager.pushPage('addContactPage', {
 						title: 'Add Contact',
 						props: {
@@ -250,8 +245,49 @@ $$.control.registerControl('messagePage', {
 			})			
 		}
 
-		this.onAction = function(action) {
-			console.log('onAction', action, item)
+		this.getButtons = function() {
+			return {
+				reply: {
+					icon: 'fa fa-reply',
+					title: 'Reply',
+					onClick: function() {
+						reply('reply')
+					}
+				},
+				replyAll: {
+					icon: 'fa fa-reply-all',
+					title: 'Reply All',
+					onClick: function() {
+						reply('replyAll')
+					}
+				},
+				forward: {
+					icon: 'fa fa-share-square',
+					title: 'Forward',
+					onClick: function() {
+						const HEADER = '\n\n----- Forwarded mail -----\n'
+
+
+						if (ctrl.model.isHtml && item.partID.text != false) {
+							srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID.text).then((message) => {
+								forwardMessage(HEADER + message.text)
+							})						
+						}
+		
+						else if (!ctrl.model.isHtml) {
+							forwardMessage(HEADER + ctrl.model.text)
+						}
+						else {
+							forwardMessage('')
+						}
+		
+					}
+				}
+			}				
+		}
+		
+		function reply(action) {
+			console.log('reply')
 
 			if (action == 'reply' || action == 'replyAll') {
 
@@ -277,24 +313,6 @@ $$.control.registerControl('messagePage', {
 				}
 			}
 
-			if (action == 'forward') {
-				const HEADER = '\n\n----- Forwarded mail -----\n'
-
-
-				if (ctrl.model.isHtml && item.partID.text != false) {
-					srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID.text).then((message) => {
-						forwardMessage(HEADER + message.text)
-					})						
-				}
-
-				else if (!ctrl.model.isHtml) {
-					forwardMessage(HEADER + ctrl.model.text)
-				}
-				else {
-					forwardMessage('')
-				}
-
-			}
 		}
 
 

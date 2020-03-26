@@ -37,9 +37,6 @@ $$.control.registerControl('breizbot.pager', {
 					if (typeof fn == 'function') {
 						fn.call(pageCtrlIface)
 					}
-					else if (typeof pageCtrlIface.onAction == 'function') {
-						pageCtrlIface.onAction(cmd)
-					}
 				}
 			}
 		})
@@ -88,24 +85,23 @@ $$.control.registerControl('breizbot.pager', {
 
 			options = options || {}
 
+			let {title, props, onReturn, onBack, events} = options
+
+			const control = content.addControl(ctrlName, $.extend({$pager: this}, props), events)
+
 			let buttons = {}
 
 			if (options.buttons != undefined) {
 				buttons = options.buttons
 			}
 			else {
-				const desc = $$.control.getControlInfo(ctrlName)
-				if (desc.options.buttons != undefined) {
-					buttons = desc.options.buttons
+				const getButtons = control.iface().getButtons
+				if (typeof getButtons == 'function') {
+					buttons = getButtons()
 				}
-	
 			}
 
-			let {title, props, onReturn, onBack, events} = options
-
-			curInfo = {title, buttons, onReturn, onBack}
-
-			curInfo.ctrl = content.addControl(ctrlName, $.extend({$pager: this}, props), events)
+			curInfo = {title, buttons, onReturn, onBack, ctrl: control}
 
 			ctrl.setData({showBack: stack.length > 0, title, buttons: $$.util.objToArray(buttons, 'name')})
 		}	

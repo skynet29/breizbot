@@ -9,10 +9,6 @@ $$.control.registerControl('boxesPage', {
 		showForm: false
 	},
 
-	buttons: {
-		apply: {title: 'Apply', icon: 'fa fa-check'}
-	},
-	
 	init: function(elt, srvMail, pager) {
 
 		const {currentAccount, showForm} = this.props
@@ -72,26 +68,30 @@ $$.control.registerControl('boxesPage', {
 
 		loadMailboxes()
 
-
-		this.onAction = function(action) {
-			console.log('onAction', action)
-			if (action == 'apply') {
-
-				if (showForm) {
-					ctrl.scope.submit.click()
-					return
+		this.getButtons = function() {
+			return {
+				apply: {
+					title: 'Apply',
+					icon: 'fa fa-check',
+					onClick: function() {
+						if (showForm) {
+							ctrl.scope.submit.click()
+							return
+						}
+		
+						const {tree} = ctrl.scope
+						const node = tree.getActiveNode()
+						if (node == null) {
+							$$.ui.showAlert({title: 'Select Target Mailbox', content: 'Please select a target mailbox'})
+							return
+						}
+						const targetName = tree.getNodePath(node)
+		
+						pager.popPage(targetName)
+		
+					}
 				}
-
-				const {tree} = ctrl.scope
-				const node = tree.getActiveNode()
-				if (node == null) {
-					$$.ui.showAlert({title: 'Select Target Mailbox', content: 'Please select a target mailbox'})
-					return
-				}
-				const targetName = tree.getNodePath(node)
-
-				pager.popPage(targetName)
-			}
+			}					
 		}
 
 	}

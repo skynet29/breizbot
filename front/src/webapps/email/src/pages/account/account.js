@@ -8,10 +8,6 @@ $$.control.registerControl('accountPage', {
 		data: null
 	},
 
-	buttons: {
-		apply: {title: 'Apply', icon: 'fa fa-check'}
-	},
-
 	init: function(elt, srvMail, pager) {
 
 		const {data} = this.props
@@ -96,14 +92,19 @@ $$.control.registerControl('accountPage', {
 
 		ctrl.scope.form.setFormData(map[ctrl.model.provider])
 
-		this.onAction = function(cmd) {
-			ctrl.scope.submit.click()
+		this.getButtons = function() {
+			return {
+				apply: {
+					title: 'Apply',
+					icon: 'fa fa-check',
+					onClick: function() {
+						ctrl.scope.submit.click()
+					}
+				}
+			}				
 		}
 
-
-
 	}
-
 
 });
 

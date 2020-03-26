@@ -9,11 +9,6 @@ $$.control.registerControl('writeMailPage', {
 		data: {}
 	},
 
-	buttons: {
-		attachment: {icon: 'fa fa-paperclip', title: 'Add attachment'},
-		send: {icon: 'fa fa-paper-plane', title: 'Send Message'}
-	},	
-
 	init: function(elt, srvMail, pager) {
 
 		const {accountName, data} = this.props
@@ -78,29 +73,39 @@ $$.control.registerControl('writeMailPage', {
 			ctrl.scope.content.focus()
 		}		
 
-		this.onAction = function(action) {
-			console.log('onAction', action)
-			if (action == 'send') {
-				ctrl.scope.submit.click()
-			}
-			if( action == 'attachment') {
-				pager.pushPage('breizbot.files', {
-					title: 'Select a file to attach',
-					props: {
-						showThumbnail: true
-					},
-					events: {
-						fileclick: function(ev, data) {
-							pager.popPage(data)
-						}
-					},
-					onReturn: function(data) {
-						const {fileName, rootDir} = data
-						ctrl.model.attachments.push({fileName, rootDir})
-						ctrl.update()						
+		this.getButtons = function() {
+			return {
+				attachment: {
+					icon: 'fa fa-paperclip',
+					title: 'Add attachment',
+					onClick: function() {
+						pager.pushPage('breizbot.files', {
+							title: 'Select a file to attach',
+							props: {
+								showThumbnail: true
+							},
+							events: {
+								fileclick: function(ev, data) {
+									pager.popPage(data)
+								}
+							},
+							onReturn: function(data) {
+								const {fileName, rootDir} = data
+								ctrl.model.attachments.push({fileName, rootDir})
+								ctrl.update()						
+							}
+						})
+		
 					}
-				})
-			}
+				},
+				send: {
+					icon: 'fa fa-paper-plane',
+					title: 'Send Message',
+					onClick: function() {
+						ctrl.scope.submit.click()
+					}
+				}
+			}				
 		}
 
 	}

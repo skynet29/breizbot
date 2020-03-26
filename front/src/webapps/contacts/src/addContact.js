@@ -8,10 +8,6 @@ $$.control.registerControl('addContactPage', {
 		from: {}
 	},
 
-	buttons: {
-		add: {title: 'Add', icon: 'fa fa-user-plus'}
-	},	
-
 	init: function(elt, users, pager) {
 
 		const {from} = this.props
@@ -37,15 +33,18 @@ $$.control.registerControl('addContactPage', {
 			}
 		})
 
-		this.onAction = function(cmd) {
-			console.log('onAction', cmd)
-			ctrl.scope.submit.click()
-		}
-
-
-
+		this.getButtons = function() {
+			return 	{
+				add: {
+					title: 'Add',
+					icon: 'fa fa-user-plus',
+					onClick: function() {
+						ctrl.scope.submit.click()
+					}
+				}
+			}
+		}		
 	}
-
 
 });
 

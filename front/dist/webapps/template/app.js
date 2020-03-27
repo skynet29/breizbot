@@ -1,0 +1,1 @@
+$$.control.registerControl("rootPage",{template:"<div></div>",init:function(t){$$.viewController(t,{data:{},events:{}})}});

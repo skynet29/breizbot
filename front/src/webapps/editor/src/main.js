@@ -26,7 +26,7 @@ $$.control.registerControl('rootPage', {
 						return
 					}
 					$$.ui.showPrompt({title: 'Save File', content: "FileName:"}, function(fileName) {
-						fileName += '.doc'
+						fileName += '.hdoc'
 						ctrl.setData({fileName, rootDir: '/apps/editor'})
 						saveFile()
 					})
@@ -36,11 +36,16 @@ $$.control.registerControl('rootPage', {
 					pager.pushPage('breizbot.files', {
 						title: 'Open File',
 						props: {
-							filterExtension: '.doc'
+							filterExtension: '.hdoc'
+						},
+						events: {
+							fileclick: function(ev, data) {
+								pager.popPage(data)
+							}
 						},
 						onReturn: function(data) {
 							console.log('onReturn', data)
-							const {fileName, rootDir, cmd} = data
+							const {fileName, rootDir} = data
 							const url = files.fileUrl(rootDir + fileName)
 
 							ctrl.setData({fileName, rootDir})
@@ -57,21 +62,16 @@ $$.control.registerControl('rootPage', {
 							imageOnly: true,
 							showThumbnail: true
 						},
+						events: {
+							fileclick: function(ev, data) {
+								pager.popPage(data)
+							}
+						},
 						onReturn: function(data) {
 							console.log('onReturn', data)
-							const {fileName, rootDir, cmd} = data
+							const {fileName, rootDir} = data
 							const url = files.fileUrl(rootDir + fileName)
-
-							if (cmd == 'openFile') {
-								ctrl.setData({fileName, rootDir})
-
-								ctrl.scope.editor.load(url)
-
-							}
-							if (cmd == 'insertImage') {
-
-								ctrl.scope.editor.insertImage(url)
-							}
+							ctrl.scope.editor.insertImage(url)
 						}						
 					})					
 				}
@@ -92,27 +92,6 @@ $$.control.registerControl('rootPage', {
 				})
 			})	
 		}
-
-		this.onReturn = function(data) {
-			console.log('onReturn', data)
-			if (data == undefined) {
-				return
-			}
-			const {fileName, rootDir, cmd} = data
-			const url = files.fileUrl(rootDir + fileName)
-
-			if (cmd == 'openFile') {
-				ctrl.setData({fileName, rootDir})
-
-				ctrl.scope.editor.load(url)
-
-			}
-			if (cmd == 'insertImage') {
-
-				ctrl.scope.editor.insertImage(url)
-			}
-		}
-
 
 	}
 });

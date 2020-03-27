@@ -12,6 +12,8 @@ const browserify = require('gulp-browserify')
 
 sass.compiler = require('node-sass')
 
+const isDev = process.env.NODE_ENV != 'production'
+console.log('isDev', isDev)
 
 function source(dest, srcs, options) {
 	options = options || {}
@@ -46,13 +48,13 @@ function source(dest, srcs, options) {
 
 
 	if (typeof options.concat == 'string') {
-		stream = stream.pipe(sourcemaps.init())
+		if (isDev) {stream = stream.pipe(sourcemaps.init())}
 		stream = stream.pipe(concat(options.concat))
-		stream = stream.pipe(sourcemaps.write())
+		if (isDev) {stream = stream.pipe(sourcemaps.write())}
 	}
 
-	if (options.isCode === true) {
-		//stream = stream.pipe(uglify())
+	if (options.isCode === true && !isDev) {
+		stream = stream.pipe(uglify())
 	}
 
 

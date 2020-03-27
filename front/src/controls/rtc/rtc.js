@@ -38,8 +38,36 @@ $$.control.registerControl('breizbot.rtc', {
 				onCall: function(ev) {
 					console.log('onCall')
 
-					pager.pushPage('breizbot.friendsPage', {
+					pager.pushPage('breizbot.friends', {
 						title,
+						props: {
+							showSelection: true
+						},
+						buttons: {
+							call: {
+								title: 'Call',
+								icon: 'fa fa-check',
+								onClick: function() {
+									const selection = this.getSelection()
+									if (selection == undefined) {
+										$$.ui.showAlert({title: 'Error', content: 'Please select a friend'})
+										return
+									}
+									const {friendUserName, isConnected} = selection
+									console.log('userName', friendUserName)
+									if (!isConnected) {
+										$$.ui.showAlert({
+											title: 'Error', 
+											content: `User <strong>${friendUserName}</strong> is not connected`
+										})
+									}
+									else {
+										pager.popPage(friendUserName)
+									}
+						
+								}
+							}
+						},
 						onReturn: function(userName) {
 							rtc.call(userName, appName, iconCls)					
 						}						

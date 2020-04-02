@@ -73,7 +73,7 @@ $$.control.registerControl('messagePage', {
 						srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID).then((message) => {
 							//console.log('message', message)
 							waitDlg.hide()
-							const url = `data:${type}/${subtype};base64,` + message.data
+							const url = $$.util.buildDataURL(type, subtype, message.data)
 							pager.pushPage('breizbot.viewer', {
 								title: info.name,
 								props: {
@@ -118,7 +118,7 @@ $$.control.registerControl('messagePage', {
 								srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID).then((message) => {
 									//console.log('message', message)
 									waitDlg.hide()
-									const url = `data:${type}/${subtype};base64,` + message.data
+									const url = $$.util.buildDataURL(type, subtype, message.data)
 									$$.util.downloadUrl(url, info.name)
 
 								})
@@ -152,7 +152,7 @@ $$.control.registerControl('messagePage', {
 					embeddedImages.forEach((e) => {
 						const {type, subtype, partID, cid} = e
 						srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID).then((message) => {
-							const url = `data:${type}/${subtype};base64,` + message.data
+							const url = $$.util.buildDataURL(type, subtype, message.data)
 							const $img = $iframe.find(`img[src="cid:${cid}"]`)
 							$img.attr('src', url)
 

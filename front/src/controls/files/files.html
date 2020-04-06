@@ -108,6 +108,22 @@
 				</div>			
 
 				<div 
+					bn-if="isMP3"  
+					class="file item"
+					>
+					<div class="icon">
+						<i bn-attr="{class: class1}"></i>
+					</div>
+					
+					<div class="info">
+						<div>Title:&nbsp;<strong bn-text="$scope.f.mp3.title"></strong></div>
+
+						<div>Artist:&nbsp;<strong bn-text="$scope.f.mp3.artist"></strong></div>
+						<span bn-text="getSize"></span>	
+					</div>
+				</div>			
+
+				<div 
 					bn-if="if3"  
 					class="file item"
 					>

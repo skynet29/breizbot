@@ -21,11 +21,12 @@
 		align-items: center;
 		justify-content: space-between;
 
-		.shuffle {
-			display: flex;
-			margin-left: 10px;
-		}		
 	}
+
+	.shuffle {
+		display: flex;
+		margin-bottom: 20px;
+	}		
 
 	.slider {
 		display: flex;

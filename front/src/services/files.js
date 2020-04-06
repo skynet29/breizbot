@@ -68,6 +68,10 @@ $$.service.registerService('breizbot.files', {
 			convertToMP3: function(filePath, fileName) {
 				console.log('[FileService] convertToMP3', filePath, fileName)
 				return http.post('/convertToMP3', {filePath, fileName})
+			},
+			zipFolder: function(folderPath, folderName) {
+				console.log('[FileService] zipFolder', folderPath, folderName)
+				return http.post('/zipFolder', {folderPath, folderName})
 			}
 
 		}

@@ -117,10 +117,11 @@ apps.forEach((appName) => {
 	//console.log('check path', appName)
 	const appPath = path.join(appsPath, appName, 'index.js')
 	if (fs.existsSync(appPath)) {
-		const ctx = {wss, config, db: db.collection(appName), util}
+		const ctx = {wss, config, db: db.collection('app.' + appName), util}
 		console.log(`add API router for app ${appName}`.blue)
 
-		const router = require(appPath)(ctx)
+		const router = express.Router()
+		require(appPath)(ctx, router)
 		app.use(`/api/app/${appName}`, router)
 	}
 

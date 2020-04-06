@@ -24,9 +24,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between; }
-    .player .toolbar .shuffle {
-      display: flex;
-      margin-left: 10px; }
+  .player .shuffle {
+    display: flex;
+    margin-bottom: 20px; }
   .player .slider {
     display: flex;
     align-items: center; }

@@ -13,6 +13,10 @@ function getIconClass(name) {
 	if (name.endsWith('.mp4')) {
 		return 'fa-file-video'
 	}
+	if (name.endsWith('.zip')) {
+		return 'fa-file-archive'
+	}
+
 	return 'fa-file'
 }
 
@@ -35,6 +39,7 @@ $$.control.registerControl('breizbot.files', {
 		showToolbar: false,
 		imageOnly: false,
 		filterExtension: undefined,
+		getMP3Info: false,
 		friendUser: ''
 	},
 
@@ -51,7 +56,8 @@ $$.control.registerControl('breizbot.files', {
 			showToolbar,
 			filterExtension,
 			friendUser,
-			imageOnly
+			imageOnly,
+			getMP3Info
 		} = this.props
 
 		if (friendUser != '') {
@@ -90,6 +96,10 @@ $$.control.registerControl('breizbot.files', {
 				operation: 'none',
 				nbSelection: 0,
 				isShareSelected: false,
+				isMP3: function(scope) {
+					return getMP3Info && scope.f.mp3 != undefined && scope.f.mp3.title != undefined &&
+						scope.f.mp3.artist != undefined
+				},
 				getPath: function() {
 					const tab = ('/home' + this.rootDir).split('/')
 					tab.shift()
@@ -113,7 +123,7 @@ $$.control.registerControl('breizbot.files', {
 					return scope.f.name != '..'
 				},
 				if2: function(scope) {
-					return !scope.f.folder && !scope.f.isImage
+					return !scope.f.folder && !scope.f.isImage && !this.isMP3(scope)
 				},
 				if3: function(scope) {
 					return !scope.f.folder && scope.f.isImage
@@ -229,6 +239,21 @@ $$.control.registerControl('breizbot.files', {
 
 					if (cmd == 'convertToMP3') {
 						srvFiles.convertToMP3(rootDir, info.name)
+						.then(function(resp) {
+							console.log('resp', resp)
+							loadData()
+						})
+						.catch(function(resp) {
+							console.log('resp', resp)
+							$$.ui.showAlert({
+								content: resp.responseText,
+								title: 'Error'
+							})
+						})								
+					}
+
+					if (cmd == 'zipFolder') {
+						srvFiles.zipFolder(rootDir, info.name)
 						.then(function(resp) {
 							console.log('resp', resp)
 							loadData()
@@ -436,7 +461,7 @@ $$.control.registerControl('breizbot.files', {
 				rootDir = ctrl.model.rootDir
 			}
 			console.log('loadData', rootDir)
-			srvFiles.list(rootDir, {filterExtension, imageOnly}, friendUser).then(function(files) {
+			srvFiles.list(rootDir, {filterExtension, imageOnly, getMP3Info}, friendUser).then(function(files) {
 				//console.log('files', files)
 				files.forEach((f) => {
 					if (f.isImage) {
@@ -455,6 +480,9 @@ $$.control.registerControl('breizbot.files', {
 						}
 						if (f.name.endsWith('.mp4')) {
 							f.items.convertToMP3 = {name: 'Convert to MP3'}
+						}
+						if (f.folder) {
+							f.items.zipFolder = {name: 'Zip Folder', icon: 'fas fa-file-archive'}
 						}
 
 					}

@@ -11,12 +11,14 @@ $$.control.registerControl('rootPage', {
 				title,
 				props: {
 					filterExtension: '.mp3',
+					getMP3Info: true,
 					friendUser
 				},
 				events: {
 					fileclick: function(ev, info) {
 						const {rootDir, fileName } = info
-						const files = $(this).iface().getFiles()
+						const iface = $(this).iface()
+						const files = iface.getFiles()
 						//console.log('files', files)
 						const firstIdx = files.findIndex((f) => f.name == fileName)
 						//console.log('firstIdx', firstIdx)
@@ -27,6 +29,9 @@ $$.control.registerControl('rootPage', {
 								files,
 								rootDir,
 								friendUser
+							},
+							onBack: function() {
+								iface.update()
 							}
 						})
 	

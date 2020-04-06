@@ -11,7 +11,7 @@ $$.control.registerControl('player', {
 
 	template: {gulp_inject: './player.html'},
 
-	deps: ['breizbot.files', 'breizbot.pager'],
+	deps: ['breizbot.files', 'breizbot.http'],
 
 	props: {
 		rootDir: '',
@@ -20,7 +20,7 @@ $$.control.registerControl('player', {
 		friendUser: ''
 	},
 
-	init: function(elt, filesSrv, pager) {
+	init: function(elt, filesSrv, http) {
 
 		const {rootDir, files, firstIdx, friendUser} = this.props
 
@@ -31,7 +31,9 @@ $$.control.registerControl('player', {
 				idx: firstIdx,
 				nbFiles: files.length,
 				src: getFileUrl(firstIdx),
+				name: getName(firstIdx),
 				title: getTitle(firstIdx),
+				artist: getArtist(firstIdx),
 				duration: 0,
 				curTime: 0,
 				playing: false,
@@ -64,6 +66,38 @@ $$.control.registerControl('player', {
 				onPaused: function() {
 					//console.log('onPaused')
 					ctrl.setData({playing: false})
+				},
+
+				onFindInfo: function() {
+					const {name} = ctrl.model
+					http.post('/search', {
+						query: name.replace('.mp3', ''),
+					}).then((data) => {
+						console.log(data)
+						if (Object.keys(data).length != 0) {
+							$$.ui.showConfirm({title: 'MP3 Information', content: data}, function() {
+								ctrl.setData({
+									title: data.title,
+									artist: data.artist
+								})
+								const {idx} = ctrl.model
+	
+								http.post('/saveInfo', {
+									filePath: rootDir + files[idx].name,
+									friendUser,
+									tags: {
+										title: data.title,
+										artist: data.artist	
+									}
+								})
+	
+							})
+						}
+						else {
+							$$.ui.showAlert({title: 'MP3 Information', content: 'No information found !'})
+						}
+
+					})
 				},
 
 				onPlay: function() {
@@ -124,6 +158,8 @@ $$.control.registerControl('player', {
 			ctrl.setData({
 				src: getFileUrl(idx),
 				title: getTitle(idx),
+				name: getName(idx),
+				artist: getArtist(idx),
 				idx
 			})						
 		}
@@ -149,10 +185,17 @@ $$.control.registerControl('player', {
 
 		const audio = ctrl.scope.audio.get(0)
 
-		function getTitle(idx) {
+		function getName(idx) {
 			return files[idx].name
 		}
 
+		function getTitle(idx) {
+			return files[idx].mp3.title || ''
+		}
+
+		function getArtist(idx) {
+			return files[idx].mp3.artist || ''
+		}
 
 		function getFileUrl(idx) {
 			return filesSrv.fileUrl(rootDir + files[idx].name, friendUser)

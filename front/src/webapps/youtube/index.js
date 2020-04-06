@@ -1,5 +1,3 @@
-const router = require('express').Router()
-
 const ytdl = require('ytdl-core');
 
 const path = require('path')
@@ -7,7 +5,7 @@ const fs = require('fs-extra')
 const fetch = require('node-fetch')
 const querystring = require('querystring')
 
-module.exports = function(ctx) {
+module.exports = function(ctx, router) {
 
 	console.log('start API youtube')
 
@@ -103,8 +101,6 @@ module.exports = function(ctx) {
 		
 
 	})
-
-	return router
 
 }
 

@@ -1,6 +1,4 @@
-const router = require('express').Router()
-
-module.exports = function(ctx) {
+module.exports = function(ctx, router) {
 
 	const db = require('./lib/db')(ctx.db)
 	const mails = require('./lib/mails')(ctx)	
@@ -160,5 +158,4 @@ module.exports = function(ctx) {
 		})	
 	})
 
-	return router
 }

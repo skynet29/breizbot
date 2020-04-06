@@ -1,7 +1,9 @@
 const path = require('path')
 const fs = require('fs-extra')
+const zipFolder = require('zip-a-folder')
 const config = require('../lib/config')
 const {imageSize, genThumbnail, isImage, resizeImage, convertToMP3} = require('../lib/util')
+const NodeID3 = require('node-id3')
 
 
 const cloudPath = config.CLOUD_HOME
@@ -32,6 +34,23 @@ router.post('/list', function(req, res) {
 					size: statInfo.size,
 					isImage: isImage(file),
 					mtime: statInfo.mtimeMs
+				}
+
+				if (!ret.folder && options.getMP3Info === true && file.endsWith('.mp3')) {
+					return new Promise(function(resolve, reject) {
+						NodeID3.read(filePath, function(err, tags) {
+							if (err) {
+								reject(err)
+							}
+							ret.mp3 = {
+								artist: tags.artist,
+								title: tags.title,
+								year: tags.year,
+								genre: tags.genre
+							}
+							resolve(ret)
+						})
+					})
 				}
 
 				if (ret.isImage) {
@@ -214,7 +233,7 @@ router.post('/convertToMP3', function(req, res) {
 	console.log('convertToMP3', req.body)
 	const {filePath, fileName} = req.body
 
-	var user = req.session.user
+	const user = req.session.user
 
 	const fullPath = path.join(cloudPath, user, filePath)
 
@@ -228,17 +247,35 @@ router.post('/convertToMP3', function(req, res) {
 	})			
 })
 
+router.post('/zipFolder', function(req, res) {
+	const {folderPath, folderName} = req.body
+
+	const user = req.session.user
+
+	const fullFolderPath = path.join(cloudPath, user, folderPath, folderName)
+	const fullZipFilePath = path.join(cloudPath, user, folderPath, folderName + '.zip')
+
+	zipFolder.zip(fullFolderPath, fullZipFilePath).then(() => {
+		res.status(200).send('folder zipped!')
+
+	})
+	.catch((e)=> {
+		console.log('error', e)
+		res.status(400).send(e.message)
+	})
+
+})
+
 
 router.post('/copy', function(req, res) {
 	console.log('copy req', req.body)
-	var fileNames = req.body.fileNames
-	var destPath = req.body.destPath
+	const {fileNames, destPath} = req.body
 
-	var user = req.session.user
+	const user = req.session.user
 
-	var promises = fileNames.map(function(fileName) {
-		var fullPath = path.join(cloudPath, user, fileName)
-		var fullDest = path.join(cloudPath, user, destPath, path.basename(fileName))
+	const promises = fileNames.map(function(fileName) {
+		const fullPath = path.join(cloudPath, user, fileName)
+		const fullDest = path.join(cloudPath, user, destPath, path.basename(fileName))
 		console.log('fullDest', fullDest)
 		return fs.copy(fullPath, fullDest)
 	})

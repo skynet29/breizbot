@@ -103,7 +103,7 @@ $$.control.registerControl('player', {
 							artist: data.artist
 						}
 						files[idx].mp3 = tags
-						ctrl.update()
+						ctrl.setData(tags)
 						http.post('/saveInfo', {
 							filePath: rootDir + data.name,
 							friendUser,

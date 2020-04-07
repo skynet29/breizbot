@@ -1,3 +1,12 @@
+.editDlg {
+  display: grid;
+  grid-template-columns: 50px 1fr auto;
+  grid-gap: 10px; }
+  .editDlg label {
+    grid-column: 1 / 2; }
+  .editDlg input {
+    grid-column: 2 / 3; }
+
 .rootPage {
   padding: 10px; }
   .rootPage .w3-bar {

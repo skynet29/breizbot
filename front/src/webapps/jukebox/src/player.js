@@ -26,6 +26,30 @@ $$.control.registerControl('player', {
 
 		let shuffleIndexes = null
 
+		const editDlg = $$.formDialogController({
+			template: {gulp_inject: './editDlg.html'},
+			title: 'MP3 Information',
+			width: 'auto',
+			events: {
+				onFindInfo: function() {
+					const {name} = editDlg.getData()
+					http.post('/search', {
+						query: name.replace('.mp3', ''),
+					}).then((data) => {
+						console.log(data)
+						if (data && data.title) {
+							editDlg.setData(data)
+						}
+						else {
+							$$.ui.showAlert({title: 'MP3 Information', content: 'No information found !'})
+						}
+
+					})
+
+				}
+			}
+		})
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				idx: firstIdx,
@@ -68,37 +92,27 @@ $$.control.registerControl('player', {
 					ctrl.setData({playing: false})
 				},
 
-				onFindInfo: function() {
-					const {name} = ctrl.model
-					http.post('/search', {
-						query: name.replace('.mp3', ''),
-					}).then((data) => {
+				onEditInfo: function() {
+					const {idx, name} = ctrl.model
+					const data = $.extend({name}, files[idx].mp3)
+					editDlg.setData(data, true)
+					editDlg.show(function(data) {
 						console.log(data)
-						if (Object.keys(data).length != 0) {
-							$$.ui.showConfirm({title: 'MP3 Information', content: data}, function() {
-								ctrl.setData({
-									title: data.title,
-									artist: data.artist
-								})
-								const {idx} = ctrl.model
-	
-								http.post('/saveInfo', {
-									filePath: rootDir + files[idx].name,
-									friendUser,
-									tags: {
-										title: data.title,
-										artist: data.artist	
-									}
-								})
-	
-							})
+						const tags = {
+							title: data.title,
+							artist: data.artist
 						}
-						else {
-							$$.ui.showAlert({title: 'MP3 Information', content: 'No information found !'})
-						}
+						files[idx].mp3 = tags
+						ctrl.update()
+						http.post('/saveInfo', {
+							filePath: rootDir + data.name,
+							friendUser,
+							tags
+						})
+
 
 					})
-				},
+ 				},
 
 				onPlay: function() {
 					audio.play()

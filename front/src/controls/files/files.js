@@ -98,7 +98,7 @@ $$.control.registerControl('breizbot.files', {
 				isShareSelected: false,
 				isMP3: function(scope) {
 					return getMP3Info && scope.f.mp3 != undefined && scope.f.mp3.title != undefined &&
-						scope.f.mp3.artist != undefined
+						scope.f.mp3.title != ''
 				},
 				getPath: function() {
 					const tab = ('/home' + this.rootDir).split('/')

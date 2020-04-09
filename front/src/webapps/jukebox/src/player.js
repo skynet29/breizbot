@@ -29,7 +29,7 @@ $$.control.registerControl('player', {
 		let wakeLock = null
 		
 		if (navigator.wakeLock && navigator.wakeLock.request) {
-			navigator.wakeLock.request('system').then((lock) => {
+			navigator.wakeLock.request('screen').then((lock) => {
 				console.log('take wakeLock')
 				wakeLock = lock
 			})

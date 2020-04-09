@@ -32,6 +32,9 @@ $$.control.registerControl('player', {
 			navigator.wakeLock.request('screen').then((lock) => {
 				console.log('take wakeLock')
 				wakeLock = lock
+				wakeLock.addEventListener('release', () => {
+					console.log('Wake Lock was released');
+				  })
 			})
 			.catch((e) => {
 				$$.ui.showAlert({title: "WakeLock", content: e})

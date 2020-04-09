@@ -9,10 +9,9 @@ $$.control.registerControl('rootPage', {
 
 		const audio = new Audio('/webapps/camera/assets/camera_shutter.mp3')
 
-		function saveImage(url) {
+		function saveImage(blob) {
 			const fileName = 'SNAP' + Date.now() + '.png'
 			console.log('fileName', fileName)
-			const blob = $$.util.dataURLtoBlob(url)
 			srvFiles.uploadFile(blob, fileName, '/apps/camera').then(function(resp) {
 				console.log('resp', resp)
 				pager.popPage()
@@ -42,21 +41,23 @@ $$.control.registerControl('rootPage', {
 				},
 				onTakePicture: function(ev) {
 					audio.play()
-					const url = ctrl.scope.camera.takePicture()
-					
-					pager.pushPage('breizbot.viewer', {
-						title: 'Snapshot', 
-						props: {url, type: 'image'},
-						buttons: {
-							save: {
-								title: 'Save',
-								icon: 'fa fa-save',
-								onClick: function() {
-									saveImage(url)
+					ctrl.scope.camera.takePicture().then((blob) => {
+						pager.pushPage('breizbot.viewer', {
+							title: 'Snapshot', 
+							props: {url: URL.createObjectURL(blob), type: 'image'},
+							buttons: {
+								save: {
+									title: 'Save',
+									icon: 'fa fa-save',
+									onClick: function() {
+										saveImage(blob)
+									}
 								}
-							}
-						},	
+							},	
+						})
+	
 					})
+					
 				},
 				onDeviceChange: function(ev, data) {
 					console.log('onDeviceChange', $(this).getValue())

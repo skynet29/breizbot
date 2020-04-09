@@ -1,26 +1,32 @@
-const router = require('express').Router()
+const fetch = require('node-fetch')
+const querystring = require('querystring')
 
-const qwant = require("qwant-api")
- 
-module.exports = function(ctx) {
 
-	router.post('/search', function(req, res) {
-		console.log('browser/search', req.body)
+module.exports = function(ctx, router) {
 
+    router.post('/search', function(req, res) {
 		const {query} = req.body
 
-		qwant.search("web", { query, count: 10, offset: 1, language: "french" }, function(err, data){
-		    if (err) {
-		    	res.sendStatus('404')
-		    }
-		    else {
-		    	res.json(data)
-		    }
-		})		
+		const params = {
+            q: query,	
+			count: 10,
+			t: query,
+			uiv: 4			
+		}
 
+		fetch('https://api.qwant.com/api/search/web?' + querystring.stringify(params))
+		.then((rep) => {
+			return rep.json()
+		})
+		.then((json) => {
+			res.json(json.data.result.items)
+		})
+		.catch((e) => {
+			console.log('error', e)
+			res.sendStatus(404)
+		})
 	})
 
-	return router
 
 }
 

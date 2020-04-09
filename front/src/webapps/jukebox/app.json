@@ -1,7 +1,7 @@
 {	
-	"iconCls": "fa fa-compact-disc fa-2x",
+	"iconCls": "fab fa-itunes-note fa-2x",
 	"colorCls": "w3-pink",
-	"title": "Jukebox",
+	"title": "Music",
 	"styles": ["app.css"],
 	"brainjs": ["map"]
 }

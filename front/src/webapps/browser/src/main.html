@@ -6,11 +6,11 @@
 	<div bn-each="results">
 		<div class="w3-card-2 item">
 			<div class="link">
-				<a bn-attr="{href: $i.url}" bn-html="$i.title" class="link" target="_blank"></a>
+				<a bn-attr="{href: $scope.$i.url}" bn-html="$scope.$i.title" class="link" target="_blank"></a>
 				
 			</div>
-			<div bn-html="$i.source" class="source"></div>		
-			<div bn-html="$i.desc" class="desc"></div>	
+			<div bn-html="$scope.$i.source" class="source"></div>		
+			<div bn-html="$scope.$i.desc" class="desc"></div>	
 		</div>
 	</div>
 	

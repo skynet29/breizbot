@@ -26,6 +26,26 @@ $$.control.registerControl('player', {
 
 		let shuffleIndexes = null
 
+		let wakeLock = null
+		
+		if (navigator.wakeLock && navigator.wakeLock.request) {
+			navigator.wakeLock.request('system').then((lock) => {
+				console.log('take wakeLock')
+				wakeLock = lock
+			})
+			.catch((e) => {
+				$$.ui.showAlert({title: "WakeLock", content: e})
+			})
+	
+		}
+
+		this.dispose = function() {
+			if (wakeLock != null) {
+				console.log('release wakeLock')
+				wakeLock.release()
+			}
+		}
+
 		const editDlg = $$.formDialogController({
 			template: {gulp_inject: './editDlg.html'},
 			title: 'MP3 Information',

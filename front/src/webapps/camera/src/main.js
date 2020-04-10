@@ -32,11 +32,28 @@ $$.control.registerControl('rootPage', {
 				showMessage: false,
 				show1: function() {
 					return this.videoDevices.length > 1
-				}
+				},
+				hasZoom: false
 			},
 			events: {
 				onCameraReady: function() {
 					console.log('onCameraReady')
+					const iface = $(this).iface()
+					setTimeout(() => {
+						const capabilities = iface.getCapabilities()
+						console.log('capabilities', capabilities)
+
+						if (capabilities.zoom) {
+							const settings = iface.getSettings()
+							console.log('settings', settings)
+							const {min, max, step} = capabilities.zoom
+							ctrl.scope.slider.setData({min, max, step})
+							ctrl.scope.slider.setValue(settings.zoom)
+							ctrl.setData({hasZoom: true})
+						}
+	
+					}, 500)
+					
 					ctrl.setData({ready: true})
 				},
 				onTakePicture: function(ev) {
@@ -71,6 +88,11 @@ $$.control.registerControl('rootPage', {
 					ctrl.setData({constraints})
 
 
+				},
+				onZoomChange: function(ev) {
+					const value = $(this).getValue()
+					console.log('onZoomChange', value)
+					ctrl.scope.camera.setZoom(value)
 				}
 			}
 		})

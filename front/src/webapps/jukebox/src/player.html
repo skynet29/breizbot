@@ -1,4 +1,4 @@
-<div class="title">
+<div class="title" bn-show="!title">
 	<strong>FileName:&nbsp;</strong>
 	<span bn-text="name"></span>
 </div>
@@ -11,7 +11,6 @@
 	<span bn-text="artist"></span>
 </div>
 <div class="toolbar">
-	<div>
 		<button bn-prop="prop1" bn-event="click: onPrev" class="w3-btn w3-blue" title="Previous">
 			<i class="fa fa-lg fa-step-backward"></i>
 		</button>
@@ -27,11 +26,10 @@
 		<button bn-prop="prop2" bn-event="click: onNext" class="w3-btn w3-blue" title="Next">
 			<i class="fa fa-lg fa-step-forward"></i>
 		</button>	
-	</div>	
 
-		<button bn-event="click: onEditInfo" class="w3-btn w3-blue" title="Edit Info">
+		<!-- <button bn-event="click: onEditInfo" class="w3-btn w3-blue" title="Edit Info">
 			<i class="fa fa-lg fa-edit"></i>
-		</button>		
+		</button>		 -->
 
 </div>
 

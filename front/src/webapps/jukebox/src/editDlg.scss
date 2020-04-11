@@ -1,13 +1,36 @@
 .editDlg {
-    display: grid;
-    grid-template-columns: 50px 1fr auto;
-    grid-gap: 10px;
 
-    label {
-        grid-column: 1 / 2;
+    padding: 10px;
+
+    form {
+
+        //margin-top: 10px;
+
+        display: grid;
+        grid-template-columns: 50px 1fr auto;
+        grid-gap: 10px;
+
+        label {
+            grid-column: 1 / 2;
+        }
+        
+        input {
+            grid-column: 2 / 3;
+        }
     }
-     
-    input {
-        grid-column: 2 / 3;
+
+    .toolbar {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+
+        .w3-circle {
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 3rem;
+            height: 3rem;
+        }
     }
 }

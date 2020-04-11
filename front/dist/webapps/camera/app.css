@@ -1,5 +1,12 @@
 .rootPage {
   position: relative; }
+  .rootPage .w3-circle {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem; }
   .rootPage .main {
     display: flex;
     flex-direction: row;
@@ -14,7 +21,8 @@
     left: 0px;
     z-index: 1000;
     width: 100%;
-    text-align: center; }
+    display: flex;
+    justify-content: center; }
   .rootPage .slider {
     position: absolute;
     top: 50px;

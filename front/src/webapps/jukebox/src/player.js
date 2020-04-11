@@ -11,7 +11,7 @@ $$.control.registerControl('player', {
 
 	template: {gulp_inject: './player.html'},
 
-	deps: ['breizbot.files', 'breizbot.http'],
+	deps: ['breizbot.files', 'breizbot.http', 'breizbot.pager'],
 
 	props: {
 		rootDir: '',
@@ -20,7 +20,7 @@ $$.control.registerControl('player', {
 		friendUser: ''
 	},
 
-	init: function(elt, filesSrv, http) {
+	init: function(elt, filesSrv, http, pager) {
 
 		const {rootDir, files, firstIdx, friendUser} = this.props
 
@@ -49,29 +49,6 @@ $$.control.registerControl('player', {
 			}
 		}
 
-		const editDlg = $$.formDialogController({
-			template: {gulp_inject: './editDlg.html'},
-			title: 'MP3 Information',
-			width: 'auto',
-			events: {
-				onFindInfo: function() {
-					const {name} = editDlg.getData()
-					http.post('/search', {
-						query: name.replace('.mp3', ''),
-					}).then((data) => {
-						console.log(data)
-						if (data && data.title) {
-							editDlg.setData(data)
-						}
-						else {
-							$$.ui.showAlert({title: 'MP3 Information', content: 'No information found !'})
-						}
-
-					})
-
-				}
-			}
-		})
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -114,28 +91,6 @@ $$.control.registerControl('player', {
 					//console.log('onPaused')
 					ctrl.setData({playing: false})
 				},
-
-				onEditInfo: function() {
-					const {idx, name} = ctrl.model
-					const data = $.extend({name}, files[idx].mp3)
-					editDlg.setData(data, true)
-					editDlg.show(function(data) {
-						console.log(data)
-						const tags = {
-							title: data.title,
-							artist: data.artist
-						}
-						files[idx].mp3 = tags
-						ctrl.setData(tags)
-						http.post('/saveInfo', {
-							filePath: rootDir + data.name,
-							friendUser,
-							tags
-						})
-
-
-					})
- 				},
 
 				onPlay: function() {
 					audio.play()
@@ -238,7 +193,35 @@ $$.control.registerControl('player', {
 			return filesSrv.fileUrl(rootDir + files[idx].name, friendUser)
 		}
 
-
+		this.getButtons = function() {
+			return {
+				editInfo: {
+					title: 'Edit Info',
+					icon: 'fa fa-edit',
+					onClick: function() {
+						const {idx, name} = ctrl.model
+						pager.pushPage('editDlg', {
+							title: 'Edit MP3 Info',
+							props: {
+								data: files[idx].mp3,
+								fileName: name
+							},
+							onReturn: function(tags) {
+								console.group('onReturn', tags)
+								files[idx].mp3 = tags
+								ctrl.setData(tags)
+								http.post('/saveInfo', {
+									filePath: rootDir + name,
+									friendUser,
+									tags
+								})			
+							}
+						})
+	
+					}
+				}
+			}
+		}
 
 	}
 

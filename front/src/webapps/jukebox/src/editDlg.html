@@ -1,10 +1,16 @@
-<div class="editDlg">
-    <input type="text" name="name" hidden>
+<form bn-event="submit: onSubmit">
     <label>Title</label>
-    <input type="text" name="title" required>
-    <button type="button" title="Find Info" bn-event="click: onFindInfo" class="w3-btn w3-blue">
-        <i class="fa fa-info"></i>
-    </button>
+    <input type="text" bn-val="title" bn-update="input" required>
     <label>Artist</label>
-    <input type="text" name="artist" required>
+    <input type="text" bn-val="artist" bn-update="input" required>
+
+
+    <input type="submit" hidden bn-bind="submit">
+</form>
+
+<div class="toolbar">
+    <button type="button" title="Find Info" bn-event="click: onFindInfo" class="w3-btn w3-blue w3-circle">
+        <i class="fa fa-search"></i>
+    </button>
+    
 </div>

@@ -41,11 +41,11 @@ $$.control.registerControl('rootPage', {
 					const iface = $(this).iface()
 					setTimeout(() => {
 						const capabilities = iface.getCapabilities()
-						console.log('capabilities', capabilities)
+						//console.log('capabilities', capabilities)
 
 						if (capabilities.zoom) {
 							const settings = iface.getSettings()
-							console.log('settings', settings)
+							//console.log('settings', settings)
 							const {min, max, step} = capabilities.zoom
 							ctrl.scope.slider.setData({min, max, step})
 							ctrl.scope.slider.setValue(settings.zoom)

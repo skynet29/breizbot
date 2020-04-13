@@ -511,7 +511,7 @@ $$.control.registerControl('breizbot.files', {
 		}
 
 		this.update = function() {
-			console.log('[FileCtrl] update')
+			//console.log('[FileCtrl] update')
 			loadData()
 		}
 	},

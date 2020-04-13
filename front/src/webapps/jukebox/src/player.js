@@ -207,7 +207,7 @@ $$.control.registerControl('player', {
 								fileName: name
 							},
 							onReturn: function(tags) {
-								console.group('onReturn', tags)
+								//console.group('onReturn', tags)
 								files[idx].mp3 = tags
 								ctrl.setData(tags)
 								http.post('/saveInfo', {

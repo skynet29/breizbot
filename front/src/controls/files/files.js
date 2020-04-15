@@ -480,7 +480,7 @@ $$.control.registerControl('breizbot.files', {
 		}
 
 
-		function loadData(rootDir) {
+		function loadData(rootDir, resetFilters) {
 			if (rootDir == undefined) {
 				rootDir = ctrl.model.rootDir
 			}
@@ -518,6 +518,10 @@ $$.control.registerControl('breizbot.files', {
 
 				sortFiles(files)
 
+				if (resetFilters !== false) {
+					ctrl.model.mp3Filters = null
+				}
+
 				ctrl.setData({
 					files, 
 					rootDir, 
@@ -540,7 +544,7 @@ $$.control.registerControl('breizbot.files', {
 
 		this.update = function() {
 			//console.log('[FileCtrl] update')
-			loadData()
+			loadData(undefined, false)
 		}
 
 		this.setMP3Filters = function(mp3Filters) {

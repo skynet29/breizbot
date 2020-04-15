@@ -13,6 +13,8 @@ $$.control.registerControl('player', {
 
 	deps: ['breizbot.files', 'breizbot.http', 'breizbot.pager'],
 
+	wakeLock: true,
+
 	props: {
 		rootDir: '',
 		files: [],
@@ -26,30 +28,6 @@ $$.control.registerControl('player', {
 
 		let shuffleIndexes = null
 
-		let wakeLock = null
-		
-		if (navigator.wakeLock && navigator.wakeLock.request) {
-			navigator.wakeLock.request('screen').then((lock) => {
-				console.log('take wakeLock')
-				wakeLock = lock
-				wakeLock.addEventListener('release', () => {
-					console.log('Wake Lock was released');
-				  })
-			})
-			.catch((e) => {
-				$$.ui.showAlert({title: "WakeLock", content: e})
-			})
-	
-		}
-
-		this.dispose = function() {
-			if (wakeLock != null) {
-				console.log('release wakeLock')
-				wakeLock.release()
-			}
-		}
-
-
 		const ctrl = $$.viewController(elt, {
 			data: {
 				idx: firstIdx,
@@ -61,11 +39,11 @@ $$.control.registerControl('player', {
 				duration: 0,
 				curTime: 0,
 				playing: false,
-				prop1: function() {
-					return {disabled: !(this.idx > 0)}
+				isFirst: function() {
+					return (this.idx == 0)
 				},
-				prop2: function() {
-					return {disabled: !(this.idx < this.nbFiles - 1)}
+				isLast: function() {
+					return (this.idx == this.nbFiles - 1)
 				},
 				getTimeInfo: function() {
 					return `${getTime(this.curTime)} / ${getTime(this.duration)}`
@@ -108,7 +86,7 @@ $$.control.registerControl('player', {
 				onShuffleChange: function(ev, value) {
 					//console.log('onShuffleChange', value)
 					if (value == 'ON') {
-						shuffleIndexes = knuthShuffle(ctrl.model.nbFiles)
+						shuffleIndexes = $$.util.knuthShuffle(ctrl.model.nbFiles)
 						//console.log('shuffleIndexes', shuffleIndexes)
 					}
 					else {
@@ -155,25 +133,6 @@ $$.control.registerControl('player', {
 				idx
 			})						
 		}
-
-		function knuthShuffle(length) {
-			//console.log('knuthShuffle', length)
-			let arr = []
-			for(let k = 0; k < length; k++) {
-				arr.push(k)
-			}
-
-		    var rand, temp, i;
-		 
-		    for (i = arr.length - 1; i > 0; i -= 1) {
-		        rand = Math.floor((i + 1) * Math.random());//get random between zero and i (inclusive)
-		        temp = arr[rand];//swap i and the zero-indexed number
-		        arr[rand] = arr[i];
-		        arr[i] = temp;
-		    }
-		    return arr;
-		}		
-
 
 		const audio = ctrl.scope.audio.get(0)
 

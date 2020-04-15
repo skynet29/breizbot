@@ -50,9 +50,6 @@ $$.control.registerControl('breizbot.pager', {
 			
 			const iface = curInfo.ctrl.iface()
 			//console.log('popPage', pageCtrl)
-			if (typeof iface.dispose == 'function') {
-				iface.dispose()
-			}
 			curInfo.ctrl.safeEmpty().remove()
 			if (isBack) {
 				if (typeof curInfo.onBack == 'function') {
@@ -63,7 +60,7 @@ $$.control.registerControl('breizbot.pager', {
 				curInfo.onReturn(data)
 			}
 
-			curInfo = stack.pop()			
+			curInfo = stack.pop()
 			curInfo.ctrl.show()
 			const {title, buttons} = curInfo
 			ctrl.setData({showBack: stack.length > 0, title, buttons: $$.util.objToArray(buttons, 'name')})

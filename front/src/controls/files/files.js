@@ -40,7 +40,8 @@ $$.control.registerControl('breizbot.files', {
 		imageOnly: false,
 		filterExtension: undefined,
 		getMP3Info: false,
-		friendUser: ''
+		friendUser: '',
+		mp3Filters: null
 	},
 
 	template: {gulp_inject: './files.html'},
@@ -57,7 +58,8 @@ $$.control.registerControl('breizbot.files', {
 			filterExtension,
 			friendUser,
 			imageOnly,
-			getMP3Info
+			getMP3Info,
+			mp3Filters
 		} = this.props
 
 		if (friendUser != '') {
@@ -96,6 +98,28 @@ $$.control.registerControl('breizbot.files', {
 				operation: 'none',
 				nbSelection: 0,
 				isShareSelected: false,
+				mp3Filters,
+
+				isInFilter: function(mp3Info) {
+					var ret = true
+					for(var f in this.mp3Filters) {
+						var value = mp3Info[f]
+						var filterValue = this.mp3Filters[f]
+						if (filterValue != null) {
+							ret &= (filterValue === value)
+						}
+					}
+					return ret
+				},				
+
+				getFiles: function() {
+					if (this.mp3Filters === null) {
+						return this.files
+					}
+					return this.files.filter((f) => {
+						return f.folder || (f.mp3 && f.mp3 && this.isInFilter(f.mp3))
+					})
+				},
 				isMP3: function(scope) {
 					return getMP3Info && scope.f.mp3 != undefined && scope.f.mp3.title != undefined &&
 						scope.f.mp3.title != ''
@@ -276,7 +300,7 @@ $$.control.registerControl('breizbot.files', {
 
 				onFileClick: function(ev) {
 					const idx = $(this).closest('.thumbnail').index()					
-					const info = ctrl.model.files[idx]
+					const info = ctrl.model.getFiles()[idx]
 
 					ev.stopPropagation()
 					const data = {
@@ -289,7 +313,7 @@ $$.control.registerControl('breizbot.files', {
 				},
 				onCheckClick: function(ev) {
 					const idx = $(this).closest('.thumbnail').index()					
-					const info = ctrl.model.files[idx]
+					const info = ctrl.model.getFiles()[idx]
 
 					if (info.name == 'share' && ctrl.model.rootDir == '/') {
 						ctrl.model.isShareSelected = $(this).getValue()
@@ -300,7 +324,7 @@ $$.control.registerControl('breizbot.files', {
 				onFolderClick: function(ev) {
 
 					const idx = $(this).closest('.thumbnail').index()					
-					const info = ctrl.model.files[idx]
+					const info = ctrl.model.getFiles()[idx]
 
 					const dirName = info.name
 					//console.log('onFolderClick', dirName)
@@ -510,9 +534,21 @@ $$.control.registerControl('breizbot.files', {
 			return ctrl.model.files.filter((f) => !f.folder)
 		}
 
+		this.getFilteredFiles = function() {
+			return ctrl.model.getFiles().filter((f) => !f.folder)
+		}
+
 		this.update = function() {
 			//console.log('[FileCtrl] update')
 			loadData()
+		}
+
+		this.setMP3Filters = function(mp3Filters) {
+			ctrl.setData({mp3Filters})
+		}
+
+		this.getMP3Filters = function() {
+			return ctrl.model.mp3Filters
 		}
 	},
 

@@ -56,7 +56,6 @@
 </div>
 
 <div class="pathPanel" bn-event="click.pathItem: onPathItem">
-	<div>Path:</div>
 	<div bn-each="getPath" bn-index="idx">
 		<i class="fa fa-chevron-right" bn-show="!isFirst"></i>
 		<span>
@@ -72,7 +71,7 @@
 
 <div class="scrollPanel">
 
-	<div bn-each="files" 
+	<div bn-each="getFiles" 
 		bn-iter="f" 
 		class="container"
 		bn-event="click.folder: onFolderClick, click.check: onCheckClick, click.file: onFileClick, contextmenuchange.thumbnail: onContextMenu">

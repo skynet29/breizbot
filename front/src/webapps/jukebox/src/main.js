@@ -14,14 +14,48 @@ $$.control.registerControl('rootPage', {
 					getMP3Info: true,
 					friendUser
 				},
+				buttons: {
+					search: {
+						title: 'Filter',
+						icon: 'fa fa-search',
+						onClick: function() {
+							let artists = {}
+							const iface = this
+							const mp3Filters = iface.getMP3Filters()
+							iface.getFiles()
+								.forEach((f) => {
+									if (f.mp3 && f.mp3.artist) {
+										artists[f.mp3.artist] = 1
+									}
+								})
+							artists = Object.keys(artists)
+							artists.unshift('All')
+							pager.pushPage('filterDlg', {
+								title: 'Filter',
+								props: {
+									artists,
+									selectedArtist:  (mp3Filters && mp3Filters.artist) || 'All'
+								},
+								onReturn: function(artist) {
+									console.log('artist', artist)
+									if (artist == 'All') {
+										artist = null
+									}
+									iface.setMP3Filters({artist})
+								}
+							})
+						},
+					}
+				},
 				events: {
 					fileclick: function(ev, info) {
+						console.log('info', info)
 						const {rootDir, fileName } = info
 						const iface = $(this).iface()
-						const files = iface.getFiles()
-						//console.log('files', files)
+						const files = iface.getFilteredFiles()
+						console.log('files', files)
 						const firstIdx = files.findIndex((f) => f.name == fileName)
-						//console.log('firstIdx', firstIdx)
+						console.log('firstIdx', firstIdx)
 						pager.pushPage('player', {
 							title: 'Player',
 							props: {

@@ -1,0 +1,22 @@
+.filterDlg {
+
+    padding: 10px;
+
+    form {
+
+        //margin-top: 10px;
+
+        display: grid;
+        grid-template-columns: 50px 1fr auto;
+        grid-gap: 10px;
+        align-items: center;
+
+        label {
+            grid-column: 1 / 2;
+        }
+        
+        .brainjs-selectmenu {
+            grid-column: 2 / 3;
+        }
+    }
+}

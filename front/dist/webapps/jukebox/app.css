@@ -20,6 +20,18 @@
       width: 3rem;
       height: 3rem; }
 
+.filterDlg {
+  padding: 10px; }
+  .filterDlg form {
+    display: grid;
+    grid-template-columns: 50px 1fr auto;
+    grid-gap: 10px;
+    align-items: center; }
+    .filterDlg form label {
+      grid-column: 1 / 2; }
+    .filterDlg form .brainjs-selectmenu {
+      grid-column: 2 / 3; }
+
 .rootPage {
   padding: 10px; }
   .rootPage .w3-bar {

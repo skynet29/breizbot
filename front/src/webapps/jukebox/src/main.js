@@ -6,6 +6,43 @@ $$.control.registerControl('rootPage', {
 
 	init: function(elt, pager) {
 
+		function openFilterPage(iface) {
+			let artists = {}
+			const mp3Filters = iface.getMP3Filters()
+			iface.getFiles()
+				.forEach((f) => {
+					if (f.mp3 && f.mp3.artist) {
+						if (artists[f.mp3.artist]) {
+							artists[f.mp3.artist]++
+						}
+						else {
+							artists[f.mp3.artist] = 1
+						}						
+					}
+				})
+			artists = Object.keys(artists).map((artist) => {
+				const nbTitle = artists[artist]
+				return (nbTitle == 1) ?
+					{value: artist, label: artist} :
+					{value: artist, label: `${artist} (${nbTitle})`}
+			})
+			artists.unshift({value: 'All', label: 'All', style: 'font-weight: bold;'})
+			pager.pushPage('filterDlg', {
+				title: 'Filter',
+				props: {
+					artists,
+					selectedArtist:  (mp3Filters && mp3Filters.artist) || 'All'
+				},
+				onReturn: function(artist) {
+					console.log('artist', artist)
+					if (artist == 'All') {
+						artist = null
+					}
+					iface.setMP3Filters({artist})
+				}
+			})
+		}
+
 		function openFilePage(title, friendUser) {
 			pager.pushPage('breizbot.files', {
 				title,
@@ -19,32 +56,8 @@ $$.control.registerControl('rootPage', {
 						title: 'Filter',
 						icon: 'fa fa-search',
 						onClick: function() {
-							let artists = {}
-							const iface = this
-							const mp3Filters = iface.getMP3Filters()
-							iface.getFiles()
-								.forEach((f) => {
-									if (f.mp3 && f.mp3.artist) {
-										artists[f.mp3.artist] = 1
-									}
-								})
-							artists = Object.keys(artists)
-							artists.unshift('All')
-							pager.pushPage('filterDlg', {
-								title: 'Filter',
-								props: {
-									artists,
-									selectedArtist:  (mp3Filters && mp3Filters.artist) || 'All'
-								},
-								onReturn: function(artist) {
-									console.log('artist', artist)
-									if (artist == 'All') {
-										artist = null
-									}
-									iface.setMP3Filters({artist})
-								}
-							})
-						},
+							openFilterPage(this)
+						}
 					}
 				},
 				events: {

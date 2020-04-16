@@ -1,6 +1,6 @@
 <form bn-event="submit: onSubmit">
     <label>Artist</label>
-    <div bn-control="brainjs.selectmenu" bn-data="{items: artists}" bn-val="selectedArtist" bn-update="selectmenuchange"></div>    
+    <div bn-control="brainjs.combobox" bn-data="{items: artists}" bn-val="selectedArtist" bn-update="comboboxchange"></div>    
 
     <input type="submit" hidden bn-bind="submit">
 </form>

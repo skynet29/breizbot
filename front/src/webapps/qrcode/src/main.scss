@@ -1,0 +1,26 @@
+.rootPage {
+	position: relative;
+
+
+	.main {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		align-items: center;
+		height: 100%;	
+
+		.brainjs-camera {
+			height: 100%;
+			//flex: 1;
+		}	
+	}
+
+	.slider {
+		position: absolute;
+		top: 50px;
+		right: 10px;
+		height: 300px;
+		z-index: 1000;
+	}
+
+}

@@ -44,11 +44,7 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				videoDevices: [],
 				showMessage: false,
-				show1: function() {
-					return this.videoDevices.length > 1
-				},
 				hasZoom: false
 			},
 			events: {

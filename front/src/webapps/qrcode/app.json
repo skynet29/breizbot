@@ -1,6 +1,6 @@
 {	
-	"iconCls": "fa fa-qrcode fa-2x",
+	"iconCls": "fa fa-barcode fa-2x",
 	"colorCls": "w3-amber",
-	"title": "BarCode",
+	"title": "Barcode",
 	"styles": ["app.css"]
 }

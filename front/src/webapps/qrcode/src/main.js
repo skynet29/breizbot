@@ -14,7 +14,7 @@ $$.control.registerControl('rootPage', {
 			})
 			.then((barcodes) => {
 				if (barcodes.length == 0) {
-					requestAnimationFrame(detect)
+					setTimeout(detect, 1000)
 				}
 				else {
 					console.log('barcodes', barcodes)
@@ -32,7 +32,7 @@ $$.control.registerControl('rootPage', {
 						}
 					}
 					$$.ui.showAlert({title: 'BarCode Detected', content}, () => {
-						requestAnimationFrame(detect)
+						detect()
 					})
 				}
 			})
@@ -66,7 +66,7 @@ $$.control.registerControl('rootPage', {
 							ctrl.setData({hasZoom: true})
 						}
 
-						requestAnimationFrame(detect)
+						detect()
 
 	
 					}, 500)

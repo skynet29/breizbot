@@ -19,23 +19,20 @@ $$.control.registerControl('editDlg', {
                artist: data.artist 
             },
             events: {
-                onFindInfo: function() {
-					http.post('/search', {
+                onFindInfo: async function() {
+					const data = await http.post('/search', {
 						query: fileName.replace('.mp3', ''),
-					}).then((data) => {
-						console.log(data)
-						if (data && data.title) {
-							ctrl.setData({
-                                title: data.title,
-                                artist: data.artist 
-                            })
-						}
-						else {
-							$$.ui.showAlert({title: 'MP3 Information', content: 'No information found !'})
-						}
-
 					})
-                    
+                    console.log(data)
+                    if (data && data.title) {
+                        ctrl.setData({
+                            title: data.title,
+                            artist: data.artist 
+                        })
+                    }
+                    else {
+                        $$.ui.showAlert({title: 'MP3 Information', content: 'No information found !'})
+                    }                    
                 },
                 onSubmit: function(ev) {
                     ev.preventDefault()

@@ -64,20 +64,17 @@ $$.control.registerControl('accountPage', {
 				}
 			},
 			events: {
-				onSubmit: function(ev) {
+				onSubmit: async function(ev) {
 					ev.preventDefault()
 					const formData = $(this).getFormData()
 					console.log('formData', formData)
 					if (data == null) {
-						srvMail.createMailAccount(formData).then(() => {
-							pager.popPage()
-						})						
+						await srvMail.createMailAccount(formData)
 					}
 					else {
-						srvMail.updateMailAccount(formData).then(() => {
-							pager.popPage()
-						})												
+						await srvMail.updateMailAccount(formData)
 					}
+					pager.popPage()
 
 				},
 				onProviderChange: function() {

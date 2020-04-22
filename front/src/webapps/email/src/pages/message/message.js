@@ -60,7 +60,7 @@ $$.control.registerControl('messagePage', {
 				}
 			},
 			events: {
-				openAttachment: function(ev) {
+				openAttachment: async function(ev) {
 					ev.preventDefault()
 					const idx = $(this).closest('li').index()
 					const info = ctrl.model.attachments[idx]
@@ -70,39 +70,37 @@ $$.control.registerControl('messagePage', {
 
 					if (info.canOpen) {
 						waitDlg.show()
-						srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID).then((message) => {
-							//console.log('message', message)
-							waitDlg.hide()
-							const url = $$.util.buildDataURL(type, subtype, message.data)
-							pager.pushPage('breizbot.viewer', {
-								title: info.name,
-								props: {
-									type: $$.util.getFileType(info.name),
-									url	
-								},
-								buttons: {
-									save: {
-										title: 'Save',
-										icon: 'fa fa-save',
-										onClick: function() {
-											const blob = $$.util.dataURLtoBlob(url)
-											srvFiles.uploadFile(blob, info.name, '/apps/email').then(function(resp) {
-												console.log('resp', resp)
-												pager.popPage()
-											})	
-											.catch(function(resp) {
-												$$.ui.showAlert({
-													title: 'Error',
-													content: resp.responseText
-												})
-											})													
+						const message = await srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID)
+						//console.log('message', message)
+						waitDlg.hide()
+						const url = $$.util.buildDataURL(type, subtype, message.data)
+						pager.pushPage('breizbot.viewer', {
+							title: info.name,
+							props: {
+								type: $$.util.getFileType(info.name),
+								url	
+							},
+							buttons: {
+								save: {
+									title: 'Save',
+									icon: 'fa fa-save',
+									onClick: async function() {
+										const blob = $$.util.dataURLtoBlob(url)
+										try {
+											const resp = await srvFiles.uploadFile(blob, info.name, '/apps/email')
+											console.log('resp', resp)
+											pager.popPage()
+										}
+										catch (e) {
+											$$.ui.showAlert({
+												title: 'Error',
+												content: resp.responseText
+											})
 										}
 									}
-								},	
-							
-							})		
-					
-						})								
+								}
+							}							
+						})							
 					}
 					else {
 						$$.ui.showConfirm({
@@ -112,19 +110,17 @@ $$.control.registerControl('messagePage', {
 							content: `This attachment cannot be open with NetOS<br>
 								Do you want to download it ?`
 							},
-							function() {
+							async function() {
 								console.log('OK')
 								waitDlg.show()
-								srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID).then((message) => {
-									//console.log('message', message)
-									waitDlg.hide()
-									const url = $$.util.buildDataURL(type, subtype, message.data)
-									$$.util.downloadUrl(url, info.name)
-
-								})
-
+								const message = await srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID)
+								//console.log('message', message)
+								waitDlg.hide()
+								const url = $$.util.buildDataURL(type, subtype, message.data)
+								$$.util.downloadUrl(url, info.name)
 							}
 						)
+					
 					}
 
 				},
@@ -143,21 +139,17 @@ $$.control.registerControl('messagePage', {
 				},
 				onEmbeddedImages: function(ev) {
 					ev.preventDefault()
-					//ctrl.setData({embeddedImages: []})
 					const $iframe = $(ctrl.scope.iframe.get(0).contentWindow.document)
 
 					const {embeddedImages} = ctrl.model
 					ctrl.setData({embeddedImages: []})
 
-					embeddedImages.forEach((e) => {
+					embeddedImages.forEach(async (e) => {
 						const {type, subtype, partID, cid} = e
-						srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID).then((message) => {
-							const url = $$.util.buildDataURL(type, subtype, message.data)
-							const $img = $iframe.find(`img[src="cid:${cid}"]`)
-							$img.attr('src', url)
-
-						})					
-
+						const message = await srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID)
+						const url = $$.util.buildDataURL(type, subtype, message.data)
+						const $img = $iframe.find(`img[src="cid:${cid}"]`)
+						$img.attr('src', url)
 					})
 
 				},
@@ -199,22 +191,23 @@ $$.control.registerControl('messagePage', {
 		}
 		console.log('isHtml', isHtml)
 
-
-		srvMail.openMessage(currentAccount, mailboxName, item.seqno, partID).then((message) => {
+		async function openMessage() {
+			const message = await srvMail.openMessage(currentAccount, mailboxName, item.seqno, partID)
 			console.log('message', message)
-
-
+	
+	
 			const {text, attachments, embeddedImages} = message
 
 			attachments.forEach((a) => {
 				a.canOpen = $$.util.getFileType(a.name) != undefined && a.encoding.toUpperCase() == 'BASE64'
 
 			})
+	
+	
+			ctrl.setData({text, attachments, embeddedImages, loading:false, isHtml})	
+		}
 
-
-			ctrl.setData({text, attachments, embeddedImages, loading:false, isHtml})
-
-		})
+		openMessage()
 
 		function replyMessage(text, to) {
 			//console.log('replyMessage', text)
@@ -264,14 +257,13 @@ $$.control.registerControl('messagePage', {
 				forward: {
 					icon: 'fa fa-share-square',
 					title: 'Forward',
-					onClick: function() {
+					onClick: async function() {
 						const HEADER = '\n\n----- Forwarded mail -----\n'
 
 
 						if (ctrl.model.isHtml && item.partID.text != false) {
-							srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID.text).then((message) => {
-								forwardMessage(HEADER + message.text)
-							})						
+							const message = await srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID.text)
+							forwardMessage(HEADER + message.text)
 						}
 		
 						else if (!ctrl.model.isHtml) {
@@ -286,7 +278,7 @@ $$.control.registerControl('messagePage', {
 			}				
 		}
 		
-		function reply(action) {
+		async function reply(action) {
 			console.log('reply')
 
 			if (action == 'reply' || action == 'replyAll') {
@@ -300,11 +292,9 @@ $$.control.registerControl('messagePage', {
 				}
 
 				if (ctrl.model.isHtml && item.partID.text != false) {
-					srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID.text).then((message) => {
-						replyMessage(HEADER + message.text, to)
-					})						
+					const message = srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID.text)
+					replyMessage(HEADER + message.text, to)
 				}
-
 				else if (!ctrl.model.isHtml) {
 					replyMessage(HEADER + ctrl.model.text, to)
 				}

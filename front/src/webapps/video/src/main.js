@@ -77,15 +77,15 @@ $$.control.registerControl('rootPage', {
 		  pc = null		  
 		}	
 			
-		function openMedia() {
+		async function openMedia() {
 			console.log('openMedia')
-			navigator.mediaDevices.getUserMedia({
-			  audio: true,
-			  video: true
-			})
-			.then(function(stream) {
+			try {
+				const stream = await navigator.mediaDevices.getUserMedia({
+					audio: true,
+					video: true
+				  })
 				console.log('localStream ready')
-				
+			
 				localVideo.srcObject = stream
 				localStream = stream
 
@@ -93,25 +93,23 @@ $$.control.registerControl('rootPage', {
 					rtc.accept()
 					createPeerConnection()	
 					pc.addStream(localStream)				
-				}
-			})
-			.catch(function(e) {
+				}	
+			}
+			catch (e) {
 				console.log('error', e)
 				if (rtc.isCallee) {
 					rtc.deny()
 				}
-
-			})			
+			}
 		}
 
-		rtc.on('accept', function() {
+		rtc.on('accept', async function() {
 			createPeerConnection()
 			pc.addStream(localStream)
-			pc.createOffer().then((sessionDescription) => {
-				console.log('createOffer', sessionDescription)
-				pc.setLocalDescription(sessionDescription)
-				rtc.sendData('offer', sessionDescription)
-			})
+			const sessionDescription = await pc.createOffer()
+			console.log('createOffer', sessionDescription)
+			pc.setLocalDescription(sessionDescription)
+			rtc.sendData('offer', sessionDescription)
 		})
 
 
@@ -124,15 +122,12 @@ $$.control.registerControl('rootPage', {
 		    }))		
 		})		
 
-		rtc.onData('offer', function(data) {
+		rtc.onData('offer', async function(data) {
 			pc.setRemoteDescription(new RTCSessionDescription(data))
 			console.log('Sending answer to peer.')
-			pc.createAnswer().then((sessionDescription) => {
-				pc.setLocalDescription(sessionDescription)
-				rtc.sendData('answer', sessionDescription)
-
-			})
-
+			const sessionDescription = await pc.createAnswer()
+			pc.setLocalDescription(sessionDescription)
+			rtc.sendData('answer', sessionDescription)
 		})	
 
 		rtc.onData('answer', function(data) {

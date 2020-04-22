@@ -13,7 +13,7 @@ $$.control.registerControl('rootPage', {
 				results: []
 			},
 			events: {
-				onSearch: function(ev) {					
+				onSearch: async function(ev) {					
 					ev.preventDefault()
 					const {url} = $(this).getFormData()
 					console.log('onSearch', url)
@@ -21,12 +21,11 @@ $$.control.registerControl('rootPage', {
 						ctrl.setData({results: [], url})	
 					}
 					else {
-						browser.search(url).then((results) => {
-							console.log('results', results)
-							ctrl.setData({
-								results, 
-								url: 'about:blank'
-							})
+						const results = await browser.search(url)
+						console.log('results', results)
+						ctrl.setData({
+							results, 
+							url: 'about:blank'
 						})
 					}					
 				}

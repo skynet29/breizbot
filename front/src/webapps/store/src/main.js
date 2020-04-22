@@ -19,22 +19,24 @@ $$.control.registerControl('rootPage', {
 						width: 'auto',
 						okText: (data.activated) ? 'Remove from Home page' : 'Add to Home page'
 					},
-						function() {
-							srvUsers.activateApp(data.appName, !data.activated).then(() => {
-								data.activated = !data.activated
-								const info = ctrl.model.apps.find((a) => a.appName == data.appName)	
-								info.activated = data.activated
-								ctrl.update()
-							})
+						async function() {
+							await srvUsers.activateApp(data.appName, !data.activated)
+							data.activated = !data.activated
+							const info = ctrl.model.apps.find((a) => a.appName == data.appName)	
+							info.activated = data.activated
+							ctrl.update()
 						})
 				}
 			}
 		})
 
-		srvApps.listAll().then((apps) => {
+		async function listAll() {
+			const apps = await srvApps.listAll()
 			console.log('apps', apps)
 			ctrl.setData({apps})
-		})
+		}
+
+		listAll()
 	}
 });
 

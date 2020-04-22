@@ -207,7 +207,7 @@ $$.control.registerControl('breizbot.files', {
 					loadData()
 				},
 
-				onContextMenu: function(ev, data) {
+				onContextMenu: async function(ev, data) {
 					const idx = $(this).closest('.thumbnail').index()					
 					const info = ctrl.model.files[idx]
 					const {cmd} = data
@@ -220,75 +220,19 @@ $$.control.registerControl('breizbot.files', {
 					}
 
 					if (cmd == 'rename') {
-						const oldFileName = info.name
-						$$.ui.showPrompt({label: 'New name', title: 'Rename', value: oldFileName}, function(newFileName) {
-							console.log('newFileName', newFileName)
-							if (newFileName != oldFileName) {
-								srvFiles.renameFile(rootDir, oldFileName, newFileName)
-								.then(function(resp) {
-									console.log('resp', resp)
-									loadData()
-								})
-								.catch(function(resp) {
-									console.log('resp', resp)
-									$$.ui.showAlert({
-										content: resp.responseText,
-										title: 'Error'
-									})
-								})								}
-						})
+						rename(info)
 					}
 
 					if (cmd == 'makeResizedCopy') {
-						$$.ui.showPrompt({
-							label: 'Rescale percentage:', 
-							title: 'Make resized copy',
-							attrs: {min: 10, max: 90, type: 'number'},
-							value: 50
-						}, function(percentage) {
-							srvFiles.resizeImage(rootDir, info.name, percentage+'%')
-							.then(function(resp) {
-								console.log('resp', resp)
-								loadData()
-							})
-							.catch(function(resp) {
-								console.log('resp', resp)
-								$$.ui.showAlert({
-									content: resp.responseText,
-									title: 'Error'
-								})
-							})								
-						})
+						makeResizedCopy(info)
 					}
 
 					if (cmd == 'convertToMP3') {
-						srvFiles.convertToMP3(rootDir, info.name)
-						.then(function(resp) {
-							console.log('resp', resp)
-							loadData()
-						})
-						.catch(function(resp) {
-							console.log('resp', resp)
-							$$.ui.showAlert({
-								content: resp.responseText,
-								title: 'Error'
-							})
-						})								
+						convertToMP3(info)
 					}
 
 					if (cmd == 'zipFolder') {
-						srvFiles.zipFolder(rootDir, info.name)
-						.then(function(resp) {
-							console.log('resp', resp)
-							loadData()
-						})
-						.catch(function(resp) {
-							console.log('resp', resp)
-							$$.ui.showAlert({
-								content: resp.responseText,
-								title: 'Error'
-							})
-						})								
+						zipFolder(info)
 					}
 
 					if (cmd == 'delete') {
@@ -338,25 +282,27 @@ $$.control.registerControl('breizbot.files', {
 						loadData(ctrl.model.rootDir + dirName + '/')
 					}
 				},
-				onCreateFolder: function() {
+				onCreateFolder: async function() {
 					var rootDir = ctrl.model.rootDir
-					$$.ui.showPrompt({
+					const folderName = await $$.ui.showPrompt({
 						content: 'Folder name:', 
 						title: 'New Folder'
-					}, function(folderName) {
-						srvFiles.mkdir(rootDir + folderName)
-						.then(function(resp) {
-							console.log('resp', resp)
-							loadData()
-						})
-						.catch(function(resp) {
-							console.log('resp', resp)
-							$$.ui.showAlert({
-								content: resp.responseText,
-								title: 'Error'
-							})
-						})	
 					})
+					console.log('folderName', folderName)
+					if (folderName == null) return
+
+					try {
+						const resp = await srvFiles.mkdir(rootDir + folderName)
+						console.log('resp', resp)
+						loadData()
+					}
+					catch(resp) {
+						console.log('resp', resp)
+						$$.ui.showAlert({
+							content: resp.responseText,
+							title: 'Error'
+						})
+					}
 				},
 				onTogleSelection: function()	{
 					toggleSelection()
@@ -395,65 +341,69 @@ $$.control.registerControl('breizbot.files', {
 					
 				},
 
-				onShareFiles: function(ev) {
+				onShareFiles: async function(ev) {
 					console.log('onShareFiles')
-					srvFiles.shareFiles(getSelFiles())
-					.then(function(resp) {
+					try {
+						const resp = await srvFiles.shareFiles(getSelFiles())
 						console.log('resp', resp)
 						ctrl.setData({selectedFiles: [], operation: 'none'})
 						loadData()
-					})
-					.catch(function(resp) {
+					}
+					catch(resp) {
 						console.log('resp', resp)
 						//ctrl.setData({selectedFiles: [], operation: 'none'})
 						$$.ui.showAlert({
 							content: resp.responseText,
 							title: 'Error'
 						})
-					})						
+					}					
 				},
 
-				onPasteFiles: function(ev) {
+				onPasteFiles: async function(ev) {
 					console.log('onPasteFiles')
 					const {rootDir, selectedFiles, operation} = ctrl.model
-					const promise = 
-						(operation == 'copy') ? srvFiles.copyFiles(selectedFiles, rootDir) : srvFiles.moveFiles(selectedFiles, rootDir)
 
-					promise
-					.then(function(resp) {
+					let resp = ''
+					try {
+						if (operation == 'copy') {
+							resp = await srvFiles.copyFiles(selectedFiles, rootDir)
+						}
+						else {
+							resp = await srvFiles.moveFiles(selectedFiles, rootDir)
+						}
 						console.log('resp', resp)
 						ctrl.setData({selectedFiles: [], operation: 'none'})
 						loadData()
-					})
-					.catch(function(resp) {
+					}
+					catch(resp) {
 						console.log('resp', resp)
 						//ctrl.setData({selectedFiles: [], operation: 'none'})
 						$$.ui.showAlert({
 							content: resp.responseText,
 							title: 'Error'
 						})
-					})						
+					}					
 				},
 				onImportFile: function(ev) {
 
-					$$.util.openFileDialog(function(file) {
+					$$.util.openFileDialog(async function(file) {
 						//console.log('fileSize', file.size / 1024)
 						if (file.size > maxUploadSize) {
 							$$.ui.showAlert({content: 'File too big', title: 'Import file'})
 							return
 						}
-						$$.util.readFile(file).then((blob) => {
-							srvFiles.uploadFile(blob, file.name, ctrl.model.rootDir).then(function() {
-								loadData()
-							})
-							.catch(function(resp) {
-								console.log('resp', resp)
-								$$.ui.showAlert({content: resp.responseText, title: 'Error'})							
-							})
+						const blob = await $$.util.readFile(file)
+						try {
+							await srvFiles.uploadFile(blob, file.name, ctrl.model.rootDir)
+							loadData()	
+						}
+						catch(resp) {
+							console.log('resp', resp)
+							$$.ui.showAlert({content: resp.responseText, title: 'Error'})							
+						}
 
-						})
-				
 					})
+				
 				}
 			}
 
@@ -463,73 +413,148 @@ $$.control.registerControl('breizbot.files', {
 			$$.ui.showConfirm({
 				content: 'Are you sure ?',
 				title: 'Delete files'
-			}, function() {
-				srvFiles.removeFiles(fileNames)
-				.then(function(resp) {
+			}, async function() {
+				try {
+					const resp = await srvFiles.removeFiles(fileNames)
 					console.log('resp', resp)
-					loadData()
-				})
-				.catch(function(resp) {
+					loadData()	
+				}
+				catch(resp) {
 					console.log('resp', resp)
 					$$.ui.showAlert({
 						content: resp.responseText,
 						title: 'Error'
 					})
-				})					
+				}
 			})				
 		}
 
 
-		function loadData(rootDir, resetFilters) {
+		async function loadData(rootDir, resetFilters) {
 			if (rootDir == undefined) {
 				rootDir = ctrl.model.rootDir
 			}
 			console.log('loadData', rootDir)
-			srvFiles.list(rootDir, {filterExtension, imageOnly, getMP3Info}, friendUser).then(function(files) {
-				//console.log('files', files)
-				files.forEach((f) => {
+			const files = await srvFiles.list(rootDir, {filterExtension, imageOnly, getMP3Info}, friendUser)
+			//console.log('files', files)
+			files.forEach((f) => {
+				if (f.isImage) {
+					f.thumbnailUrl = srvFiles.fileThumbnailUrl(rootDir + f.name, thumbnailSize, friendUser)
+				}
+				if (showToolbar) {
+					f.items = {
+						delete: {name: 'Delete', icon: 'fas fa-trash'},
+						rename: {name: 'Rename'}
+					}
 					if (f.isImage) {
-						f.thumbnailUrl = srvFiles.fileThumbnailUrl(rootDir + f.name, thumbnailSize, friendUser)
+						f.items.makeResizedCopy = {name: 'Make resized copy', icon: 'fas fa-compress-arrows-alt'}
 					}
-					if (showToolbar) {
-						f.items = {
-							delete: {name: 'Delete', icon: 'fas fa-trash'},
-							rename: {name: 'Rename'}
-						}
-						if (f.isImage) {
-							f.items.makeResizedCopy = {name: 'Make resized copy', icon: 'fas fa-compress-arrows-alt'}
-						}
-						if (!f.folder) {
-							f.items.download = {name: 'Download', icon: 'fas fa-download'}
-						}
-						if (f.name.endsWith('.mp4')) {
-							f.items.convertToMP3 = {name: 'Convert to MP3'}
-						}
-						if (f.folder) {
-							f.items.zipFolder = {name: 'Zip Folder', icon: 'fas fa-file-archive'}
-						}
+					if (!f.folder) {
+						f.items.download = {name: 'Download', icon: 'fas fa-download'}
+					}
+					if (f.name.endsWith('.mp4')) {
+						f.items.convertToMP3 = {name: 'Convert to MP3'}
+					}
+					if (f.folder) {
+						f.items.zipFolder = {name: 'Zip Folder', icon: 'fas fa-file-archive'}
+					}
 
-					}
-				})
+				}
+			})
 			
-				if (rootDir != '/') {
-					files.unshift({name: '..', folder: true})
-				}
+			if (rootDir != '/') {
+				files.unshift({name: '..', folder: true})
+			}
 
-				sortFiles(files)
+			sortFiles(files)
 
-				if (resetFilters !== false) {
-					ctrl.model.mp3Filters = null
-				}
+			if (resetFilters !== false) {
+				ctrl.model.mp3Filters = null
+			}
 
-				ctrl.setData({
-					files, 
-					rootDir, 
-					nbSelection: 0,
-					isShareSelected: false
+			ctrl.setData({
+				files, 
+				rootDir, 
+				nbSelection: 0,
+				isShareSelected: false
+			})
+
+		}
+
+		async function zipFolder(info) {
+			try {
+				const resp = await srvFiles.zipFolder(ctrl.model.rootDir, info.name)
+				console.log('resp', resp)
+				loadData()	
+			}
+			catch(resp) {
+				console.log('resp', resp)
+				$$.ui.showAlert({
+					content: resp.responseText,
+					title: 'Error'
 				})
+			}
+		}
 
-			})		
+		async function convertToMP3(info) {
+			try {
+				const resp = await srvFiles.convertToMP3(ctrl.model.rootDir, info.name)
+				console.log('resp', resp)
+				loadData()	
+			}
+			catch(resp) {
+				console.log('resp', resp)
+				$$.ui.showAlert({
+					content: resp.responseText,
+					title: 'Error'
+				})
+			}
+		}
+
+		async function makeResizedCopy(info) {
+			const percentage = await $$.ui.showPrompt({
+				label: 'Rescale percentage:', 
+				title: 'Make resized copy',
+				attrs: {min: 10, max: 90, type: 'number'},
+				value: 50
+			})
+			
+			if (percentage != null) {
+				try {
+					const resp = await srvFiles.resizeImage(ctrl.model.rootDir, info.name, percentage+'%')
+					console.log('resp', resp)
+					loadData()	
+				}
+				catch(resp) {
+					console.log('resp', resp)
+					$$.ui.showAlert({
+						content: resp.responseText,
+						title: 'Error'
+					})
+				}
+			}
+
+		}		
+
+		async function rename(info) {
+			const oldFileName = info.name
+			const newFileName = await $$.ui.showPrompt({label: 'New name', title: 'Rename', value: oldFileName})
+			console.log('newFileName', newFileName)
+			if (newFileName != null && newFileName != oldFileName) {
+				try {
+					const resp = await srvFiles.renameFile(ctrl.model.rootDir, oldFileName, newFileName)
+					console.log('resp', resp)
+					loadData()	
+				}
+				catch(resp) {
+					console.log('resp', resp)
+					$$.ui.showAlert({
+						content: resp.responseText,
+						title: 'Error'
+					})
+
+				}
+			}
 		}
 
 		loadData()

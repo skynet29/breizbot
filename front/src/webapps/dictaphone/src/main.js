@@ -133,15 +133,16 @@ $$.control.registerControl('rootPage', {
 				chunks.push(e.data)
 			}
 
-			mediaRecorder.onstop = function(e) {
-				$$.ui.showPrompt({title: 'Sound Clip Title', label: 'Enter a name:'}, function(name) {
+			mediaRecorder.onstop = async function(e) {
+				const name = await $$.ui.showPrompt({title: 'Sound Clip Title', label: 'Enter a name:'})
+				if (name != null) {
 					console.log('clipName', name)
 					const blob = new Blob(chunks, {type: 'audio/ogg; codecs=opus'})
 					chunks = []
 					const url = URL.createObjectURL(blob)
 					ctrl.model.clips.push({name, url, saved: false})
 					ctrl.update()
-				})
+				}
 			}
 
 			visualize(stream)

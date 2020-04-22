@@ -44,26 +44,25 @@ $$.control.registerControl('boxesPage', {
 		})
 
 
-		function loadMailboxes() {
+		async function loadMailboxes() {
 			console.log('loadMailboxes')
-			srvMail.getMailboxes(currentAccount).then((mailboxes) => {
-				console.log('mailboxes', mailboxes)
-				if (showForm) {
-					ctrl.setData({
-						mailboxes: [{
-							title: 'Folders',
-							folder: true,
-							children: mailboxes,
-							expanded: true
-						}]
-					})
-				}
-				else {
-					ctrl.setData({
-						mailboxes
-					})
-				}
-			})
+			const mailboxes = await srvMail.getMailboxes(currentAccount)
+			console.log('mailboxes', mailboxes)
+			if (showForm) {
+				ctrl.setData({
+					mailboxes: [{
+						title: 'Folders',
+						folder: true,
+						children: mailboxes,
+						expanded: true
+					}]
+				})
+			}
+			else {
+				ctrl.setData({
+					mailboxes
+				})
+			}
 		}
 
 		loadMailboxes()

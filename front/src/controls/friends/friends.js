@@ -47,15 +47,17 @@ $$.control.registerControl('breizbot.friends', {
 					}
 					elt.trigger('friendclick', {userName})
 				},
-				onSendMessage: function(ev) {
+				onSendMessage: async function(ev) {
 					ev.stopPropagation()
 					const idx = $(this).closest('li').index()
 
 					const userName =  ctrl.model.friends[idx].friendUserName
 					//console.log('onSendMessage', userName)
-					$$.ui.showPrompt({title: 'Send Message', label: 'Message:'}, function(text) {
+					const text = await $$.ui.showPrompt({title: 'Send Message', label: 'Message:'})
+
+					if (text != null) {
 						users.sendNotif(userName, {text, reply: true})
-					})
+					}
 				}
 			}
 		})	

@@ -58,23 +58,21 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		function showInfo(url) {
+		async function showInfo(url) {
 			//console.log('showInfo', url)
-			ytdl.info(url).then((info) => {
-				//console.log('info', info)
-				info.percent = 0
-				info.showInfo = true,
-				info.videoUrl = url
-				ctrl.setData(info)
-			})
+			const info = await ytdl.info(url)
+			//console.log('info', info)
+			info.percent = 0
+			info.showInfo = true,
+			info.videoUrl = url
+			ctrl.setData(info)
 		}
 
-		function searchInfo(query) {
+		async function searchInfo(query) {
 			//console.log('searchInfo', query)
-			ytdl.search(query, 10).then((results) => {
-				//console.log('results', results)
-				ctrl.setData({results, showInfo: false})
-			})
+			const results = await ytdl.search(query, 10)
+			//console.log('results', results)
+			ctrl.setData({results, showInfo: false})
 		}
 
 		broker.onTopic('breizbot.ytdl.progress', (msg) => {

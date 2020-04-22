@@ -17,17 +17,18 @@ $$.control.registerControl('addContactPage', {
 				from
 			},
 			events: {
-				onSubmit: function(ev) {
+				onSubmit: async function(ev) {
 					ev.preventDefault()
 					const data = $(this).getFormData()
 					console.log('data', data)
-					users.addContact(data.name, data.email).then(() => {
+					try {
+						await users.addContact(data.name, data.email)
 						console.log('contact added !')
 						pager.popPage()
-					})
-					.catch((err) => {
+					}
+					catch(err) {
 						$$.ui.showAlert({title: 'Error', content: err.responseText})
-					})
+					}
 				}
 
 			}

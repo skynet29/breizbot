@@ -47,12 +47,13 @@ $$.control.registerControl('breizbot.users', {
 						users.remove(username).then(getUsers)
 					})
 				},
-				onNotif: function(ev) {
+				onNotif: async function(ev) {
 					const idx = $(this).closest('tr').index()
 					const {username} = ctrl.model.data[idx]
-					$$.ui.showPrompt({title: 'Send Notification', label: 'Message'}, function(text) {
+					const text = await $$.ui.showPrompt({title: 'Send Notification', label: 'Message'})
+					if (text != null) {
 						users.sendNotif(username, {text})
-					})
+					}
 				},
 				onUpdate: function() {
 					getUsers()

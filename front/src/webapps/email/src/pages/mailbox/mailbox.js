@@ -91,25 +91,24 @@ $$.control.registerControl('mailboxPage', {
 			}
 		})
 
-		function load(pageNo) {
+		async function load(pageNo) {
 			if (pageNo == undefined) {
 				pageNo = ctrl.model.pageNo
 			}
 
 			ctrl.setData({loading: true})
 
-			srvMail.openMailbox(currentAccount, mailboxName, pageNo).then((data) => {
-				console.log('data', data)
-				const {messages, nbMsg} = data
-				ctrl.setData({
-					loading: false,
-					check: false,
-					pageNo,
-					nbPage: Math.ceil(nbMsg / 20),
-					nbMsg,
-					messages: messages.reverse()
-				})
-			})			
+			const data = await srvMail.openMailbox(currentAccount, mailboxName, pageNo)
+			console.log('data', data)
+			const {messages, nbMsg} = data
+			ctrl.setData({
+				loading: false,
+				check: false,
+				pageNo,
+				nbPage: Math.ceil(nbMsg / 20),
+				nbMsg,
+				messages: messages.reverse()
+			})
 		}
 
 		function getSeqNos() {
@@ -123,17 +122,16 @@ $$.control.registerControl('mailboxPage', {
 			return seqNos
 		}
 
-		function deleteMessage() {
+		async function deleteMessage() {
 			const seqNos = getSeqNos()
 			if (seqNos.length == 0) {
 				$$.ui.showAlert({title: 'Delete Message', content: 'Please select one or severall messages !'})
 				return
 			}
 
-			srvMail.deleteMessage(currentAccount, mailboxName, seqNos).then(() => {
-				console.log('Messages deleted')
-				load()
-			})
+			await srvMail.deleteMessage(currentAccount, mailboxName, seqNos)
+			console.log('Messages deleted')
+			load()
 		}
 
 		function moveMessage() {
@@ -148,22 +146,16 @@ $$.control.registerControl('mailboxPage', {
 				props: {
 					currentAccount
 				},
-				onReturn: function(targetName) {
+				onReturn: async function(targetName) {
 					if (targetName == mailboxName) {
 						$$.ui.showAlert({title: 'Select Target Mailbox', content: 'Target mailbox must be different from current mailbox'})
 						return
 					}
 
-					srvMail.moveMessage(currentAccount, mailboxName, targetName, seqNos)
-					.then(() => {
-						load()
-					})
+					await srvMail.moveMessage(currentAccount, mailboxName, targetName, seqNos)
+					load()
 				}
 			})
-			// srvMail.deleteMessage(currentAccount, mailboxName, seqNos).then(() => {
-			// 	console.log('Messages deleted')
-			// 	load()
-			// })
 		}		
 
 		load(1)

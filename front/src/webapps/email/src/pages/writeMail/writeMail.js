@@ -22,7 +22,7 @@ $$.control.registerControl('writeMailPage', {
 				prop1: function() {return {autofocus: this.data.html == undefined}}
 			},
 			events: {
-				onSend: function(ev) {
+				onSend: async function(ev) {
 					console.log('onSend')
 					ev.preventDefault()
 					const data = $(this).getFormData()
@@ -32,13 +32,13 @@ $$.control.registerControl('writeMailPage', {
 						data.attachments = attachments.map((a) => a.rootDir + a.fileName)
 					}
 
-					srvMail.sendMail(accountName, data)
-					.then(() => {
-						pager.popPage()
-					})
-					.catch((e) => {
+					try {
+						await srvMail.sendMail(accountName, data)
+						pager.popPage()	
+					}
+					catch(e) {
 						$$.ui.showAlert({title: 'Error', content: e.responseText})
-					})
+					}
 
 				},
 				openContact: function() {

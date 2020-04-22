@@ -33,7 +33,7 @@ function source(dest, srcs, options) {
 		stream = stream.pipe(eslint({
 			useEslintrc: false,		
 			parserOptions: {
-				ecmaVersion: 6				
+				ecmaVersion: 8				
 			}
 
 		}))

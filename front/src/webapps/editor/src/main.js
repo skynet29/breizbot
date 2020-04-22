@@ -19,17 +19,19 @@ $$.control.registerControl('rootPage', {
 					ctrl.scope.editor.html('')
 					ctrl.setData({fileName: ''})
 				},				
-				onSaveFile: function(ev) {
+				onSaveFile: async function(ev) {
 					console.log('onSaveFile')
 					if (ctrl.model.fileName != '') {
 						saveFile()
 						return
 					}
-					$$.ui.showPrompt({title: 'Save File', content: "FileName:"}, function(fileName) {
+					let fileName = await $$.ui.showPrompt({title: 'Save File', content: "FileName:"})
+					console.log('fileName', fileName)
+					if (fileName != null) {
 						fileName += '.hdoc'
 						ctrl.setData({fileName, rootDir: '/apps/editor'})
 						saveFile()
-					})
+					}
 				},
 				onOpenFile: function(ev) {
 					console.log('onOpenFile')
@@ -78,19 +80,20 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		function saveFile() {
+		async function saveFile() {
 			const {fileName, rootDir} = ctrl.model
 			const htmlString = ctrl.scope.editor.html()
 			const blob = new Blob([htmlString], {type: 'text/html'})
-			files.uploadFile(blob, fileName, rootDir).then(function(resp) {
+			try {
+				const resp = await files.uploadFile(blob, fileName, rootDir)
 				console.log('resp', resp)
-			})	
-			.catch(function(resp) {
+			}
+			catch(resp) {
 				$$.ui.showAlert({
 					title: 'Error',
 					content: resp.responseText
 				})
-			})	
+			}
 		}
 
 	}

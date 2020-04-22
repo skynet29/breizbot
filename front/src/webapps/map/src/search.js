@@ -24,19 +24,18 @@ $$.control.registerControl('searchPage', {
 				}
 			},
 			events: {
-				onSubmit: function(ev) {
+				onSubmit: async function(ev) {
 					ev.preventDefault()
 					console.log('onSubmit')
 					const {search} = $(this).getFormData()
 					ctrl.setData({message: '', running: true})
-					srvCities.getCities(ctrl.model.currentCountry, search).then((cities) => {
-						console.log('cities', cities)
-						const length = cities.length
-						ctrl.setData({
-							running: false,
-							cities,
-							message: length == 0 ? 'No result': `${length} match`
-						})
+					const cities = await srvCities.getCities(ctrl.model.currentCountry, search)
+					console.log('cities', cities)
+					const length = cities.length
+					ctrl.setData({
+						running: false,
+						cities,
+						message: length == 0 ? 'No result': `${length} match`
 					})
 				},
 				onItemClick: function(ev) {
@@ -49,8 +48,11 @@ $$.control.registerControl('searchPage', {
 			}
 		})
 
-		srvCities.getCountries().then((countries) => {
+		async function getCountries() {
+			const countries = await srvCities.getCountries()
 			ctrl.setData({countries, currentCountry: 'FR'})
-		})
+		}
+
+		getCountries()
 	}
 });

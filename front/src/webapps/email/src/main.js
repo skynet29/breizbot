@@ -114,9 +114,10 @@ $$.control.registerControl('rootPage', {
 		})
 
 
-		function loadAccount() {
+		async function loadAccount() {
 			console.log('loadAccount')
-			srvMail.getMailAccounts().then((accounts) => {
+			try {
+				const accounts = await srvMail.getMailAccounts()
 				console.log('accounts', accounts)
 				if (accounts.length == 0) {
 					return
@@ -124,21 +125,21 @@ $$.control.registerControl('rootPage', {
 				const currentAccount = accounts[0]
 				console.log('currentAccount', currentAccount)
 				ctrl.setData({accounts, currentAccount})
-				loadMailboxes()
-			}).catch((err) => {
+				loadMailboxes()	
+			}
+			catch(err) {
 				$$.ui.showAlert({title: 'Error', content: err})
-			})			
+			}
 		}
 
-		function loadMailboxes() {
+		async function loadMailboxes() {
 			console.log('loadMailboxes')
 			const {currentAccount} = ctrl.model
-			srvMail.getMailboxes(currentAccount).then((mailboxes) => {
-				console.log('mailboxes', mailboxes)
+			const mailboxes = await srvMail.getMailboxes(currentAccount)
+			console.log('mailboxes', mailboxes)
 
-				ctrl.setData({
-					mailboxes
-				})
+			ctrl.setData({
+				mailboxes
 			})
 		}
 

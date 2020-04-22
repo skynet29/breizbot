@@ -22,47 +22,43 @@ $$.control.registerControl('rootPage', {
 					console.log('onDelete', item)
 					users.removeNotif(item._id)
 				},
-				onAccept: function() {
+				onAccept: async function() {
 					const idx = $(this).closest('li').index()
 					const item = ctrl.model.notifs[idx]
 					console.log('onAccept', item)
 
 					const friendUserName = item.from
-					users.addFriend(friendUserName).then(() => {
-						return users.removeNotif(item._id).then(() => {
-							return users.sendNotif(friendUserName, {text: 'User has accepted your invitation'})
-						})
-					})
+					await users.addFriend(friendUserName)
+					await users.removeNotif(item._id)
+					await users.sendNotif(friendUserName, {text: 'User has accepted your invitation'})
 				},
-				onDecline: function() {
+				onDecline: async function() {
 					const idx = $(this).closest('li').index()
 					const item = ctrl.model.notifs[idx]
 					console.log('onDecline', item)
 					const friendUserName = item.from
 
-					users.removeNotif(item._id).then(() => {
-						return users.sendNotif(friendUserName, {text: `User has declined your invitation`})
-					})				
+					await users.removeNotif(item._id)
+					await users.sendNotif(friendUserName, {text: `User has declined your invitation`})
 				},
-				onReply: function(ev) {
+				onReply: async function(ev) {
 					const idx = $(this).closest('li').index()
 					const item = ctrl.model.notifs[idx]
 					console.log('onReply', item)
 					const friendUserName = item.from	
-					$$.ui.showPrompt({title: 'Reply', label: 'Message:'}, function(text) {
-						users.removeNotif(item._id).then(() => {
-							return users.sendNotif(friendUserName, {text, reply:true})
-						})
-					})				
+					const text = await $$.ui.showPrompt({title: 'Reply', label: 'Message:'})
+					if (text != null) {
+						await users.removeNotif(item._id)
+						await users.sendNotif(friendUserName, {text, reply:true})
+					}
 				}
 			}
 		})	
 
-		function updateNotifs() {
-			users.getNotifs().then((notifs) => {
-				console.log('notifs', notifs)
-				ctrl.setData({notifs})
-			})				
+		async function updateNotifs() {
+			const notifs = await users.getNotifs()
+			console.log('notifs', notifs)
+			ctrl.setData({notifs})
 		}
 
 		broker.register('breizbot.notifCount', function(msg) {
@@ -70,7 +66,7 @@ $$.control.registerControl('rootPage', {
 			updateNotifs()
 		})
 
-		updateNotifs()
+		//updateNotifs()
 
 	}
 });

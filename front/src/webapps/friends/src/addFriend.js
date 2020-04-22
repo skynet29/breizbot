@@ -18,17 +18,16 @@ $$.control.registerControl('addFriendPage', {
 				show1: function() {return this.friends.length == 0}
 			},
 			events: {
-				onSearch: function(ev) {
+				onSearch: async function(ev) {
 					console.log('onSearch')
 					ev.preventDefault()
 					const {search} = $(this).getFormData()
 					$(this).resetForm()
 					console.log('search', search)
-					users.match(search).then((friends) => {
-						ctrl.setData({friends: friends.filter((friend) => friend.username != params.$userName)})
-					})
+					const friends = await users.match(search)
+					ctrl.setData({friends: friends.filter((friend) => friend.username != params.$userName)})
 				},
-				onInvit: function(ev) {
+				onInvit: async function(ev) {
 					const friendUserName = $(this).data('username')
 					console.log('onInvit', friendUserName)
 					if (currentFriends.includes(friendUserName)) {
@@ -38,11 +37,10 @@ $$.control.registerControl('addFriendPage', {
 						return
 					}
 
-					users.sendNotif(friendUserName, {
+					await users.sendNotif(friendUserName, {
 						type: 'invit',
-					}).then(() => {
-						$$.ui.showAlert({title: 'Add Friend', content: `An invitation was sent to user <strong>${friendUserName}</strong>`})
 					})
+					$$.ui.showAlert({title: 'Add Friend', content: `An invitation was sent to user <strong>${friendUserName}</strong>`})
 				}
 			}
 		})	

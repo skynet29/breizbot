@@ -9,19 +9,21 @@ $$.control.registerControl('rootPage', {
 
 		const audio = new Audio('/webapps/camera/assets/camera_shutter.mp3')
 
-		function saveImage(blob) {
+		async function saveImage(blob) {
 			const fileName = 'SNAP' + Date.now() + '.png'
 			console.log('fileName', fileName)
-			srvFiles.uploadFile(blob, fileName, '/apps/camera').then(function(resp) {
+			try {
+				const resp = await srvFiles.uploadFile(blob, fileName, '/apps/camera')
 				console.log('resp', resp)
 				pager.popPage()
-			})	
-			.catch(function(resp) {
+			}
+			catch(resp) {
 				$$.ui.showAlert({
 					title: 'Error',
 					content: resp.responseText
 				})
-			})			
+
+			}
 		}
 
 		const ctrl = $$.viewController(elt, {
@@ -56,25 +58,22 @@ $$.control.registerControl('rootPage', {
 					
 					ctrl.setData({ready: true})
 				},
-				onTakePicture: function(ev) {
+				onTakePicture: async function(ev) {
 					audio.play()
-					ctrl.scope.camera.takePicture().then((blob) => {
-						pager.pushPage('breizbot.viewer', {
-							title: 'Snapshot', 
-							props: {url: URL.createObjectURL(blob), type: 'image'},
-							buttons: {
-								save: {
-									title: 'Save',
-									icon: 'fa fa-save',
-									onClick: function() {
-										saveImage(blob)
-									}
+					const blob = await ctrl.scope.camera.takePicture()
+					pager.pushPage('breizbot.viewer', {
+						title: 'Snapshot', 
+						props: {url: URL.createObjectURL(blob), type: 'image'},
+						buttons: {
+							save: {
+								title: 'Save',
+								icon: 'fa fa-save',
+								onClick: function() {
+									saveImage(blob)
 								}
-							},	
-						})
-	
-					})
-					
+							}
+						}
+					})						
 				},
 				onDeviceChange: function(ev, data) {
 					console.log('onDeviceChange', $(this).getValue())
@@ -97,7 +96,8 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		$$.util.getVideoDevices().then((videoDevices) => {
+		async function getVideoDevices() {
+			const videoDevices = await $$.util.getVideoDevices()
 			ctrl.setData({
 				videoDevices: videoDevices.map((i) => {
 					return {value: i.id, label: i.label}
@@ -109,9 +109,10 @@ $$.control.registerControl('rootPage', {
 			}
 			else {
 				ctrl.setData({showMessage: true})
-			}
-		})
+			}	
+		}
 
+		getVideoDevices()
 		
 
 	}

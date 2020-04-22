@@ -18,7 +18,7 @@
     "express": "^4.16.4",
     "express-fileupload": "^1.1.1-alpha.3",
     "express-session": "^1.15.6",
-    "ffmpeg-static": "^2.4.0",
+    "ffmpeg": "0.0.4",
     "fs-extra": "^7.0.1",
     "greenlock": "^2.6.7",
     "greenlock-store-fs": "^3.0.2",

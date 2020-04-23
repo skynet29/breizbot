@@ -37,23 +37,22 @@ $$.control.registerControl('breizbot.contacts', {
 					elt.trigger('contactclick', data)					
 				},
 
-				onDeleteItem: function(ev) {
+				onDeleteItem: async function(ev) {
 					ev.stopPropagation()
 					const idx =  $(this).closest('li').index()
 					const data = ctrl.model.contacts[idx]
 					console.log('onDeleteItem', data)
-					users.removeContact(data._id).then(load)
+					await users.removeContact(data._id)
+					load()
 
 				}
 			}
 		})	
 
-		function load() {
-			users.getContacts().then((contacts) => {
-				console.log('contacts', contacts)
-				ctrl.setData({contacts})
-			})	
-
+		async function load() {
+			const contacts = await users.getContacts()
+			console.log('contacts', contacts)
+			ctrl.setData({contacts})
 		}
 
 		load()

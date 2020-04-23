@@ -4,10 +4,16 @@
   padding: 10px; }
   .rootPage form {
     display: flex;
-    flex-direction: row; }
+    flex-direction: row;
+    border: 2px solid #eeeeee;
+    border-radius: 20px;
+    padding-left: 10px;
+    padding-right: 10px; }
     .rootPage form input {
       flex: 1;
-      padding: 5px; }
+      padding: 5px;
+      border: none;
+      outline: none; }
   .rootPage .content {
     flex: 1; }
     .rootPage .content iframe {

@@ -25,7 +25,7 @@ $$.control.registerControl('rootPage', {
 						saveFile()
 						return
 					}
-					let fileName = await $$.ui.showPrompt({title: 'Save File', content: "FileName:"})
+					let fileName = await $$.ui.showPrompt({title: 'Save File', label: "FileName:"})
 					console.log('fileName', fileName)
 					if (fileName != null) {
 						fileName += '.hdoc'

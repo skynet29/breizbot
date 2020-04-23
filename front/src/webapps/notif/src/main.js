@@ -66,7 +66,7 @@ $$.control.registerControl('rootPage', {
 			updateNotifs()
 		})
 
-		//updateNotifs()
+		updateNotifs()
 
 	}
 });

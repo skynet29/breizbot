@@ -10,19 +10,20 @@ $$.control.registerControl('rootPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				url: 'about:blank',
-				results: []
+				results: [],
+				showClear: false
 			},
 			events: {
 				onSearch: async function(ev) {					
 					ev.preventDefault()
 					const {url} = $(this).getFormData()
-					console.log('onSearch', url)
+					//console.log('onSearch', url)
 					if (url.startsWith('https://') || url.startsWith('http://')) {
 						ctrl.setData({results: [], url})	
 					}
 					else {
 						const results = await browser.search(url)
-						console.log('results', results)
+						//console.log('results', results)
 						ctrl.setData({
 							results, 
 							url: 'about:blank'

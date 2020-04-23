@@ -1,6 +1,11 @@
 <form bn-event="submit: onSearch" bn-bind="form">
-	<input type="text" name="url" placeholder="What are you looking for ?" required="" bn-event="click: onInputClick" autocomplete="on">
-	<button class="w3-button w3-blue" type="submit"><i class="fa fa-search"></i></button>
+	<input type="search" 
+		name="url" 
+		placeholder="What are you looking for ?" 
+		autocomplete="off"
+		required="" 
+		bn-control="brainjs.input">
+	<button class="w3-button w3-text-blue" type="submit" ><i class="fa fa-search"></i></button>
 </form>
 <div class="results w3-light-grey">
 	<div bn-each="results">

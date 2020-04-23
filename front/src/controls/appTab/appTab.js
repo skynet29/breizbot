@@ -15,13 +15,13 @@ $$.control.registerControl('breizbot.appTab', {
 			},
 			events: {
 				onFrameLoaded: function() {
-					console.log('[appTab] onFrameLoaded')
+					//console.log('[appTab] onFrameLoaded')
 				}
 			}
 		})
 
 		this.onAppExit = function()  {
-			console.log('[appTab] onAppExit', ctrl.model.appUrl)
+			//console.log('[appTab] onAppExit', ctrl.model.appUrl)
 			const $iframe = $(ctrl.scope.iframe.get(0).contentWindow.document)
 			const rootPage = $iframe.find('.rootPage').iface()
 			if (rootPage && typeof rootPage.onAppExit == 'function') {
@@ -31,7 +31,7 @@ $$.control.registerControl('breizbot.appTab', {
 		}	
 
 		this.onAppSuspend = function()  {
-			console.log('[appTab] onAppSuspend', ctrl.model.appUrl)
+			//console.log('[appTab] onAppSuspend', ctrl.model.appUrl)
 			const $iframe = $(ctrl.scope.iframe.get(0).contentWindow.document)
 			const rootPage = $iframe.find('.rootPage').iface()
 			if (rootPage && typeof rootPage.onAppSuspend == 'function') {
@@ -40,7 +40,7 @@ $$.control.registerControl('breizbot.appTab', {
 		}
 
 		this.onAppResume = function()  {
-			console.log('[appTab] onAppResume', ctrl.model.appUrl)
+			//console.log('[appTab] onAppResume', ctrl.model.appUrl)
 			const $iframe = $(ctrl.scope.iframe.get(0).contentWindow.document)
 			const rootPage = $iframe.find('.rootPage').iface()
 			if (rootPage && typeof rootPage.onAppResume == 'function') {
@@ -49,7 +49,7 @@ $$.control.registerControl('breizbot.appTab', {
 		}
 
 		this.setAppUrl = function(appUrl) {
-			console.log('[appTab] setAppUrl', appUrl)
+			//console.log('[appTab] setAppUrl', appUrl)
 			ctrl.setData({appUrl: appUrl + '&date=' + Date.now()})
 		}
 	}

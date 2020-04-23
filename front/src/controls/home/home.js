@@ -71,12 +71,12 @@ $$.control.registerControl('breizbot.home', {
 			},
 			events: {
 				onAppClick: function(ev, data) {
-					console.log('onAppClick', data)
+					//console.log('onAppClick', data)
 					openApp(data.appName)
 
 				},				
 				onContextMenu: async function(ev, data) {
-					console.log('onContextMenu', data)
+					//console.log('onContextMenu', data)
 					if (data.cmd == 'logout') {
 						logout()
 					}
@@ -99,7 +99,7 @@ $$.control.registerControl('breizbot.home', {
 
 				},
 				onNotification: function(ev) {
-					console.log('onNotification')
+					//console.log('onNotification')
 					if (ctrl.model.nbNotif == 0) {
 						$$.ui.showAlert({content: 'no notifications', title: 'Notifications'})
 					}
@@ -109,7 +109,7 @@ $$.control.registerControl('breizbot.home', {
 				},
 				onCallResponse: function(ev, data) {
 					const {cmd} = data
-					console.log('onCallResponse', data)
+					//console.log('onCallResponse', data)
 					ctrl.setData({hasIncomingCall: false})
 					audio.stop()
 					if (cmd == 'accept') {	
@@ -125,7 +125,7 @@ $$.control.registerControl('breizbot.home', {
 				},
 
 				onFullScreen: function(ev) {
-					console.log('onFullScreen')
+					//console.log('onFullScreen')
 					const elem = document.documentElement
 					const requestFullscreen = elem.requestFullscreen ||
 						elem.webkitRequestFullscreen
@@ -135,15 +135,14 @@ $$.control.registerControl('breizbot.home', {
 					}
 				},
 				onTabRemove: function(ev, idx) {
-					console.log('onTabRemove', idx)
+					//console.log('onTabRemove', idx)
 					const info = ctrl.scope.tabs.getTabInfo(idx)
-					console.log('info', info)
 					info.ctrlIface.onAppExit().then(() => {
 						ctrl.scope.tabs.removeTab(idx)
 					})					
 				},
 				onTabActivate: function(ev, ui) {	
-					console.log('onTabActivate')
+					//console.log('onTabActivate')
 					const {newTab, oldTab} = ui
 					const newTabIdx = newTab.index()
 					const oldTabIdx = oldTab.index()
@@ -210,8 +209,7 @@ $$.control.registerControl('breizbot.home', {
 		function openApp(appName, params) {
 			const appInfo = ctrl.model.apps.find((a) => a.appName == appName)
 			const title = appInfo.props.title
-			//console.log('appInfo', appInfo)
-			console.log('openApp', appName, params)
+			//console.log('openApp', appName, params)
 			let idx = ctrl.scope.tabs.getTabIndexFromTitle(title)
 			const appUrl = getAppUrl(appName, params)
 			if (idx < 0) { // apps not already run

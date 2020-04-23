@@ -7,7 +7,7 @@ $$.control.registerControl('rootPage', {
 	init: function(elt, broker, appData, pager) {
 
 		const {zoom, center} = appData.getData()
-		console.log('center', center)
+		//console.log('center', center)
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -20,11 +20,11 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onSearch: function() {
-					console.log('onSearch')
+					//console.log('onSearch')
 					pager.pushPage('searchPage', {
 						title: 'Search City',
 						onReturn: function(coord) {
-							console.log('onReturn', coord)
+							//console.log('onReturn', coord)
 							const latlng = {lat: coord.lat, lng: coord.lon}
 							try {
 								ctrl.scope.map.updateShape('marker', {latlng})
@@ -40,7 +40,7 @@ $$.control.registerControl('rootPage', {
 					})
 				},
 				onLocationChange: function(ev, state) {
-					console.log('onLocationChange', state)
+					//console.log('onLocationChange', state)
 					if (state == 'ON') {
 						navigator.geolocation.getCurrentPosition(updateLocation)
 						
@@ -71,7 +71,7 @@ $$.control.registerControl('rootPage', {
 				lat: position.coords.latitude,
 				lng: position.coords.longitude
 			}
-			console.log('updateLocation', latlng)
+			//console.log('updateLocation', latlng)
 			try {
 				ctrl.scope.map.updateShape('location', {latlng})
 			}
@@ -111,7 +111,7 @@ $$.control.registerControl('rootPage', {
 		})
 
 		this.onAppExit = function() {
-			console.log('[map] onAppExit')
+			//console.log('[map] onAppExit')
 			const {map} = ctrl.scope
 			return appData.saveData({zoom: map.getZoom(), center: map.getCenter()})
 		}

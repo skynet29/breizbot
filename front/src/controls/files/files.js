@@ -285,7 +285,7 @@ $$.control.registerControl('breizbot.files', {
 				onCreateFolder: async function() {
 					var rootDir = ctrl.model.rootDir
 					const folderName = await $$.ui.showPrompt({
-						content: 'Folder name:', 
+						label: 'Folder name:', 
 						title: 'New Folder'
 					})
 					console.log('folderName', folderName)

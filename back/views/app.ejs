@@ -38,7 +38,7 @@ body {
 <script>
 	$(function() {
 		$.getJSON('/api/appData').then((data) => {
-			console.log('appData', data)
+			//console.log('appData', data)
 			$$.service.configureService('breizbot.params', '<%- params %>')
 			$$.service.configureService('breizbot.appData', data)
 			

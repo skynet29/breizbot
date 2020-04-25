@@ -14,7 +14,7 @@ module.exports = function(ctx, router) {
 	const ytAPIUrl = 'https://www.googleapis.com/youtube/v3/search?'
 	const apiKey = 'AIzaSyDH0qRqgnKqGdfVZlN1F4Ff3zPiiiJFQGE'
 
-	router.post('/search', function(req, res) {
+	router.post('/search', async function(req, res) {
 		console.log('youtube/search', req.body)
 
 		const {query, maxResults} = req.body
@@ -26,26 +26,29 @@ module.exports = function(ctx, router) {
 			q: query,				
 		}
 
-		fetch(ytAPIUrl + querystring.stringify(params))
-		.then((rep) => {
-			return rep.json()
-		})
-		.then((json) => {
-			res.json(json.items
-				.filter((i) => i.id.kind == 'youtube#video')
-				.map((i) => {
-				const {title, thumbnails} = i.snippet
-				return {
-					id: i.id.videoId,
-					title,
-					thumbnail: thumbnails.default.url
-				}
-			}))
-		})
-		.catch((e) => {
+		try {
+			const rep = await fetch(ytAPIUrl + querystring.stringify(params))
+			const json = await rep.json()
+			if (json.error) {
+				res.json(json.error.message)
+			}
+			else {
+				res.json(json.items
+					.filter((i) => i.id.kind == 'youtube#video')
+					.map((i) => {
+						const {title, thumbnails} = i.snippet
+						return {
+							id: i.id.videoId,
+							title,
+							thumbnail: thumbnails.default.url
+						}
+					}))
+			}
+		}
+		catch(e) {
 			console.log('error', e)
 			res.sendStatus(404)
-		})
+		}
 
 	})
 

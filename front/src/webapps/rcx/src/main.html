@@ -1,0 +1,57 @@
+<div>
+    <div bn-show="notSupported" class="notSupported">
+        Sorry, <b>Web Serial</b> is not supported on this device, make sure you're
+        running Chrome 78 or later and have enabled the
+        <code>#enable-experimental-web-platform-features</code> flag in
+        <code>chrome://flags</code>
+    </div>
+
+    <button class="w3-button w3-blue" 
+        bn-event="click: onConnect"
+        bn-show="!connected"
+        >Connect</button>
+
+    <div bn-show="connected">
+
+        <div class="beep">
+            <button class="w3-button w3-blue" bn-event="click: onBeep">Beep</button>
+
+            <div bn-control="brainjs.combobox", 
+            bn-data="{items: [
+                {value: 0, label: 'Beep'},
+                {value: 1, label: 'Beep beep'},
+                {value: 2, label: 'Downward tones'},
+                {value: 3, label: 'Upward tones'},
+                {value: 4, label: 'Low buzz'},
+                {value: 5, label: 'Fast upward tones'}
+            ]}" 
+            bn-val="beep" bn-iface="beepType"></div>
+    
+        </div>
+        <button class="w3-button w3-blue" bn-event="click: onBattery">Battery</button>
+        <button class="w3-button w3-blue" bn-event="click: onVersion">Version</button>
+        <button class="w3-button w3-blue" bn-event="click: onMotorStatus">Motor Status</button>
+        <button class="w3-button w3-blue" bn-event="click: onPowerOff">Power Off</button>
+
+        <fieldset bn-control="brainjs.checkgroup" bn-iface="motorList">
+            <legend>Motor List</legend>
+            <input type="checkbox" value="A" class="w3-check"><label>A</label>
+            <input type="checkbox" value="B" class="w3-check"><label>B</label>
+            <input type="checkbox" value="C" class="w3-check"><label>C</label>
+
+        </fieldset>
+
+        <fieldset bn-control="brainjs.radiogroup" bn-iface="motorDir">
+            <legend>Motor Direction</legend>
+            <input type="radio" value="Fwd" class="w3-radio"><label>Forward</label>
+            <input type="radio" value="Bkd" class="w3-radio"><label>Backward</label>
+
+        </fieldset>
+
+        <button class="w3-button w3-blue" bn-event="click: onMotorOn">Motor On</button>
+        <button class="w3-button w3-blue" bn-event="click: onMotorOff">Motor Off</button>
+
+    </div>
+
+
+</div>

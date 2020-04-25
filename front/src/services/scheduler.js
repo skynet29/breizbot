@@ -1,8 +1,8 @@
 $$.service.registerService('breizbot.scheduler', {
 
-	deps: ['brainjs.http', 'breizbot.params'],
+	deps: ['brainjs.http'],
 
-	init: function(config, http, params) {
+	init: function(config, http) {
 
 		return {
 			openApp: function(appName, appParams) {

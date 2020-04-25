@@ -72,7 +72,12 @@ $$.control.registerControl('rootPage', {
 			//console.log('searchInfo', query)
 			const results = await ytdl.search(query, 10)
 			//console.log('results', results)
-			ctrl.setData({results, showInfo: false})
+			if (typeof results == 'string') {
+				$$.ui.showAlert({title: 'Error', content: results})
+			}
+			else {
+				ctrl.setData({results, showInfo: false})
+			}
 		}
 
 		broker.onTopic('breizbot.ytdl.progress', (msg) => {

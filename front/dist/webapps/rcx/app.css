@@ -1,0 +1,17 @@
+.rootPage {
+  margin: 1em; }
+  .rootPage .notSupported {
+    padding: 1em;
+    background-color: red;
+    color: white; }
+  .rootPage fieldset {
+    margin-top: 10px;
+    margin-bottom: 10px; }
+    .rootPage fieldset label {
+      margin-right: 10px; }
+  .rootPage .beep {
+    display: flex;
+    margin-bottom: 10px;
+    align-items: center; }
+    .rootPage .beep button {
+      margin-right: 30px; }

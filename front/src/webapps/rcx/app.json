@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fa fa-robot fa-2x",
+	"colorCls": "w3-blue",
+	"title": "RCX",
+	"styles": ["app.css"]
+}

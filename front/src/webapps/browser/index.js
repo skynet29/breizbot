@@ -4,7 +4,7 @@ const querystring = require('querystring')
 
 module.exports = function(ctx, router) {
 
-    router.post('/search', function(req, res) {
+    router.post('/search', async function(req, res) {
 		const {query} = req.body
 
 		const params = {
@@ -14,17 +14,15 @@ module.exports = function(ctx, router) {
 			uiv: 4			
 		}
 
-		fetch('https://api.qwant.com/api/search/web?' + querystring.stringify(params))
-		.then((rep) => {
-			return rep.json()
-		})
-		.then((json) => {
+		try {
+			const rep = await fetch('https://api.qwant.com/api/search/web?' + querystring.stringify(params))
+			const json = await rep.json()
 			res.json(json.data.result.items)
-		})
-		.catch((e) => {
+		}
+		catch(e)  {
 			console.log('error', e)
 			res.sendStatus(404)
-		})
+		}
 	})
 
 

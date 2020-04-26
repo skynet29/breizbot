@@ -15,7 +15,7 @@ $$.control.registerControl('rootPage', {
 					console.log('onAppClick', data)
 					$$.ui.showConfirm({
 						title: data.props.title, 
-						content: 'Description:',
+						content: `<h3>Description</h3><p>${data.props.description || ""}</p>`,
 						width: 'auto',
 						okText: (data.activated) ? 'Remove from Home page' : 'Add to Home page'
 					},

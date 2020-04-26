@@ -1,10 +1,10 @@
 $$.control.registerControl('rootPage', {
 
-	deps: ['breizbot.apps', 'breizbot.users'],
+	deps: ['breizbot.apps', 'breizbot.pager'],
 
 	template: {gulp_inject: './main.html'},
 
-	init: function(elt, srvApps, srvUsers) {
+	init: function(elt, srvApps, pager) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -13,32 +13,16 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onAppClick: function(ev, data) {
 					console.log('onAppClick', data)
-					const {props} = data
-					let description = props.description || "No description"
-					description = description.split(';').join('<br>')
-					$$.ui.showConfirm({
-						title: 'App Information', 
-						content: `
-							<h3>
-								<span class="${props.colorCls} w3-right w3-padding w3-round-large">
-									<i class="${props.iconCls}"></i>
-								</span>
-								${props.title}
-							</h3>
-							<h3>Description</h3>
-							<p class="w3-padding">${description}</p>
-							`,
-						width: 400,
-						okText: (data.activated) ? 'Remove from Home page' : 'Add to Home page'
-					},
-						async function() {
-							await srvUsers.activateApp(data.appName, !data.activated)
-							data.activated = !data.activated
-							const info = ctrl.model.apps.find((a) => a.appName == data.appName)	
-							info.activated = data.activated
-							ctrl.update()
-						})
+
+					pager.pushPage('infoPage', {
+						title: 'App Information',
+						props: {
+							info: data
+						},
+						onBack: listAll
+					})
 				}
+
 			}
 		})
 

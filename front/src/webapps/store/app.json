@@ -1,4 +1,5 @@
 {	
 	"title": "Applications",
-	"visible": false
+	"visible": false,
+	"styles": ["app.css"]
 }

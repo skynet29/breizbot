@@ -1,0 +1,17 @@
+.infoPage {
+
+    padding: 10px;
+
+    .titleBar {
+        display: flex;
+        justify-content: space-between;
+
+        .tile {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60px;
+            height: 60px;
+        }
+    }
+}

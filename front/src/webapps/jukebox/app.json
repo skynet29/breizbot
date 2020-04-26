@@ -3,5 +3,6 @@
 	"colorCls": "w3-pink",
 	"title": "Music",
 	"styles": ["app.css"],
-	"brainjs": ["map"]
+	"brainjs": ["map"],
+	"description": "Music player; For MP3 file, display artist and title when available"
 }

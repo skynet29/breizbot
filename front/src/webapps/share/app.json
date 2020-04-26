@@ -3,5 +3,6 @@
 	"colorCls": "w3-green",
 	"title": "Share",
 	"brainjs": ["map", "pdf"],	
-	"styles": ["app.css"]
+	"styles": ["app.css"],
+	"description": "Show files shared by your friends"
 }

@@ -2,5 +2,6 @@
 	"iconCls": "fa fa-microphone-alt fa-2x",
 	"colorCls": "w3-orange",
 	"title": "Micro",
-	"styles": ["app.css"]
+	"styles": ["app.css"],
+	"description": "Dictaphone"
 }

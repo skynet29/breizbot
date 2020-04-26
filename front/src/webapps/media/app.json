@@ -2,5 +2,6 @@
 	"iconCls": "fa fa-film fa-2x",
 	"colorCls": "w3-yellow",
 	"title": "Media",
-	"styles": ["app.css"]
+	"styles": ["app.css"],
+	"description": "Show files from USB key plugged to your HomeBox"
 }

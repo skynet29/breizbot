@@ -1,6 +1,7 @@
 {	
 	"iconCls": "fab fa-youtube fa-2x",
 	"colorCls": "w3-red",
-	"title": "Youtube",
-	"styles": ["app.css"]
+	"title": "YouTube",
+	"styles": ["app.css"],
+	"description": "YouTube search engine (request are quotta limited);Download video directly in your cloud"
 }

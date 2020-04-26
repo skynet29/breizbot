@@ -3,5 +3,6 @@
 	"colorCls": "w3-teal",
 	"title": "Email",
 	"styles": ["app.css"],
-	"brainjs": ["tree", "map", "pdf"]
+	"brainjs": ["tree", "map", "pdf"],
+	"description": "IMAP/SMTP email client; Works with most provider (gmail, free, SFR, Orange, Bouygue);;NOTE: For Gmail you had to activate the IMAP protocol support in the gmail app;and allowed access to the less secure application in your Google account"
 }

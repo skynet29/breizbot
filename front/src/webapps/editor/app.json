@@ -2,5 +2,6 @@
 	"title": "Editor",
 	"iconCls": "fa fa-file-word fa-2x",
 	"colorCls": "w3-yellow"	,
-	"styles": ["app.css"]
+	"styles": ["app.css"],
+	"description": "Word Processor;File are saved in the public HTML format with hdoc extension"
 }

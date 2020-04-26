@@ -2,5 +2,6 @@
 	"iconCls": "fa fa-tasks fa-2x",
 	"colorCls": "w3-blue",
 	"title": "HomeBox",
-	"styles": ["app.css"]
+	"styles": ["app.css"],
+	"description": "HomeBox service manager; Start/Stop your homebox application"
 }

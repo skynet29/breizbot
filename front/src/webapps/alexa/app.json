@@ -2,5 +2,6 @@
 	"iconCls": "fa fa-circle-notch fa-2x fa-flip-vertical w3-text-aqua",
 	"colorCls": "w3-blue",
 	"title": "Alexa",
-	"styles": ["app.css"]
+	"styles": ["app.css"],
+	"description": "Ask Alexa what you want;;An Amazon account is needed;Connection to your account are safe"
 }

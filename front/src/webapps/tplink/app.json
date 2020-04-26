@@ -2,6 +2,7 @@
 	"iconCls": "fa fa-plug fa-2x",
 	"colorCls": "w3-blue",
 	"title": "TP Link",
-	"styles": ["app.css"]
+	"styles": ["app.css"],
+	"description": "Control your WIFI TPLink plugs thanks to your HomeBox"
 	
 }

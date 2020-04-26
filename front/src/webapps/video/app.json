@@ -2,5 +2,6 @@
 	"iconCls": "fa fa-phone-volume fa-2x",
 	"colorCls": "w3-green",
 	"title": "Phone",
-	"styles": ["app.css"]
+	"styles": ["app.css"],
+	"description": "Make video call to your connected friends"
 }

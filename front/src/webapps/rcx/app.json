@@ -3,5 +3,5 @@
 	"colorCls": "w3-blue",
 	"title": "RCX",
 	"styles": ["app.css"],
-	"description": "Lego Mindstorm RCX command center"
+	"description": "Lego Mindstorm RCX command center; Pilot your robots directly from your WEB browser;Works only with Chrome desktop browser"
 }

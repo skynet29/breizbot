@@ -13,10 +13,22 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onAppClick: function(ev, data) {
 					console.log('onAppClick', data)
+					const {props} = data
+					let description = props.description || "No description"
+					description = description.split(';').join('<br>')
 					$$.ui.showConfirm({
-						title: data.props.title, 
-						content: `<h3>Description</h3><p>${data.props.description || ""}</p>`,
-						width: 'auto',
+						title: 'App Information', 
+						content: `
+							<h3>
+								<span class="${props.colorCls} w3-right w3-padding w3-round-large">
+									<i class="${props.iconCls}"></i>
+								</span>
+								${props.title}
+							</h3>
+							<h3>Description</h3>
+							<p class="w3-padding">${description}</p>
+							`,
+						width: 400,
 						okText: (data.activated) ? 'Remove from Home page' : 'Add to Home page'
 					},
 						async function() {

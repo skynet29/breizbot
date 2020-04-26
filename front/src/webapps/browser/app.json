@@ -2,5 +2,6 @@
 	"iconCls": "fa fa-globe fa-2x",
 	"colorCls": "w3-green",
 	"title": "Search",
-	"styles": ["app.css"]
+	"styles": ["app.css"],
+	"description": "WEB search engine (use Qwant engine)"
 }

@@ -3,5 +3,6 @@
 	"colorCls": "w3-amber",
 	"title": "Demo 1",
 	"styles": ["app.css"],
-	"scripts": ["/lib/aframe/aframe-master.min.js"]
+	"scripts": ["/lib/aframe/aframe-master.min.js"],
+	"description": "Virtual Reality demo"
 }

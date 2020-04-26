@@ -2,5 +2,6 @@
 	"iconCls": "fa fa-chess fa-2x",
 	"colorCls": "w3-amber",
 	"title": "Chess",
-	"styles": ["app.css"]
+	"styles": ["app.css"],
+	"description": "Play chess game with your connected friends"
 }

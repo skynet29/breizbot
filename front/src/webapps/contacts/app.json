@@ -2,5 +2,6 @@
 	"iconCls": "fa fa-users fa-2x",
 	"colorCls": "w3-deep-orange",
 	"title": "Contacts",
-	"styles": ["app.css"]
+	"styles": ["app.css"],
+	"description": "Contacts manager;Store email of your contacts"
 }

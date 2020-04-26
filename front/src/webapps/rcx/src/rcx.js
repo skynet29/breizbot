@@ -141,7 +141,7 @@ $$.service.registerService('app.rcx', {
                 
                 timer = setTimeout(() => {
                     timer = null
-                    reject('Timeout')
+                    reject('Timeout, check your RCX is switched on')
                 }, 1000)
 	
 			})

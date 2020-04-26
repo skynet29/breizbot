@@ -11,7 +11,10 @@ $$.control.registerControl('rootPage', {
 			data: {
 				notSupported: !('serial' in navigator),
 				connected: false,
-				beep: 0
+				beep: 0,
+				showConnect: function() {
+					return !this.notSupported && !this.connected
+				}
 			},
 			events: {
 				onConnect: async function() {

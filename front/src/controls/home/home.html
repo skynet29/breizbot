@@ -63,8 +63,11 @@
 	bn-iface="tabs" 
 	bn-event="tabsremove: onTabRemove, tabsactivate: onTabActivate">
 	<div bn-control="breizbot.apps" 
-		bn-data="{apps: getMyApps}"
-		bn-event="appclick: onAppClick"
+		bn-data="{
+			apps: getMyApps,
+			items
+		}"
+		bn-event="appclick: onAppClick, appcontextmenu: onTileContextMenu"
 		title="Home" 
 		>		
 	</div>

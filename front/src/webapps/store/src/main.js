@@ -1,26 +1,52 @@
 $$.control.registerControl('rootPage', {
 
-	deps: ['breizbot.apps', 'breizbot.pager'],
+	deps: [
+		'breizbot.apps',
+		'breizbot.pager', 
+		'breizbot.users',
+		'breizbot.scheduler'
+	],
 
 	template: {gulp_inject: './main.html'},
 
-	init: function(elt, srvApps, pager) {
+	init: function(elt, srvApps, pager, users, scheduler) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				apps: []
+				apps: [],
+				getItems: function() {
+					return function(data) {
+						const ret = {
+							info: {name: 'Information', icon: 'fas fa-info-circle'}
+						}
+						if (!data.activated) {
+							ret.add = {name: 'Add to Home page', icon: 'fas fa-plus'}
+						}
+						return ret
+					}
+				}
 			},
 			events: {
 				onAppClick: function(ev, data) {
 					console.log('onAppClick', data)
+					scheduler.openApp(data.appName)
+				},
+				onTileContextMenu: async function(ev, data) {
+					//console.log('onTileContextMenu', data)
+					if (data.cmd == 'info') {
+						pager.pushPage('infoPage', {
+							title: 'App Information',
+							props: {
+								info: data
+							}
+						})
+	
+					}
+					if (data.cmd == 'add') {
+						await users.activateApp(data.appName, true)
+						listAll()
 
-					pager.pushPage('infoPage', {
-						title: 'App Information',
-						props: {
-							info: data
-						},
-						onBack: listAll
-					})
+					}
 				}
 
 			}

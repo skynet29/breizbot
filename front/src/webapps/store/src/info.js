@@ -1,14 +1,12 @@
 $$.control.registerControl('infoPage', {
 
-    deps: ['breizbot.users'],
-
     template: {gulp_inject: './info.html'},
 
     props: {
         info: {}
     },
 
-    init: function(elt, users) {
+    init: function(elt) {
 
         let {info} = this.props
 
@@ -28,14 +26,6 @@ $$.control.registerControl('infoPage', {
                 iconCls,
                 getColorClass: function() {
                     return `tile w3-round-large ${colorCls}`
-                }
-            },
-            events: {
-                onClick: async function() {
-                    await users.activateApp(info.appName, !info.activated)
-                    info.activated = !info.activated
-                    ctrl.update()
-
                 }
             }
         })

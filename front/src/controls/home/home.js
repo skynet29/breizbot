@@ -66,10 +66,22 @@ $$.control.registerControl('breizbot.home', {
 				},
 				getMyApps: function() {
 					return this.apps.filter((a) => a.activated)
+				},
+				items: function() {
+					return function(data) {
+						return {
+							remove:{name: 'Remove'}
+						}	
+					}
 				}
 
 			},
 			events: {
+				onTileContextMenu: async function(ev, data) {
+					//console.log('onTileContextMenu', data)
+					await users.activateApp(data.appName, false)
+					loadApp()
+				},
 				onAppClick: function(ev, data) {
 					//console.log('onAppClick', data)
 					openApp(data.appName)
@@ -202,16 +214,12 @@ $$.control.registerControl('breizbot.home', {
 		})
 
 
-		function getAppUrl(appName, params) {
-			return $$.util.getUrlParams(`/apps/${appName}`, params)
-		}
-
 		function openApp(appName, params) {
 			const appInfo = ctrl.model.apps.find((a) => a.appName == appName)
 			const title = appInfo.props.title
 			//console.log('openApp', appName, params)
 			let idx = ctrl.scope.tabs.getTabIndexFromTitle(title)
-			const appUrl = getAppUrl(appName, params)
+			const appUrl = $$.util.getUrlParams(`/apps/${appName}`, params)
 			if (idx < 0) { // apps not already run
 				idx = ctrl.scope.tabs.addTab(title, {
 					removable: true,

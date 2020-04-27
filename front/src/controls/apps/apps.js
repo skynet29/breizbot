@@ -1,20 +1,28 @@
 $$.control.registerControl('breizbot.apps', {
 
+	deps: ['breizbot.scheduler'],
+
 	props: {
 		apps: [],
-		showActivated: false
+		showActivated: false,
+		items: function() {return {}}
 	},
 
 	$iface: 'setData(data)',
 
 	template: {gulp_inject: './apps.html'},
 
-	init: function(elt) {
+	init: function(elt, scheduler) {
 
-		const {apps, showActivated} = this.props
+		const {apps, showActivated, items} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				getItems: function(scope) {
+					//console.log('getItems', scope.app)
+					const {appName, activated} = scope.app
+					return items({appName, activated})
+				},
 				apps,
 				showActivated,
 				show1: function(scope) {
@@ -32,6 +40,13 @@ $$.control.registerControl('breizbot.apps', {
 					//console.log('onTileClick', $(this).data('item'))
 					const idx = $(this).index()
 					elt.trigger('appclick', ctrl.model.apps[idx])
+				},
+				onTileContextMenu: function(ev, data) {
+					const idx = $(this).index()
+					//console.log('onTileContextMenu', data)
+					const {cmd} = data
+					const info = $.extend({cmd}, ctrl.model.apps[idx])
+					elt.trigger('appcontextmenu', info)
 				}
 			}
 		})
@@ -47,6 +62,6 @@ $$.control.registerControl('breizbot.apps', {
 	},
 
 	$iface: `setData(data)`,
-	$events: 'appclick'
+	$events: 'appclick;appcontextmenu'
 });
 

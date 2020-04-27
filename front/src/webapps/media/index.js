@@ -1,6 +1,4 @@
-const router = require('express').Router()
-
-module.exports = function(ctx) {
+module.exports = function(ctx, router) {
 
 
 	const {wss} = ctx
@@ -84,5 +82,4 @@ module.exports = function(ctx) {
 
 	})
 
-	return router
 }

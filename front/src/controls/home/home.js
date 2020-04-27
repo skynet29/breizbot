@@ -68,11 +68,9 @@ $$.control.registerControl('breizbot.home', {
 					return this.apps.filter((a) => a.activated)
 				},
 				items: function() {
-					return function(data) {
-						return {
-							remove:{name: 'Remove'}
-						}	
-					}
+					return {
+						remove:{name: 'Remove'}
+					}	
 				}
 
 			},

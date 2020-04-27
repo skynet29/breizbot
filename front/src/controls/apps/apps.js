@@ -5,7 +5,7 @@ $$.control.registerControl('breizbot.apps', {
 	props: {
 		apps: [],
 		showActivated: false,
-		items: function() {return {}}
+		items: null
 	},
 
 	$iface: 'setData(data)',
@@ -20,8 +20,7 @@ $$.control.registerControl('breizbot.apps', {
 			data: {
 				getItems: function(scope) {
 					//console.log('getItems', scope.app)
-					const {appName, activated} = scope.app
-					return items({appName, activated})
+					return (typeof items == 'function') ? items(scope.app) : items
 				},
 				apps,
 				showActivated,

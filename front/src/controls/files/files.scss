@@ -5,7 +5,7 @@
 		flex-direction: column;
 		padding: 10px;
 
-	.scrollPanel {
+	> .scrollPanel {
 		flex: 1;
 		overflow-y: auto;
 		border: 1px solid lightgrey;
@@ -49,13 +49,13 @@
 		}							
 	}
 
-	.toolbar {
+	> .toolbar {
 		.brainjs-controlgroup {
-			margin-bottom: 10px;
+			margin-bottom: 10px;			
 		}
 	}
 
-	.pathPanel > div {
+	> .pathPanel > div {
 		display: inline-block;
 	}
 }

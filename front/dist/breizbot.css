@@ -46,38 +46,38 @@
   display: flex;
   flex-direction: column;
   padding: 10px; }
-  .breizbot-files .scrollPanel {
+  .breizbot-files > .scrollPanel {
     flex: 1;
     overflow-y: auto;
     border: 1px solid lightgrey;
     margin-top: 10px; }
-    .breizbot-files .scrollPanel .container {
+    .breizbot-files > .scrollPanel .container {
       display: flex;
       flex-direction: column; }
-      .breizbot-files .scrollPanel .container .thumbnail {
+      .breizbot-files > .scrollPanel .container .thumbnail {
         margin: 5px;
         position: relative;
         padding: 10px;
         background-color: white; }
-        .breizbot-files .scrollPanel .container .thumbnail .check {
+        .breizbot-files > .scrollPanel .container .thumbnail .check {
           position: absolute;
           left: 5px;
           top: 5px; }
-        .breizbot-files .scrollPanel .container .thumbnail .item {
+        .breizbot-files > .scrollPanel .container .thumbnail .item {
           display: flex;
           align-items: center;
           cursor: pointer; }
-          .breizbot-files .scrollPanel .container .thumbnail .item .icon {
+          .breizbot-files > .scrollPanel .container .thumbnail .item .icon {
             min-width: 100px;
             text-align: center; }
-          .breizbot-files .scrollPanel .container .thumbnail .item .info {
+          .breizbot-files > .scrollPanel .container .thumbnail .item .info {
             display: flex;
             flex-direction: column;
             overflow: hidden;
             margin-left: 5px; }
-  .breizbot-files .toolbar .brainjs-controlgroup {
+  .breizbot-files > .toolbar .brainjs-controlgroup {
     margin-bottom: 10px; }
-  .breizbot-files .pathPanel > div {
+  .breizbot-files > .pathPanel > div {
     display: inline-block; }
 
 .breizbot-home {
@@ -104,16 +104,16 @@
   flex-direction: column;
   height: 100%;
   overflow: hidden; }
-  .breizbot-pager .toolbar {
+  .breizbot-pager > .toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center; }
-    .breizbot-pager .toolbar .left {
+    .breizbot-pager > .toolbar > .left {
       display: flex;
       align-items: center; }
-      .breizbot-pager .toolbar .left .title {
+      .breizbot-pager > .toolbar > .left > .title {
         margin-left: 5px; }
-  .breizbot-pager .content {
+  .breizbot-pager > .content {
     flex: 1;
     overflow: hidden; }
 

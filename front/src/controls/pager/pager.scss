@@ -4,22 +4,22 @@
     height: 100%; 
     overflow: hidden;
 
-    .toolbar {
+    > .toolbar {
         display: flex;
         justify-content: space-between;
          align-items: center;
 
-         .left {
+         > .left {
              display: flex;
              align-items: center;
 
-             .title {
+            > .title {
                  margin-left: 5px;
              }
          }
     }
 
-    .content {
+    > .content {
         flex: 1; 
         overflow: hidden;
     }

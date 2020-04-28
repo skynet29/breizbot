@@ -99,6 +99,24 @@
     flex: 1;
     overflow: hidden; }
 
+.breizbot-pager {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; }
+  .breizbot-pager .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
+    .breizbot-pager .toolbar .left {
+      display: flex;
+      align-items: center; }
+      .breizbot-pager .toolbar .left .title {
+        margin-left: 5px; }
+  .breizbot-pager .content {
+    flex: 1;
+    overflow: hidden; }
+
 .breizbot-pdf {
   display: flex;
   flex-direction: column; }

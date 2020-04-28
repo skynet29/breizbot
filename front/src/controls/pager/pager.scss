@@ -1,0 +1,26 @@
+.breizbot-pager {
+    display: flex; 
+    flex-direction: column; 
+    height: 100%; 
+    overflow: hidden;
+
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+         align-items: center;
+
+         .left {
+             display: flex;
+             align-items: center;
+
+             .title {
+                 margin-left: 5px;
+             }
+         }
+    }
+
+    .content {
+        flex: 1; 
+        overflow: hidden;
+    }
+}

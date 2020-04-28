@@ -1,25 +1,16 @@
-<div style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
-	
-	<div bn-show="showBack" class="w3-green" style="display: flex; justify-content: space-between; align-items: center;">
+<div bn-show="showBack" class="w3-green toolbar">
+	<div class="left">
 		<button class="w3-button" title="Back" bn-event="click: onBack">
 			<i class="fa fa-arrow-left"></i>
 		</button>
-		<div bn-text="title"></div>
-		<div bn-each="buttons" bn-event="click.action: onAction">
-			<button 
-				bn-show="show1" 
-				class="w3-button action" 
-				bn-text="$scope.$i.label" 
-				bn-data="{cmd: $scope.$i.name}"
-				></button>
-			<button 
-				bn-show="show2" 
-				class="w3-button action" 
-				bn-data="{cmd: $scope.$i.name}"
-				bn-attr="{title: $scope.$i.title}"
-				><i bn-attr="{class: $scope.$i.icon}"></i></button>
-		</div>
+		<div bn-text="title" class="title"></div>
+	
 	</div>
-	<div bn-bind="content" style="flex: 1; overflow: hidden;"></div>
-
+	<div bn-each="buttons" bn-event="click.action: onAction">
+		<button bn-show="show1" class="w3-button action" bn-text="$scope.$i.label"
+			bn-data="{cmd: $scope.$i.name}"></button>
+		<button bn-show="show2" class="w3-button action" bn-data="{cmd: $scope.$i.name}"
+			bn-attr="{title: $scope.$i.title}"><i bn-attr="{class: $scope.$i.icon}"></i></button>
+	</div>
 </div>
+<div bn-bind="content" class="content"></div>

@@ -4,42 +4,6 @@
     flex: 1;
     border: none; }
 
-.breizbot-apps .tile {
-  width: 90px;
-  height: 90px;
-  margin: 10px;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: relative; }
-
-.breizbot-apps .arrow-right {
-  background-color: orange;
-  height: 30px;
-  left: -15px;
-  position: absolute;
-  top: -15px;
-  width: 30px;
-  transform: rotate(-45deg); }
-
-.breizbot-apps .scrollPanel {
-  height: 100%;
-  overflow-y: auto; }
-
-.breizbot-apps .main {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  align-content: start; }
-
-.breizbot-contacts {
-  overflow: hidden; }
-  .breizbot-contacts .scrollPanel {
-    height: 100%;
-    overflow-y: auto; }
-
 .breizbot-files {
   height: 100%;
   overflow: hidden;
@@ -79,6 +43,42 @@
     margin-bottom: 10px; }
   .breizbot-files > .pathPanel > div {
     display: inline-block; }
+
+.breizbot-apps .tile {
+  width: 90px;
+  height: 90px;
+  margin: 10px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative; }
+
+.breizbot-apps .arrow-right {
+  background-color: orange;
+  height: 30px;
+  left: -15px;
+  position: absolute;
+  top: -15px;
+  width: 30px;
+  transform: rotate(-45deg); }
+
+.breizbot-apps .scrollPanel {
+  height: 100%;
+  overflow-y: auto; }
+
+.breizbot-apps .main {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  align-content: start; }
+
+.breizbot-contacts {
+  overflow: hidden; }
+  .breizbot-contacts .scrollPanel {
+    height: 100%;
+    overflow-y: auto; }
 
 .breizbot-home {
   height: 100%;

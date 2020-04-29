@@ -51,6 +51,8 @@
 
 			const thumbnailSize = '100x?'
 			const maxUploadSize = 2 * 1024 * 2014 // 2 Mo
+			let nbFiles = 0
+			let nbFolders = 0
 
 			let selected = false
 
@@ -71,9 +73,9 @@
 				const selFiles = []
 				elt.find('.check:checked').each(function () {
 					const idx = $(this).closest('.thumbnail').index()
-					const info = ctrl.model.files[idx]
+					const { name, folder } = ctrl.model.files[idx]
 
-					selFiles.push({ fileName: ctrl.model.rootDir + info.name, idx })
+					selFiles.push({ fileName: ctrl.model.rootDir + name, idx, folder })
 				})
 				//console.log('selFiles', selFiles)	
 				return selFiles
@@ -100,6 +102,22 @@
 					nbSelection: 0,
 					isShareSelected: false,
 					mp3Filters,
+					info: function () {
+						let ret = []
+						if (nbFolders == 1) {
+							ret.push(`${nbFolders} folder`)
+						}
+						if (nbFolders > 1) {
+							ret.push(`${nbFolders} folders`)
+						}
+						if (nbFiles == 1) {
+							ret.push(`${nbFiles} file`)
+						}
+						if (nbFiles > 1) {
+							ret.push(`${nbFiles} files`)
+						}
+						return ret.join(' / ')
+					},
 
 					isInFilter: function (mp3Info) {
 						var ret = true
@@ -259,7 +277,8 @@
 						}
 
 						if (cmd == 'delete') {
-							deleteFiles([{ fileName: rootDir + info.name, idx }])
+							const { name, folder } = info
+							deleteFiles([{ fileName: rootDir + name, idx, folder }])
 						}
 
 
@@ -317,13 +336,14 @@
 						try {
 							const resp = await srvFiles.mkdir(rootDir + folderName)
 							console.log('resp', resp)
-							const idx = ctrl.model.files.reduce((accu, i) => {
-								return (i.folder) ? accu + 1 : accu
-							}, 0)
-							console.log('idx', idx)
+							let idx = nbFolders
+							if (rootDir != '/') {
+								idx++
+							}
 							ctrl.insertArrayItemAfter('files', idx - 1, resp)
-							ctrl.model.files.splice(idx, 0, resp)
 							console.log('files', ctrl.model.files)
+							nbFolders++;
+							ctrl.updateNode('info')
 						}
 						catch (resp) {
 							console.log('resp', resp)
@@ -450,8 +470,14 @@
 						//loadData()	
 						fileNames.reverse().forEach((i) => {
 							ctrl.removeArrayItem('files', i.idx)
-							ctrl.model.files.splice(i.idx, 1)
+							if (i.folder) {
+								nbFolders--
+							}
+							else {
+								nbFiles--
+							}
 						})
+						ctrl.updateNode('info')
 						console.log('files', ctrl.model.files)
 					}
 					catch (resp) {
@@ -473,6 +499,17 @@
 				const files = await srvFiles.list(rootDir, { filterExtension, imageOnly, getMP3Info }, friendUser)
 				//console.log('files', files)
 
+				nbFiles = 0
+				nbFolders = 0
+				files.forEach((i) => {
+					if (i.folder) {
+						nbFolders++
+					}
+					else {
+						nbFiles++
+					}
+				})
+
 				if (rootDir != '/') {
 					files.unshift({ name: '..', folder: true })
 				}
@@ -482,6 +519,7 @@
 				if (resetFilters !== false) {
 					ctrl.model.mp3Filters = null
 				}
+
 
 				ctrl.setData({
 					files,
@@ -497,8 +535,9 @@
 					const resp = await srvFiles.zipFolder(ctrl.model.rootDir, info.name)
 					//console.log('resp', resp)
 					ctrl.insertArrayItemAfter('files', idx, resp)
-					ctrl.model.files.splice(idx + 1, 0, resp)
 					console.log('files', ctrl.model.files)
+					nbFiles++
+					ctrl.updateNode('info')
 
 				}
 				catch (resp) {
@@ -515,7 +554,8 @@
 					const resp = await srvFiles.convertToMP3(ctrl.model.rootDir, info.name)
 					//console.log('resp', resp)
 					ctrl.insertArrayItemAfter('files', idx, resp)
-					ctrl.model.files.splice(idx + 1, 0, resp)
+					nbFiles++
+					ctrl.updateNode('info')
 					console.log('files', ctrl.model.files)
 
 				}
@@ -542,8 +582,9 @@
 						const resp = await srvFiles.resizeImage(rootDir, info.name, percentage + '%')
 						//console.log('resp', resp)
 						ctrl.insertArrayItemAfter('files', idx, resp)
-						ctrl.model.files.splice(idx + 1, 0, resp)
 						console.log('files', ctrl.model.files)
+						nbFiles++
+						ctrl.updateNode('info')
 
 					}
 					catch (resp) {
@@ -566,7 +607,6 @@
 						const resp = await srvFiles.renameFile(ctrl.model.rootDir, oldFileName, newFileName)
 						//console.log('resp', resp)
 						ctrl.updateArrayItem('files', idx, resp)
-						ctrl.model.files[idx] = resp
 						console.log('files', ctrl.model.files)
 					}
 					catch (resp) {

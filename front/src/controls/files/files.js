@@ -51,8 +51,6 @@
 
 			const thumbnailSize = '100x?'
 			const maxUploadSize = 2 * 1024 * 2014 // 2 Mo
-			let nbFiles = 0
-			let nbFolders = 0
 
 			let selected = false
 
@@ -103,6 +101,19 @@
 					isShareSelected: false,
 					mp3Filters,
 					info: function () {
+						let nbFiles = 0
+						let nbFolders = 0
+						this.getFiles().forEach((i) => {
+							if (i.folder) {
+								if (i.name != '..') {
+									nbFolders++
+								}
+							}
+							else {
+								nbFiles++
+							}
+						})
+
 						let ret = []
 						if (nbFolders == 1) {
 							ret.push(`${nbFolders} folder`)
@@ -336,13 +347,10 @@
 						try {
 							const resp = await srvFiles.mkdir(rootDir + folderName)
 							console.log('resp', resp)
-							let idx = nbFolders
-							if (rootDir != '/') {
-								idx++
-							}
-							ctrl.insertArrayItemAfter('files', idx - 1, resp)
+							let idx = ctrl.model.getFiles().filter((f) => f.folder).length
+							console.log('idx', idx)
+							ctrl.insertArrayItemAfter('files', idx - 1, resp, 'files')
 							console.log('files', ctrl.model.files)
-							nbFolders++;
 							ctrl.updateNode('info')
 						}
 						catch (resp) {
@@ -469,13 +477,7 @@
 						console.log('resp', resp)
 						//loadData()	
 						fileNames.reverse().forEach((i) => {
-							ctrl.removeArrayItem('files', i.idx)
-							if (i.folder) {
-								nbFolders--
-							}
-							else {
-								nbFiles--
-							}
+							ctrl.removeArrayItem('files', i.idx, 'files')
 						})
 						ctrl.updateNode('info')
 						console.log('files', ctrl.model.files)
@@ -499,16 +501,6 @@
 				const files = await srvFiles.list(rootDir, { filterExtension, imageOnly, getMP3Info }, friendUser)
 				//console.log('files', files)
 
-				nbFiles = 0
-				nbFolders = 0
-				files.forEach((i) => {
-					if (i.folder) {
-						nbFolders++
-					}
-					else {
-						nbFiles++
-					}
-				})
 
 				if (rootDir != '/') {
 					files.unshift({ name: '..', folder: true })
@@ -534,9 +526,8 @@
 				try {
 					const resp = await srvFiles.zipFolder(ctrl.model.rootDir, info.name)
 					//console.log('resp', resp)
-					ctrl.insertArrayItemAfter('files', idx, resp)
+					ctrl.insertArrayItemAfter('files', idx, resp, 'files')
 					console.log('files', ctrl.model.files)
-					nbFiles++
 					ctrl.updateNode('info')
 
 				}
@@ -553,8 +544,7 @@
 				try {
 					const resp = await srvFiles.convertToMP3(ctrl.model.rootDir, info.name)
 					//console.log('resp', resp)
-					ctrl.insertArrayItemAfter('files', idx, resp)
-					nbFiles++
+					ctrl.insertArrayItemAfter('files', idx, resp, 'files')
 					ctrl.updateNode('info')
 					console.log('files', ctrl.model.files)
 
@@ -581,9 +571,8 @@
 					try {
 						const resp = await srvFiles.resizeImage(rootDir, info.name, percentage + '%')
 						//console.log('resp', resp)
-						ctrl.insertArrayItemAfter('files', idx, resp)
+						ctrl.insertArrayItemAfter('files', idx, resp, 'files')
 						console.log('files', ctrl.model.files)
-						nbFiles++
 						ctrl.updateNode('info')
 
 					}
@@ -606,7 +595,7 @@
 					try {
 						const resp = await srvFiles.renameFile(ctrl.model.rootDir, oldFileName, newFileName)
 						//console.log('resp', resp)
-						ctrl.updateArrayItem('files', idx, resp)
+						ctrl.updateArrayItem('files', idx, resp, 'files')
 						console.log('files', ctrl.model.files)
 					}
 					catch (resp) {

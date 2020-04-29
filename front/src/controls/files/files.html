@@ -72,11 +72,13 @@
 <div class="scrollPanel">
 
 	<div bn-each="getFiles" 
-		bn-iter="f" 
+		bn-iter="f"
+		bn-lazzy="10" 
+		bn-bind="files"
 		class="container"
 		bn-event="click.folder: onFolderClick, click.check: onCheckClick, click.file: onFileClick, contextmenuchange.thumbnail: onContextMenu">
 		
-		<div class="thumbnail w3-card-2" bn-control="brainjs.contextmenu" bn-data="data1">	
+		<div class="thumbnail w3-card-2" bn-control="brainjs.contextmenu" bn-data="{items: getItems}">	
 
 				<span bn-if="if1">
 					<input type="checkbox" bn-show="showToolbar" class="check w3-check">						
@@ -127,7 +129,7 @@
 					class="file item"
 					>
 					<div class="icon">
-						<img bn-attr="{src: $scope.f.thumbnailUrl}">
+						<img bn-attr="{src: getThumbnailUrl}">
 					</div>
 					
 					<div class="info">

@@ -2,75 +2,33 @@ const path = require('path')
 const fs = require('fs-extra')
 const zipFolder = require('zip-a-folder')
 const config = require('../lib/config')
-const {imageSize, genThumbnail, isImage, resizeImage, convertToMP3} = require('../lib/util')
-const NodeID3 = require('node-id3')
+const { genThumbnail, isImage, resizeImage, convertToMP3, getFileInfo } = require('../lib/util')
 
 
 const cloudPath = config.CLOUD_HOME
 
 const router = require('express').Router()
 
-router.post('/list', function(req, res) {
+router.post('/list', async function (req, res) {
 	//console.log('list req', req.session.user)
 	//console.log('params', req.body)
 	const options = req.body.options || {}
 	const user = req.session.user
-	const {destPath, friendUser} = req.body
+	const { destPath, friendUser } = req.body
 	let rootPath = path.join(cloudPath, user, destPath)
 	if (friendUser != undefined && friendUser != '') {
 		rootPath = path.join(cloudPath, friendUser, 'share', destPath)
 	}
 
-	fs.readdir(rootPath)
-	.then(function(files) {
+	try {
+		const files = await fs.readdir(rootPath)
 		//console.log('files', files)
-		const promises = files.map((file) => {
+		const promises = files.map(async (file) => {
 			const filePath = path.join(rootPath, file)
-			return fs.lstat(filePath).then((statInfo) => {	
-				//console.log('statInfo', statInfo)
-				const ret = {
-					name: file, 
-					folder: statInfo.isDirectory(),
-					size: statInfo.size,
-					isImage: isImage(file),
-					mtime: statInfo.mtimeMs
-				}
-
-				if (!ret.folder && options.getMP3Info === true && file.endsWith('.mp3')) {
-					return new Promise(function(resolve, reject) {
-						NodeID3.read(filePath, function(err, tags) {
-							if (err) {
-								reject(err)
-							}
-							ret.mp3 = {
-								artist: tags.artist,
-								title: tags.title,
-								year: tags.year,
-								genre: tags.genre
-							}
-							resolve(ret)
-						})
-					})
-				}
-
-				if (ret.isImage) {
-					return imageSize(filePath).then((dimension) => {
-						//console.log('dimension', dimension)
-						ret.dimension = dimension
-						return ret
-					})
-				}
-				else {
-					return ret
-				}
-			})
+			return await getFileInfo(filePath, options)
 		})
-		
-		return Promise.all(promises)
-	
-	})
-	.then(function(values) {
-		//console.log('values', values)
+
+		const values = await Promise.all(promises)
 		let ret = values
 
 		if (typeof options.filterExtension == 'string') {
@@ -82,55 +40,57 @@ router.post('/list', function(req, res) {
 		if (options.imageOnly === true) {
 			ret = values.filter((info) => {
 				return info.folder === true || isImage(info.name)
-			})			
+			})
 		}
-		//console.log('ret', ret)
 
 		res.json(ret)
-	})		
-	.catch(function(err) {
-		console.log('err', err)
+	}
+	catch (e) {
+		console.log('error', e)
 		res.json([])
-	}) 
+	}
 
 })
 
-router.post('/mkdir', function(req, res) {
+
+
+
+router.post('/mkdir', async function (req, res) {
 	console.log('mkdir req', req.body)
-	const {fileName} = req.body
+	const { fileName } = req.body
 	const user = req.session.user
-
-	fs.mkdirp(path.join(cloudPath, user, fileName))
-	.then(function() {
-		res.status(200).send('Folder created !')
-	})
-	.catch(function(e) {
+	const folderPath = path.join(cloudPath, user, fileName)
+	try {
+		await fs.mkdirp(folderPath)
+		res.json(await getFileInfo(folderPath))
+	}
+	catch (e) {
 		console.log('error', e)
-		res.status(400).send(e.message)			
-	})	
-})	
+		res.status(400).send(e.message)
+	}
+})
 
-router.post('/delete', function(req, res) {
+router.post('/delete', function (req, res) {
 	console.log('delete req', req.body)
 	const fileNames = req.body
 	const user = req.session.user
 
-	const promises = fileNames.map(function(fileName) {
+	const promises = fileNames.map(function (fileName) {
 		return fs.remove(path.join(cloudPath, user, fileName))
 	})
 
 	Promise.all(promises)
-	.then(function() {
-		res.status(200).send('File removed !')
-	})
-	.catch(function(e) {
-		console.log('error', e)
-		res.status(400).send(e.message)
-	})			
+		.then(function () {
+			res.status(200).send('File removed !')
+		})
+		.catch(function (e) {
+			console.log('error', e)
+			res.status(400).send(e.message)
+		})
 })
 
 
-router.post('/save', function(req, res) {
+router.post('/save', function (req, res) {
 	console.log('save req')
 	if (!req.files) {
 		return res.status(400).send('No files were uploaded.');
@@ -138,44 +98,44 @@ router.post('/save', function(req, res) {
 	}
 
 	const user = req.session.user
-	const destPath = path.join(cloudPath, user,  req.body.destPath)
+	const destPath = path.join(cloudPath, user, req.body.destPath)
 	console.log('destPath', destPath)
 	const file = req.files.file
 
 	fs.lstat(destPath)
-	.catch(function(err) {
-		console.log('lstat', err)
-		return fs.mkdirp(destPath)
-	})
-	.then(function() {
-		
-		file.mv(path.join(destPath, file.name), function(err) {
-		    if (err) {
-		    	console.log('err', err)
-		     	return res.status(500).send(err)
-		    }
-		 
-		    res.send('File uploaded!')
+		.catch(function (err) {
+			console.log('lstat', err)
+			return fs.mkdirp(destPath)
 		})
-	})		
-	.catch(function(e) {
-		console.log('error', e)
-		res.status(400).send(e.message)			
-	})
+		.then(function () {
+
+			file.mv(path.join(destPath, file.name), function (err) {
+				if (err) {
+					console.log('err', err)
+					return res.status(500).send(err)
+				}
+
+				res.send('File uploaded!')
+			})
+		})
+		.catch(function (e) {
+			console.log('error', e)
+			res.status(400).send(e.message)
+		})
 
 })
 
 
 
 
-router.post('/move', function(req, res) {
+router.post('/move', function (req, res) {
 	console.log('move req', req.body)
 	var fileNames = req.body.fileNames
 	var destPath = req.body.destPath
 
 	var user = req.session.user
 
-	var promises = fileNames.map(function(fileName) {
+	var promises = fileNames.map(function (fileName) {
 		var fullPath = path.join(cloudPath, user, fileName)
 		var fullDest = path.join(cloudPath, user, destPath, path.basename(fileName))
 		console.log('fullDest', fullDest)
@@ -183,97 +143,109 @@ router.post('/move', function(req, res) {
 	})
 
 	Promise.all(promises)
-	.then(function() {
-		res.status(200).send('File moved !')
-	})
-	.catch(function(e) {
-		console.log('error', e)
-		res.status(400).send(e.message)
-	})			
+		.then(function () {
+			res.status(200).send('File moved !')
+		})
+		.catch(function (e) {
+			console.log('error', e)
+			res.status(400).send(e.message)
+		})
 })
 
-router.post('/rename', function(req, res) {
+router.post('/rename', async function (req, res) {
 	console.log('move req', req.body)
-	const {filePath, oldFileName, newFileName} = req.body
+	const { filePath, oldFileName, newFileName } = req.body
 
 	var user = req.session.user
 
 	const oldFullPath = path.join(cloudPath, user, filePath, oldFileName)
 	const newFullPath = path.join(cloudPath, user, filePath, newFileName)
 
-	fs.move(oldFullPath, newFullPath)
-	.then(function() {
-		res.status(200).send('File moved !')
-	})
-	.catch(function(e) {
+	try {
+		await fs.move(oldFullPath, newFullPath)
+		const info = await getFileInfo(newFullPath)
+		res.json(info)
+	}
+	catch (e) {
 		console.log('error', e)
 		res.status(400).send(e.message)
-	})			
+	}
 })
 
-router.post('/resizeImage', function(req, res) {
+router.post('/resizeImage', async function (req, res) {
 	console.log('resizeImage', req.body)
-	const {filePath, fileName, resizeFormat} = req.body
+	const { filePath, fileName, resizeFormat } = req.body
 
 	var user = req.session.user
 
 	const fullPath = path.join(cloudPath, user, filePath)
 
-	resizeImage(fullPath, fileName, resizeFormat)
-	.then(function() {
-		res.status(200).send('File resized!')
-	})
-	.catch(function(e) {
+	try {
+		const info = await resizeImage(fullPath, fileName, resizeFormat)
+		res.json(info)
+	}
+	catch (e) {
 		console.log('error', e)
 		res.status(400).send(e.message)
-	})			
+	}
 })
 
-router.post('/convertToMP3', function(req, res) {
+router.post('/convertToMP3', async function (req, res) {
 	console.log('convertToMP3', req.body)
-	const {filePath, fileName} = req.body
+	const { filePath, fileName } = req.body
 
 	const user = req.session.user
 
 	const fullPath = path.join(cloudPath, user, filePath)
 
-	convertToMP3(fullPath, fileName)
-	.then(function() {
-		res.status(200).send('File converted!')
-	})
-	.catch(function(e) {
+	try {
+		const resp = await convertToMP3(fullPath, fileName)
+		res.json(resp)
+	}
+	catch (e) {
 		console.log('error', e)
 		res.status(400).send(e.message)
-	})			
+	}
 })
 
-router.post('/zipFolder', function(req, res) {
-	const {folderPath, folderName} = req.body
+router.post('/zipFolder', async function (req, res) {
+	const { folderPath, folderName } = req.body
 
 	const user = req.session.user
 
 	const fullFolderPath = path.join(cloudPath, user, folderPath, folderName)
-	const fullZipFilePath = path.join(cloudPath, user, folderPath, folderName + '.zip')
+	const fileName = folderName + '.zip'
+	const fullZipFilePath = path.join(cloudPath, user, folderPath, fileName)
 
-	zipFolder.zip(fullFolderPath, fullZipFilePath).then(() => {
-		res.status(200).send('folder zipped!')
+	try {
+		await zipFolder.zip(fullFolderPath, fullZipFilePath)
+		const statInfo = await fs.lstat(fullZipFilePath)
+		//console.log('statInfo', statInfo)
 
-	})
-	.catch((e)=> {
+		res.json({
+			name: fileName,
+			folder: false,
+			size: statInfo.size,
+			isImage: false,
+			mtime: statInfo.mtimeMs,
+		})
+
+	}
+	catch (e) {
 		console.log('error', e)
 		res.status(400).send(e.message)
-	})
+	}
 
 })
 
 
-router.post('/copy', function(req, res) {
+router.post('/copy', function (req, res) {
 	console.log('copy req', req.body)
-	const {fileNames, destPath} = req.body
+	const { fileNames, destPath } = req.body
 
 	const user = req.session.user
 
-	const promises = fileNames.map(function(fileName) {
+	const promises = fileNames.map(function (fileName) {
 		const fullPath = path.join(cloudPath, user, fileName)
 		const fullDest = path.join(cloudPath, user, destPath, path.basename(fileName))
 		console.log('fullDest', fullDest)
@@ -281,42 +253,42 @@ router.post('/copy', function(req, res) {
 	})
 
 	Promise.all(promises)
-	.then(function() {
-		res.status(200).send('File copied !')
-	})
-	.catch(function(e) {
-		console.log('error', e)
-		res.status(400).send(e.message)
-	})			
+		.then(function () {
+			res.status(200).send('File copied !')
+		})
+		.catch(function (e) {
+			console.log('error', e)
+			res.status(400).send(e.message)
+		})
 })
 
 
 
-router.get('/load', function(req, res) {
+router.get('/load', function (req, res) {
 	//console.log('load req', req.query)
-	const {fileName, friendUser} = req.query
+	const { fileName, friendUser } = req.query
 	const user = req.session.user
 
 	if (friendUser != undefined && friendUser != '') {
-		res.sendFile(path.join(cloudPath, friendUser, 'share', fileName))		
+		res.sendFile(path.join(cloudPath, friendUser, 'share', fileName))
 	}
 	else {
-		res.sendFile(path.join(cloudPath, user, fileName))	
+		res.sendFile(path.join(cloudPath, user, fileName))
 	}
 })
 
-router.get('/loadThumbnail', function(req, res) {
+router.get('/loadThumbnail', function (req, res) {
 	//console.log('load req', req.query)
-	const {fileName, size, friendUser} = req.query
+	const { fileName, size, friendUser } = req.query
 	const user = req.session.user
 
 	if (friendUser != undefined && friendUser != '') {
-		genThumbnail(path.join(cloudPath, friendUser, 'share', fileName), res, size)		
+		genThumbnail(path.join(cloudPath, friendUser, 'share', fileName), res, size)
 	}
 	else {
-		genThumbnail(path.join(cloudPath, user, fileName), res, size)	
-	}	
-	
+		genThumbnail(path.join(cloudPath, user, fileName), res, size)
+	}
+
 })
 
 module.exports = router

@@ -3,7 +3,8 @@
   flex-direction: column;
   padding: 10px; }
   .rootPage .breizbot-rtc {
-    height: 100%; }
+    height: 100%;
+    overflow: hidden; }
   .rootPage .panel {
     flex: 1;
     display: flex;

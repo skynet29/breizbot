@@ -145,7 +145,8 @@
     .breizbot-rtc .toolbar p {
       margin: 0px; }
   .breizbot-rtc .panel {
-    flex: 1; }
+    flex: 1;
+    overflow: hidden; }
 
 .breizbot-addUser {
   margin: 10px;

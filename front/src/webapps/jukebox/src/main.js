@@ -75,10 +75,8 @@ $$.control.registerControl('rootPage', {
 								firstIdx,
 								files,
 								rootDir,
-								friendUser
-							},
-							onBack: function() {
-								iface.update()
+								friendUser,
+								fileCtrl: iface
 							}
 						})
 	

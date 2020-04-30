@@ -624,6 +624,15 @@
 				loadData(undefined, false)
 			}
 
+			this.updateFile = async function (fileName, options) {
+				const { files, rootDir } = ctrl.model
+				const idx = files.findIndex((i) => i.name == fileName)
+				//console.log('[FileCtrl] updateFile', idx, fileName, options)
+				const info = await srvFiles.fileInfo(rootDir + fileName, friendUser, options)
+				ctrl.updateArrayItem('files', idx, info, 'files')
+				console.log('files', files)
+			}
+
 			this.setMP3Filters = function (mp3Filters) {
 				ctrl.setData({ mp3Filters })
 			}

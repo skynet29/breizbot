@@ -9,6 +9,25 @@ const cloudPath = config.CLOUD_HOME
 
 const router = require('express').Router()
 
+router.post('/fileInfo', async function (req, res) {
+	//console.log('list req', req.session.user)
+	//console.log('params', req.body)
+	const user = req.session.user
+	const { filePath, friendUser, options } = req.body
+	let rootPath = path.join(cloudPath, user, filePath)
+	if (friendUser != undefined && friendUser != '') {
+		rootPath = path.join(cloudPath, friendUser, 'share', filePath)
+	}
+
+	try {
+		res.json(await getFileInfo(rootPath, options))
+	}
+	catch(e) {
+		console.log('error', e)
+		res.status(404).send(e.message)
+	}
+})
+
 router.post('/list', async function (req, res) {
 	//console.log('list req', req.session.user)
 	//console.log('params', req.body)

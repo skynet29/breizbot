@@ -6,6 +6,11 @@ $$.service.registerService('breizbot.files', {
 		const http = resource('/api/files')
 		
 		return {
+			fileInfo: function(filePath, friendUser, options) {
+				console.log('[FileService] fileInfo', filePath, friendUser, options)
+
+				return http.post('/fileInfo', {filePath, friendUser, options})
+			},
 			list: function(destPath, options, friendUser) {
 				console.log('[FileService] list', destPath)
 

@@ -75,6 +75,15 @@
             flex-direction: column;
             overflow: hidden;
             margin-left: 5px; }
+  .breizbot-files > .download {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column; }
+    .breizbot-files > .download .downloadItems {
+      margin-top: 10px;
+      margin-left: 20px; }
+    .breizbot-files > .download progress {
+      width: 100%; }
   .breizbot-files > .toolbar .brainjs-controlgroup {
     margin-bottom: 10px; }
   .breizbot-files > .pathPanel > div {

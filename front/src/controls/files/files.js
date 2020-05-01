@@ -50,7 +50,7 @@
 		init: function (elt, srvFiles) {
 
 			const thumbnailSize = '100x?'
-			const maxUploadSize = 2 * 1024 * 2014 // 2 Mo
+			const maxUploadSize = 10 * 1024 * 2014 // 10 Mo
 
 			let selected = false
 
@@ -92,6 +92,10 @@
 			const ctrl = $$.viewController(elt, {
 
 				data: {
+					downloads: [],
+					hasDownloads: function() {
+						return this.downloads.length > 0
+					},
 					loading: false,
 					showToolbar,
 					rootDir: '/',
@@ -249,6 +253,20 @@
 
 				},
 				events: {
+					onToggleDownload: function() {
+						console.log('onToggleDownload')
+						const $i = $(this).find('i')
+						const panel = $(this).siblings('.downloadItems')
+						if ($i.hasClass('fa-caret-right')) {
+							$i.removeClass('fa-caret-right').addClass('fa-caret-down')
+							panel.slideDown()
+						}
+						else {
+							$i.removeClass('fa-caret-down').addClass('fa-caret-right')						
+							panel.slideUp()
+						}
+	
+					},
 					onPathItem: function (ev) {
 						const pathItem = $(this).data('info')
 						console.log('onPathItem', pathItem)
@@ -348,11 +366,7 @@
 						try {
 							const resp = await srvFiles.mkdir(rootDir + folderName)
 							console.log('resp', resp)
-							let idx = ctrl.model.getFiles().filter((f) => f.folder).length
-							console.log('idx', idx)
-							ctrl.insertArrayItemAfter('files', idx - 1, resp, 'files')
-							console.log('files', ctrl.model.files)
-							ctrl.updateNode('info')
+							insertFile(resp)
 						}
 						catch (resp) {
 							console.log('resp', resp)
@@ -446,14 +460,36 @@
 
 						$$.util.openFileDialog(async function (file) {
 							//console.log('fileSize', file.size / 1024)
-							if (file.size > maxUploadSize) {
-								$$.ui.showAlert({ content: 'File too big', title: 'Import file' })
-								return
-							}
-							const blob = await $$.util.readFile(file)
+							console.log('Download file:', file.name)
+							// if (file.size > maxUploadSize) {
+							// 	$$.ui.showAlert({ content: 'File too big', title: 'Import file' })
+							// 	return
+							// }
 							try {
-								await srvFiles.uploadFile(blob, file.name, ctrl.model.rootDir)
-								loadData()
+								const data = {
+									fileName: file.name, 
+									percentage: 0
+								}
+
+								const {downloads, rootDir} = ctrl.model
+								downloads.push(data)
+								ctrl.updateNode('downloads, hasDownloads')
+
+								await srvFiles.uploadFile(file, file.name, ctrl.model.rootDir, function(evt) {
+									if (evt.lengthComputable) {
+										const percentComplete = evt.loaded / evt.total
+										//console.log('percentComplete', percentComplete)
+										data.percentage = percentComplete
+										ctrl.updateNode('downloads')
+
+									  }
+								})
+								console.log('Download Finished: ', data.fileName)
+								const idx = downloads.indexOf(data)
+								downloads.splice(idx, 1)
+								ctrl.updateNode('downloads, hasDownloads')
+								const fileInfo = await srvFiles.fileInfo(rootDir + data.fileName)
+								insertFile(fileInfo)
 							}
 							catch (resp) {
 								console.log('resp', resp)
@@ -613,6 +649,15 @@
 			}
 
 			loadData()
+
+			function insertFile(fileInfo) {
+				let idx = ctrl.model.getFiles().filter((f) => f.folder).length
+				//console.log('idx', idx)
+				ctrl.insertArrayItemAfter('files', idx - 1, fileInfo, 'files')
+				console.log('files', ctrl.model.files)
+				ctrl.updateNode('info')
+
+			}
 
 			this.getFiles = function () {
 				return ctrl.model.files.filter((f) => !f.folder)

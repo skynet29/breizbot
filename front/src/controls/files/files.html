@@ -1,57 +1,40 @@
-
 <div class="toolbar" bn-show="showToolbar">
 	<div bn-control="brainjs.controlgroup">
-		<button 
-			title="New folder"
-			bn-event="click: onCreateFolder"
-		><i class="fas fa-folder-plus"></i></button>		
+		<button title="New folder" bn-event="click: onCreateFolder"><i class="fas fa-folder-plus"></i></button>
 
-		<button 
-			title="Import file"
-			bn-event="click: onImportFile"
-		><i class="fa fa-upload"></i></button>		
+		<button title="Import file" bn-event="click: onImportFile"><i class="fa fa-upload"></i></button>
 
 
 	</div>
 
 	<div bn-control="brainjs.controlgroup">
-		<button 
-			title="Toggle Selection"
-			bn-event="click: onTogleSelection"
-		><i class="fa fa-check"></i></button>
+		<button title="Toggle Selection" bn-event="click: onTogleSelection"><i class="fa fa-check"></i></button>
 
 
-		<button 
-			title="Reload"
-			bn-event="click: onReload"
-		><i class="fa fa-sync-alt"></i></button>	
+		<button title="Reload" bn-event="click: onReload"><i class="fa fa-sync-alt"></i></button>
 	</div>
 
 	<div bn-control="brainjs.controlgroup">
-		<button title="Delete"
-			bn-event="click: onDeleteFiles"
-			bn-prop="prop1"
-		><i class="fa fa-trash"></i></button>
+		<button title="Delete" bn-event="click: onDeleteFiles" bn-prop="prop1"><i class="fa fa-trash"></i></button>
 
-		<button title="Cut"
-			bn-prop="prop1"
-			bn-event="click: onCutFiles"
-		><i class="fa fa-cut"></i></button>	
+		<button title="Cut" bn-prop="prop1" bn-event="click: onCutFiles"><i class="fa fa-cut"></i></button>
 
-		<button title="Copy"
-			bn-prop="prop1"
-			bn-event="click: onCopyFiles"
-			><i class="fa fa-copy"></i></button>
+		<button title="Copy" bn-prop="prop1" bn-event="click: onCopyFiles"><i class="fa fa-copy"></i></button>
 
-		<button title="Share"
-			bn-prop="prop2"
-			bn-event="click: onShareFiles"
-			><i class="fa fa-share-alt"></i></button>
+		<button title="Share" bn-prop="prop2" bn-event="click: onShareFiles"><i class="fa fa-share-alt"></i></button>
 
-		<button title="Paste"
-			bn-prop="prop3"
-			bn-event="click: onPasteFiles"
-		><i class="fa fa-paste"></i></button>		
+		<button title="Paste" bn-prop="prop3" bn-event="click: onPasteFiles"><i class="fa fa-paste"></i></button>
+	</div>
+</div>
+
+<div class="download" bn-show="hasDownloads" bn-bind="hasDownloads">
+	<strong bn-event="click: onToggleDownload"><i class="fa fa-caret-down fa-fw"></i>
+			Downloads</strong>
+	<div bn-each="downloads" bn-bind="downloads" class="downloadItems">
+		<div class="w3-card w3-padding-small">
+			<div bn-text="$scope.$i.fileName"></div>
+			<progress max="1" bn-val="$scope.$i.percentage"></progress>
+		</div>
 	</div>
 </div>
 
@@ -66,89 +49,76 @@
 	<div bn-each="getPath" bn-index="idx">
 		<i class="fa fa-chevron-right" bn-show="!isFirst"></i>
 		<span>
-			<a class="pathItem" bn-text="$scope.$i" href="#" bn-show="!isLast" bn-data="{info: getPathInfo}"></a>	
-			<span bn-text="$scope.$i" bn-show="isLast"></span>	
-			
+			<a class="pathItem" bn-text="$scope.$i" href="#" bn-show="!isLast" bn-data="{info: getPathInfo}"></a>
+			<span bn-text="$scope.$i" bn-show="isLast"></span>
+
 		</span>
 	</div>
 
-	
+
 </div>
 
 
 <div class="scrollPanel">
 
-	<div bn-each="getFiles" 
-		bn-iter="f"
-		bn-lazzy="10" 
-		bn-bind="files"
-		class="container"
+	<div bn-each="getFiles" bn-iter="f" bn-lazzy="10" bn-bind="files" class="container"
 		bn-event="click.folder: onFolderClick, click.check: onCheckClick, click.file: onFileClick, contextmenuchange.thumbnail: onContextMenu">
-		
-		<div class="thumbnail w3-card-2" bn-control="brainjs.contextmenu" bn-data="{items: getItems}">	
 
-				<span bn-if="if1">
-					<input type="checkbox" bn-show="showToolbar" class="check w3-check">						
-				</span>
-				<div bn-if="$scope.f.folder" class="folder item">
-					<div class="icon">
-						<i class="fa fa-4x fa-folder-open w3-text-blue-grey"></i>
-					</div>
-					
-					<div class="info">
-						<strong bn-text="$scope.f.name"></strong>		
-						<span bn-text="getDate" bn-if="if1"></span>										
-					</div>
+		<div class="thumbnail w3-card-2" bn-control="brainjs.contextmenu" bn-data="{items: getItems}">
+
+			<span bn-if="if1">
+				<input type="checkbox" bn-show="showToolbar" class="check w3-check">
+			</span>
+			<div bn-if="$scope.f.folder" class="folder item">
+				<div class="icon">
+					<i class="fa fa-4x fa-folder-open w3-text-blue-grey"></i>
 				</div>
-				<div 
-					bn-if="if2"  
-					class="file item"
-					>
-					<div class="icon">
-						<i bn-attr="{class: class1}"></i>
-					</div>
-					
-					<div class="info">
-						<strong bn-text="$scope.f.name"></strong>
-						<span bn-text="getDate"></span>							
-						<span bn-text="getSize"></span>	
-					</div>
-				</div>			
 
-				<div 
-					bn-if="isMP3"  
-					class="file item"
-					>
-					<div class="icon">
-						<i bn-attr="{class: class1}"></i>
-					</div>
-					
-					<div class="info">
-						<div>Title:&nbsp;<strong bn-text="$scope.f.mp3.title"></strong></div>
+				<div class="info">
+					<strong bn-text="$scope.f.name"></strong>
+					<span bn-text="getDate" bn-if="if1"></span>
+				</div>
+			</div>
+			<div bn-if="if2" class="file item">
+				<div class="icon">
+					<i bn-attr="{class: class1}"></i>
+				</div>
 
-						<div>Artist:&nbsp;<strong bn-text="$scope.f.mp3.artist"></strong></div>
-						<span bn-text="getSize"></span>	
-					</div>
-				</div>			
+				<div class="info">
+					<strong bn-text="$scope.f.name"></strong>
+					<span bn-text="getDate"></span>
+					<span bn-text="getSize"></span>
+				</div>
+			</div>
 
-				<div 
-					bn-if="if3"  
-					class="file item"
-					>
-					<div class="icon">
-						<img bn-attr="{src: getThumbnailUrl}">
-					</div>
-					
-					<div class="info">
-						<strong bn-text="$scope.f.name"></strong>
-						<span bn-text="getDate"></span>
-						<span bn-text="getSize"></span>						
-						<span bn-text="getDimension"></span>					
-					</div>
-				</div>	
-			
+			<div bn-if="isMP3" class="file item">
+				<div class="icon">
+					<i bn-attr="{class: class1}"></i>
+				</div>
+
+				<div class="info">
+					<div>Title:&nbsp;<strong bn-text="$scope.f.mp3.title"></strong></div>
+
+					<div>Artist:&nbsp;<strong bn-text="$scope.f.mp3.artist"></strong></div>
+					<span bn-text="getSize"></span>
+				</div>
+			</div>
+
+			<div bn-if="if3" class="file item">
+				<div class="icon">
+					<img bn-attr="{src: getThumbnailUrl}">
+				</div>
+
+				<div class="info">
+					<strong bn-text="$scope.f.name"></strong>
+					<span bn-text="getDate"></span>
+					<span bn-text="getSize"></span>
+					<span bn-text="getDimension"></span>
+				</div>
+			</div>
+
 		</div>
 	</div>
-	
+
 
 </div>

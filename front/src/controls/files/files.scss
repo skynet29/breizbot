@@ -48,6 +48,20 @@
 			}			
 		}							
 	}
+	> .download {
+		margin-bottom: 10px;
+		display: flex;
+		flex-direction: column;
+		
+		.downloadItems {
+			margin-top: 10px;
+			margin-left: 20px;
+		}
+
+		progress {
+			width: 100%;
+		}
+	}
 
 	> .toolbar {
 		.brainjs-controlgroup {

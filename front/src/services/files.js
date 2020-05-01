@@ -25,7 +25,7 @@ $$.service.registerService('breizbot.files', {
 				return $$.util.getUrlParams('/api/files/loadThumbnail', {fileName, size, friendUser})
 			},
 
-			uploadFile: function(blob, saveAsfileName, destPath) {
+			uploadFile: function(blob, saveAsfileName, destPath, onUploadProgress) {
 				console.log('[FileService] uploadFile', saveAsfileName, destPath)
 				if (!(blob instanceof Blob)) {
 					console.warn('File format not supported')
@@ -35,7 +35,7 @@ $$.service.registerService('breizbot.files', {
 				var fd = new FormData()
 				fd.append('file', blob, saveAsfileName)
 				fd.append('destPath', destPath)
-				return http.postFormData('/save', fd)
+				return http.postFormData('/save', fd, onUploadProgress)
 			},
 
 			removeFiles: function(fileNames) {

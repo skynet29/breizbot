@@ -399,7 +399,7 @@
 					onCutFiles: function (ev) {
 						console.log('onCutFiles')
 						ctrl.setData({
-							selectedFiles: getSelFiles(),
+							selectedFiles: getSelFiles().map((i) => i.fileName),
 							operation: 'cut'
 						})
 					},
@@ -407,7 +407,7 @@
 					onCopyFiles: function (ev) {
 						console.log('onCopyFiles')
 						ctrl.setData({
-							selectedFiles: getSelFiles(),
+							selectedFiles: getSelFiles().map((i) => i.fileName),
 							operation: 'copy'
 						})
 
@@ -416,7 +416,7 @@
 					onShareFiles: async function (ev) {
 						console.log('onShareFiles')
 						try {
-							const resp = await srvFiles.shareFiles(getSelFiles())
+							const resp = await srvFiles.shareFiles(getSelFiles().map((i) => i.fileName))
 							console.log('resp', resp)
 							ctrl.setData({ selectedFiles: [], operation: 'none' })
 							loadData()

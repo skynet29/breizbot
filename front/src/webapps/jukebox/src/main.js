@@ -20,7 +20,7 @@ $$.control.registerControl('rootPage', {
 						}						
 					}
 				})
-			artists = Object.keys(artists).map((artist) => {
+			artists = Object.keys(artists).sort().map((artist) => {
 				const nbTitle = artists[artist]
 				return (nbTitle == 1) ?
 					{value: artist, label: artist} :

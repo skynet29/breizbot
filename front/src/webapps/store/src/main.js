@@ -59,6 +59,10 @@ $$.control.registerControl('rootPage', {
 		}
 
 		listAll()
+
+		this.onAppResume = function() {
+			listAll()
+		}
 	}
 });
 

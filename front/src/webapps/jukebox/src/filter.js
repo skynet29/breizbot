@@ -16,7 +16,7 @@ $$.control.registerControl('filterDlg', {
 
         const ctrl = $$.viewController(elt, {
             data: {
-                artists,
+                artists: artists.sort(),
                 selectedArtist
             },
             events: {

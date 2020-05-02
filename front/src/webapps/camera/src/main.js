@@ -7,17 +7,25 @@ $$.control.registerControl('rootPage', {
 
 	init: function(elt, srvFiles, pager) {
 
+		const savingDlg = $$.ui.savingDialog()
+
 		const audio = new Audio('/webapps/camera/assets/camera_shutter.mp3')
 
 		async function saveImage(blob) {
 			const fileName = 'SNAP' + Date.now() + '.png'
 			console.log('fileName', fileName)
 			try {
-				const resp = await srvFiles.uploadFile(blob, fileName, '/apps/camera')
+				savingDlg.show()
+				const resp = await srvFiles.uploadFile(blob, fileName, '/apps/camera', (percentage) => {
+					savingDlg.setPercentage(percentage)
+				})
+				await $$.util.wait(1000)
+				savingDlg.hide()
 				console.log('resp', resp)
-				pager.popPage()
+				//pager.popPage()
 			}
 			catch(resp) {
+				savingDlg.hide()
 				$$.ui.showAlert({
 					title: 'Error',
 					content: resp.responseText

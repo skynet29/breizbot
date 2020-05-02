@@ -14,6 +14,7 @@ $$.control.registerControl('messagePage', {
 
 		const {currentAccount, mailboxName, item} = this.props
 
+		const savingDlg = $$.ui.savingDialog()
 
 		const waitDlg = $$.dialogController({
 			title: 'Loading ...',
@@ -87,11 +88,16 @@ $$.control.registerControl('messagePage', {
 									onClick: async function() {
 										const blob = $$.util.dataURLtoBlob(url)
 										try {
-											const resp = await srvFiles.uploadFile(blob, info.name, '/apps/email')
+											savingDlg.show()
+											const resp = await srvFiles.uploadFile(blob, info.name, '/apps/email', (value) => {
+												savingDlg.setPercentage(value)
+											})
 											console.log('resp', resp)
-											pager.popPage()
+											await $$.util.wait(1000)
+											savingDlg.hide()
 										}
 										catch (e) {
+											savingDlg.hide()
 											$$.ui.showAlert({
 												title: 'Error',
 												content: resp.responseText

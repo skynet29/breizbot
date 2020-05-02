@@ -1,13 +1,15 @@
 $$.control.registerControl('rootPage', {
 
-	template: {gulp_inject: './main.html'},
+	template: { gulp_inject: './main.html' },
 
 	deps: ['breizbot.files'],
 
-	init: function(elt, files) {
+	init: function (elt, files) {
 
 		let mediaRecorder = null
 		let chunks = []
+
+		const savingDlg = $$.ui.savingDialog()
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -15,19 +17,19 @@ $$.control.registerControl('rootPage', {
 				clips: []
 			},
 			events: {
-				onRecord: function(ev) {
+				onRecord: function (ev) {
 					//console.log('onRecord')
-					ctrl.setData({recording: true})
+					ctrl.setData({ recording: true })
 					mediaRecorder.start()
 				},
 
-				onStop: function(ev) {
+				onStop: function (ev) {
 					//console.log('onStop')
-					ctrl.setData({recording: false})
+					ctrl.setData({ recording: false })
 					mediaRecorder.stop()
 				},
 
-				onDeleteClip: function(ev) {
+				onDeleteClip: function (ev) {
 					//console.log('onDeleteClip')
 					const index = $(this).closest('.clip').index()
 					//console.log('index', index)
@@ -38,31 +40,32 @@ $$.control.registerControl('rootPage', {
 					ctrl.update()
 				},
 
-				onSaveClip: function(ev) {
+				onSaveClip: async function (ev) {
 					//console.log('onSaveClip')
 					const index = $(this).closest('.clip').index()
 					const data = ctrl.model.clips[index]
 
 					//console.log('data', data)
-
-					fetch(data.url)
-					.then((resp) => { 
-						return resp.blob()
-					})
-					.then((blob) => {
-						return files.uploadFile(blob, data.name + '.ogg', '/apps/micro')
-					})
-					.then((resp) => {
-						console.log('resp', resp)
+					try {
+						const ret = await fetch(data.url)
+						const blob = await ret.blob()
+						savingDlg.show()
+						const resp = await files.uploadFile(blob, data.name + '.ogg', '/apps/micro', (value) => {
+							savingDlg.setPercentage(value)
+						})
+						await $$.util.wait(1000)
+						savingDlg.hide()
 						data.saved = true
 						ctrl.update()
-					})
-					.catch(function(resp) {
+
+					}
+					catch (e) {
+						savingDlg.hide()
 						$$.ui.showAlert({
 							title: 'Error',
-							content: resp.responseText
+							content: ev.responseText
 						})
-					})						
+					}
 				}
 
 			}
@@ -104,12 +107,12 @@ $$.control.registerControl('rootPage', {
 				const sliceWidth = width / bufferLength
 				let x = 0
 
-				for(let i = 0; i < bufferLength; i++) {
+				for (let i = 0; i < bufferLength; i++) {
 					const v = dataArray[i] / 128.0
 					const y = v * height / 2
 
-					if (i == 0)  {
-						canvasCtx.moveTo(x, y)						
+					if (i == 0) {
+						canvasCtx.moveTo(x, y)
 					}
 					else {
 						canvasCtx.lineTo(x, y)
@@ -125,22 +128,22 @@ $$.control.registerControl('rootPage', {
 
 		}
 
-		navigator.mediaDevices.getUserMedia({audio: true}).then((stream) => {
+		navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
 
 			mediaRecorder = new MediaRecorder(stream)
 
-			mediaRecorder.ondataavailable = function(e) {
+			mediaRecorder.ondataavailable = function (e) {
 				chunks.push(e.data)
 			}
 
-			mediaRecorder.onstop = async function(e) {
-				const name = await $$.ui.showPrompt({title: 'Sound Clip Title', label: 'Enter a name:'})
+			mediaRecorder.onstop = async function (e) {
+				const name = await $$.ui.showPrompt({ title: 'Sound Clip Title', label: 'Enter a name:' })
 				if (name != null) {
 					console.log('clipName', name)
-					const blob = new Blob(chunks, {type: 'audio/ogg; codecs=opus'})
+					const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' })
 					chunks = []
 					const url = URL.createObjectURL(blob)
-					ctrl.model.clips.push({name, url, saved: false})
+					ctrl.model.clips.push({ name, url, saved: false })
 					ctrl.update()
 				}
 			}

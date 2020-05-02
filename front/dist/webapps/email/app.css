@@ -85,6 +85,27 @@
       .boxesPage .scrollPanelTree .tree span.fa {
         color: #607d8b; }
 
+.mailboxPage {
+  display: flex;
+  flex-direction: column;
+  padding-left: 10px;
+  padding-right: 10px; }
+  .mailboxPage .toolbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center; }
+    .mailboxPage .toolbar .loading {
+      padding: 8px 0 8px 0; }
+  .mailboxPage .scrollPanelTable {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid black; }
+    .mailboxPage .scrollPanelTable table .item {
+      cursor: pointer; }
+    .mailboxPage .scrollPanelTable table tr.unseen {
+      font-weight: bold; }
+
 .messagePage {
   display: flex;
   flex-direction: column; }
@@ -125,27 +146,6 @@
       margin: 0;
       flex: 1;
       border: none; }
-
-.mailboxPage {
-  display: flex;
-  flex-direction: column;
-  padding-left: 10px;
-  padding-right: 10px; }
-  .mailboxPage .toolbar {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center; }
-    .mailboxPage .toolbar .loading {
-      padding: 8px 0 8px 0; }
-  .mailboxPage .scrollPanelTable {
-    flex: 1;
-    overflow-y: auto;
-    border: 1px solid black; }
-    .mailboxPage .scrollPanelTable table .item {
-      cursor: pointer; }
-    .mailboxPage .scrollPanelTable table tr.unseen {
-      font-weight: bold; }
 
 .writeMailPage form {
   display: flex;

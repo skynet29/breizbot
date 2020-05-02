@@ -8,6 +8,8 @@ $$.control.registerControl('rootPage', {
 
 		let range
 
+		const savingDlg = $$.ui.savingDialog()
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				fileName: '',
@@ -85,10 +87,16 @@ $$.control.registerControl('rootPage', {
 			const htmlString = ctrl.scope.editor.html()
 			const blob = new Blob([htmlString], {type: 'text/html'})
 			try {
-				const resp = await files.uploadFile(blob, fileName, rootDir)
+				savingDlg.show()
+				const resp = await files.uploadFile(blob, fileName, rootDir, (value) => {
+					savingDlg.setPercentage(value)
+				})
 				console.log('resp', resp)
+				await $$.util.wait(1000)
+				savingDlg.hide()
 			}
 			catch(resp) {
+				savingDlg.hide()
 				$$.ui.showAlert({
 					title: 'Error',
 					content: resp.responseText

@@ -93,7 +93,7 @@
 
 				data: {
 					downloads: [],
-					hasDownloads: function() {
+					hasDownloads: function () {
 						return this.downloads.length > 0
 					},
 					loading: false,
@@ -253,7 +253,7 @@
 
 				},
 				events: {
-					onToggleDownload: function() {
+					onToggleDownload: function () {
 						console.log('onToggleDownload')
 						const $i = $(this).find('i')
 						const panel = $(this).siblings('.downloadItems')
@@ -262,10 +262,10 @@
 							panel.slideDown()
 						}
 						else {
-							$i.removeClass('fa-caret-down').addClass('fa-caret-right')						
+							$i.removeClass('fa-caret-down').addClass('fa-caret-right')
 							panel.slideUp()
 						}
-	
+
 					},
 					onPathItem: function (ev) {
 						const pathItem = $(this).data('info')
@@ -467,22 +467,17 @@
 							// }
 							try {
 								const data = {
-									fileName: file.name, 
+									fileName: file.name,
 									percentage: 0
 								}
 
-								const {downloads, rootDir} = ctrl.model
+								const { downloads, rootDir } = ctrl.model
 								downloads.push(data)
 								ctrl.updateNode('downloads, hasDownloads')
 
-								await srvFiles.uploadFile(file, file.name, ctrl.model.rootDir, function(evt) {
-									if (evt.lengthComputable) {
-										const percentComplete = evt.loaded / evt.total
-										//console.log('percentComplete', percentComplete)
-										data.percentage = percentComplete
-										ctrl.updateNode('downloads')
-
-									  }
+								await srvFiles.uploadFile(file, file.name, ctrl.model.rootDir, function (percentComplete) {
+									data.percentage = percentComplete
+									ctrl.updateNode('downloads')
 								})
 								console.log('Download Finished: ', data.fileName)
 								const idx = downloads.indexOf(data)
@@ -535,7 +530,7 @@
 					rootDir = ctrl.model.rootDir
 				}
 				console.log('loadData', rootDir)
-				ctrl.setData({loading: true})
+				ctrl.setData({ loading: true })
 				const files = await srvFiles.list(rootDir, { filterExtension, imageOnly, getMP3Info }, friendUser)
 				//console.log('files', files)
 

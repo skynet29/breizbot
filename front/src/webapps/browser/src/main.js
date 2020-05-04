@@ -14,10 +14,9 @@ $$.control.registerControl('rootPage', {
 				showClear: false
 			},
 			events: {
-				onSearch: async function(ev) {					
-					ev.preventDefault()
-					const {url} = $(this).getFormData()
-					//console.log('onSearch', url)
+				onSearch: async function(ev, data) {					
+					console.log('onSearch', data)
+					const url = data.value
 					if (url.startsWith('https://') || url.startsWith('http://')) {
 						ctrl.setData({results: [], url})	
 					}

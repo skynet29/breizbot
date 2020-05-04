@@ -14,7 +14,7 @@ $$.control.registerControl('messagePage', {
 
 		const {currentAccount, mailboxName, item} = this.props
 
-		const savingDlg = $$.ui.savingDialog()
+		const savingDlg = $$.ui.progressDialog()
 
 		const waitDlg = $$.dialogController({
 			title: 'Loading ...',

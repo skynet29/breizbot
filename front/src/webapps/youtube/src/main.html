@@ -1,57 +1,8 @@
+<div bn-control="breizbot.searchbar" 
+	bn-bind="searchbar"
+	bn-event="searchbarsubmit: onStart"
+	data-placeholder="Search or paste video link url here"></div>
 
-
-<form bn-event="submit: onStart" bn-bind="form">
-	<input type="text" name="url" placeholder="Search or paste video link url here" required="" bn-event="click: onInputClick" autocomplete="on">
-	<button class="w3-button w3-blue" type="submit"><i class="fa fa-search"></i></button>
-</form>
-
-<div bn-show="show1" bn-control="brainjs.progressbar" bn-val="percent" bn-data="{showPercent: true}">
-</div>
-
-<div bn-show="show2">
-	<button class="w3-button w3-blue" title="Back to list" bn-event="click: onBackToList">
-		<i class="fa fa-chevron-left"></i>
-	</button>
-</div>	
-
-<div class="info" bn-show="show3">
-	<div class="thumbnail">
-		<img bn-attr="{src: thumbnail_url}">
-		<div class="download" bn-show="show4">
-			<div>
-				<button 
-					class="w3-button w3-green" 
-					title="Download"
-					bn-event="click: onDownload"
-					><i class="fa fa-download"></i></button>
-				
-			</div>
-			<div>
-				<a class="w3-button w3-red" title="Play on Youtube" bn-attr="{href: videoUrl}" target="_blank">
-					<i class="fa fa-play-circle"></i>
-				</a>
-				
-			</div>
-			
-		</div>
-	</div>
-	<div class="details">
-		<div>
-			<strong>Title: </strong> <span bn-text="title"></span>				
-		</div>
-		<div>
-			<strong>Length: </strong><span bn-text="text1"></span>	
-		</div>
-		<div class="description">
-			<strong>Description: </strong><textarea bn-text="description"></textarea>	
-		</div>		
-		
-	</div>	
-
-
-
-</div>
-	
 
 <div class="results w3-light-grey" bn-show="!showInfo">
 	<div bn-each="results" bn-event="click.item: onItemInfo">

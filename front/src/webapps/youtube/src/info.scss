@@ -1,0 +1,49 @@
+.infoPage {
+
+    flex: 1;
+    margin: 10px;
+    display: flex;
+    flex-direction: column;
+
+    .video {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%; 
+        height: 0;
+
+        iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+    }
+
+    .details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        margin-top: 10px;
+
+        > div {
+            display: flex;
+        }
+
+        strong {
+            display: inline-block;
+            min-width: 100px;
+        }
+
+        .description {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+
+            textarea {
+                flex: 1;
+                border: none;
+            }
+        }
+    }		
+}

@@ -109,6 +109,29 @@
     flex: 1;
     overflow: hidden; }
 
+.breizbot-pager {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; }
+  .breizbot-pager > .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; }
+    .breizbot-pager > .toolbar > .left {
+      display: flex;
+      align-items: center;
+      min-width: 0; }
+      .breizbot-pager > .toolbar > .left > .title {
+        margin-left: 5px;
+        margin-right: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; }
+  .breizbot-pager > .content {
+    flex: 1;
+    overflow: hidden; }
+
 .breizbot-pdf {
   display: flex;
   flex-direction: column; }
@@ -139,6 +162,19 @@
   .breizbot-rtc .panel {
     flex: 1;
     overflow: hidden; }
+
+.breizbot-searchbar > form {
+  display: flex;
+  flex-direction: row;
+  border: 2px solid #eeeeee;
+  border-radius: 20px;
+  padding-left: 10px;
+  padding-right: 10px; }
+  .breizbot-searchbar > form input {
+    flex: 1;
+    padding: 5px;
+    border: none;
+    outline: none; }
 
 .breizbot-addUser {
   margin: 10px;
@@ -177,21 +213,3 @@
     margin: 10px; }
     .breizbot-viewer .audio audio {
       width: 100%; }
-
-.breizbot-pager {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden; }
-  .breizbot-pager > .toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; }
-    .breizbot-pager > .toolbar > .left {
-      display: flex;
-      align-items: center; }
-      .breizbot-pager > .toolbar > .left > .title {
-        margin-left: 5px; }
-  .breizbot-pager > .content {
-    flex: 1;
-    overflow: hidden; }

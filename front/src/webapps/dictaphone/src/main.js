@@ -9,7 +9,7 @@ $$.control.registerControl('rootPage', {
 		let mediaRecorder = null
 		let chunks = []
 
-		const savingDlg = $$.ui.savingDialog()
+		const savingDlg = $$.ui.progressDialog()
 
 		const ctrl = $$.viewController(elt, {
 			data: {

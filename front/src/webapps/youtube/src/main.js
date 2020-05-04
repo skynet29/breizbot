@@ -2,70 +2,50 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
-	deps: ['app.ytdl', 'breizbot.broker', 'breizbot.params'],
+	deps: ['app.ytdl', 'breizbot.params', 'breizbot.pager'],
 
-	init: function(elt ,ytdl, broker, params) {
+	init: function(elt ,ytdl, params, pager) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				title: '',
-				length_seconds: 0,
-				thumbnail_url: '#', 
-				description: '',
-				percent: 0,
 				results: [],
-				showInfo: true,
-				videoUrl: '',
-				show1: function() {return this.showInfo && this.percent != 0},
-				show2: function() {return this.showInfo && this.results.length > 0},
-				show3: function() {return this.showInfo && this.title != ''},
-				show4: function() {return this.percent == 0},
-				text1: function() {
-					return new Date(this.length_seconds*1000).toLocaleTimeString('fr-FR', {timeZone: 'UTC'})
-				}
+				showInfo: true
 			},
 			events: {
-				onStart: function(ev) {
-					ev.preventDefault()
-					const {url} = $(this).getFormData()
-					if (url.startsWith('https://youtu.be/')) {
-						showInfo(url)	
+				onStart: function(ev, data) {
+					const url = data.value
+					const startUrl = 'https://youtu.be/'
+					if (url.startsWith(startUrl)) {
+						showInfo(url.replace('https://youtu.be/', ''))	
 					}
 					else {
 						searchInfo(url)
 					}
 				},
-				onDownload: function(ev) {
-					const {videoUrl, title} = ctrl.model
-					console.log('onDownload', videoUrl)
-					const fileName = title + '.mp4'
-					ytdl.download(videoUrl, fileName)
-				},
-
 				onItemInfo: function(ev) {
 					const idx = $(this).index()
 					const videoId = ctrl.model.results[idx].id
 					console.log('onItemInfo', videoId)
-					showInfo('https://youtu.be/' + videoId)
-				},
-				onInputClick: function() {
-					$(this).val('')
-				},
-
-				onBackToList: function() {
-					ctrl.setData({showInfo: false})
+					showInfo(videoId)
 				}
+
 			}
 		})
 
-		async function showInfo(url) {
+		async function showInfo(videoId) {
 			//console.log('showInfo', url)
-			const info = await ytdl.info(url)
+			const videoUrl = 'https://youtu.be/' + videoId
+			const info = await ytdl.info(videoUrl)
+			info.videoUrl = videoUrl
+			info.videoId = videoId
 			//console.log('info', info)
-			info.percent = 0
-			info.showInfo = true,
-			info.videoUrl = url
-			ctrl.setData(info)
+			pager.pushPage('infoPage', {
+				title: info.title,
+				props: {
+					info
+				}
+			})
+			
 		}
 
 		async function searchInfo(query) {
@@ -80,17 +60,8 @@ $$.control.registerControl('rootPage', {
 			}
 		}
 
-		broker.onTopic('breizbot.ytdl.progress', (msg) => {
-			if (msg.hist == true) {
-				return
-			}
-			//console.log('progress', msg.data)
-			const {percent} = msg.data
-			ctrl.setData({percent})
-		})
-
 		if (params.url != undefined) {
-			ctrl.scope.form.setFormData({url: params.url})
+			ctrl.scope.searchbar.setValue(params.url)
 			showInfo(params.url)
 		}
 

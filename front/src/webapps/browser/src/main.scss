@@ -3,23 +3,6 @@
 	flex-direction: column;
 	padding: 10px;
 
-	form {
-		display: flex;
-		flex-direction: row;
-		border: 2px solid rgb(238, 238 , 238);
-		border-radius: 20px;
-		padding-left: 10px;
-		padding-right: 10px;
-
-		input {
-			flex: 1;
-			padding: 5px;
-			border: none;
-			outline: none;
-		}
-
-
-	}
 
 	.content {
 		flex: 1;

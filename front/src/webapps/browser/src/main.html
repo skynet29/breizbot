@@ -1,12 +1,7 @@
-<form bn-event="submit: onSearch" bn-bind="form">
-	<input type="search" 
-		name="url" 
-		placeholder="What are you looking for ?" 
-		autocomplete="off"
-		required="" 
-		bn-control="brainjs.input">
-	<button class="w3-button w3-text-blue" type="submit" ><i class="fa fa-search"></i></button>
-</form>
+<div bn-control="breizbot.searchbar" 
+	bn-event="searchbarsubmit: onSearch"
+	data-placeholder="What are you looking for ?" 
+	></div>
 <div class="results w3-light-grey">
 	<div bn-each="results">
 		<div class="w3-card-2 item">

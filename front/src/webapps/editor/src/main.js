@@ -8,7 +8,7 @@ $$.control.registerControl('rootPage', {
 
 		let range
 
-		const savingDlg = $$.ui.savingDialog()
+		const savingDlg = $$.ui.progressDialog()
 
 		const ctrl = $$.viewController(elt, {
 			data: {

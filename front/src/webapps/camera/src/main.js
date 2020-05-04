@@ -7,7 +7,7 @@ $$.control.registerControl('rootPage', {
 
 	init: function(elt, srvFiles, pager) {
 
-		const savingDlg = $$.ui.savingDialog()
+		const savingDlg = $$.ui.progressDialog()
 
 		const audio = new Audio('/webapps/camera/assets/camera_shutter.mp3')
 

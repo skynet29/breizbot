@@ -1,45 +1,43 @@
+.infoPage {
+  flex: 1;
+  margin: 10px;
+  display: flex;
+  flex-direction: column; }
+  .infoPage .video {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+    height: 0; }
+    .infoPage .video iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%; }
+  .infoPage .details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px; }
+    .infoPage .details > div {
+      display: flex; }
+    .infoPage .details strong {
+      display: inline-block;
+      min-width: 100px; }
+    .infoPage .details .description {
+      flex: 1;
+      display: flex;
+      flex-direction: row; }
+      .infoPage .details .description textarea {
+        flex: 1;
+        border: none; }
+
 .rootPage {
   padding: 10px;
   display: flex;
   flex-direction: column; }
-  .rootPage form {
-    display: flex;
-    flex-direction: row;
+  .rootPage .breizbot-searchbar {
     margin-bottom: 10px; }
-    .rootPage form input {
-      flex: 1;
-      padding: 5px; }
-  .rootPage .info {
-    flex: 1;
-    margin-top: 10px;
-    display: flex;
-    flex-direction: column; }
-    .rootPage .info .thumbnail {
-      display: flex;
-      flex-direction: row;
-      margin-bottom: 10px; }
-      .rootPage .info .thumbnail .download {
-        margin: 0 0 0 20px;
-        display: flex;
-        flex-direction: column; }
-        .rootPage .info .thumbnail .download > div {
-          margin-bottom: 10px; }
-    .rootPage .info .details {
-      flex: 1;
-      display: flex;
-      flex-direction: column; }
-      .rootPage .info .details > div {
-        display: flex; }
-      .rootPage .info .details strong {
-        display: inline-block;
-        min-width: 100px; }
-      .rootPage .info .details .description {
-        flex: 1;
-        display: flex;
-        flex-direction: row; }
-        .rootPage .info .details .description textarea {
-          flex: 1;
-          border: none; }
   .rootPage .results {
     flex: 1;
     overflow-y: auto;

@@ -27,5 +27,9 @@ $$.control.registerControl('breizbot.searchbar', {
         this.setValue = function(value) {
             ctrl.scope.form.setFormData({value})
         }
-    }
-});
+    },
+    $iface: `
+        setValue(value: string)
+    `,
+    $events: 'searchbarsubmit'
+});11

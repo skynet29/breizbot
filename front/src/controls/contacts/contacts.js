@@ -69,7 +69,9 @@ $$.control.registerControl('breizbot.contacts', {
 			return ret
 		}
 
-	}
+	},
+	$iface: `getSelection(): [ContactInfo]`,
+	$events: 'contactclick'
 });
 
 

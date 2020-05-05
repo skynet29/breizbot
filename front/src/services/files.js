@@ -83,7 +83,8 @@ $$.service.registerService('breizbot.files', {
 	},
 
 	$iface: `
-		list(path, options, friendUser):Promise;
+		list(path, options, friendUser):Promise<[FileInfo]>;
+		fileInfo(filePath, friendUser, options):Promise<FileInfo>
 		fileUrl(fileName, friendUser):string;
 		fileThumbnailUrl(fileName, size, friendUser):string;
 		uploadFile(blob, saveAsfileName, destPath):Promise;
@@ -94,6 +95,7 @@ $$.service.registerService('breizbot.files', {
 		renameFile(filePath, oldFileName, newFileName):Promise;
 		resizeImage(filePath, fileName, resizeFormat):Promise;
 		convertToMP3(filePath, fileName):Promise
+		zipFolder(folderPath, folderName):Promise
 	`
 
 });

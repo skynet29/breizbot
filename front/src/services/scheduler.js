@@ -21,6 +21,7 @@ $$.service.registerService('breizbot.scheduler', {
 	},
 
 	$iface: `
-		openApp(appName, appParams):Promise;
+		openApp(appName, appParams);
+		logout()
 		`
 });

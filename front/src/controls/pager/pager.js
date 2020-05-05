@@ -6,7 +6,11 @@ $$.control.registerControl('breizbot.pager', {
 	},
 	template: {gulp_inject: './pager.html'},
 
-	$iface: `popPage(data);pushPage(ctrlName, options)`,
+	$iface: `
+		popPage(data)
+		pushPage(ctrlName, options)
+		setButtonVisible(buttonsVisible: {[buttonName]:boolean})
+	`,
 
 	init: function(elt) {
 

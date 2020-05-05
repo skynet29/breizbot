@@ -6,9 +6,6 @@ $$.control.registerControl('breizbot.addUser', {
 		$pager: null
 	},
 
-	buttons: [
-		{label: 'Create', name: 'create'}
-	],
 
 	init: function(elt) {
 
@@ -25,14 +22,19 @@ $$.control.registerControl('breizbot.addUser', {
 			}
 		})
 
-		this.onAction = function(cmd) {
-			//console.log('onAction', cmd)
-			ctrl.scope.submit.click()
+		this.getButtons = function() {
+			return {
+				create: {
+					title: 'Create',
+					icon: 'fa fa-check',
+					onClick: function() {
+						ctrl.scope.submit.click()
+					}
+				}
+			}
+		
 		}
 
-	},
+	}
 
-	$iface: `
-		onAction(cmd)
-	`
 });

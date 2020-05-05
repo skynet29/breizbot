@@ -687,7 +687,14 @@
 			}
 		},
 
-		$iface: 'update()',
+		$iface: `
+			update();
+			updateFile(fileName: string, options);
+			setMP3Filters(mp3Filter);
+			getMP3Filters(): Mp3Filter;
+			getFiles(): [FileInfo];
+			getFilteredFiles(): [FileInfo]
+		`,
 		$events: 'fileclick'
 
 	});

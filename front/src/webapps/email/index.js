@@ -1,161 +1,175 @@
-module.exports = function(ctx, router) {
+module.exports = function (ctx, router) {
 
 	const db = require('./lib/db')(ctx.db)
-	const mails = require('./lib/mails')(ctx)	
+	const mails = require('./lib/mails')(ctx)
 
 
-	router.get('/getMailAccounts', function(req, res) {
+	router.get('/getMailAccounts', async function (req, res) {
 		const userName = req.session.user
 
-		db.getMailAccounts(userName).then((accounts) => {
+		try {
+			const accounts = await db.getMailAccounts(userName)
 
 			res.json(accounts.map((acc) => acc.name))
-		})
-		.catch(() => {
+		}
+		catch (e) {
 			res.sendStatus(400)
-		})	
+		}
 	})
 
-	router.post('/getMailAccount', function(req, res) {
+	router.post('/getMailAccount', async function (req, res) {
 		const userName = req.session.user
-		const {name} = req.body
+		const { name } = req.body
 
-		db.getMailAccount(userName, name).then((account) => {
+		try {
+			const account = await db.getMailAccount(userName, name)
 
 			res.json(account)
-		})
-		.catch(() => {
+		}
+		catch (e) {
 			res.sendStatus(400)
-		})	
-	})	
+		}
 
-	router.post('/updateMailAccount', function(req, res) {
+	})
+
+	router.post('/updateMailAccount', async function (req, res) {
 		const userName = req.session.user
 		const data = req.body
 
-
-		db.updateMailAccount(userName, data).then(() => {
-
+		try {
+			await db.updateMailAccount(userName, data)
 			res.sendStatus(200)
-		})
-		.catch(() => {
+		}
+		catch (e) {
 			res.sendStatus(400)
-		})	
-	})	
-
-	router.post('/createMailAccount', function(req, res) {
-		db.createMailAccount(req.session.user, req.body).then((data) => {
-			res.json(data)
-		})
-		.catch(() => {
-			res.sendStatus(400)
-		})	
+		}
 	})
 
-	router.post('/getMailboxes', function(req, res) {
-		const userName = req.session.user
-		const {name} = req.body
+	router.post('/createMailAccount', async function (req, res) {
+		try {
+			const data = await db.createMailAccount(req.session.user, req.body)
+			res.json(data)
+		}
+		catch (e) {
+			res.sendStatus(400)
 
-		mails.getMailboxes(userName, name).then((mailboxes) => {
+		}
+	})
+
+	router.post('/getMailboxes', async function (req, res) {
+		const userName = req.session.user
+		const { name } = req.body
+		try {
+			const mailboxes = await mails.getMailboxes(userName, name)
 			res.json(mailboxes)
-		})
-		.catch((err) => {
-			console.log('err', err)
+		}
+		catch (e) {
 			res.sendStatus(400)
-		})	
+		}
+
 	})
 
-	router.post('/addMailbox', function(req, res) {
+	router.post('/addMailbox', async function (req, res) {
 		const userName = req.session.user
-		const {name, mailboxName} = req.body
+		const { name, mailboxName } = req.body
 
-		mails.addMailbox(userName, name, mailboxName).then(() => {
+		try {
+			await mails.addMailbox(userName, name, mailboxName)
 			res.sendStatus(200)
-		})
-		.catch((err) => {
-			console.log('err', err)
+
+		}
+		catch (e) {
 			res.sendStatus(400)
-		})	
-	})	
+		}
 
-	router.post('/openMailbox', function(req, res) {
+	})
+
+	router.post('/openMailbox', async function (req, res) {
 		const userName = req.session.user
-		const {name, mailboxName, pageNo} = req.body
+		const { name, mailboxName, pageNo } = req.body
 
-		mails.openMailbox(userName, name, mailboxName, pageNo).then((messages) => {
+		try {
+			const messages = await mails.openMailbox(userName, name, mailboxName, pageNo)
 			res.json(messages)
-		})
-		.catch((err) => {
-			console.log('err', err)
+		}
+		catch (e) {
 			res.sendStatus(400)
-		})	
+		}
+
 	})
 
-	router.post('/openMessage', function(req, res) {
+	router.post('/openMessage', async function (req, res) {
 		const userName = req.session.user
-		const {name, mailboxName, seqNo, partID} = req.body
+		const { name, mailboxName, seqNo, partID } = req.body
 
-		mails.openMessage(userName, name, mailboxName, seqNo, partID).then((data) => {
+		try {
+			const data = await mails.openMessage(userName, name, mailboxName, seqNo, partID)
 			res.json(data)
-		})
-		.catch((err) => {
-			console.log('err', err)
+		}
+		catch (e) {
 			res.sendStatus(400)
-		})	
+		}
+
 	})
 
 
-	router.post('/openAttachment', function(req, res) {
+	router.post('/openAttachment', async function (req, res) {
 		const userName = req.session.user
-		const {name, mailboxName, seqNo, partID} = req.body
+		const { name, mailboxName, seqNo, partID } = req.body
 
-		mails.openAttachment(userName, name, mailboxName, seqNo, partID).then((data) => {
+		try {
+			const data = await mails.openAttachment(userName, name, mailboxName, seqNo, partID)
 			res.json(data)
-		})
-		.catch((err) => {
-			console.log('err', err)
+
+		}
+		catch (e) {
 			res.sendStatus(400)
-		})	
+		}
+
 	})
 
-	router.post('/deleteMessage', function(req, res) {
+	router.post('/deleteMessage', async function (req, res) {
 		const userName = req.session.user
-		const {name, mailboxName, seqNos} = req.body
+		const { name, mailboxName, seqNos } = req.body
 
-		mails.deleteMessage(userName, name, mailboxName, seqNos).then(() => {
+		try {
+			await mails.deleteMessage(userName, name, mailboxName, seqNos)
 			res.sendStatus(200)
-		})
-		.catch((err) => {
-			console.log('err', err)
+
+		}
+		catch (e) {
 			res.sendStatus(400)
-		})	
+		}
+
 	})
 
-	router.post('/moveMessage', function(req, res) {
+	router.post('/moveMessage', async function (req, res) {
 		const userName = req.session.user
-		const {name, mailboxName, seqNos, targetName} = req.body
+		const { name, mailboxName, seqNos, targetName } = req.body
 
-		mails.moveMessage(userName, name, mailboxName, targetName, seqNos).then(() => {
+		try {
+			await mails.moveMessage(userName, name, mailboxName, targetName, seqNos)
 			res.sendStatus(200)
-		})
-		.catch((err) => {
-			console.log('err', err)
+
+		}
+		catch (e) {
 			res.sendStatus(400)
-		})	
+		}
+
 	})
 
-	router.post('/sendMail', function(req, res) {
+	router.post('/sendMail', async function (req, res) {
 		const userName = req.session.user
-		const {accountName, data} = req.body
+		const { accountName, data } = req.body
 
-		mails.sendMail(userName, accountName, data).then((data) => {
-			console.log('sendMail', data)
+		try {
+			const ret = await mails.sendMail(userName, accountName, data)
+			console.log('sendMail', ret)
 			res.sendStatus(200)
-		})
-		.catch((err) => {
-			console.log('err', err)
-			res.status(400).send(err)
-		})	
+		}
+		catch (e) {
+			res.sendStatus(400)
+		}
 	})
 
 }

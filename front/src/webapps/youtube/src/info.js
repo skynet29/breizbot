@@ -16,12 +16,18 @@ $$.control.registerControl('infoPage', {
 
         const {title, thumbnail, description, length_seconds, videoUrl, videoId} = this.props.info
 
+        const {width, height} = thumbnail
         const ctrl = $$.viewController(elt, {
             data: {
 				duration: new Date(length_seconds*1000).toLocaleTimeString('fr-FR', {timeZone: 'UTC'}),
                 title,
-                width: thumbnail.width,
-                height: thumbnail.height, 
+                width,
+                height,
+                ratio: function() {
+                    const ret = `${(height/width)*100}%`
+                    console.log('ratio', ret)
+                    return ret
+                },
                 videoUrl: $$.util.getUrlParams(`https://www.youtube-nocookie.com/embed/${videoId}`, {
                     rel: 0,
                     modestbranding: 1,

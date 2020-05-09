@@ -3,5 +3,5 @@
 	"colorCls": "w3-red",
 	"title": "YouTube",
 	"styles": ["app.css"],
-	"description": "YouTube search engine (request are quotta limited);Download video directly in your cloud"
+	"description": "YouTube search engine (use Qwant video api);Download video directly in your cloud"
 }

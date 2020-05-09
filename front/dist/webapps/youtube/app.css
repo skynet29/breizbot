@@ -53,5 +53,13 @@
       cursor: pointer;
       padding: 5px;
       background-color: white; }
-      .rootPage .results .item img {
+      .rootPage .results .item .imgWrapper {
+        flex: 1;
         margin: 0 10px 0 0; }
+        .rootPage .results .item .imgWrapper img {
+          max-width: 100%; }
+      .rootPage .results .item .info {
+        flex: 2;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between; }

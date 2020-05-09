@@ -11,8 +11,8 @@ module.exports = function (ctx, router) {
 
 	const { wss, config } = ctx
 
-	const ytAPIUrl = 'https://www.googleapis.com/youtube/v3/search?'
-	const apiKey = 'AIzaSyDH0qRqgnKqGdfVZlN1F4Ff3zPiiiJFQGE'
+	const url = 'https://api.qwant.com/api/search/videos?'
+	
 
 	router.post('/search', async function (req, res) {
 		console.log('youtube/search', req.body)
@@ -20,29 +20,33 @@ module.exports = function (ctx, router) {
 		const { query, maxResults } = req.body
 
 		const params = {
-			part: 'snippet',
-			maxResults: maxResults || 3,
-			key: apiKey,
-			q: query,
+			count: 100,
+			uiv: 4,
+			t: 'videos',
+			q: query
 		}
 
 		try {
-			const rep = await fetch(ytAPIUrl + querystring.stringify(params))
+			const rep = await fetch(url + querystring.stringify(params))
 			const json = await rep.json()
 			if (json.error) {
 				res.json(json.error.message)
 			}
 			else {
-				res.json(json.items
-					.filter((i) => i.id.kind == 'youtube#video')
+				const {items} = json.data.result
+
+				res.json(items
+					.filter((i) => i.source == 'youtube')
 					.map((i) => {
-						const { title, thumbnails } = i.snippet
 						return {
-							id: i.id.videoId,
-							title,
-							thumbnail: thumbnails.default.url
+							id: i.media_id,
+							title: i.title,
+							thumbnail: i.thumbnail,
+							date: i.date
 						}
-					}))
+					})
+					.slice(0, maxResults)
+				)
 			}
 		}
 		catch (e) {

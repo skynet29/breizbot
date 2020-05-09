@@ -7,8 +7,17 @@
 <div class="results w3-light-grey" bn-show="!showInfo">
 	<div bn-each="results" bn-event="click.item: onItemInfo">
 		<div class="item w3-card-2 w3-hover-shadow">
-			<img bn-attr="{src: $scope.$i.thumbnail}">
-			<strong bn-text="$scope.$i.title"></strong>
+			<div class="imgWrapper">
+				<img bn-attr="{src: $scope.$i.thumbnail}">
+			</div>
+
+			<div class="info">
+				<div bn-html="$scope.$i.title" ></div>
+				<div>
+					<i class="far fa-clock"></i>
+					<span bn-text="getDate"></span>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>

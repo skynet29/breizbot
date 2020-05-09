@@ -9,7 +9,10 @@ $$.control.registerControl('rootPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				results: [],
-				showInfo: true
+				showInfo: true,
+				getDate: function(scope) {
+					return new Date(scope.$i.date * 1000).toLocaleDateString('fr-FR')
+				}
 			},
 			events: {
 				onStart: function(ev, data) {
@@ -50,7 +53,7 @@ $$.control.registerControl('rootPage', {
 
 		async function searchInfo(query) {
 			//console.log('searchInfo', query)
-			const results = await ytdl.search(query, 10)
+			const results = await ytdl.search(query, 20)
 			//console.log('results', results)
 			if (typeof results == 'string') {
 				$$.ui.showAlert({title: 'Error', content: results})

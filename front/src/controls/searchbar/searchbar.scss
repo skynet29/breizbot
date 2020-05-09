@@ -8,11 +8,14 @@
 		padding-left: 10px;
 		padding-right: 10px;
 
+        input:-webkit-autofill {transition: background-color 5000s ease-in-out 0s;}
+
 		input {
 			flex: 1;
 			padding: 5px;
 			border: none;
-			outline: none;
+            outline: none;
+            
 		}
 
 

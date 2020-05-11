@@ -1,8 +1,22 @@
 .rootPage {
   height: 100%;
   position: relative; }
+  .rootPage .searchButton {
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 3rem;
+    height: 3rem;
+    margin: 10px; }
   .rootPage .map {
     height: 100%; }
+    .rootPage .map .myToolTip .leaflet-popup-content-wrapper {
+      border-radius: 0; }
+      .rootPage .map .myToolTip .leaflet-popup-content-wrapper .leaflet-popup-content {
+        margin: 2px;
+        text-align: center;
+        color: green; }
   .rootPage .toolbar {
     position: absolute;
     top: 10px;

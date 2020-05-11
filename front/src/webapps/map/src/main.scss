@@ -2,8 +2,31 @@
 	height: 100%;
 	position: relative;
 
+	.searchButton {
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 3rem;
+		height: 3rem;
+		margin: 10px;		
+	}
+	
 	.map {
 		height: 100%;
+
+		.myToolTip {
+
+			.leaflet-popup-content-wrapper {
+				border-radius: 0;
+
+				.leaflet-popup-content {
+					margin: 2px;
+					text-align: center;
+					color: green;
+				}
+			}
+		}
 	}
 
 	.toolbar {

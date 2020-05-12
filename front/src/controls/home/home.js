@@ -8,25 +8,27 @@ $$.control.registerControl('breizbot.home', {
 		'breizbot.scheduler'
 	],
 
+	wakeLock: true,
+
 	props: {
 		userName: 'Unknown'
 	},
 
-	template: {gulp_inject: './home.html'},
+	template: { gulp_inject: './home.html' },
 
-	init: function(elt, broker, users, rtc, srvApps, scheduler) {
+	init: function (elt, broker, users, rtc, srvApps, scheduler) {
 
 		function createAudio() {
 			let audio = null
 			return {
-				play: function() {
+				play: function () {
 					//console.log('audio play')
 					audio = new Audio('/assets/skype.mp3')
-					audio.loop = true	
-					setTimeout(() => {audio.play()}, 100)
+					audio.loop = true
+					setTimeout(() => { audio.play() }, 100)
 				},
 
-				stop: function() {
+				stop: function () {
 					//console.log('audio stop')
 					if (audio != null) {
 						audio.pause()
@@ -37,21 +39,21 @@ $$.control.registerControl('breizbot.home', {
 		}
 
 		rtc.processCall()
-		
-		rtc.on('call', function(callInfo) {
-			ctrl.setData({hasIncomingCall: true, callInfo})
+
+		rtc.on('call', function (callInfo) {
+			ctrl.setData({ hasIncomingCall: true, callInfo })
 			audio.play()
 		})
 
-		rtc.on('cancel', function() {
-			ctrl.setData({hasIncomingCall: false})
+		rtc.on('cancel', function () {
+			ctrl.setData({ hasIncomingCall: false })
 			audio.stop()
-		})		
+		})
 
-		const {userName} = this.props
+		const { userName } = this.props
 
 		const audio = createAudio()
-	
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				apps: [],
@@ -61,31 +63,31 @@ $$.control.registerControl('breizbot.home', {
 				callInfo: null,
 				fullScreen: false,
 				connected: false,
-				hasNotif: function() {
+				hasNotif: function () {
 					return this.nbNotif > 0
 				},
-				getMyApps: function() {
+				getMyApps: function () {
 					return this.apps.filter((a) => a.activated)
 				},
-				items: function() {
+				items: function () {
 					return {
-						remove:{name: 'Remove'}
-					}	
+						remove: { name: 'Remove' }
+					}
 				}
 
 			},
 			events: {
-				onTileContextMenu: async function(ev, data) {
+				onTileContextMenu: async function (ev, data) {
 					//console.log('onTileContextMenu', data)
 					await users.activateApp(data.appName, false)
 					loadApp()
 				},
-				onAppClick: function(ev, data) {
+				onAppClick: function (ev, data) {
 					//console.log('onAppClick', data)
 					openApp(data.appName)
 
-				},				
-				onContextMenu: async function(ev, data) {
+				},
+				onContextMenu: async function (ev, data) {
 					//console.log('onContextMenu', data)
 					if (data.cmd == 'logout') {
 						logout()
@@ -94,66 +96,66 @@ $$.control.registerControl('breizbot.home', {
 						openApp('store')
 					}
 					if (data.cmd == 'pwd') {
-						const newPwd = await $$.ui.showPrompt({title: 'Change Password', label: 'New Password:'})
+						const newPwd = await $$.ui.showPrompt({ title: 'Change Password', label: 'New Password:' })
 						console.log('newPwd', newPwd)
 						if (newPwd != null) {
 							try {
 								await users.changePwd(newPwd)
-								$$.ui.showAlert({title: 'Change Password', content: 'Password has been changed'})	
+								$$.ui.showAlert({ title: 'Change Password', content: 'Password has been changed' })
 							}
-							catch(e) {
-								$$.ui.showAlert({title: 'Error', content: e.responseText})
+							catch (e) {
+								$$.ui.showAlert({ title: 'Error', content: e.responseText })
 							}
 						}
-					}					
+					}
 
 				},
-				onNotification: function(ev) {
+				onNotification: function (ev) {
 					//console.log('onNotification')
 					if (ctrl.model.nbNotif == 0) {
-						$$.ui.showAlert({content: 'no notifications', title: 'Notifications'})
+						$$.ui.showAlert({ content: 'no notifications', title: 'Notifications' })
 					}
 					else {
 						openApp('notif')
-					}					
+					}
 				},
-				onCallResponse: function(ev, data) {
-					const {cmd} = data
+				onCallResponse: function (ev, data) {
+					const { cmd } = data
 					//console.log('onCallResponse', data)
-					ctrl.setData({hasIncomingCall: false})
+					ctrl.setData({ hasIncomingCall: false })
 					audio.stop()
-					if (cmd == 'accept') {	
-						const {from, appName} = ctrl.model.callInfo
+					if (cmd == 'accept') {
+						const { from, appName } = ctrl.model.callInfo
 						openApp(appName, {
 							caller: from,
-							clientId: rtc.getRemoteClientId()							
-						})				
+							clientId: rtc.getRemoteClientId()
+						})
 					}
-					if (cmd == 'deny') {						
+					if (cmd == 'deny') {
 						rtc.deny()
 					}
 				},
 
-				onFullScreen: function(ev) {
+				onFullScreen: function (ev) {
 					//console.log('onFullScreen')
 					const elem = document.documentElement
 					const requestFullscreen = elem.requestFullscreen ||
 						elem.webkitRequestFullscreen
 
 					if (requestFullscreen) {
-						requestFullscreen.call(elem)						
+						requestFullscreen.call(elem)
 					}
 				},
-				onTabRemove: function(ev, idx) {
+				onTabRemove: function (ev, idx) {
 					//console.log('onTabRemove', idx)
 					const info = ctrl.scope.tabs.getTabInfo(idx)
 					info.ctrlIface.onAppExit().then(() => {
 						ctrl.scope.tabs.removeTab(idx)
-					})					
+					})
 				},
-				onTabActivate: function(ev, ui) {	
+				onTabActivate: function (ev, ui) {
 					//console.log('onTabActivate')
-					const {newTab, oldTab} = ui
+					const { newTab, oldTab } = ui
 					const newTabIdx = newTab.index()
 					const oldTabIdx = oldTab.index()
 					if (oldTabIdx > 0) {
@@ -162,7 +164,7 @@ $$.control.registerControl('breizbot.home', {
 					}
 					if (newTabIdx > 0) {
 						const info = ctrl.scope.tabs.getTabInfo(newTabIdx)
-						info.ctrlIface.onAppResume()						
+						info.ctrlIface.onAppResume()
 					}
 					if (newTabIdx == 0) {
 						loadApp()
@@ -173,41 +175,41 @@ $$.control.registerControl('breizbot.home', {
 			}
 		})
 
-		document.addEventListener("webkitfullscreenchange", function(ev) {
-		  console.log('fullscreenchange', ev)
-		  ctrl.setData({fullScreen: !ctrl.model.fullScreen})
+		document.addEventListener("webkitfullscreenchange", function (ev) {
+			console.log('fullscreenchange', ev)
+			ctrl.setData({ fullScreen: !ctrl.model.fullScreen })
 		})
 
-		document.addEventListener("fullscreenchange", function(ev) {
-		  console.log('fullscreenchange', ev)
-		  ctrl.setData({fullScreen: !ctrl.model.fullScreen})
+		document.addEventListener("fullscreenchange", function (ev) {
+			console.log('fullscreenchange', ev)
+			ctrl.setData({ fullScreen: !ctrl.model.fullScreen })
 		})
 
 		function updateNotifs(nbNotif) {
-			ctrl.setData({nbNotif})
-		
+			ctrl.setData({ nbNotif })
+
 		}
 
 		broker.on('connected', (state) => {
-			ctrl.setData({connected: state})
+			ctrl.setData({ connected: state })
 		})
 
 		window.addEventListener('message', (ev) => {
 			console.log('[home] message', ev.data)
-			const {type, data} = ev.data
+			const { type, data } = ev.data
 			if (type == 'openApp') {
-				const {appName, appParams} = data
+				const { appName, appParams } = data
 				openApp(appName, appParams)
 			}
-			
+
 		}, false)
 
-		broker.register('breizbot.notifCount', function(msg) {
+		broker.register('breizbot.notifCount', function (msg) {
 			//console.log('msg', msg)
 			updateNotifs(msg.data)
 		})
 
-		broker.onTopic('breizbot.logout', function(msg) {
+		broker.onTopic('breizbot.logout', function (msg) {
 			location.href = '/logout'
 		})
 
@@ -246,16 +248,32 @@ $$.control.registerControl('breizbot.home', {
 				ctrl.setData({
 					apps
 				})
-			})			
+			})
 		}
 
 
-		function logout() {			
+		function logout() {
 			scheduler.logout()
 		}
 
-		loadApp()	
-		
+		loadApp()
+
+		setInterval(sendPosition, 30 * 1000) // every 30 sec
+
+		function sendPosition() {
+			navigator.geolocation.getCurrentPosition((position) => {
+				//console.log('position', position)
+				const { coords } = position
+				users.sendPosition({
+					lat: coords.latitude,
+					lng: coords.longitude
+				})
+			},
+				(e) => { console.log('geoloc error:', e) },
+				{ enableHighAccuracy: true })
+		}
+
+
 
 	}
 });

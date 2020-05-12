@@ -24,9 +24,9 @@ function addToHistory(userName, msg) {
 function forwardHistory(userName, topic, client) {
 	if (history[userName]) {
 		const msgs = wildcard(topic, history[userName])
-		for(let i in msgs) {
-		  sendMsg(client, msgs[i])
-		}		
+		for (let i in msgs) {
+			sendMsg(client, msgs[i])
+		}
 	}
 
 }
@@ -36,13 +36,13 @@ const config = require('./config')
 let wss
 
 setInterval(() => {
-  //console.log('[Broker] check connection')
-  const now = Date.now()
-  wss.connections.forEach((client) => {
-    if ((now - client.lastPingDate) > pingInterval) {
-    	client.close()
-    }
-  })
+	//console.log('[Broker] check connection')
+	const now = Date.now()
+	wss.connections.forEach((client) => {
+		if ((now - client.lastPingDate) > pingInterval) {
+			client.close()
+		}
+	})
 }, pingInterval)
 
 function init(options, store) {
@@ -50,7 +50,7 @@ function init(options, store) {
 		options.secure = true
 	}
 
-	wss = ws.createServer(options, function(client) {
+	wss = ws.createServer(options, function (client) {
 		onConnect(client, store)
 	})
 
@@ -60,10 +60,10 @@ function init(options, store) {
 }
 
 function sendMsg(client, msg) {
-  	//console.log('[Broker] sendMsg', msg)
-  	if (client == undefined) {
-  		return
-  	}
+	//console.log('[Broker] sendMsg', msg)
+	if (client == undefined) {
+		return
+	}
 	msg.time = Date.now()
 	client.sendText(JSON.stringify(msg))
 }
@@ -72,12 +72,12 @@ function sendMsg(client, msg) {
 
 function sendError(client, text) {
 	console.log('sendError', text)
-	sendMsg(client, {type: 'error', text})
+	sendMsg(client, { type: 'error', text })
 }
 
 function onConnect(client, store) {
 
-	const {path, headers} = client
+	const { path, headers } = client
 	//console.log('onConnect', path)
 
 	if (path.startsWith('/homebox/')) {
@@ -85,24 +85,24 @@ function onConnect(client, store) {
 		if (authorization == undefined) {
 			sendError(client, 'Missing authorization')
 			return
-		}		
+		}
 
 		const credentials = auth.parse(headers.authorization)
 		//console.log('credentials', credentials)
 		const userName = credentials.name
 		db.getUserInfo(userName)
-		.then((userInfo) => {
-			const {pwd} = userInfo
-			if (pwd === credentials.pass) {
+			.then((userInfo) => {
+				const { pwd } = userInfo
+				if (pwd === credentials.pass) {
 					addHomeboxClient(client, userName)
-			}
-			else {
-				sendError(client, 'Bad password')
-			}
-		})
-		.catch((e) => {			
-			sendError(client, e)
-		})
+				}
+				else {
+					sendError(client, 'Bad password')
+				}
+			})
+			.catch((e) => {
+				sendError(client, e)
+			})
 	}
 	else if (path.startsWith('/hmi/')) {
 
@@ -113,7 +113,7 @@ function onConnect(client, store) {
 
 		const cookies = cookie.parse(headers.cookie)
 		//console.log('cookies', cookies)
-		
+
 		let sid = cookies['connect.sid']
 		if (sid == undefined) {
 			sendError(client, 'Missing sid')
@@ -122,7 +122,7 @@ function onConnect(client, store) {
 		sid = sid.split(/[:.]+/)[1]
 		//console.log('sid', sid)
 
-		store.get(sid, function(err, session) {
+		store.get(sid, function (err, session) {
 			//console.log('err', err)
 			//console.log('session', session)
 			if (err != null || session == null) {
@@ -163,19 +163,19 @@ function sendToUser(userName, msg) {
 
 	clients.forEach((client) => {
 		Object.keys(client.registeredTopics).forEach((registeredTopic) => {
-		  if (wildcard(registeredTopic, msg.topic)) {
-		    client.sendText(text)
-		    return
-		  }
+			if (wildcard(registeredTopic, msg.topic)) {
+				client.sendText(text)
+				return
+			}
 
-		}) 		
+		})
 	})
 	addToHistory(userName, msg)
 	return true
 }
 
 function sendTopic(userName, topic, data) {
-	return sendToUser(userName, {topic, data})
+	return sendToUser(userName, { topic, data })
 }
 
 function addHmiClient(client, userName) {
@@ -196,10 +196,10 @@ function addHmiClient(client, userName) {
 	client.on('text', (text) => {
 
 		const msg = JSON.parse(text)
-		const {type, topic} = msg
+		const { type, topic } = msg
 		if (type == 'register') {
 			//console.log('register', topic)
-			client.registeredTopics[topic] = 1	
+			client.registeredTopics[topic] = 1
 
 			forwardHistory(userName, topic, client)
 
@@ -210,7 +210,7 @@ function addHmiClient(client, userName) {
 		if (type == 'unregister') {
 			//console.log('unregister', topic)
 			if (client.registeredTopics[topic] != undefined) {
-			  delete client.registeredTopics[topic]
+				delete client.registeredTopics[topic]
 			}
 
 			unregisterHomeboxTopics(getHomeboxClient(userName), [topic])
@@ -224,12 +224,12 @@ function addHmiClient(client, userName) {
 		if (type == 'ping') {
 			//console.log('ping')
 			client.lastPingDate = Date.now()
-			sendMsg(client, {type: 'pong'})			
+			sendMsg(client, { type: 'pong' })
 		}
 
 	})
 
-	client.on('close', (code)  => {
+	client.on('close', (code) => {
 		console.log(`Client disconnected`, clientId)
 		const topics = Object.keys(client.registeredTopics)
 		unregisterHomeboxTopics(getHomeboxClient(userName), topics)
@@ -237,15 +237,15 @@ function addHmiClient(client, userName) {
 		if (getHmiClients(userName).length == 0) {
 			console.log(`client '${userName}' is disconnected`.red)
 			sendFriends(userName, false)
-		}		
-	})	
+		}
+	})
 
 	client.on('error', (err) => {
 		console.log('connection error')
-	})  
+	})
 
 
-	sendMsg(client, {type: 'ready', clientId})
+	sendMsg(client, { type: 'ready', clientId })
 
 
 }
@@ -260,16 +260,16 @@ function registerHomeboxTopics(client, topics) {
 	}
 
 	topics.forEach((topic) => {
-	  if (topic.startsWith('homebox.')) {
-	    if (client.registeredTopics[topic] == undefined) {
-	      client.registeredTopics[topic] = 1
-	      sendMsg(client, {type: 'register', topic})
-	    }
-	    else {
-	      client.registeredTopics[topic]++
-	    }
-	  }           
-	})  
+		if (topic.startsWith('homebox.')) {
+			if (client.registeredTopics[topic] == undefined) {
+				client.registeredTopics[topic] = 1
+				sendMsg(client, { type: 'register', topic })
+			}
+			else {
+				client.registeredTopics[topic]++
+			}
+		}
+	})
 }
 
 function unregisterHomeboxTopics(client, topics) {
@@ -278,15 +278,15 @@ function unregisterHomeboxTopics(client, topics) {
 	}
 
 	topics.forEach((topic) => {
-	  if (topic.startsWith('homebox.')) {
-	    if (client.registeredTopics[topic] != undefined) {
-	      if (--client.registeredTopics[topic] == 0) {
-	      	delete client.registeredTopics[topic]
-	      	sendMsg(client, {type: 'unregister', topic})	      	
-	      }
-	    }
-	  }           
-	})  
+		if (topic.startsWith('homebox.')) {
+			if (client.registeredTopics[topic] != undefined) {
+				if (--client.registeredTopics[topic] == 0) {
+					delete client.registeredTopics[topic]
+					sendMsg(client, { type: 'unregister', topic })
+				}
+			}
+		}
+	})
 }
 
 function addHomeboxClient(client, userName) {
@@ -298,38 +298,38 @@ function addHomeboxClient(client, userName) {
 	client.lastPingDate = Date.now()
 
 	console.log(`homebox '${userName}' is connected`.green)
-	sendTopic(userName, 'breizbot.homebox.status', {connected: true})
+	sendTopic(userName, 'breizbot.homebox.status', { connected: true })
 
 	client.on('text', (text) => {
 
 		const msg = JSON.parse(text)
-		const {type, topic} = msg
+		const { type, topic } = msg
 
 		if (type == 'ping') {
 			client.lastPingDate = Date.now()
-			sendMsg(client, {type: 'pong'})
+			sendMsg(client, { type: 'pong' })
 		}
 
 		if (type == 'notif') {
 			sendToUser(userName, msg)
 		}
 		if (type == 'callServiceResp') {
-		  client.services.emit(msg.srvName, msg)
-		}      
+			client.services.emit(msg.srvName, msg)
+		}
 
 
 	})
 
-	client.on('close', (code)  => {
+	client.on('close', (code) => {
 		//console.log(`Client disconnected`)
 		console.log(`homebox '${userName}' is disconnected`.red)
-		sendTopic(userName, 'breizbot.homebox.status', {connected: false})
-		
-	})		
+		sendTopic(userName, 'breizbot.homebox.status', { connected: false })
+
+	})
 
 	client.on('error', (err) => {
 		console.log('connection error')
-	})  	
+	})
 
 	getHmiClients(userName).forEach((client) => {
 		const topics = Object.keys(client.registeredTopics)
@@ -339,51 +339,53 @@ function addHomeboxClient(client, userName) {
 }
 
 function callService(userName, srvName, data) {
-  console.log('[broker] callService', srvName, data)
-  return new Promise((resolve, reject) => {
-  	const client = getHomeboxClient(userName)
-    if (client == undefined) {
-      reject('homebox is not connected')
-      return
-    }
+	console.log('[broker] callService', srvName, data)
+	return new Promise((resolve, reject) => {
+		const client = getHomeboxClient(userName)
+		if (client == undefined) {
+			reject('homebox is not connected')
+			return
+		}
 
-    client.services.once(srvName, (msg) => {
-      if (msg.err != undefined) {
-        reject(msg.err)
-      }
-      else {
-        resolve(msg.data)
-      }
-    })
+		client.services.once(srvName, (msg) => {
+			if (msg.err != undefined) {
+				reject(msg.err)
+			}
+			else {
+				resolve(msg.data)
+			}
+		})
 
-    sendMsg(client, {
-      type: 'callService',
-      srvName,
-      data
-    })
+		sendMsg(client, {
+			type: 'callService',
+			srvName,
+			data
+		})
 
-  })
+	})
 }
 
 function logout(sessionId) {
 	wss.connections.find((client) => {
 		if (client.sessionId == sessionId && client.path == '/hmi/') {
-			sendMsg(client, {type: 'notif', topic: 'breizbot.logout'})
+			sendMsg(client, { type: 'notif', topic: 'breizbot.logout' })
 		}
-	})	
+	})
 }
 
 function isUserConnected(userName) {
 	return getHmiClients(userName).length != 0
 }
 
+async function sendToFriends(userName, topic, data) {
+	const friends = await db.getFriends(userName)
+	friends.forEach((friend) => {
+		sendTopic(friend, topic, data)
+	})
+}
 
 function sendFriends(userName, isConnected) {
-	db.getFriends(userName).then((friends) => {
-		friends.forEach((friend) => {
-			sendTopic(friend, 'breizbot.friends', {isConnected, userName})
-		})
-	})
+	sendToFriends(userName, 'breizbot.friends', { isConnected, userName })
 }
 
 function sendToClient(destId, msg) {
@@ -411,6 +413,7 @@ module.exports = {
 	sendToUser,
 	sendToClient,
 	sendTopic,
+	sendToFriends,
 	getClients,
 	callService
 }

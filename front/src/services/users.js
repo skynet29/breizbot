@@ -66,14 +66,18 @@ $$.service.registerService('breizbot.users', {
 			addContact: function(name, email) {
 				return http.post(`/addContact`, {name, email})
 			},
-
 			getContacts: function() {
 				return http.get(`/getContacts`)
 			},
 
 			removeContact: function(contactId) {
 				return http.delete(`/removeContact/${contactId}`)
-			}						
+			},
+			
+			sendPosition: function(coords) {
+				//console.log('sendFriendPosition', coords)
+				return http.post('/position', coords)
+			}
 		}
 	},
 	$iface: `
@@ -92,6 +96,7 @@ $$.service.registerService('breizbot.users', {
 		changePwd(newPwd):Promise;
 		addContact(name, email):Promise;
 		getContacts():Promise(contacts);
-		removeContact(contactId):Promise
+		removeContact(contactId):Promise;
+		sendPosition(coords):Promise
 	`
 });

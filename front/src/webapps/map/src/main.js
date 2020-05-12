@@ -21,19 +21,21 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onShapeContextMenu: function (ev, data) {
-					console.log('onShapeContextMenu', data)
+					//console.log('onShapeContextMenu', data)
 					const {id, latlng, cmd} = data
 					if (cmd == 'remove') {
 						ctrl.scope.map.removeShape(id)
 						delete markers[id]	
 					}
 					if (cmd == "zoom") {
-						ctrl.scope.map.flyTo(latlng, 13)
+						const info = ctrl.scope.map.getShapeInfo(id)
+						//console.log('info', info)
+						ctrl.scope.map.flyTo(info.latlng, 13)
 					}
 
 				},
 				onMapContextMenu: async function (ev, data) {
-					console.log('onMapContextMenu', data)
+					//console.log('onMapContextMenu', data)
 					const { latlng } = data
 					const tooltip = await $$.ui.showPrompt({
 						title: 'Add Marker',
@@ -159,6 +161,44 @@ $$.control.registerControl('rootPage', {
 			}
 			ctrl.scope.map.panTo(latlng)
 		}
+
+		broker.register('breizbot.friendPosition', (msg) => {
+			if (msg.hist) {
+				return
+			}
+			const {data} = msg
+			//console.log('breizbot.friendPosition', msg)	
+			const time = new Date(msg.time).toLocaleTimeString('fr-FR')		
+			const shapeId = 'friends.' + data.userName
+			const popupContent = data.userName + '<br>' + time
+			try {
+				ctrl.scope.map.updateShape(shapeId, {
+					latlng: data.coords,
+					popupContent
+				})
+			}
+			catch (e) {
+				ctrl.scope.map.addShape(shapeId, {
+					type: 'marker',
+					layer: 'friends',
+					latlng: data.coords,
+					icon: {
+						type: 'font',
+						className: 'far fa-user',
+						color: 'blue',
+						fontSize: 20
+					},
+
+					popup: {
+						content: popupContent,
+						className: 'myToolTip',
+						closeButton: false
+					}
+				})
+			}
+
+
+		})
 
 		broker.register('homebox.map.updateShape.*', (msg) => {
 

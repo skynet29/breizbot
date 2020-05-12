@@ -333,7 +333,7 @@ module.exports = function (ctx) {
     const imap = Imap.create(account)
     await imap.connect()
 
-    const nbMsg = await imap.openBox(mailboxName, true)
+    const nbMsg = await imap.openBox(mailboxName, false)
 
     await imap.moveMessages(targetName, seqNos)
 

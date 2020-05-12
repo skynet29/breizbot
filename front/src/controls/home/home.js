@@ -260,17 +260,35 @@ $$.control.registerControl('breizbot.home', {
 
 		setInterval(sendPosition, 30 * 1000) // every 30 sec
 
+		let coords = null
+
+		function geoError(e) {
+			console.log('geoloc error:', e)
+		}
+
+		function updateLocation(position) {
+			//console.log('updateLocation', position)
+			coords = position.coords
+		}
+
+		navigator.geolocation.getCurrentPosition(updateLocation)
+
+		navigator.geolocation.watchPosition(updateLocation, geoError,
+			{
+				enableHighAccuracy: true
+			}
+		)
+
+
 		function sendPosition() {
-			navigator.geolocation.getCurrentPosition((position) => {
-				//console.log('position', position)
-				const { coords } = position
+			//console.log('sendPosition', coords)
+			if (coords != null) {
 				users.sendPosition({
 					lat: coords.latitude,
 					lng: coords.longitude
 				})
-			},
-				(e) => { console.log('geoloc error:', e) },
-				{ enableHighAccuracy: true })
+
+			}
 		}
 
 

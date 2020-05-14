@@ -1,36 +1,74 @@
-<div class="toolbar" bn-show="showToolbar">
-	<div bn-control="brainjs.controlgroup">
-		<button title="New folder" bn-event="click: onCreateFolder"><i class="fas fa-folder-plus"></i></button>
+<div class="toolbar w3-green" bn-show="showToolbar" bn-bind="toolbar">
+	<div class="left">
+		<div class="group" bn-show="!isMobileDevice">
+			<button 
+				class="w3-button" 
+				title="New folder" 
+				bn-event="click: onCreateFolder" 
+				data-cmd="newFolder">
+					<i class="fas fa-folder-plus"></i>
+				</button>
+	
+			<button 
+				class="w3-button" 
+				title="Import file" 
+				data-cmd="importFile"
+				bn-event="click: onImportFile">
+					<i class="fa fa-upload"></i>
+				</button>
 
-		<button title="Import file" bn-event="click: onImportFile"><i class="fa fa-upload"></i></button>
-
-
+			<button 
+				class="w3-button" 
+				title="Reload" 
+				data-cmd="reload"
+				bn-event="click: onReload">
+					<i class="fa fa-sync-alt"></i>
+				</button>
+	
+	
+		</div>
+	
+		<div class="group">
+			<button class="w3-button" title="Toggle Selection" bn-event="click: onTogleSelection"><i class="fa fa-check"></i></button>
+	
+	
+		</div>
+	
+		<div class="group">
+			<button class="w3-button" title="Delete" bn-event="click: onDeleteFiles" bn-prop="prop1"><i class="fa fa-trash"></i></button>
+	
+			<button class="w3-button" title="Cut" bn-prop="prop1" bn-event="click: onCutFiles"><i class="fa fa-cut"></i></button>
+	
+			<button class="w3-button" title="Copy" bn-prop="prop1" bn-event="click: onCopyFiles"><i class="fa fa-copy"></i></button>
+	
+			<button class="w3-button" title="Share" bn-prop="prop2" bn-event="click: onShareFiles"><i class="fa fa-share-alt"></i></button>
+	
+			<button class="w3-button" title="Paste" bn-prop="prop3" bn-event="click: onPasteFiles"><i class="fa fa-paste"></i></button>
+		</div>
+	
+	
 	</div>
+	<div bn-show="isMobileDevice">
+		<button class="w3-button" title="More actions" 
+			bn-control="brainjs.contextmenu"
+			bn-event="contextmenuchange: onToolbarContextMenu"
+			bn-data="{
+				trigger: 'left',
+				items: {
+				 	newFolder: {name: 'New folder', icon: 'fas fa-folder-plus'},
+				 	importFile: {name: 'Import file', icon: 'fas fa-upload'},
+				 	reload: {name: 'Reload', icon: 'fas fa-sync-alt'}
+				}
+			}">
+			<i class="fa fa-ellipsis-v"></i></button>
 
-	<div bn-control="brainjs.controlgroup">
-		<button title="Toggle Selection" bn-event="click: onTogleSelection"><i class="fa fa-check"></i></button>
-
-
-		<button title="Reload" bn-event="click: onReload"><i class="fa fa-sync-alt"></i></button>
-	</div>
-
-	<div bn-control="brainjs.controlgroup">
-		<button title="Delete" bn-event="click: onDeleteFiles" bn-prop="prop1"><i class="fa fa-trash"></i></button>
-
-		<button title="Cut" bn-prop="prop1" bn-event="click: onCutFiles"><i class="fa fa-cut"></i></button>
-
-		<button title="Copy" bn-prop="prop1" bn-event="click: onCopyFiles"><i class="fa fa-copy"></i></button>
-
-		<button title="Share" bn-prop="prop2" bn-event="click: onShareFiles"><i class="fa fa-share-alt"></i></button>
-
-		<button title="Paste" bn-prop="prop3" bn-event="click: onPasteFiles"><i class="fa fa-paste"></i></button>
 	</div>
 </div>
 
-<div class="download" bn-show="hasDownloads" bn-bind="hasDownloads">
+<div class="download" bn-show="hasDownloads" bn-bind="downloads">
 	<strong bn-event="click: onToggleDownload"><i class="fa fa-caret-down fa-fw"></i>
 			Uploads</strong>
-	<div bn-each="downloads" bn-bind="downloads" class="downloadItems">
+	<div bn-each="downloads" class="downloadItems">
 		<div class="w3-card w3-padding-small">
 			<div bn-text="$scope.$i.fileName"></div>
 			<progress max="1" bn-val="$scope.$i.percentage"></progress>
@@ -38,7 +76,7 @@
 	</div>
 </div>
 
-<div bn-text="info" bn-bind="info"></div>
+<div bn-text="info" bn-bind="info" class="info"></div>
 
 <div bn-show="loading" class="loading">
 	<i class="fa fa-spinner fa-pulse"></i>

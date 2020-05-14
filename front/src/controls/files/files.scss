@@ -3,7 +3,6 @@
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		padding: 10px;
 
 	> .scrollPanel {
 		flex: 1;
@@ -49,6 +48,7 @@
 		}							
 	}
 	> .download {
+		margin-left: 10px;
 		margin-bottom: 10px;
 		display: flex;
 		flex-direction: column;
@@ -64,12 +64,30 @@
 	}
 
 	> .toolbar {
-		.brainjs-controlgroup {
-			margin-bottom: 10px;			
+		display: flex;
+		justify-content: space-between;
+
+		.left {
+			display: flex;
+		}
+		.group {
+			border-right: 1px solid white;		
 		}
 	}
 
-	> .pathPanel > div {
-		display: inline-block;
+	> .pathPanel {
+		margin-left: 10px;
+		> div {
+			display: inline-block;
+		}
+	}
+
+	> .info {
+		margin-left: 10px;
+		margin-top: 10px;
+	}
+
+	> .loading {
+		margin-left: 10px;
 	}
 }

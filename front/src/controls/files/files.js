@@ -89,6 +89,17 @@
 				elt.find('.check').prop('checked', selected)
 			}
 
+			if (showToolbar) {
+				const resizeObserver = new ResizeObserver(entries => {
+					ctrl.model.isMobileDevice = $$.util.isMobileDevice()
+					ctrl.updateNodeTree('toolbar')
+				  })
+				
+				resizeObserver.observe(elt.get(0));
+	
+			}
+			
+	
 			const ctrl = $$.viewController(elt, {
 
 				data: {
@@ -96,6 +107,7 @@
 					hasDownloads: function () {
 						return this.downloads.length > 0
 					},
+					isMobileDevice: false,
 					loading: false,
 					showToolbar,
 					rootDir: '/',
@@ -253,6 +265,10 @@
 
 				},
 				events: {
+					onToolbarContextMenu: function (ev, data) {
+						console.log('onToolbarContextMenu', data)
+						elt.find(`button[data-cmd=${data.cmd}]`).click()
+					},
 					onToggleDownload: function () {
 						console.log('onToggleDownload')
 						const $i = $(this).find('i')
@@ -473,16 +489,16 @@
 
 								const { downloads, rootDir } = ctrl.model
 								downloads.push(data)
-								ctrl.updateNode('downloads, hasDownloads')
+								ctrl.updateNodeTree('downloads')
 
 								await srvFiles.uploadFile(file, file.name, ctrl.model.rootDir, function (percentComplete) {
 									data.percentage = percentComplete
-									ctrl.updateNode('downloads')
+									ctrl.updateNodeTree('downloads')
 								})
 								console.log('Download Finished: ', data.fileName)
 								const idx = downloads.indexOf(data)
 								downloads.splice(idx, 1)
-								ctrl.updateNode('downloads, hasDownloads')
+								ctrl.updateNodeTree('downloads')
 								const fileInfo = await srvFiles.fileInfo(rootDir + data.fileName)
 								insertFile(fileInfo)
 							}

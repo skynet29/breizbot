@@ -45,8 +45,7 @@
   height: 100%;
   overflow: hidden;
   display: flex;
-  flex-direction: column;
-  padding: 10px; }
+  flex-direction: column; }
   .breizbot-files > .scrollPanel {
     flex: 1;
     overflow-y: auto;
@@ -77,6 +76,7 @@
             overflow: hidden;
             margin-left: 5px; }
   .breizbot-files > .download {
+    margin-left: 10px;
     margin-bottom: 10px;
     display: flex;
     flex-direction: column; }
@@ -85,10 +85,22 @@
       margin-left: 20px; }
     .breizbot-files > .download progress {
       width: 100%; }
-  .breizbot-files > .toolbar .brainjs-controlgroup {
-    margin-bottom: 10px; }
-  .breizbot-files > .pathPanel > div {
-    display: inline-block; }
+  .breizbot-files > .toolbar {
+    display: flex;
+    justify-content: space-between; }
+    .breizbot-files > .toolbar .left {
+      display: flex; }
+    .breizbot-files > .toolbar .group {
+      border-right: 1px solid white; }
+  .breizbot-files > .pathPanel {
+    margin-left: 10px; }
+    .breizbot-files > .pathPanel > div {
+      display: inline-block; }
+  .breizbot-files > .info {
+    margin-left: 10px;
+    margin-top: 10px; }
+  .breizbot-files > .loading {
+    margin-left: 10px; }
 
 .breizbot-home {
   height: 100%;

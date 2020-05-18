@@ -22,6 +22,13 @@
 		border: 1px solid black;
 
 		table {
+			border: none;
+			th {
+				position: sticky;
+				top: 0;
+				z-index: 2;
+				background-color: rgb(76, 175, 80);
+			}
 			.item {
 				cursor: pointer;
 			}

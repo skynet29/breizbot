@@ -101,10 +101,17 @@
     flex: 1;
     overflow-y: auto;
     border: 1px solid black; }
-    .mailboxPage .scrollPanelTable table .item {
-      cursor: pointer; }
-    .mailboxPage .scrollPanelTable table tr.unseen {
-      font-weight: bold; }
+    .mailboxPage .scrollPanelTable table {
+      border: none; }
+      .mailboxPage .scrollPanelTable table th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background-color: #4caf50; }
+      .mailboxPage .scrollPanelTable table .item {
+        cursor: pointer; }
+      .mailboxPage .scrollPanelTable table tr.unseen {
+        font-weight: bold; }
 
 .messagePage {
   display: flex;

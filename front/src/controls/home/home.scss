@@ -26,6 +26,20 @@
 	.content {
 		flex: 1;
 		overflow: hidden;
+		padding: 0;
+		.ui-tabs-nav {
+			padding: 0;
+			.ui-tabs-tab {
+				border-radius: 0;
+				margin: 0;
+				//border: none;
+
+				a {
+					outline: none;
+					user-select: none;
+				}
+			}
+		}
 
 	}
 

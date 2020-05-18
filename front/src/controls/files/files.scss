@@ -67,11 +67,18 @@
 		display: flex;
 		justify-content: space-between;
 
+
 		.left {
 			display: flex;
 		}
 		.group {
-			border-right: 1px solid white;		
+			//border-right: 1px solid white;	
+			display: flex;	
+			align-items: center;
+			.separator {
+				border-left: 1px solid white;
+				height: 80%;
+			}
 		}
 	}
 

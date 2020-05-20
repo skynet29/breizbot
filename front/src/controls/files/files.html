@@ -1,4 +1,4 @@
-<div class="toolbar w3-green" bn-show="showToolbar" bn-bind="toolbar">
+<div class="toolbar" bn-show="showToolbar" bn-bind="toolbar">
 	<div class="left">
 		<div class="group" bn-show="!isMobileDevice">
 			<button 
@@ -91,7 +91,7 @@
 		<i class="fa fa-chevron-right" bn-show="!isFirst"></i>
 		<span>
 			<a class="pathItem" bn-text="$scope.$i" href="#" bn-show="!isLast" bn-data="{info: getPathInfo}"></a>
-			<span bn-text="$scope.$i" bn-show="isLast"></span>
+			<span bn-text="$scope.$i" bn-show="isLast" class="lastItem"></span>
 
 		</span>
 	</div>

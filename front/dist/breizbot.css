@@ -87,7 +87,9 @@
       width: 100%; }
   .breizbot-files > .toolbar {
     display: flex;
-    justify-content: space-between; }
+    justify-content: space-between;
+    background-color: #128C7E;
+    color: white; }
     .breizbot-files > .toolbar .left {
       display: flex; }
     .breizbot-files > .toolbar .group {
@@ -98,11 +100,18 @@
         height: 80%; }
   .breizbot-files > .pathPanel {
     margin-left: 10px; }
+    .breizbot-files > .pathPanel .fa-chevron-right {
+      color: #6c757d; }
+    .breizbot-files > .pathPanel .lastItem {
+      color: #6c757d; }
+    .breizbot-files > .pathPanel .pathItem {
+      text-decoration: none;
+      color: #007bff; }
     .breizbot-files > .pathPanel > div {
       display: inline-block; }
   .breizbot-files > .info {
-    margin-left: 10px;
-    margin-top: 10px; }
+    margin: 10px;
+    text-align: right; }
   .breizbot-files > .loading {
     margin-left: 10px; }
 
@@ -113,7 +122,9 @@
   .breizbot-home .header {
     display: flex;
     justify-content: space-between;
-    align-items: center; }
+    align-items: center;
+    background-color: #075E54;
+    color: white; }
     .breizbot-home .header .state {
       padding: 8px 16px 8px 16px; }
     .breizbot-home .header .notification {
@@ -142,7 +153,9 @@
   .breizbot-pager > .toolbar {
     display: flex;
     justify-content: space-between;
-    align-items: center; }
+    align-items: center;
+    background-color: #128C7E;
+    color: white; }
     .breizbot-pager > .toolbar > .left {
       display: flex;
       align-items: center;

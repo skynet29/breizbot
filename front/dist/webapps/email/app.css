@@ -35,6 +35,18 @@
       .rootPage .scrollPanelTree .tree span.fa {
         color: #607d8b; }
 
+.addContactPage {
+  margin: 10px;
+  display: flex;
+  justify-content: center; }
+  .addContactPage label {
+    display: inline-block;
+    min-width: 120px; }
+  .addContactPage .brainjs-inputgroup {
+    margin-bottom: 5px; }
+    .addContactPage .brainjs-inputgroup input {
+      padding: 5px; }
+
 .accountPage {
   margin: 10px;
   display: flex;
@@ -50,18 +62,6 @@
     display: flex;
     align-items: center;
     margin-top: 10px; }
-
-.addContactPage {
-  margin: 10px;
-  display: flex;
-  justify-content: center; }
-  .addContactPage label {
-    display: inline-block;
-    min-width: 120px; }
-  .addContactPage .brainjs-inputgroup {
-    margin-bottom: 5px; }
-    .addContactPage .brainjs-inputgroup input {
-      padding: 5px; }
 
 .boxesPage {
   padding: 10px;
@@ -87,27 +87,26 @@
 
 .mailboxPage {
   display: flex;
-  flex-direction: column;
-  padding-left: 10px;
-  padding-right: 10px; }
+  flex-direction: column; }
   .mailboxPage .toolbar {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center; }
+    align-items: center;
+    padding: 0 10px 0 10px; }
     .mailboxPage .toolbar .loading {
       padding: 8px 0 8px 0; }
   .mailboxPage .scrollPanelTable {
     flex: 1;
-    overflow-y: auto;
-    border: 1px solid black; }
+    overflow-y: auto; }
     .mailboxPage .scrollPanelTable table {
       border: none; }
       .mailboxPage .scrollPanelTable table th {
         position: sticky;
         top: 0;
         z-index: 2;
-        background-color: #4caf50; }
+        background-color: #666;
+        color: white; }
       .mailboxPage .scrollPanelTable table .item {
         cursor: pointer; }
       .mailboxPage .scrollPanelTable table tr.unseen {

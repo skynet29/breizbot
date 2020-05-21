@@ -93,13 +93,13 @@
 				const resizeObserver = new ResizeObserver(entries => {
 					ctrl.model.isMobileDevice = $$.util.isMobileDevice()
 					ctrl.updateNodeTree('toolbar')
-				  })
-				
+				})
+
 				resizeObserver.observe(elt.get(0));
-	
+
 			}
-			
-	
+
+
 			const ctrl = $$.viewController(elt, {
 
 				data: {
@@ -191,7 +191,7 @@
 						const ret = {}
 						if (showToolbar && scope.f.name != '..') {
 							ret.delete = { name: 'Delete', icon: 'fas fa-trash' }
-							ret.rename = { name: 'Rename' }
+							ret.rename = { name: 'Rename', icon: 'fas fa-i-cursor' }
 							if (scope.f.isImage) {
 								ret.makeResizedCopy = { name: 'Make resized copy', icon: 'fas fa-compress-arrows-alt' }
 							}
@@ -202,7 +202,10 @@
 								ret.convertToMP3 = { name: 'Convert to MP3' }
 							}
 							if (scope.f.folder) {
-								ret.zipFolder = { name: 'Zip Folder', icon: 'fas fa-file-archive' }
+								ret.zipFolder = { name: 'Zip Folder', icon: 'fas fa-compress' }
+							}
+							if (!scope.f.folder && scope.f.name.endsWith('.zip')) {
+								ret.unzipFile = { name: 'Unzip File', icon: 'fas fa-expand-alt' }
 							}
 
 						}
@@ -320,6 +323,10 @@
 
 						if (cmd == 'zipFolder') {
 							zipFolder(info, idx)
+						}
+
+						if (cmd == 'unzipFile') {
+							unzipFile(info, idx)
 						}
 
 						if (cmd == 'delete') {
@@ -569,6 +576,22 @@
 					nbSelection: 0,
 					isShareSelected: false
 				})
+
+			}
+
+			async function unzipFile(info, idx) {
+				try {
+					const resp = await srvFiles.unzipFile(ctrl.model.rootDir, info.name)
+					//console.log('resp', resp)
+					loadData()
+				}
+				catch (resp) {
+					console.log('resp', resp)
+					$$.ui.showAlert({
+						content: resp.responseText,
+						title: 'Error'
+					})
+				}
 
 			}
 

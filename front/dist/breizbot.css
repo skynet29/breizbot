@@ -4,43 +4,6 @@
     flex: 1;
     border: none; }
 
-.breizbot-apps .tile {
-  width: 90px;
-  height: 90px;
-  margin: 10px;
-  border-radius: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative; }
-
-.breizbot-apps .arrow-right {
-  background-color: orange;
-  height: 30px;
-  left: -15px;
-  position: absolute;
-  top: -15px;
-  width: 30px;
-  transform: rotate(-45deg); }
-
-.breizbot-apps .scrollPanel {
-  height: 100%;
-  overflow-y: auto; }
-
-.breizbot-apps .main {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  flex-wrap: wrap;
-  align-content: start; }
-
-.breizbot-contacts {
-  overflow: hidden; }
-  .breizbot-contacts .scrollPanel {
-    height: 100%;
-    overflow-y: auto; }
-
 .breizbot-files {
   height: 100%;
   overflow: hidden;
@@ -115,6 +78,37 @@
   .breizbot-files > .loading {
     margin-left: 10px; }
 
+.breizbot-apps .tile {
+  width: 90px;
+  height: 90px;
+  margin: 10px;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative; }
+
+.breizbot-apps .arrow-right {
+  background-color: orange;
+  height: 30px;
+  left: -15px;
+  position: absolute;
+  top: -15px;
+  width: 30px;
+  transform: rotate(-45deg); }
+
+.breizbot-apps .scrollPanel {
+  height: 100%;
+  overflow-y: auto; }
+
+.breizbot-apps .main {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  align-content: start; }
+
 .breizbot-home {
   height: 100%;
   display: flex;
@@ -145,6 +139,12 @@
           outline: none;
           user-select: none; }
 
+.breizbot-contacts {
+  overflow: hidden; }
+  .breizbot-contacts .scrollPanel {
+    height: 100%;
+    overflow-y: auto; }
+
 .breizbot-pager {
   display: flex;
   flex-direction: column;
@@ -169,23 +169,6 @@
   .breizbot-pager > .content {
     flex: 1;
     overflow: hidden; }
-
-.breizbot-pdf {
-  display: flex;
-  flex-direction: column; }
-  .breizbot-pdf .brainjs-pdf {
-    flex: 1; }
-  .breizbot-pdf .toolbar {
-    padding: 0 10px 0 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between; }
-    .breizbot-pdf .toolbar .pages {
-      display: flex;
-      align-items: center; }
-    .breizbot-pdf .toolbar .loading {
-      padding: 8px 0 8px 0; }
 
 .breizbot-rtc {
   display: flex;
@@ -216,6 +199,20 @@
     border: none;
     outline: none; }
 
+.breizbot-viewer {
+  height: 100%; }
+  .breizbot-viewer .video {
+    height: 100%; }
+    .breizbot-viewer .video video {
+      object-fit: scale-down;
+      width: 100%;
+      height: 100%;
+      background-color: black; }
+  .breizbot-viewer .audio {
+    margin: 10px; }
+    .breizbot-viewer .audio audio {
+      width: 100%; }
+
 .breizbot-addUser {
   margin: 10px;
   display: flex;
@@ -240,16 +237,19 @@
     flex: 1;
     overflow: auto; }
 
-.breizbot-viewer {
-  height: 100%; }
-  .breizbot-viewer .video {
-    height: 100%; }
-    .breizbot-viewer .video video {
-      object-fit: scale-down;
-      width: 100%;
-      height: 100%;
-      background-color: black; }
-  .breizbot-viewer .audio {
-    margin: 10px; }
-    .breizbot-viewer .audio audio {
-      width: 100%; }
+.breizbot-pdf {
+  display: flex;
+  flex-direction: column; }
+  .breizbot-pdf .brainjs-pdf {
+    flex: 1; }
+  .breizbot-pdf .toolbar {
+    padding: 0 10px 0 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between; }
+    .breizbot-pdf .toolbar .pages {
+      display: flex;
+      align-items: center; }
+    .breizbot-pdf .toolbar .loading {
+      padding: 8px 0 8px 0; }

@@ -77,6 +77,10 @@ $$.service.registerService('breizbot.files', {
 			zipFolder: function(folderPath, folderName) {
 				console.log('[FileService] zipFolder', folderPath, folderName)
 				return http.post('/zipFolder', {folderPath, folderName})
+			},
+			unzipFile: function(folderPath, fileName) {
+				console.log('[FileService] unzipFile', folderPath, fileName)
+				return http.post('/unzipFile', {folderPath, fileName})
 			}
 
 		}

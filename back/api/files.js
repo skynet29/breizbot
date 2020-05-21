@@ -1,6 +1,7 @@
 const path = require('path')
 const fs = require('fs-extra')
 const zipFolder = require('zip-a-folder')
+const unzipper = require('unzipper')
 const config = require('../lib/config')
 const { genThumbnail, isImage, resizeImage, convertToMP3, getFileInfo } = require('../lib/util')
 
@@ -257,6 +258,31 @@ router.post('/zipFolder', async function (req, res) {
 
 })
 
+router.post('/unzipFile', async function (req, res) {
+	console.log('unzipFile', req.body)
+	const { folderPath, fileName } = req.body
+
+	const user = req.session.user
+
+	const fullFolderPath = path.join(cloudPath, user, folderPath)
+	const fullZipFileName = path.join(fullFolderPath, fileName)
+
+	try {
+		fs.createReadStream(fullZipFileName)
+		.pipe(unzipper.Extract({ path: fullFolderPath }))
+		.on('close', async () => {
+			console.log('unzip finished !')
+			res.sendStatus(200)
+	
+		})
+		
+	}
+	catch (e) {
+		console.log('error', e)
+		res.status(400).send(e.message)
+	}
+
+})
 
 router.post('/copy', function (req, res) {
 	console.log('copy req', req.body)

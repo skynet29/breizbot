@@ -8,8 +8,6 @@ $$.control.registerControl('breizbot.home', {
 		'breizbot.scheduler'
 	],
 
-	wakeLock: true,
-
 	props: {
 		userName: 'Unknown'
 	},
@@ -291,7 +289,32 @@ $$.control.registerControl('breizbot.home', {
 			}
 		}
 
+		function requestWakeLock() {
+			if (navigator.wakeLock && navigator.wakeLock.request) {
+				navigator.wakeLock.request('screen').then((lock) => {
+					console.log('take wakeLock')
+					lock.addEventListener('release', () => {
+						console.log('Wake Lock was released')
+					  })
+				})
+				.catch((e) => {
+					console.error('WakeLock', e)
+				})
+		
+			}
+		
+		}
+		
+		function onVisibilityChange() {
+			console.log('visibilitychange', document.visibilityState)
+			if (document.visibilityState === 'visible') {
+				requestWakeLock()
+			}	
+		}
 
+		document.addEventListener('visibilitychange', onVisibilityChange)
+
+		requestWakeLock()
 
 	}
 });

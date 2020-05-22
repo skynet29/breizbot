@@ -13,8 +13,6 @@
 
 		deps: ['breizbot.files', 'breizbot.http', 'breizbot.pager'],
 
-		wakeLock: true,
-
 		props: {
 			rootDir: '',
 			files: [],

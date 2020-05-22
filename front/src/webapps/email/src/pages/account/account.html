@@ -1,52 +1,33 @@
 <div class="main">
 	<form bn-event="submit: onSubmit" bn-bind="form" bn-form="data">
 
-		<div bn-control="brainjs.inputgroup">
-			<label>Provider</label>
-			<span bn-control="brainjs.combobox" 
-				bn-event="comboboxchange: onProviderChange" bn-val="provider"
-				bn-data="{items: providers}"
-				bn-prop="{disabled: isEdit}"
-			>
-			</span>		
-		</div>			
+		<label>Provider</label>
+		<span bn-control="brainjs.combobox" bn-event="comboboxchange: onProviderChange" bn-val="provider"
+			bn-data="{items: providers}" data-width="180" bn-prop="{disabled: isEdit}">
+		</span>
 
-		<div bn-control="brainjs.inputgroup">
-			<label>Account Name</label>
-			<input type="text" name="name" required="" autofocus="" bn-prop="{disabled: isEdit}">			
-		</div>
+		<label>Account Name</label>
+		<input type="text" name="name" required="" autofocus="" bn-prop="{disabled: isEdit}">
 
-		<div bn-control="brainjs.inputgroup">
-			<label>User</label>
-			<input type="text" name="user" required="">			
-		</div>
+		<label>User</label>
+		<input type="text" name="user" required="">
 
-		<div bn-control="brainjs.inputgroup">
-			<label>Password</label>
-			<input type="text" name="pwd" required="">			
-		</div>
+		<label>Password</label>
+		<input type="text" name="pwd" required="">
 
-		<div bn-control="brainjs.inputgroup">
-			<label>Email</label>
-			<input type="email" name="email" required="">			
-		</div>
+		<label>Email</label>
+		<input type="email" name="email" required="">
 
-	
 
-		<div bn-control="brainjs.inputgroup" bn-show="show1">
-			<label>IMAP Server</label>
-			<input type="text" name="imapHost" required="">			
-		</div>		
 
-		<div bn-control="brainjs.inputgroup"  bn-show="show1">
-			<label>SMTP Server</label>
-			<input type="text" name="smtpHost" required="">			
-		</div>		
+		<label bn-show="show1">IMAP Server</label>
+		<input type="text" name="imapHost" required="" bn-show="show1">
 
-		<div class="copySent">
-			<label>Make a copy of sent mail in Sent folder</label>
-			<div bn-control="brainjs.flipswitch" bn-data="data1" name="makeCopy"></div>
-		</div>
+		<label bn-show="show1">SMTP Server</label>
+		<input type="text" name="smtpHost" required="" bn-show="show1">
+
+		<label>Make a copy of sent mail in Sent folder</label>
+		<div bn-control="brainjs.flipswitch" name="makeCopy"></div>
 
 		<input type="submit" hidden="" bn-bind="submit">
 	</form>

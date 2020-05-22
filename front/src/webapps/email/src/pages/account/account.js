@@ -58,10 +58,7 @@ $$.control.registerControl('accountPage', {
 				providers: Object.keys(map),
 				data,
 				isEdit: data != null,
-				show1: function() {return this.provider == 'Other'},
-				data1: function() {
-					return {height: 25, width: 100, texts: {left: 'YES', right: 'NO'}}
-				}
+				show1: function() {return this.provider == 'Other'}
 			},
 			events: {
 				onSubmit: async function(ev) {

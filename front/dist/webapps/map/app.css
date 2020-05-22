@@ -30,6 +30,8 @@
       flex-direction: row;
       align-items: center;
       margin-bottom: 10px; }
+      .rootPage .toolbar .location label {
+        margin-right: 10px; }
 
 .searchPage {
   padding: 10px;

@@ -374,7 +374,7 @@ module.exports = function (ctx) {
     }
     console.log('data', data)
 
-    if (account.makeCopy == 'YES') {
+    if (account.makeCopy === true) {
       console.log('Make a copy to Sent folder')
 
       await appendMsg(account, data)

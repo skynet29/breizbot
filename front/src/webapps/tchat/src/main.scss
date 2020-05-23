@@ -1,7 +1,6 @@
 .rootPage {
 	display: flex;
 	flex-direction: column;
-	padding: 10px;
 
 	.breizbot-rtc {
 		height: 100%;
@@ -16,7 +15,6 @@
 		.content {
 			flex: 1;
 			border: 1px solid lightgrey;
-			margin-bottom: 10px;
 			overflow: auto;
 
 			.messages {

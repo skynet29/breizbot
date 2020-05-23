@@ -193,8 +193,11 @@
   .breizbot-rtc .toolbar {
     display: flex;
     justify-content: space-between;
-    margin: 10px;
-    align-items: center; }
+    align-items: center;
+    background-color: #128C7E;
+    color: white; }
+    .breizbot-rtc .toolbar > .status {
+      margin-left: 5px; }
     .breizbot-rtc .toolbar p {
       margin: 0px; }
   .breizbot-rtc .panel {

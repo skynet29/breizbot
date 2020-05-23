@@ -85,6 +85,7 @@ $$.control.registerControl('breizbot.rtc', {
 			}
 		})
 
+
 		ctrl.scope.panel.append($children)		
 	}
 

@@ -18,13 +18,9 @@ $$.control.registerControl('addFriendPage', {
 				show1: function() {return this.friends.length == 0}
 			},
 			events: {
-				onSearch: async function(ev) {
-					console.log('onSearch')
-					ev.preventDefault()
-					const {search} = $(this).getFormData()
-					$(this).resetForm()
-					console.log('search', search)
-					const friends = await users.match(search)
+				onSearch: async function(ev, data) {
+					console.log('onSearch', data)
+					const friends = await users.match(data.value)
 					ctrl.setData({friends: friends.filter((friend) => friend.username != params.$userName)})
 				},
 				onInvit: async function(ev) {

@@ -191,10 +191,9 @@ $$.control.registerControl('rootPage', {
 			}			
 		})
 
-
 		this.onAppExit = function() {
-			return rtc.bye()
-		}
+			return rtc.exit()
+		}		
 
 
 	}

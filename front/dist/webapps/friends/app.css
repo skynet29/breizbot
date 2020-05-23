@@ -2,22 +2,19 @@
   margin: 10px;
   display: flex;
   flex-direction: column; }
-  .addFriendPage .searchPanel {
-    display: flex;
-    margin-bottom: 10px; }
-    .addFriendPage .searchPanel input {
-      flex: 1;
-      padding: 5px;
-      margin-right: 10px; }
   .addFriendPage .scrollPanel {
+    margin-top: 10px;
     flex: 1;
     overflow-y: auto; }
 
-.rootPage {
+.rootPage .toolbar {
+  background-color: #128C7E;
+  color: white;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: flex-end; }
+  .rootPage .toolbar button {
+    margin-left: 5px; }
+
+.rootPage .breizbot-friends {
   margin: 10px; }
-  .rootPage .toolbar {
-    margin-bottom: 10px;
-    display: flex;
-    justify-content: flex-end; }
-    .rootPage .toolbar button {
-      margin-left: 5px; }

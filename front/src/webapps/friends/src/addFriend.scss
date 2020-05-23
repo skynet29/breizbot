@@ -3,18 +3,8 @@
 	display: flex;
 	flex-direction: column;
 
-	.searchPanel {
-		display: flex;
-		margin-bottom: 10px;
-
-		input {
-			flex: 1;
-			padding: 5px;
-			margin-right: 10px;
-		}
-	}
-
 	.scrollPanel {
+		margin-top: 10px;
 		flex: 1;
 		overflow-y: auto;
 	}

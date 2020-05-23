@@ -1,14 +1,15 @@
 .rootPage {
   display: flex;
-  flex-direction: column;
-  padding: 10px; }
+  flex-direction: column; }
   .rootPage .message {
-    margin-left: 10px; }
+    margin-left: 10px;
+    margin-top: 10px; }
   .rootPage .content {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    flex: 1; }
+    flex: 1;
+    margin-top: 10px; }
     .rootPage .content #myBoard {
       width: 400px; }
       .rootPage .content #myBoard .highlight-white {

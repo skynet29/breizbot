@@ -1,10 +1,10 @@
 .rootPage {
 	display: flex;
 	flex-direction: column;
-	padding: 10px;
 
 	.message {
 		margin-left: 10px;
+		margin-top: 10px;
 	}
 
 	.content {
@@ -12,6 +12,7 @@
 		flex-direction: row;
 		justify-content: center;
 		flex: 1;
+		margin-top: 10px;
 
 		#myBoard {
 			width: 400px;

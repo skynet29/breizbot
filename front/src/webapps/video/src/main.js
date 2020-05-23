@@ -42,7 +42,7 @@ $$.control.registerControl('rootPage', {
 		let remoteStream
 
 		function createPeerConnection() {
-			console.log('createPeerConnection')
+			//console.log('createPeerConnection')
 			try {
 			  pc = new RTCPeerConnection(pcConfig)
 
@@ -60,12 +60,12 @@ $$.control.registerControl('rootPage', {
 			  	}
 			  }
 			  pc.onaddstream = function(event) {
-			  	console.log('onaddstream', event)
+			  	//console.log('onaddstream', event)
 			  	remoteStream = event.stream
 			  	remoteVideo.srcObject = remoteStream			  	
 			  }
 			  //pc.onremovestream = handleRemoteStreamRemoved
-			  console.log('Created RTCPeerConnnection')
+			  //console.log('Created RTCPeerConnnection')
 			} catch (e) {
 			  console.log('Failed to create PeerConnection, exception: ' + e.message)
 			  alert('Cannot create RTCPeerConnection object.')
@@ -78,13 +78,13 @@ $$.control.registerControl('rootPage', {
 		}	
 			
 		async function openMedia() {
-			console.log('openMedia')
+			//console.log('openMedia')
 			try {
 				const stream = await navigator.mediaDevices.getUserMedia({
 					audio: true,
 					video: true
 				  })
-				console.log('localStream ready')
+				//console.log('localStream ready')
 			
 				localVideo.srcObject = stream
 				localStream = stream
@@ -107,7 +107,7 @@ $$.control.registerControl('rootPage', {
 			createPeerConnection()
 			pc.addStream(localStream)
 			const sessionDescription = await pc.createOffer()
-			console.log('createOffer', sessionDescription)
+			//console.log('createOffer', sessionDescription)
 			pc.setLocalDescription(sessionDescription)
 			rtc.sendData('offer', sessionDescription)
 		})
@@ -124,7 +124,7 @@ $$.control.registerControl('rootPage', {
 
 		rtc.onData('offer', async function(data) {
 			pc.setRemoteDescription(new RTCSessionDescription(data))
-			console.log('Sending answer to peer.')
+			//console.log('Sending answer to peer.')
 			const sessionDescription = await pc.createAnswer()
 			pc.setLocalDescription(sessionDescription)
 			rtc.sendData('answer', sessionDescription)
@@ -144,7 +144,7 @@ $$.control.registerControl('rootPage', {
 		})
 
 		this.onAppExit = function() {
-			return rtc.bye()
+			return rtc.exit()
 		}		
 	
 	}

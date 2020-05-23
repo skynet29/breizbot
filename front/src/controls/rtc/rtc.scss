@@ -5,8 +5,13 @@
 	.toolbar {
 		display: flex;
 		justify-content: space-between;
-		margin: 10px;
 		align-items: center;
+		background-color: #128C7E;
+		color: white;
+
+		> .status {
+			margin-left: 5px;
+		}
 
 		p {
 			margin: 0px;

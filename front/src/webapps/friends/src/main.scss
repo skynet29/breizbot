@@ -1,7 +1,9 @@
 .rootPage {
-	margin: 10px;
 	
 	.toolbar {
+		background-color: #128C7E;
+		color: white;
+
 		margin-bottom: 10px;
 		display: flex;
 		justify-content: flex-end;
@@ -9,5 +11,9 @@
 		button {
 			margin-left: 5px;
 		}
+	}
+
+	.breizbot-friends {
+		margin: 10px;
 	}
 }

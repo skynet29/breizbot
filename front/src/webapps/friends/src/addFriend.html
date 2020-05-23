@@ -1,7 +1,8 @@
-<form class="searchPanel" bn-event="submit: onSearch">
-	<input type="text" name="search" autofocus="" required="" minlength="3" placeholder="Search username" autocomplete="off">
-	<button class="w3-btn w3-blue" title="Search" type="submit"><i class="fa fa-search"></i></button>
-</form>
+<div bn-control="breizbot.searchbar" 
+	bn-bind="searchbar"
+	bn-event="searchbarsubmit: onSearch"
+	data-placeholder="Search username"></div>
+
 <div class="scrollPanel">
 	<p bn-show="show1">No results</p>
 	<ul class="w3-ul w3-border w3-white" 

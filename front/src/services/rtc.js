@@ -145,6 +145,16 @@ class RTC extends EventEmitter2 {
 		return Promise.resolve()
 	}
 
+	exit() {
+		if (this.status == 'calling') {
+			return this.cancel()
+		}
+		if (this.status == 'connected') {
+			return this.bye()
+		}
+		return Promise.resolve()
+	}
+
 	sendData(type, data) {
 		return this.http.post(`/api/rtc/sendToClient`, {
 			destId: this.destId, 

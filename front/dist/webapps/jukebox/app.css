@@ -69,7 +69,10 @@
       margin: 10px; }
   .player .shuffle {
     display: flex;
-    margin-bottom: 20px; }
+    margin-bottom: 20px;
+    align-items: center; }
+    .player .shuffle > span {
+      margin-right: 10px; }
   .player .slider {
     display: flex;
     align-items: center; }

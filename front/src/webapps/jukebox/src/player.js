@@ -82,9 +82,9 @@
 						audio.currentTime = value
 					},
 
-					onShuffleChange: function (ev, value) {
+					onShuffleChange: function (ev, isActivated) {
 						//console.log('onShuffleChange', value)
-						if (value == 'ON') {
+						if (isActivated) {
 							shuffleIndexes = $$.util.knuthShuffle(ctrl.model.nbFiles)
 							//console.log('shuffleIndexes', shuffleIndexes)
 						}

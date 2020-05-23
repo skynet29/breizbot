@@ -38,6 +38,11 @@
 	.shuffle {
 		display: flex;
 		margin-bottom: 20px;
+		align-items: center;
+
+		> span {
+			margin-right: 10px;
+		}
 	}		
 
 	.slider {

@@ -16,7 +16,7 @@ $$.control.registerControl('rootPage', {
 				zoom: zoom || 13,
 				watchID: null,
 				show1: function () {
-					return this.watchID == null
+					return (this.watchID == null) ? 'visible' : 'hidden'
 				}
 			},
 			events: {

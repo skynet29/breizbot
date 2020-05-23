@@ -1,19 +1,10 @@
 .rootPage {
 	height: 100%;
-	position: relative;
-
-	.searchButton {
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 3rem;
-		height: 3rem;
-		margin: 10px;		
-	}
+	display: flex;
+	flex-direction: column;
 
 	.map {
-		height: 100%;
+		flex: 1;
 
 		.myToolTip {
 
@@ -30,19 +21,17 @@
 	}
 
 	.toolbar {
-		position: absolute;
-		top: 80px;
-		right: 10px;
-		z-index: 1000;
 		display: flex;
-		flex-direction: column;
-		align-items: flex-end;
+		align-items: center;
+		background-color: #128C7E;
+		color: white;
+		justify-content: space-between;
 
 		.location {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			margin-bottom: 10px;
+			margin-left: 5px;
 			label {
 				margin-right: 10px;
 			}

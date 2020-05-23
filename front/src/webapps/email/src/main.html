@@ -6,6 +6,7 @@
 			<div 
 				bn-control="brainjs.combobox" 
 				bn-data="{items: accounts}" 
+				data-width="100"
 				bn-val="currentAccount"
 				bn-event="comboboxchange: onAccountChange">
 			</div>
@@ -16,7 +17,7 @@
 		<div bn-control="brainjs.contextmenu" 
 			bn-data="{items: getItems}" 
 			data-trigger="left" 
-			class="w3-button w3-blue" 
+			class="w3-button" 
 			bn-event="contextmenuchange: onMenu"
 			>
 				<i class="fa fa-ellipsis-v"></i>
@@ -27,18 +28,21 @@
 	
 </div>
 
-<div>
-	Select folder to open:
+<div class="content">
+	<div>
+		Select folder to open:
+	</div>
+	
+	<div class="scrollPanelTree">
+		<div 
+			class="tree" 
+			bn-control="brainjs.tree"
+			bn-data="{source: mailboxes}"
+			bn-event="treeactivate: onTreeActivate"
+			bn-iface="tree"
+		></div>
+	</div>
+	
+	
+	
 </div>
-
-<div class="scrollPanelTree">
-	<div 
-		class="tree" 
-		bn-control="brainjs.tree"
-		bn-data="{source: mailboxes}"
-		bn-event="treeactivate: onTreeActivate"
-		bn-iface="tree"
-	></div>
-</div>
-
-

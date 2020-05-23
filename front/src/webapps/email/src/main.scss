@@ -1,7 +1,4 @@
 .rootPage {
-	padding-left: 10px;
-	padding-right: 10px;
-	padding-bottom: 10px;
 	display: flex;
 	flex-direction: column;
 
@@ -9,11 +6,15 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-top: 5px;
+		//margin-top: 5px;
+		background-color: #128C7E;
+		color: white;
+
 
 		.info {
 			display: flex;
 			align-items: center;
+			margin-left: 5px;
 
 			.nbMsg {
 				margin-left: 20px;
@@ -24,6 +25,14 @@
 				align-items: center;
 			}
 		}
+	}
+
+	> .content {
+		margin: 10px;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
 	}
 
 	.scrollPanelTree {

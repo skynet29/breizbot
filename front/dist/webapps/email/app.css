@@ -1,22 +1,27 @@
 .rootPage {
-  padding-left: 10px;
-  padding-right: 10px;
-  padding-bottom: 10px;
   display: flex;
   flex-direction: column; }
   .rootPage .toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 5px; }
+    background-color: #128C7E;
+    color: white; }
     .rootPage .toolbar .info {
       display: flex;
-      align-items: center; }
+      align-items: center;
+      margin-left: 5px; }
       .rootPage .toolbar .info .nbMsg {
         margin-left: 20px; }
       .rootPage .toolbar .info .account {
         display: flex;
         align-items: center; }
+  .rootPage > .content {
+    margin: 10px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; }
   .rootPage .scrollPanelTree {
     flex: 1;
     overflow-y: auto;
@@ -47,22 +52,6 @@
     .addContactPage .brainjs-inputgroup input {
       padding: 5px; }
 
-.accountPage {
-  margin: 10px;
-  display: flex;
-  justify-content: center; }
-  .accountPage form {
-    display: grid;
-    grid-template-columns: 130px 1fr;
-    grid-gap: 10px;
-    align-items: center; }
-    .accountPage form label {
-      grid-column: 1 / 2; }
-    .accountPage form input {
-      grid-column: 2 / 3;
-      padding: 5px;
-      max-width: 180px; }
-
 .boxesPage {
   padding: 10px;
   display: flex;
@@ -84,6 +73,22 @@
         font-size: 1.3em; }
       .boxesPage .scrollPanelTree .tree span.fa {
         color: #607d8b; }
+
+.accountPage {
+  margin: 10px;
+  display: flex;
+  justify-content: center; }
+  .accountPage form {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    grid-gap: 10px;
+    align-items: center; }
+    .accountPage form label {
+      grid-column: 1 / 2; }
+    .accountPage form input {
+      grid-column: 2 / 3;
+      padding: 5px;
+      max-width: 180px; }
 
 .mailboxPage {
   display: flex;

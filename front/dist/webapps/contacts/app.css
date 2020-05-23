@@ -12,12 +12,11 @@
 
 .rootPage {
   display: flex;
-  flex-direction: column;
-  padding: 10px; }
+  flex-direction: column; }
   .rootPage .toolbar {
-    margin-bottom: 10px;
+    background-color: #128C7E;
+    color: white;
     display: flex;
     justify-content: flex-end; }
   .rootPage .breizbot-contacts {
-    flex: 1;
-    border: 1px solid black; }
+    flex: 1; }

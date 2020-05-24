@@ -33,35 +33,41 @@
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
-	}
 
-	.scrollPanelTree {
-		flex: 1;
-		overflow-y: auto;
-		border: 1px solid black;
-
-		.tree {
-			height: 100%;
-			ul {
+		.scrollPanelTree {
+			flex: 1;
+			overflow-y: auto;
+			border: 1px solid black;
+	
+			.tree {
 				height: 100%;
-				border: none;
-			}
-
-			ul:focus {
-				outline: none;
-			}
-
-			.fancytree-node {
-				display: flex;
-				align-items: center;
-				font-size: 1.3em;
-			}
-
-			span.fa {
-				color: #607d8b;
-			}
-		}			
+				ul {
+					height: 100%;
+					border: none;
+				}
+	
+				ul:focus {
+					outline: none;
+				}
+	
+				.fancytree-node {
+					display: flex;
+					align-items: center;
+					font-size: 1.3em;
+				}
+	
+				span.fa {
+					color: #607d8b;
+				}
+			}			
+		}		
 	}
+
+	> .message {
+		margin: 10px;
+	}
+
+
 
 
 }

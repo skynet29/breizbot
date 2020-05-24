@@ -22,23 +22,41 @@
     display: flex;
     flex-direction: column;
     overflow: hidden; }
-  .rootPage .scrollPanelTree {
-    flex: 1;
-    overflow-y: auto;
-    border: 1px solid black; }
-    .rootPage .scrollPanelTree .tree {
-      height: 100%; }
-      .rootPage .scrollPanelTree .tree ul {
-        height: 100%;
-        border: none; }
-      .rootPage .scrollPanelTree .tree ul:focus {
-        outline: none; }
-      .rootPage .scrollPanelTree .tree .fancytree-node {
-        display: flex;
-        align-items: center;
-        font-size: 1.3em; }
-      .rootPage .scrollPanelTree .tree span.fa {
-        color: #607d8b; }
+    .rootPage > .content .scrollPanelTree {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid black; }
+      .rootPage > .content .scrollPanelTree .tree {
+        height: 100%; }
+        .rootPage > .content .scrollPanelTree .tree ul {
+          height: 100%;
+          border: none; }
+        .rootPage > .content .scrollPanelTree .tree ul:focus {
+          outline: none; }
+        .rootPage > .content .scrollPanelTree .tree .fancytree-node {
+          display: flex;
+          align-items: center;
+          font-size: 1.3em; }
+        .rootPage > .content .scrollPanelTree .tree span.fa {
+          color: #607d8b; }
+  .rootPage > .message {
+    margin: 10px; }
+
+.accountPage {
+  margin: 10px;
+  display: flex;
+  justify-content: center; }
+  .accountPage form {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    grid-gap: 10px;
+    align-items: center; }
+    .accountPage form label {
+      grid-column: 1 / 2; }
+    .accountPage form input {
+      grid-column: 2 / 3;
+      padding: 5px;
+      max-width: 180px; }
 
 .addContactPage {
   margin: 10px;
@@ -73,22 +91,6 @@
         font-size: 1.3em; }
       .boxesPage .scrollPanelTree .tree span.fa {
         color: #607d8b; }
-
-.accountPage {
-  margin: 10px;
-  display: flex;
-  justify-content: center; }
-  .accountPage form {
-    display: grid;
-    grid-template-columns: 130px 1fr;
-    grid-gap: 10px;
-    align-items: center; }
-    .accountPage form label {
-      grid-column: 1 / 2; }
-    .accountPage form input {
-      grid-column: 2 / 3;
-      padding: 5px;
-      max-width: 180px; }
 
 .mailboxPage {
   display: flex;

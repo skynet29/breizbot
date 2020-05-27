@@ -58,7 +58,7 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onStartRecord: function (ev) {
 					ctrl.scope.camera.startRecord()
-					ctrl.setData({ recording: true })
+					ctrl.setData({ recording: true, recordingTime: '00:00' })
 					startTime = Date.now()
 					timer = setInterval(() => {
 						const diffMs = Date.now() - startTime

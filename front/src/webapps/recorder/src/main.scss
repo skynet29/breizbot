@@ -29,6 +29,21 @@
 		left: 10px;
 		z-index: 1000;
 		width: 100%;
+		display: flex;
+		align-items: center;
+
+		.icon {
+			margin-right: 5px;
+		}
+
+		.blink {
+			color:red; 
+			animation: colorblink 2s infinite;
+		  }
+		  @keyframes colorblink { 
+		  0% { }
+		  50% { color: transparent; } 
+		  }
 	}
 
 	.footer {

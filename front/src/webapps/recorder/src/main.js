@@ -9,14 +9,16 @@ $$.control.registerControl('rootPage', {
 
 		const savingDlg = $$.ui.progressDialog()
 
-		const audio = new Audio('/webapps/camera/assets/camera_shutter.mp3')
+		let timer = null
+		let startTime = 0
 
-		async function saveImage(blob) {
-			const fileName = 'SNAP' + Date.now() + '.png'
+
+		async function saveVideo(blob) {
+			const fileName = 'VIDEO' + Date.now() + '.webm'
 			console.log('fileName', fileName)
 			try {
 				savingDlg.show()
-				const resp = await srvFiles.uploadFile(blob, fileName, '/apps/camera', (percentage) => {
+				const resp = await srvFiles.uploadFile(blob, fileName, '/apps/recorder', (percentage) => {
 					savingDlg.setPercentage(percentage)
 				})
 				await $$.util.wait(1000)
@@ -37,15 +39,67 @@ $$.control.registerControl('rootPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				ready: false,
+				recording: false,
+				recordingTime: '',
 				videoDevices: [],
-				constraints: { video: true },
+				constraints: { video: true, audio: true },
 				showMessage: false,
 				show1: function () {
 					return this.videoDevices.length > 1
 				},
+				canRecord: function () {
+					return this.ready && !this.recording
+				},
+				canStop: function () {
+					return this.ready && this.recording
+				},
 				hasZoom: false
 			},
 			events: {
+				onStartRecord: function (ev) {
+					ctrl.scope.camera.startRecord()
+					ctrl.setData({ recording: true })
+					startTime = Date.now()
+					timer = setInterval(() => {
+						const diffMs = Date.now() - startTime
+						let seconds = Math.floor((diffMs / 1000) % 60)
+						let minutes = Math.floor((diffMs / (1000 * 60)) % 60)
+						minutes = (minutes < 10) ? "0" + minutes : minutes
+						seconds = (seconds < 10) ? "0" + seconds : seconds
+
+						ctrl.setData({ recordingTime: `${minutes}:${seconds}` })
+
+					}, 1000)
+				},
+				onStopRecord: function (ev) {
+					ctrl.scope.camera.stopRecord()
+					clearInterval(timer)
+					timer = null
+					ctrl.setData({ recording: false })
+				},
+				onVideoRecord: function (ev, blob) {
+					console.log('onVideoRecord', blob)
+
+					const url = URL.createObjectURL(blob)
+
+					pager.pushPage('breizbot.viewer', {
+						title: 'Recorded Video',
+						props: { url, type: 'video' },
+						buttons: {
+							save: {
+								title: 'Save',
+								icon: 'fa fa-save',
+								onClick: function () {
+									saveVideo(blob)
+								}
+							}
+						},
+						onBack: function () {
+							URL.revokeObjectURL(url)
+						}
+					})
+
+				},
 				onCameraReady: async function () {
 					console.log('onCameraReady')
 					const iface = $(this).iface()
@@ -64,30 +118,10 @@ $$.control.registerControl('rootPage', {
 
 					ctrl.setData({ ready: true })
 				},
-				onTakePicture: async function (ev) {
-					audio.play()
-					const blob = await ctrl.scope.camera.takePicture()
-					const url = URL.createObjectURL(blob)
-					pager.pushPage('breizbot.viewer', {
-						title: 'Snapshot',
-						props: { url, type: 'image' },
-						buttons: {
-							save: {
-								title: 'Save',
-								icon: 'fa fa-save',
-								onClick: function () {
-									saveImage(blob)
-								}
-							}
-						},
-						onBack: function () {
-							URL.revokeObjectURL(url)
-						}
-					})
-				},
 				onDeviceChange: function (ev, data) {
 					console.log('onDeviceChange', $(this).getValue())
 					const constraints = {
+						audio: true,
 						video: {
 							deviceId: {
 								exact: $(this).getValue()

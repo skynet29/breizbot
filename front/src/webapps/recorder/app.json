@@ -1,0 +1,8 @@
+{	
+	"iconCls": "fa fa-video fa-2x",
+	"colorCls": "w3-green",
+	"title": "Video",
+	"styles": ["app.css"],
+	"brainjs": ["map"],
+	"description": "Record video"
+}

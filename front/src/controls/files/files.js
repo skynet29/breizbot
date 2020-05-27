@@ -11,7 +11,7 @@
 		if (name.endsWith('.ogg') || name.endsWith('.mp3')) {
 			return 'fa-file-audio'
 		}
-		if (name.endsWith('.mp4')) {
+		if (name.endsWith('.mp4') || name.endsWith('.webm')) {
 			return 'fa-file-video'
 		}
 		if (name.endsWith('.zip')) {

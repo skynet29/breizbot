@@ -134,6 +134,11 @@ $$.control.registerControl('breizbot.home', {
 					}
 				},
 
+				onExitFullScreen: function() {
+					//console.log('onExitFullScreen')
+					document.exitFullscreen()
+				},
+
 				onFullScreen: function (ev) {
 					//console.log('onFullScreen')
 					const elem = document.documentElement

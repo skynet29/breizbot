@@ -2,13 +2,13 @@
 	<div>
 		<button class="w3-button" title="FullScreen" bn-event="click: onFullScreen" bn-show="!fullScreen">
 			<i class="fa fa-expand"></i></button>
+		<button class="w3-button" title="Exit FullScreen" bn-event="click: onExitFullScreen" bn-show="fullScreen">
+			<i class="fa fa-compress"></i></button>
 		<button class="w3-button" title="Connection Status">
 			<i bn-class="{w3-text-green: connected, w3-text-red: !connected}" class="fa fa-circle"></i>
-			
-		</button>			
-		<div bn-show="hasIncomingCall" 
-			bn-control="brainjs.contextmenu"
-			bn-event="contextmenuchange: onCallResponse"
+
+		</button>
+		<div bn-show="hasIncomingCall" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onCallResponse"
 			bn-data="{
 				trigger: 'left', 
 				title: callInfo.from,
@@ -16,26 +16,24 @@
 					accept: {name: 'Accept'},
 					deny: {name: 'Decline'},
 				}
-			}"
-			class="w3-button">
+			}" class="w3-button">
 			<i class="fa fa-spinner fa-pulse"></i>
 			<i bn-attr="{class: callInfo.iconCls}"></i>
 		</div>
 	</div>
 
 
-<!-- 	<strong bn-text="title"></strong>
+	<!-- 	<strong bn-text="title"></strong>
  -->
 	<div>
 		<button class="notification w3-button" title="Notification" bn-event="click: onNotification">
-			<i class="fa fa-lg fa-bell" ></i>
-			<span class="w3-badge w3-red w3-tiny" bn-text="nbNotif" bn-show="hasNotif"></span>			
+			<i class="fa fa-lg fa-bell"></i>
+			<span class="w3-badge w3-red w3-tiny" bn-text="nbNotif" bn-show="hasNotif"></span>
 		</button>
 
 
 
-		<div bn-control="brainjs.contextmenu" 
-			bn-data="{
+		<div bn-control="brainjs.contextmenu" bn-data="{
 				items: {
 					pwd: {name: 'Change password', icon: 'fas fa-lock'},
 					apps: {name: 'Applications', icon: 'fas fa-th'},
@@ -44,32 +42,24 @@
 				},
 				title: userName,
 				trigger: 'left'
-			}" 
-			class="w3-button" 
-			bn-event="contextmenuchange: onContextMenu">
-				<i class="fa fa-user fa-lg"></i>
-<!-- 				<span bn-text="userName"></span>	
- -->				<i class="fa fa-angle-down fa-lg"></i>
-    	
+			}" class="w3-button" bn-event="contextmenuchange: onContextMenu">
+			<i class="fa fa-user fa-lg"></i>
+			<!-- 				<span bn-text="userName"></span>	
+ --> <i class="fa fa-angle-down fa-lg"></i>
+
 		</div>
-		
+
 	</div>
 
-	
+
 </div>
 
-<div bn-control="brainjs.tabs" 
-	class="content" 
-	bn-iface="tabs" 
+<div bn-control="brainjs.tabs" class="content" bn-iface="tabs"
 	bn-event="tabsremove: onTabRemove, tabsactivate: onTabActivate">
-	<div bn-control="breizbot.apps" 
-		bn-data="{
+	<div bn-control="breizbot.apps" bn-data="{
 			apps: getMyApps,
 			items
-		}"
-		bn-event="appclick: onAppClick, appcontextmenu: onTileContextMenu"
-		title="Home" 
-		>		
+		}" bn-event="appclick: onAppClick, appcontextmenu: onTileContextMenu" title="Home">
 	</div>
-	
+
 </div>

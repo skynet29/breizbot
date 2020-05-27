@@ -26,6 +26,8 @@ const express = require('express')
 const session = require('express-session')
 const bodyParser = require('body-parser')
 const fileUpload = require('express-fileupload')
+const favicon = require('express-favicon')
+
 const path = require('path')
 
 const MongoDBStore = require('connect-mongodb-session')(session);
@@ -47,6 +49,9 @@ app.use(helmet({
     action: 'sameorigin'
   }
 }))
+
+app.use(favicon(path.join(__dirname, 'favicon.ico')))
+
 
 app.use(session({
 	secret: 'keyboard cat',

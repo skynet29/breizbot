@@ -11,7 +11,7 @@
 	<div bn-show="showMessage">Sorry, no video device found !</div>
 	<div 
 		bn-control="brainjs.camera" 
-		bn-event="cameraready: onCameraReady"
+		bn-event="cameraready: onCameraReady, barcode: onBarcode"
 		bn-data="{
 			constraints: {
 				video: {

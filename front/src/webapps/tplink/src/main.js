@@ -14,9 +14,9 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onAction: function() {
 					const cmd = $(this).data('cmd')
-					//console.log('cmd', cmd)
+					console.log('cmd', cmd)
 					const deviceId = $(this).closest('tr').data('deviceId')
-					//console.log('deviceId', deviceId)
+					console.log('deviceId', deviceId)
 					broker.emitTopic('homebox.tplink.cmd', {cmd, deviceId})
 				}
 			}

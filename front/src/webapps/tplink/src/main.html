@@ -15,7 +15,7 @@
                 <td bn-text="$scope.$i.type"></td>
                 <td bn-text="$scope.$i.state"></td>
                 <td bn-each="$scope.$i.actions" bn-iter="a"> 
-                    <button class="action w3-btn w3-blue w3-margin-right" bn-data="{cmd: a.cmd}" bn-text="a.label"></button>
+                    <button class="action w3-btn w3-blue w3-margin-right" bn-data="{cmd: $scope.a.cmd}" bn-text="$scope.a.label"></button>
                 </td>
             </tr>       
 

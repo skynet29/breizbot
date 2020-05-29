@@ -11,13 +11,13 @@
         </thead>
         <tbody bn-each="agents" bn-event="click.actionStart: onActionStart, click.actionStop: onActionStop, click.actionStopForce: onActionStopForce">
   			<tr>
-				<td bn-text="$i.agent"></td>
-				<td bn-text="$i.state"></td>
-				<td bn-text="$i.pid"></td>
-				<td bn-data="{agent: $i.agent}">
-					<button class="actionStart w3-btn w3-blue" bn-show="$i.pid == 0">Start</button>
-					<button class="actionStop w3-btn w3-blue"  bn-show="$i.pid != 0">Stop</button>
-					<button class="actionStopForce w3-btn w3-red" bn-show="$i.pid != 0">Kill</button>
+				<td bn-text="$scope.$i.agent"></td>
+				<td bn-text="$scope.$i.state"></td>
+				<td bn-text="$scope.$i.pid"></td>
+				<td bn-data="{agent: $scope.$i.agent}">
+					<button class="actionStart w3-btn w3-blue" bn-show="!isRunning">Start</button>
+					<button class="actionStop w3-btn w3-blue"  bn-show="isRunning">Stop</button>
+					<button class="actionStopForce w3-btn w3-red" bn-show="isRunning">Kill</button>
 				</td>
 			</tr>      	
 

@@ -37,7 +37,7 @@
     "zip-a-folder": "0.0.12"
   },
   "devDependencies": {
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.0",
     "gulp-browserify": "^0.5.1",
     "gulp-concat": "^2.6.1",
     "gulp-eslint": "^5.0.0",

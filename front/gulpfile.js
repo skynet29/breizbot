@@ -3,7 +3,7 @@ var gulp = require('gulp')
 const task = require('./task')('./dist')
 
 
-task('breizbot.js', 
+const breizbotJs = task(
 	[
 		'./externals/eventemitter2.js',
 		'./src/controls/**/*.js',
@@ -13,21 +13,23 @@ task('breizbot.js',
 
 )
 
-task('breizbot.css',
+console.log(typeof breizbotJs)
+
+const breizbotCss = task(
 	[
 		'./src/controls/**/*.scss',
 	],
 	{concat: 'breizbot.css', isSass:true}
 )
 
-task('assets',
+const assets = task(
 	[
 		'./src/assets/*',
 	],
 	{dest: 'assets'}
 )
 
-task('doc.js', 
+const docJs = task(
 	[
 		'./doc/*.js',
 	],
@@ -35,24 +37,27 @@ task('doc.js',
 
 )
 
-task('doc.html', 
+const docHtml = task(
 	[
 		'./doc/index.html',
 	]
 )
 
 
-gulp.task('doc', ['doc.js', 'doc.html'])
+//gulp.task('doc', gulp.series(docJs, docHtml))
+const doc = gulp.series(docJs, docHtml)
 
 
-gulp.task('all', ['breizbot.js', 'breizbot.css', 'assets', 'doc'])
+const all = gulp.series(breizbotJs, breizbotCss, assets, doc)
+
+exports.default = all
 
 
-gulp.task('watch', ['all'], function() {
-	gulp.watch(['./src/controls/**/*.js', './src/controls/**/*.html', './src/services/**/*.js'], ['breizbot.js'])
-	gulp.watch(['./src/controls/**/*.scss'], ['breizbot.css'])
-	gulp.watch(['./assets/*'], ['assets'])
-	gulp.watch(['./doc/*.html', './doc/*.js'], ['doc'])
+exports.watch = function() {
+	gulp.watch(['./src/controls/**/*.js', './src/controls/**/*.html', './src/services/**/*.js'], breizbotJs)
+	gulp.watch(['./src/controls/**/*.scss'], breizbotCss)
+	gulp.watch(['./assets/*'], assets)
+	gulp.watch(['./doc/*.html', './doc/*.js'], doc)
 	
 
-})
+}

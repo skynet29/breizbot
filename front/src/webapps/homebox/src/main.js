@@ -9,7 +9,10 @@ $$.control.registerControl('rootPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				agents: [],
-				homeboxConnected: false
+				homeboxConnected: false,
+				isRunning: function(scope) {
+					return scope.$i.pid != 0
+				}
 			},
 			events: {
 				onActionStart: function() {
@@ -47,6 +50,7 @@ $$.control.registerControl('rootPage', {
 
 
 		broker.register('homebox.launcher.status', (msg) => {
+			//console.log('homebox.launcher.status', msg)
 			dispTable(msg.data)
 		})
 

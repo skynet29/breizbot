@@ -16,6 +16,8 @@ const isDev = process.env.NODE_ENV != 'production'
 console.log('isDev', isDev)
 
 function source(dest, srcs, options) {
+
+	console.log('source', dest, srcs, options)
 	options = options || {}
 
 	let stream = gulp.src(srcs)
@@ -70,9 +72,10 @@ function source(dest, srcs, options) {
 
 
 module.exports = function(dest) {
-	return function task(taskName, srcs, options) {
-		gulp.task(taskName, function() {
+	return function task(srcs, options) {
+		return function() {
 			return source(dest, srcs, options)
-		})
+
+		}
 	}
 }

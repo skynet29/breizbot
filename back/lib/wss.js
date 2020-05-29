@@ -1,5 +1,5 @@
 const wildcard = require('wildcard')
-const ws = require("nodejs-websocket")
+const WebSocket = require('ws')
 const cookie = require('cookie')
 const auth = require('basic-auth')
 const uniqid = require('uniqid')
@@ -33,30 +33,27 @@ function forwardHistory(userName, topic, client) {
 
 const config = require('./config')
 
-let wss
+let wss = null
 
 setInterval(() => {
 	//console.log('[Broker] check connection')
 	const now = Date.now()
-	wss.connections.forEach((client) => {
+	getClients().forEach((client) => {
 		if ((now - client.lastPingDate) > pingInterval) {
 			client.close()
 		}
 	})
 }, pingInterval)
 
-function init(options, store) {
-	if (Object.keys(options).length != 0) {
-		options.secure = true
-	}
+function init(server, store) {
+	wss = new WebSocket.Server({ server })
 
-	wss = ws.createServer(options, function (client) {
+	wss.on('connection', function(client, request) {
+		client.path = request.url
+		client.headers = request.headers
 		onConnect(client, store)
 	})
 
-	wss.listen(config.wsPort, () => {
-		console.log(`WebSocket server start listening on port `, config.wsPort)
-	})
 }
 
 function sendMsg(client, msg) {
@@ -65,7 +62,7 @@ function sendMsg(client, msg) {
 		return
 	}
 	msg.time = Date.now()
-	client.sendText(JSON.stringify(msg))
+	client.send(JSON.stringify(msg))
 }
 
 
@@ -143,7 +140,7 @@ function onConnect(client, store) {
 
 
 function getHmiClients(userName) {
-	return wss.connections.filter((c) => c.userName == userName && c.hmi === true)
+	return getClients().filter((c) => c.userName == userName && c.hmi === true)
 }
 
 function sendToUser(userName, msg) {
@@ -164,7 +161,7 @@ function sendToUser(userName, msg) {
 	clients.forEach((client) => {
 		Object.keys(client.registeredTopics).forEach((registeredTopic) => {
 			if (wildcard(registeredTopic, msg.topic)) {
-				client.sendText(text)
+				client.send(text)
 				return
 			}
 
@@ -193,7 +190,9 @@ function addHmiClient(client, userName) {
 		sendFriends(userName, true)
 	}
 
-	client.on('text', (text) => {
+	client.on('message', (text) => {
+
+		//console.log('message', text)
 
 		const msg = JSON.parse(text)
 		const { type, topic } = msg
@@ -251,7 +250,7 @@ function addHmiClient(client, userName) {
 }
 
 function getHomeboxClient(userName) {
-	return wss.connections.find((c) => c.userName == userName && c.homebox === true)
+	return getClients().find((c) => c.userName == userName && c.homebox === true)
 }
 
 function registerHomeboxTopics(client, topics) {
@@ -300,7 +299,7 @@ function addHomeboxClient(client, userName) {
 	console.log(`homebox '${userName}' is connected`.green)
 	sendTopic(userName, 'breizbot.homebox.status', { connected: true })
 
-	client.on('text', (text) => {
+	client.on('message', (text) => {
 
 		const msg = JSON.parse(text)
 		const { type, topic } = msg
@@ -366,7 +365,7 @@ function callService(userName, srvName, data) {
 }
 
 function logout(sessionId) {
-	wss.connections.find((client) => {
+	getClients().find((client) => {
 		if (client.sessionId == sessionId && client.path == '/hmi/') {
 			sendMsg(client, { type: 'notif', topic: 'breizbot.logout' })
 		}
@@ -391,7 +390,7 @@ function sendFriends(userName, isConnected) {
 function sendToClient(destId, msg) {
 	//console.log('sendToClient', destId, msg)
 	msg.type = 'notif'
-	const dest = wss.connections.find((client) => {
+	const dest = getClients().find((client) => {
 		return client.clientId == destId
 	})
 	if (dest != undefined) {
@@ -403,7 +402,7 @@ function sendToClient(destId, msg) {
 }
 
 function getClients() {
-	return wss.connections
+	return Array.from(wss.clients)
 }
 
 module.exports = {

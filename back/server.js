@@ -156,9 +156,9 @@ if (config.USESSL) {
 
 	http.createServer(greenlock.middleware(redir)).listen(config.httpPort)
 	 
-	https.createServer(greenlock.tlsOptions, app).listen(config.httpsPort)	
+	const server = https.createServer(greenlock.tlsOptions, app).listen(config.httpsPort)	
 
-	wss.init(greenlock.tlsOptions, store)
+	wss.init(server, store)
 }
 else {
 	app.listen(config.httpPort, function() {

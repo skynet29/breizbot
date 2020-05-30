@@ -3,7 +3,7 @@ var gulp = require('gulp')
 const task = require('./task')('./dist')
 
 
-const breizbotJs = task(
+const breizbotJs = task('breizbot.js',
 	[
 		'./externals/eventemitter2.js',
 		'./src/controls/**/*.js',
@@ -13,23 +13,21 @@ const breizbotJs = task(
 
 )
 
-console.log(typeof breizbotJs)
-
-const breizbotCss = task(
+const breizbotCss = task('breizbot.css',
 	[
 		'./src/controls/**/*.scss',
 	],
 	{concat: 'breizbot.css', isSass:true}
 )
 
-const assets = task(
+const assets = task('assets',
 	[
 		'./src/assets/*',
 	],
 	{dest: 'assets'}
 )
 
-const docJs = task(
+const docJs = task('doc.js',
 	[
 		'./doc/*.js',
 	],
@@ -37,7 +35,7 @@ const docJs = task(
 
 )
 
-const docHtml = task(
+const docHtml = task('doc.html',
 	[
 		'./doc/index.html',
 	]

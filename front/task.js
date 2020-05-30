@@ -17,7 +17,6 @@ console.log('isDev', isDev)
 
 function source(dest, srcs, options) {
 
-	console.log('source', dest, srcs, options)
 	options = options || {}
 
 	let stream = gulp.src(srcs)
@@ -72,8 +71,9 @@ function source(dest, srcs, options) {
 
 
 module.exports = function(dest) {
-	return function task(srcs, options) {
+	return function task(taskName, srcs, options) {
 		return function() {
+			console.log('task', taskName)
 			return source(dest, srcs, options)
 
 		}

@@ -7,60 +7,18 @@ $$.control.registerControl('rootPage', {
 	init: function (elt, pager) {
 
 		function openFilterPage(iface) {
-			let artists = {}
-			let genres = {}
 			const mp3Filters = iface.getMP3Filters()
-			iface.getFiles()
-				.forEach((f) => {
-					if (f.mp3) {
-						const {artist, genre} = f.mp3
-						if (artist) {
-							if (artists[artist]) {
-								artists[artist]++
-							}
-							else {
-								artists[artist] = 1
-							}
-						}
-						if (genre) {
-							if (genres[genre]) {
-								genres[genre]++
-							}
-							else {
-								genres[genre] = 1
-							}
-						}
-					}
-				})
-			artists = Object.keys(artists).sort().map((artist) => {
-				const nbTitle = artists[artist]
-				return (nbTitle == 1) ?
-					{ value: artist, label: artist } :
-					{ value: artist, label: `${artist} (${nbTitle})` }
-			})
-			artists.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
-
-			genres = Object.keys(genres).sort().map((genre) => {
-				const nbTitle = genres[genre]
-				return (nbTitle == 1) ?
-					{ value: genre, label: genre } :
-					{ value: genre, label: `${genre} (${nbTitle})` }
-			})
-			genres.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
+			const files = iface.getFiles()
 
 			pager.pushPage('filterDlg', {
 				title: 'Filter',
 				props: {
-					artists,
-					genres,
-					selectedArtist: (mp3Filters && mp3Filters.artist) || 'All'
+					files,
+					mp3Filters
 				},
-				onReturn: function (artist) {
-					console.log('artist', artist)
-					if (artist == 'All') {
-						artist = null
-					}
-					iface.setMP3Filters({ artist })
+				onReturn: function (filters) {
+					//console.log('filters', filters)
+					iface.setMP3Filters(filters)
 				}
 			})
 		}

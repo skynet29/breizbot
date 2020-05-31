@@ -149,13 +149,17 @@
 
 					isInFilter: function (mp3Info) {
 						var ret = true
-						for (var f in this.mp3Filters) {
-							var value = mp3Info[f]
-							var filterValue = this.mp3Filters[f]
-							if (filterValue != null) {
+						for (let f in this.mp3Filters) {
+							//console.log('filter', f)
+							const value = mp3Info[f]
+							//console.log('value', value)
+							const filterValue = this.mp3Filters[f]
+							//console.log('filterValue', filterValue)
+							if (filterValue != 'All') {
 								ret &= (filterValue === value)
 							}
 						}
+						//console.log('ret', ret)
 						return ret
 					},
 

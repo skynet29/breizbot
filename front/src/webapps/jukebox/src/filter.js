@@ -29,7 +29,7 @@ $$.control.registerControl('filterDlg', {
             files.forEach((f) => {
                 if (f.mp3) {
                     const { genre } = f.mp3
-                    if (genre) {
+                    if (genre && !genre.startsWith('(')) {
                         if (genres[genre]) {
                             genres[genre]++
                         }

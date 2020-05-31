@@ -188,11 +188,19 @@
 					},
 
 					hasGenre: function(scope) {
-						return scope.f.mp3.genre != undefined
+						let {genre} = scope.f.mp3
+						genre = genre.trim()
+						return genre != undefined && genre != '' && !genre.startsWith('(')
 					},
 
 					hasYear: function(scope) {
-						return scope.f.mp3.year != undefined
+						let {year} = scope.f.mp3
+						year = year.trim()
+						return year != undefined && year != ''
+					},
+
+					getYear: function(scope) {
+						return parseInt(scope.f.mp3.year)
 					},
 
 					getItems: function (scope) {
@@ -563,7 +571,7 @@
 				console.log('loadData', rootDir)
 				ctrl.setData({ loading: true })
 				const files = await srvFiles.list(rootDir, { filterExtension, imageOnly, getMP3Info }, friendUser)
-				console.log('files', files)
+				//console.log('files', files)
 
 
 				if (rootDir != '/') {

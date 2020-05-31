@@ -189,13 +189,11 @@
 
 					hasGenre: function(scope) {
 						let {genre} = scope.f.mp3
-						genre = genre.trim()
 						return genre != undefined && genre != '' && !genre.startsWith('(')
 					},
 
 					hasYear: function(scope) {
 						let {year} = scope.f.mp3
-						year = year.trim()
 						return year != undefined && year != ''
 					},
 

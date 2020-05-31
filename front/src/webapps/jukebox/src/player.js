@@ -35,6 +35,8 @@
 					name: getName(firstIdx),
 					title: getTitle(firstIdx),
 					artist: getArtist(firstIdx),
+					genre: getGenre(firstIdx),
+					year: getYear(firstIdx),
 					duration: 0,
 					curTime: 0,
 					playing: false,
@@ -129,6 +131,8 @@
 					title: getTitle(idx),
 					name: getName(idx),
 					artist: getArtist(idx),
+					genre: getGenre(idx),
+					year: getYear(idx),
 					idx
 				})
 			}
@@ -145,6 +149,14 @@
 
 			function getArtist(idx) {
 				return files[idx].mp3.artist || ''
+			}
+
+			function getGenre(idx) {
+				return files[idx].mp3.genre || ''
+			}
+
+			function getYear(idx) {
+				return files[idx].mp3.year || ''
 			}
 
 			function getFileUrl(idx) {

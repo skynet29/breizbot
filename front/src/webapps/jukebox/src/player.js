@@ -18,7 +18,7 @@
 			files: [],
 			firstIdx: 0,
 			friendUser: '',
-			fileCtrl: null
+			fileCtrl: null,
 		},
 
 		init: function (elt, filesSrv, http, pager) {
@@ -37,6 +37,7 @@
 					artist: getArtist(firstIdx),
 					genre: getGenre(firstIdx),
 					year: getYear(firstIdx),
+					volume: 0,
 					duration: 0,
 					curTime: 0,
 					playing: false,
@@ -52,9 +53,12 @@
 
 				},
 				events: {
+					onVolumeChange: function(ev, value) {
+						audio.volume = value
+					},
 					onLoad: function () {
 						//console.log('duration', this.duration)
-						ctrl.setData({ duration: Math.floor(this.duration) })
+						ctrl.setData({ duration: Math.floor(this.duration), volume: audio.volume })
 					},
 
 					onTimeUpdate: function () {

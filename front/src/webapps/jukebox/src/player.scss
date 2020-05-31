@@ -7,11 +7,9 @@
 
 	.title {
 		display: flex;
-		.span {
-			flex: 1;
-			overflow: hidden;
+		> strong {
+			min-width: 60px;
 		}
-		margin-top: 10px;
 	}
 
 	.toolbar {
@@ -35,10 +33,23 @@
 
 	}
 
-	.shuffle {
+	.toolbar2 {
 		display: flex;
 		margin-bottom: 20px;
 		align-items: center;
+
+		.shuffle {
+			margin-right: 10px;
+		}
+
+		.volume {
+			margin-left: 50px;
+			margin-right: 20px;
+		}
+
+		.volulmeSlider {
+			width: 100px;
+		}
 
 		> span {
 			margin-right: 10px;

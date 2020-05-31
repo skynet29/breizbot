@@ -1,66 +1,62 @@
-<div class="title" bn-show="!title">
-	<strong>FileName:&nbsp;</strong>
-	<span bn-text="name"></span>
-</div>
-<div class="title" bn-show="title">
-	<strong>Title:&nbsp;</strong>
-	<span bn-text="title"></span>
-</div>
-<div class="title" bn-show="artist">
-	<strong>Artist:&nbsp;</strong>
-	<span bn-text="artist"></span>
-</div>
-<div class="title" bn-show="genre">
-	<strong>Genre:&nbsp;</strong>
-	<span bn-text="genre"></span>
-</div>
-<div class="title" bn-show="year">
-	<strong>Year:&nbsp;</strong>
-	<span bn-text="year"></span>
+<div class="info">
+	<div class="title" bn-show="!title">
+		<strong>FileName:</strong>
+		<span bn-text="name"></span>
+	</div>
+	<div class="title" bn-show="title">
+		<strong>Title:</strong>
+		<span bn-text="title"></span>
+	</div>
+	<div class="title" bn-show="artist">
+		<strong>Artist:</strong>
+		<span bn-text="artist"></span>
+	</div>
+	<div class="title" bn-show="genre">
+		<strong>Genre:</strong>
+		<span bn-text="genre"></span>
+	</div>
+	<div class="title" bn-show="year">
+		<strong>Year:</strong>
+		<span bn-text="year"></span>
+	</div>
 </div>
 <div class="toolbar">
-		<button bn-prop="{disabled: isFirst}" bn-event="click: onPrev" class="w3-btn w3-blue" title="Previous">
-			<i class="fa fa-lg fa-step-backward"></i>
-		</button>
-		
-		<button bn-show="!playing" bn-event="click: onPlay" class="w3-btn w3-blue" title="Play">
-			<i class="fa fa-lg fa-play"></i>
-		</button>
-		
-		<button bn-show="playing" bn-event="click: onPause" class="w3-btn w3-blue" title="Pause">
-			<i class="fa fa-lg fa-pause"></i>
-		</button>
-		
-		<button bn-prop="{disabled: isLast}" bn-event="click: onNext" class="w3-btn w3-blue" title="Next">
-			<i class="fa fa-lg fa-step-forward"></i>
-		</button>	
+	<button bn-prop="{disabled: isFirst}" bn-event="click: onPrev" class="w3-btn w3-blue" title="Previous">
+		<i class="fa fa-lg fa-step-backward"></i>
+	</button>
+
+	<button bn-show="!playing" bn-event="click: onPlay" class="w3-btn w3-blue" title="Play">
+		<i class="fa fa-lg fa-play"></i>
+	</button>
+
+	<button bn-show="playing" bn-event="click: onPause" class="w3-btn w3-blue" title="Pause">
+		<i class="fa fa-lg fa-pause"></i>
+	</button>
+
+	<button bn-prop="{disabled: isLast}" bn-event="click: onNext" class="w3-btn w3-blue" title="Next">
+		<i class="fa fa-lg fa-step-forward"></i>
+	</button>
 
 </div>
 
-<div class="shuffle">
-	<span>Shuffle</span>
-	<div 
-		bn-control="brainjs.flipswitch"
-		bn-event="flipswitchchange: onShuffleChange"
-		>
-		
-	</div>			
+<div class="toolbar2">
+	<i class="fas fa-random fa-lg w3-text-blue shuffle"></i>
+	<div bn-control="brainjs.flipswitch" bn-event="flipswitchchange: onShuffleChange">
+
+	</div>
+	<i class="fas fa-lg fa-volume-down w3-text-blue volume"></i>
+	<div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.1}" bn-event="input: onVolumeChange"
+		bn-val="volume" class="volulmeSlider"></div>
 </div>
 
 
 <div class="slider">
 	<span bn-text="getTimeInfo"></span>
-	<div bn-control="brainjs.slider" 
-		bn-data="{max: duration}"
-		bn-event="input: onSliderChange" 		 
-		bn-val="curTime">		
+	<div bn-control="brainjs.slider" bn-data="{max: duration}" bn-event="input: onSliderChange" bn-val="curTime">
 	</div>
-	
+
 </div>
 
-<audio 
-	bn-attr="{src}" 
-	bn-bind="audio"
-	autoplay="" 
-	bn-event="canplay: onLoad, timeupdate: onTimeUpdate, playing: onPlaying, pause: onPaused, ended: onEnded">		
+<audio bn-attr="{src}" bn-bind="audio" autoplay=""
+	bn-event="canplay: onLoad, timeupdate: onTimeUpdate, playing: onPlaying, pause: onPaused, ended: onEnded">
 </audio>

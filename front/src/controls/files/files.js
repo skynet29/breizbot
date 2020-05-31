@@ -187,6 +187,14 @@
 						return this.getPath().slice(1, scope.idx + 1).join('/')
 					},
 
+					hasGenre: function(scope) {
+						return scope.f.mp3.genre != undefined
+					},
+
+					hasYear: function(scope) {
+						return scope.f.mp3.year != undefined
+					},
+
 					getItems: function (scope) {
 						const ret = {}
 						if (showToolbar && scope.f.name != '..') {

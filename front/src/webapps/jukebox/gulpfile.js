@@ -4,7 +4,7 @@ var gulp = require('gulp')
 const task = require('../../../task')(__dirname.replace('src', 'dist'))
 
 
-const appJs = task(
+const appJs = task('app.js',
 	[
 		'./src/**/*.js'
 	],
@@ -12,7 +12,7 @@ const appJs = task(
 
 )
 
-const appCss = task(
+const appCss = task('app.css',
 	[
 		'./src/**/*.scss',
 	],

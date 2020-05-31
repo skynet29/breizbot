@@ -7,17 +7,21 @@ $$.control.registerControl('filterDlg', {
 
     props: {
         artists: [],
-        selectedArtist: null
+        genres: [],
+        selectedArtist: null,
+        selectedGenre: null
     },
 
     init: function(elt, pager) {
 
-        const {artists, selectedArtist} = this.props
+        const {artists, genres, selectedArtist, selectedGenre} = this.props
 
         const ctrl = $$.viewController(elt, {
             data: {
                 artists,
-                selectedArtist
+                genres,
+                selectedArtist,
+                selectedGenre
             },
             events: {
                 onSubmit: function(ev) {

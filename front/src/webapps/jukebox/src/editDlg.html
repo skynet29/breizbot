@@ -1,8 +1,12 @@
-<form bn-event="submit: onSubmit">
+<form bn-event="submit: onSubmit" bn-form="mp3">
     <label>Title</label>
-    <input type="text" bn-val="title" bn-update="input" required>
+    <input type="text" name="title" required>
     <label>Artist</label>
-    <input type="text" bn-val="artist" bn-update="input" required>
+    <input type="text" name="artist" required>
+    <label>Genre</label>
+    <input type="text" name="genre">
+    <label>Year</label>
+    <input type="number" name="year">
 
 
     <input type="submit" hidden bn-bind="submit">

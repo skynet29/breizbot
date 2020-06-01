@@ -21,6 +21,7 @@ module.exports = function(ctx, router) {
 		.then((json) => {
 			let ret = {}
 			const info = json.data[0]
+			//console.log('info', info)
 			if (info != undefined) {
 				ret = {
 					artist: info.artist.name,

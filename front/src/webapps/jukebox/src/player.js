@@ -177,7 +177,7 @@
 							pager.pushPage('editDlg', {
 								title: 'Edit MP3 Info',
 								props: {
-									data: files[idx].mp3,
+									mp3: files[idx].mp3,
 									fileName: name
 								},
 								onReturn: async function (tags) {

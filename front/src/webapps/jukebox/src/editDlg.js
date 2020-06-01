@@ -5,18 +5,17 @@ $$.control.registerControl('editDlg', {
     deps: ['breizbot.http', 'breizbot.pager'],
 
     props: {
-        data: {},
+        mp3: {},
         fileName: ''
     },
 
     init: function(elt, http, pager) {
 
-        const {data, fileName} = this.props
+        const {mp3, fileName} = this.props
 
         const ctrl = $$.viewController(elt, {
             data: {
-               title: data.title,
-               artist: data.artist 
+                mp3
             },
             events: {
                 onFindInfo: async function() {
@@ -25,10 +24,9 @@ $$.control.registerControl('editDlg', {
 					})
                     console.log(data)
                     if (data && data.title) {
-                        ctrl.setData({
-                            title: data.title,
-                            artist: data.artist 
-                        })
+                        ctrl.model.mp3.title = data.title
+                        ctrl.model.mp3.artist = data.artist
+                        ctrl.update()
                     }
                     else {
                         $$.ui.showAlert({title: 'MP3 Information', content: 'No information found !'})
@@ -36,9 +34,9 @@ $$.control.registerControl('editDlg', {
                 },
                 onSubmit: function(ev) {
                     ev.preventDefault()
+                    const data = $(this).getFormData()
 
-                    const {title, artist} = ctrl.model
-                    pager.popPage({title, artist})
+                    pager.popPage(data)
 
                 }
             }

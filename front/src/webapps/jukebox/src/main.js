@@ -46,7 +46,7 @@ $$.control.registerControl('rootPage', {
 						const { rootDir, fileName } = info
 						const iface = $(this).iface()
 						const files = iface.getFilteredFiles()
-						console.log('files', files)
+						//console.log('files', files)
 						const firstIdx = files.findIndex((f) => f.name == fileName)
 						console.log('firstIdx', firstIdx)
 						pager.pushPage('player', {

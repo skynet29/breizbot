@@ -4,43 +4,86 @@ const NodeID3 = require('node-id3')
 const path = require('path')
 
 
-module.exports = function(ctx, router) {
+module.exports = function (ctx, router) {
 
-    router.post('/search', function(req, res) {
-		const {query} = req.body
+	const {db} = ctx
+
+	async function getPlaylist(userName) {
+	
+		return db.distinct('name', {userName})
+	}	
+
+	async function  addSong(userName, name, fileInfo, checkExists) {
+		console.log('addSong', userName, name, fileInfo, checkExists)
+		if (checkExists) {
+			const records = await db.find({userName, name}).toArray()
+			console.log('records', records)
+			if (records.length != 0) {
+				return false
+			}
+
+		}
+		await db.insertOne({userName, name, fileInfo} )
+		return true
+
+	}
+
+	router.post('/getPlaylist', async function(req, res) {
+		const list = await getPlaylist(req.session.user)
+		res.json(list)
+	})
+
+	router.post('/addSong', async function(req, res) {
+		const {name, fileInfo, checkExists} = req.body
+
+		const ret = await addSong(req.session.user, name, fileInfo, checkExists)
+		res.json(ret)
+	})
+
+	router.post('/search', async function (req, res) {
+		const { query } = req.body
 
 		const params = {
-            q: query,	
-            limit: 1			
+			q: query.replace(/_|[0-9]*-/g, ' '),
+			limit: 1
 		}
 
-		fetch('https://api.deezer.com/search?' + querystring.stringify(params))
-		.then((rep) => {
-			return rep.json()
-		})
-		.then((json) => {
+		console.log('query', params.q)
+
+		try {
+			let rep = await fetch('https://api.deezer.com/search?' + querystring.stringify(params))
+			let json = await rep.json()
+			console.log('json', json)
 			let ret = {}
 			const info = json.data[0]
 			//console.log('info', info)
 			if (info != undefined) {
+				const album = info.album.id
+				console.log('album', album)
+				rep = await fetch('https://api.deezer.com/album/' + album)
+				json = await rep.json()
+				console.log('json', json)
+				const genre = (json.genres.data[0]) ? json.genres.data[0].name : 'unknown'
+	
 				ret = {
 					artist: info.artist.name,
-					title: info.title_short
+					title: info.title_short,
+					genre
 				}
-	
+
 			}
 			res.json(ret)
-		})
-		.catch((e) => {
+		}
+		catch (e) {
 			console.log('error', e)
 			res.sendStatus(404)
-		})
+		}
 
 
 	})
-	
-	router.post('/saveInfo', function(req, res) {
-		const {filePath, friendUser, tags} = req.body
+
+	router.post('/saveInfo', function (req, res) {
+		const { filePath, friendUser, tags } = req.body
 
 		const user = req.session.user
 
@@ -49,15 +92,15 @@ module.exports = function(ctx, router) {
 		let fullPath = ''
 
 		if (friendUser != undefined && friendUser != '') {
-			fullPath = path.join(cloudPath, friendUser, 'share', filePath)	
+			fullPath = path.join(cloudPath, friendUser, 'share', filePath)
 		}
 		else {
 			fullPath = path.join(cloudPath, user, filePath)
 		}
-	
 
 
-		NodeID3.write(tags, fullPath, function(err) {
+
+		NodeID3.write(tags, fullPath, function (err) {
 			if (err) {
 				res.status(400).send(err)
 			}
@@ -65,5 +108,9 @@ module.exports = function(ctx, router) {
 				res.json('MP3 info saved !')
 			}
 		})
+	})
+
+	router.post('createPlaylist', function(req, res) {
+
 	})
 }

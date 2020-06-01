@@ -24,8 +24,7 @@ $$.control.registerControl('editDlg', {
 					})
                     console.log(data)
                     if (data && data.title) {
-                        ctrl.model.mp3.title = data.title
-                        ctrl.model.mp3.artist = data.artist
+                        $.extend(ctrl.model.mp3, data)
                         ctrl.update()
                     }
                     else {

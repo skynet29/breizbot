@@ -87,6 +87,9 @@ $$.control.registerControl('rootPage', {
 							}
 						}
 					})
+				},
+				onPlaylist: function() {
+					console.log('onPlaylist')
 				}
 
 			}

@@ -26,6 +26,7 @@
 			const { rootDir, files, firstIdx, friendUser, fileCtrl } = this.props
 
 			let shuffleIndexes = null
+			let playlist = []
 
 			const ctrl = $$.viewController(elt, {
 				data: {
@@ -167,8 +168,55 @@
 				return filesSrv.fileUrl(rootDir + files[idx].name, friendUser)
 			}
 
+			async function getPlaylist() {
+				console.log('getPlaylist')
+				playlist  = await http.post('/getPlaylist')
+				console.log('playlist', playlist)
+			}
+
+			getPlaylist()
+
 			this.getButtons = function () {
 				return {
+					playlist: {
+						title: 'Add to playlist',
+						icon: 'fas fa-star',
+						items: function() {
+
+							const ret = {
+								new: {name: 'Add to new playlist'}
+							}
+
+							if (playlist.length != 0) {
+								ret.sep = '------'
+							}
+
+							playlist.forEach((name) => {
+								ret[name] = {name}
+							})
+							return ret
+						},
+						onClick: async function(cmd) {
+							console.log('onClick', cmd)
+							const fileInfo = {rootDir, friendUser, fileName: ctrl.model.name}
+							
+							if (cmd == 'new') {
+								const name = await $$.ui.showPrompt({title: 'Add Playlist', label: 'Name:'})
+								console.log('name', name)
+								const ret = await http.post('/addSong', {name, fileInfo, checkExists:true})
+								console.log('ret', ret)
+								if (!ret) {
+									$$.ui.showAlert({title: 'Error', content: 'Playlist already exists'})
+								}
+								else {
+									await getPlaylist()
+								}
+							}
+							else {
+								await http.post('/addSong', {name: cmd, fileInfo, checkExists:false})
+							}
+						}
+					},
 					editInfo: {
 						title: 'Edit Info',
 						icon: 'fa fa-edit',

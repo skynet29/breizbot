@@ -22,10 +22,13 @@ $$.control.registerControl('breizbot.pager', {
 				title: '',
 				buttons: [],
 				show1: function(scope) {
-					return scope.$i.icon == undefined && !(scope.$i.visible === false)
+					return scope.$i.items == undefined && scope.$i.icon == undefined && !(scope.$i.visible === false)
 				},
 				show2: function(scope) {
-					return scope.$i.icon != undefined && !(scope.$i.visible === false)
+					return scope.$i.items == undefined && scope.$i.icon != undefined && !(scope.$i.visible === false)
+				},
+				show3: function(scope) {
+					return scope.$i.items != undefined && !(scope.$i.visible === false)
 				}
 			},
 			events: {
@@ -40,6 +43,16 @@ $$.control.registerControl('breizbot.pager', {
 					const fn = curInfo.buttons[cmd].onClick
 					if (typeof fn == 'function') {
 						fn.call(pageCtrlIface)
+					}
+				},
+				onContextMenu: function(ev, data) {
+					console.log('onContextMenu', data)
+					const cmd = $(this).data('cmd')
+					const pageCtrlIface = curInfo.ctrl.iface()
+					console.log('onAction', cmd)
+					const fn = curInfo.buttons[cmd].onClick
+					if (typeof fn == 'function') {
+						fn.call(pageCtrlIface, data.cmd)
 					}
 				}
 			}

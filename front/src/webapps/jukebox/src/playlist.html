@@ -16,7 +16,7 @@
     You have no playlist
 </div>
 
-<div class="scrollPanel">
+<div class="scrollPanel" bn-show="hasPlaylist">
     <div bn-each="songs" bn-iter="f" bn-event="click.item: onItemClick">
         <div class="w3-card-2 item">
             <div>Title:&nbsp;<strong bn-text="$scope.f.mp3.title"></strong></div>

@@ -17,14 +17,12 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onDelete: function() {
-					const idx = $(this).closest('li').index()
-					const item = ctrl.model.notifs[idx]
+					const item = getItem(this)
 					console.log('onDelete', item)
 					users.removeNotif(item._id)
 				},
 				onAccept: async function() {
-					const idx = $(this).closest('li').index()
-					const item = ctrl.model.notifs[idx]
+					const item = getItem(this)
 					console.log('onAccept', item)
 
 					const friendUserName = item.from
@@ -33,8 +31,7 @@ $$.control.registerControl('rootPage', {
 					await users.sendNotif(friendUserName, {text: 'User has accepted your invitation'})
 				},
 				onDecline: async function() {
-					const idx = $(this).closest('li').index()
-					const item = ctrl.model.notifs[idx]
+					const item = getItem(this)
 					console.log('onDecline', item)
 					const friendUserName = item.from
 
@@ -42,8 +39,7 @@ $$.control.registerControl('rootPage', {
 					await users.sendNotif(friendUserName, {text: `User has declined your invitation`})
 				},
 				onReply: async function(ev) {
-					const idx = $(this).closest('li').index()
-					const item = ctrl.model.notifs[idx]
+					const item = getItem(this)
 					console.log('onReply', item)
 					const friendUserName = item.from	
 					const text = await $$.ui.showPrompt({title: 'Reply', label: 'Message:'})
@@ -54,6 +50,11 @@ $$.control.registerControl('rootPage', {
 				}
 			}
 		})	
+
+		function getItem(elt) {
+			const idx = Math.trunc($(elt).closest('li').index() / 2)
+			return ctrl.model.notifs[idx]
+		}
 
 		async function updateNotifs() {
 			const notifs = await users.getNotifs()

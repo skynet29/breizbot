@@ -19,14 +19,16 @@
 			firstIdx: 0,
 			friendUser: '',
 			fileCtrl: null,
+			isPlaylist: false
 		},
 
 		init: function (elt, filesSrv, http, pager) {
 
-			const { rootDir, files, firstIdx, friendUser, fileCtrl } = this.props
+			const { rootDir, files, firstIdx, friendUser, fileCtrl, isPlaylist } = this.props
 
 			let shuffleIndexes = null
 			let playlist = []
+			pager.setButtonVisible({playlist: !isPlaylist})
 
 			const ctrl = $$.viewController(elt, {
 				data: {
@@ -145,7 +147,7 @@
 			const audio = ctrl.scope.audio.get(0)
 
 			function getName(idx) {
-				return files[idx].name
+				return (isPlaylist) ? files[idx].fileInfo.fileName : files[idx].name
 			}
 
 			function getTitle(idx) {
@@ -165,13 +167,17 @@
 			}
 
 			function getFileUrl(idx) {
+				if (isPlaylist) {
+					const {rootDir, fileName, friendUser} = files[idx].fileInfo
+					return filesSrv.fileUrl(rootDir + fileName, friendUser)
+				}
 				return filesSrv.fileUrl(rootDir + files[idx].name, friendUser)
 			}
 
 			async function getPlaylist() {
-				console.log('getPlaylist')
+				//console.log('getPlaylist')
 				playlist  = await http.post('/getPlaylist')
-				console.log('playlist', playlist)
+				//console.log('playlist', playlist)
 			}
 
 			getPlaylist()
@@ -179,6 +185,7 @@
 			this.getButtons = function () {
 				return {
 					playlist: {
+						visible: !isPlaylist,
 						title: 'Add to playlist',
 						icon: 'fas fa-star',
 						items: function() {
@@ -218,6 +225,7 @@
 						}
 					},
 					editInfo: {
+						visible: !isPlaylist,
 						title: 'Edit Info',
 						icon: 'fa fa-edit',
 						onClick: function () {

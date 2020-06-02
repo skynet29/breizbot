@@ -89,7 +89,10 @@ $$.control.registerControl('rootPage', {
 					})
 				},
 				onPlaylist: function() {
-					console.log('onPlaylist')
+					//console.log('onPlaylist')
+					pager.pushPage('playlist', {
+						title: 'Playlist'
+					})
 				}
 
 			}

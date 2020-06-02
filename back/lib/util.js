@@ -5,7 +5,17 @@ const path = require('path')
 const ffmpeg = require('ffmpeg')
 const fs = require('fs-extra')
 const NodeID3 = require('node-id3')
+const config = require('../lib/config')
 
+const cloudPath = config.CLOUD_HOME
+
+function getFilePath(user, filePath, friendUser) {
+	let rootPath = path.join(cloudPath, user, filePath)
+	if (friendUser != undefined && friendUser != '') {
+		rootPath = path.join(cloudPath, friendUser, 'share', filePath)
+	}
+	return rootPath
+}
 
 function isImage(fileName) {
 	return (/\.(gif|jpg|jpeg|png)$/i).test(fileName)
@@ -117,5 +127,6 @@ module.exports = {
 	genThumbnail,
 	resizeImage,
 	convertToMP3,
-	getFileInfo
+	getFileInfo,
+	getFilePath
 }

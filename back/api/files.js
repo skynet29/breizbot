@@ -3,7 +3,8 @@ const fs = require('fs-extra')
 const zipFolder = require('zip-a-folder')
 const unzipper = require('unzipper')
 const config = require('../lib/config')
-const { genThumbnail, isImage, resizeImage, convertToMP3, getFileInfo } = require('../lib/util')
+const util = require('../lib/util')
+const { genThumbnail, isImage, resizeImage, convertToMP3, getFileInfo } = util
 
 
 const cloudPath = config.CLOUD_HOME
@@ -15,10 +16,7 @@ router.post('/fileInfo', async function (req, res) {
 	//console.log('params', req.body)
 	const user = req.session.user
 	const { filePath, friendUser, options } = req.body
-	let rootPath = path.join(cloudPath, user, filePath)
-	if (friendUser != undefined && friendUser != '') {
-		rootPath = path.join(cloudPath, friendUser, 'share', filePath)
-	}
+	const rootPath = util.getFilePath(user, filePath, friendUser)
 
 	try {
 		res.json(await getFileInfo(rootPath, options))
@@ -35,10 +33,7 @@ router.post('/list', async function (req, res) {
 	const options = req.body.options || {}
 	const user = req.session.user
 	const { destPath, friendUser } = req.body
-	let rootPath = path.join(cloudPath, user, destPath)
-	if (friendUser != undefined && friendUser != '') {
-		rootPath = path.join(cloudPath, friendUser, 'share', destPath)
-	}
+	const rootPath = util.getFilePath(user, destPath, friendUser)
 
 	try {
 		const files = await fs.readdir(rootPath)
@@ -79,7 +74,7 @@ router.post('/mkdir', async function (req, res) {
 	console.log('mkdir req', req.body)
 	const { fileName } = req.body
 	const user = req.session.user
-	const folderPath = path.join(cloudPath, user, fileName)
+	const folderPath = util.getFilePath(user, fileName)
 	try {
 		await fs.mkdirp(folderPath)
 		res.json(await getFileInfo(folderPath))

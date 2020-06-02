@@ -1,0 +1,43 @@
+.playlist {
+    display: flex;
+    flex-direction: column;
+
+    .toolbar {
+        margin-top: 10px;
+        padding-left: 10px;
+        padding-right: 10px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+
+        .left {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+                span {
+                margin-right: 10px;
+            }
+    
+        }
+
+    }
+
+    .message {
+        margin-top: 10px;
+        margin-left: 10px;
+    }
+
+    .scrollPanel {
+        padding: 10px;
+        flex: 1;
+        overflow-y: auto;
+        border: 1px solid lightgray;
+
+        .item {
+            padding: 10px;
+            margin-top: 10px;
+        }
+    }
+}

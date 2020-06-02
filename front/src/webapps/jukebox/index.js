@@ -6,35 +6,53 @@ const path = require('path')
 
 module.exports = function (ctx, router) {
 
-	const {db} = ctx
+	const { db, util } = ctx
 
 	async function getPlaylist(userName) {
-	
-		return db.distinct('name', {userName})
-	}	
 
-	async function  addSong(userName, name, fileInfo, checkExists) {
+		return db.distinct('name', { userName })
+	}
+
+	async function getPlaylistSongs(userName, name) {
+		const records = await db.find({ userName, name }).toArray()
+		const promises = records.map(async (f) => {
+			const { fileName, rootDir, friendUser } = f.fileInfo
+			const filePath = util.getFilePath(userName, rootDir + fileName, friendUser)
+			//console.log('filePath', filePath)
+			const info = await util.getFileInfo(filePath, { getMP3Info: true })
+			return {mp3: info.mp3, fileInfo: f.fileInfo}
+		})
+		return await Promise.all(promises)
+	}
+
+	async function addSong(userName, name, fileInfo, checkExists) {
 		console.log('addSong', userName, name, fileInfo, checkExists)
 		if (checkExists) {
-			const records = await db.find({userName, name}).toArray()
+			const records = await db.find({ userName, name }).toArray()
 			console.log('records', records)
 			if (records.length != 0) {
 				return false
 			}
 
 		}
-		await db.insertOne({userName, name, fileInfo} )
+		await db.insertOne({ userName, name, fileInfo })
 		return true
 
 	}
 
-	router.post('/getPlaylist', async function(req, res) {
+	router.post('/getPlaylist', async function (req, res) {
 		const list = await getPlaylist(req.session.user)
 		res.json(list)
 	})
 
-	router.post('/addSong', async function(req, res) {
-		const {name, fileInfo, checkExists} = req.body
+	router.post('/getPlaylistSongs', async function (req, res) {
+		const { name } = req.body
+		const list = await getPlaylistSongs(req.session.user, name)
+		res.json(list)
+	})
+
+	router.post('/addSong', async function (req, res) {
+		const { name, fileInfo, checkExists } = req.body
 
 		const ret = await addSong(req.session.user, name, fileInfo, checkExists)
 		res.json(ret)
@@ -64,7 +82,7 @@ module.exports = function (ctx, router) {
 				json = await rep.json()
 				console.log('json', json)
 				const genre = (json.genres.data[0]) ? json.genres.data[0].name : 'unknown'
-	
+
 				ret = {
 					artist: info.artist.name,
 					title: info.title_short,
@@ -110,7 +128,7 @@ module.exports = function (ctx, router) {
 		})
 	})
 
-	router.post('createPlaylist', function(req, res) {
+	router.post('createPlaylist', function (req, res) {
 
 	})
 }

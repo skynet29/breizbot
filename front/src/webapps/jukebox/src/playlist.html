@@ -17,8 +17,19 @@
 </div>
 
 <div class="scrollPanel" bn-show="hasPlaylist">
-    <div bn-each="songs" bn-iter="f" bn-event="click.item: onItemClick">
-        <div class="w3-card-2 item">
+    <div bn-each="songs" 
+        bn-lazzy="20"
+        bn-iter="f" 
+        bn-bind="songs"
+        bn-event="click.item: onItemClick, contextmenuchange.item:onItemContextMenu">
+        <div class="w3-card-2 item" 
+            bn-control="brainjs.contextmenu"
+            bn-data="{
+                items: {
+                    remove: {name: 'Remove', icon: 'fas fa-trash-alt'}
+                }
+            }"
+        >
             <div>Title:&nbsp;<strong bn-text="$scope.f.mp3.title"></strong></div>
 
             <div>Artist:&nbsp;<strong bn-text="$scope.f.mp3.artist"></strong></div>

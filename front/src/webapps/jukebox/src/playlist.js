@@ -30,6 +30,15 @@ $$.control.registerControl('playlist', {
                 }
             },
             events: {
+                onItemContextMenu: async function(ev, data) {
+                    console.log('onItemContextMenu', data)
+                    const idx = $(this).closest('.item').index()
+                    //console.log('idx', idx)
+                    const id = ctrl.model.songs[idx].id
+                    await http.delete('/removeSong/' + id)
+                    ctrl.removeArrayItem('songs', idx, 'songs')
+                },
+
                 onItemClick: function (ev) {
                     const idx = $(this).index()
                     //console.log('onItemClick', idx)
@@ -50,12 +59,12 @@ $$.control.registerControl('playlist', {
             ctrl.setData({ playlist })
             if (playlist.length != 0) {
                 await getPlaylistSongs(playlist[0])
-                //console.log('songs', songs)
             }
         }
 
         async function getPlaylistSongs(name) {
             const songs = await http.post('/getPlaylistSongs', { name })
+            console.log('songs', songs)
             ctrl.setData({ songs })
             pager.setButtonVisible({ play: songs.length != 0 })
         }

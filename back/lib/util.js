@@ -1,11 +1,13 @@
 const simpleThumbnail = require('simple-thumbnail')
-const {promisify} = require('util')
+const { promisify } = require('util')
 const imageSize = promisify(require('image-size'))
 const path = require('path')
 const ffmpeg = require('ffmpeg')
 const fs = require('fs-extra')
 const NodeID3 = require('node-id3')
-const config = require('../lib/config')
+const config = require('./config')
+const { ObjectID } = require('mongodb')
+
 
 const cloudPath = config.CLOUD_HOME
 
@@ -38,12 +40,12 @@ async function resizeImage(filePath, fileName, resizeFormat) {
 }
 
 function readID3(filePath) {
-	return new Promise(function(resolve, reject) {
-		NodeID3.read(filePath, function(err, tags) {
+	return new Promise(function (resolve, reject) {
+		NodeID3.read(filePath, function (err, tags) {
 			if (err) {
 				reject(err)
 			}
-			resolve( {
+			resolve({
 				artist: tags.artist,
 				title: tags.title,
 				year: tags.year,
@@ -51,7 +53,7 @@ function readID3(filePath) {
 			})
 		})
 	})
-	
+
 }
 
 async function getFileInfo(filePath, options) {
@@ -85,7 +87,7 @@ async function getFileInfo(filePath, options) {
 }
 
 function convertToMP3(filePath, fileName) {
-	return new Promise((resolve, reject) => {			
+	return new Promise((resolve, reject) => {
 		try {
 			const extname = path.extname(fileName)
 			const basename = path.basename(fileName, extname)
@@ -101,9 +103,9 @@ function convertToMP3(filePath, fileName) {
 						console.log('Audio file: ' + file);
 						const info = await getFileInfo(outFileName)
 						//console.log('statInfo', statInfo)
-					
+
 						resolve(info)
-											
+
 					}
 					else {
 						console.log('error', error)
@@ -118,15 +120,16 @@ function convertToMP3(filePath, fileName) {
 			console.log(e.code)
 			console.log(e.msg)
 			reject(e)
-		}			
+		}
 	})
 }
 
 module.exports = {
-	isImage, 
+	isImage,
 	genThumbnail,
 	resizeImage,
 	convertToMP3,
 	getFileInfo,
-	getFilePath
+	getFilePath,
+	dbObjectID: function (id) { return new ObjectID(id) }
 }

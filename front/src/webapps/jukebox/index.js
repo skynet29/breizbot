@@ -8,6 +8,11 @@ module.exports = function (ctx, router) {
 
 	const { db, util } = ctx
 
+	async function removeSong(songId) {
+		console.log(`removeSong`, songId)
+		return db.deleteOne({_id: util.dbObjectID(songId)})
+	}
+
 	async function getPlaylist(userName) {
 
 		return db.distinct('name', { userName })
@@ -20,7 +25,7 @@ module.exports = function (ctx, router) {
 			const filePath = util.getFilePath(userName, rootDir + fileName, friendUser)
 			//console.log('filePath', filePath)
 			const info = await util.getFileInfo(filePath, { getMP3Info: true })
-			return {mp3: info.mp3, fileInfo: f.fileInfo}
+			return {mp3: info.mp3, fileInfo: f.fileInfo, id: f._id}
 		})
 		return await Promise.all(promises)
 	}
@@ -39,6 +44,11 @@ module.exports = function (ctx, router) {
 		return true
 
 	}
+
+	router.delete('/removeSong/:id', async function (req, res) {
+		await removeSong(req.params.id)
+		res.sendStatus(200)
+	})
 
 	router.post('/getPlaylist', async function (req, res) {
 		const list = await getPlaylist(req.session.user)

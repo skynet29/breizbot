@@ -66,10 +66,11 @@ router.post('/activateApp', async function (req, res) {
 	}
 
 	try {
-		await db.activateApp(req.session.user, appName, activated)
+		const data = await db.activateApp(req.session.user, appName, activated)
 		res.json(data)
 	}
 	catch (e) {
+		console.error(e)
 		res.sendStatus(400)
 	}
 

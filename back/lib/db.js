@@ -91,15 +91,25 @@ module.exports = {
 	activateApp: async function (username, appName, activated) {
 		console.log(`[DB] activateApp`, username, appName, activated)
 		const info = await db.collection('users').findOne({ username })
-		const { apps } = info
-		if (activated) {
-			apps[appName] = {}
-		}
-		else {
-			delete apps[appName]
+		let { apps } = info
+		if (!Array.isArray(apps)) {			
+
+			if (activated) {
+				apps[appName] = {}
+			}
+			else {
+				delete apps[appName]
+			}
+			apps = Object.keys(apps)
+			console.log('apps', apps)
+			const update = { '$set': { apps } }
+	
+			return db.collection('users').updateOne({ username }, update)
+	
 		}
 		console.log('apps', apps)
-		const update = { '$set': { apps } }
+		const data = { apps: appName }
+		let update = (activated) ? { $push: data } : { $pull: data }
 
 		return db.collection('users').updateOne({ username }, update)
 	},

@@ -31,7 +31,7 @@ router.post('/changePwd', async function (req, res) {
 
 	try {
 		await db.changePassword(userName, newPwd)
-		res.json(data)
+		res.sendStatus(200)
 	}
 	catch (e) {
 		res.sendStatus(400)
@@ -45,7 +45,7 @@ router.delete('/:userName', async function (req, res) {
 
 	try {
 		await db.deleteUser(userName)
-		res.json(data)
+		res.sendStatus(200)
 	}
 	catch (e) {
 		res.sendStatus(400)

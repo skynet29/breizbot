@@ -10,35 +10,17 @@ function getAppFolders() {
 function getAppInfo(appName) {
 	const propsPath = path.join(appPath, appName, 'app.json')
 	return fs.readJson(propsPath)
-		.then(function(props) {
-			return props
-		})
-		.catch(function(e) {
-			return {
-				iconCls: 'fa fa-question fa-2x',
-				colorCls: 'w3-blue',
-				title: appName
-			}
-		})
 }
 
-function getPropFiles(folders) {
-	//console.log('folders', folders)
-	const promises = folders.map(function(appName) {
 
-		return getAppInfo(appName)
-				.then(function(props) {
-					//console.log('props', props)
-					return {appName, props}
-				})
-
+async function getAppsInfo() {
+	const folders = await getAppFolders()
+	const promises = folders.map(async (appName) => {
+		const props = await getAppInfo(appName)
+		return {appName, props}
 	})
 
 	return Promise.all(promises)
-}
-
-function getAppsInfo() {
-	return getAppFolders().then(getPropFiles)
 }
 
 module.exports = {

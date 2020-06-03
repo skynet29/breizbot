@@ -2,16 +2,21 @@ const router = require('express').Router()
 const apps = require('../lib/apps')
 
 
-router.get('/all', function(req, res) {
-	apps.getAppsInfo()
-	.then(function(appsInfo) {
-		const {apps} = req.session.userInfo
+router.get('/all', async function (req, res) {
+	apps.getAppsInfo().then((appsInfo) => {
+		const { apps } = req.session.userInfo
 		appsInfo.forEach((appInfo) => {
-			appInfo.activated = (appInfo.appName in apps)
+			if (!Array.isArray(apps)) {
+				appInfo.activated = (appInfo.appName in apps)
+			}
+			else {
+				appInfo.activated = apps.contains(appInfo.appName)
+			}
 		})
 		res.json(appsInfo)
-		
+
 	})
+
 })
 
 

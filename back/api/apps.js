@@ -10,7 +10,7 @@ router.get('/all', async function (req, res) {
 				appInfo.activated = (appInfo.appName in apps)
 			}
 			else {
-				appInfo.activated = apps.contains(appInfo.appName)
+				appInfo.activated = apps.includes(appInfo.appName)
 			}
 		})
 		res.json(appsInfo)

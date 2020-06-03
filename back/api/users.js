@@ -58,16 +58,10 @@ router.post('/activateApp', async function (req, res) {
 	const { appName, activated } = req.body
 	console.log('activateApp', appName, activated)
 
-	if (activated) {
-		req.session.userInfo.apps[appName] = {}
-	}
-	else {
-		delete req.session.userInfo.apps[appName]
-	}
-
 	try {
-		const data = await db.activateApp(req.session.user, appName, activated)
-		res.json(data)
+		await db.activateApp(req.session.user, appName, activated)
+		req.session.userInfo = await db.getUserInfo(req.session.user)
+		res.sendStatus(200)
 	}
 	catch (e) {
 		console.error(e)

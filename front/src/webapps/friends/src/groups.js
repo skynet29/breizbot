@@ -24,8 +24,10 @@ $$.control.registerControl('groups', {
                 onAddGroup: async function() {
                     const groupName = await $$.ui.showPrompt({ title: "Add Group", label: 'Name' })
                     console.log('groupName', groupName)
-                    await users.addSharingGroup(groupName)
-                    getGroups()
+                    if (groupName != null) {
+                        await users.addSharingGroup(groupName)
+                        getGroups()    
+                    }
 
                 }
             }

@@ -312,6 +312,9 @@
 									await users.addSharingGroup(name)
 									await getSharingGroups()
 								}
+								else {
+									return
+								}
 							}
 							const selFiles = getSelFiles().map((i) => i.fileName)
 							await srvFiles.shareFiles(selFiles, name)

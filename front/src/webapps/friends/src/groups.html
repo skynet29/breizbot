@@ -1,0 +1,17 @@
+<div>
+    <div class="toolbar">
+        <strong>Groups</strong>
+        <button class="w3-button" tille="Add group"
+            bn-event="click: onAddGroup"
+            ><i class="fa fa-user-plus"></i></button>
+    </div>
+
+    <div bn-show="noGroups">No group available</div>
+    <div bn-each="groups" class="items" bn-control="brainjs.checkgroup" bn-val="selectedGroups" bn-update="input">
+        <div class="item">
+            <input type="checkbox" bn-attr="{value: $scope.$i}" class="w3-check">
+
+            <span bn-text="$scope.$i"></span>
+        </div>
+    </div>
+</div>

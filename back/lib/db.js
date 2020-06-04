@@ -50,26 +50,26 @@ module.exports = {
 	},
 
 
-	changePassword: function (username, newPwd) {
+	changePassword: async function (username, newPwd) {
 
 		console.log(`[DB] changePassword`, username, newPwd)
 		var update = { '$set': { pwd: newPwd } }
 
-		return db.collection('users').updateOne({ username }, update)
+		await db.collection('users').updateOne({ username }, update)
 
 	},
 
-	updateLastLoginDate: function (username) {
+	updateLastLoginDate: async function (username) {
 
 		//console.log(`[DB] updateLastLoginDate`, username)
 		var update = { '$set': { lastLoginDate: Date.now() } }
 
-		return db.collection('users').updateOne({ username }, update)
+		await db.collection('users').updateOne({ username }, update)
 
 	},
 
 
-	createUser: function (data) {
+	createUser: async function (data) {
 
 		console.log(`[DB] createUser`, data)
 		data.pwd = 'welcome'
@@ -77,15 +77,15 @@ module.exports = {
 		data.createDate = Date.now()
 		data.lastLoginDate = 0
 
-		return db.collection('users').insertOne(data)
+		await db.collection('users').insertOne(data)
 	},
 
 
-	deleteUser: function (username) {
+	deleteUser: async function (username) {
 
 		console.log(`[DB] deleteUser`, username)
 
-		return db.collection('users').deleteOne({ username })
+		await db.collection('users').deleteOne({ username })
 	},
 
 	activateApp: async function (username, appName, activated) {
@@ -93,12 +93,12 @@ module.exports = {
 		const data = { apps: appName }
 		let update = (activated) ? { $push: data } : { $pull: data }
 
-		return db.collection('users').updateOne({ username }, update)
+		await db.collection('users').updateOne({ username }, update)
 	},
 
 	addNotif: function (to, from, notif) {
 		console.log(`[DB] addNotif`, to, from, notif)
-		return db.collection('notifs').insertOne({ to, from, notif, date: Date.now() })
+		db.collection('notifs').insertOne({ to, from, notif, date: Date.now() })
 	},
 
 	getNotifs: function (to) {
@@ -111,35 +111,53 @@ module.exports = {
 		return db.collection('notifs').countDocuments({ to })
 	},
 
-	removeNotif: function (notifId) {
+	removeNotif: async function (notifId) {
 		console.log(`[DB] removeNotif`, notifId)
-		return db.collection('notifs').deleteOne({ _id: new ObjectID(notifId) })
+		await db.collection('notifs').deleteOne({ _id: new ObjectID(notifId) })
 	},
 
-	getFriends: async function (userName) {
+	getFriends: async function (username) {
 		//console.log(`[DB] getFriends`, userName)
 		const friends = await db.collection('friends')
-			.find({ $or: [{ user1: userName }, { user2: userName }] })
+			.find({ username })
 			.toArray()
 
-		return friends.map((friend) => {
-			return (friend.user1 == userName) ? friend.user2 : friend.user1
-		})
+		return friends.map((f) => f.friend)
 	},
 
-	addFriend: function (userName, friendUserName) {
-		console.log(`[DB] addFriend`, userName, friendUserName)
-		return db.collection('friends').insertOne({ user1: userName, user2: friendUserName })
+	getFriendGroups: async function (username, friend) {
+		//console.log(`[DB] getFriends`, userName)
+		const info = await db.collection('friends')
+			.findOne({ username, friend })
+
+		return info.groups
+	},
+
+	setFriendGroups: async function (username, friend, groups) {
+		//console.log(`[DB] getFriends`, userName)
+		await db.collection('friends')
+			.updateOne({ username, friend }, { $set: { groups } })
+
+	},
+
+	addSharingGroup: async function (username, sharingGroupName) {
+		await db.collection('users').update({ username }, { $addToSet: { sharingGroups: sharingGroupName } })
+	},
+
+	addFriend: async function (username, friend) {
+		console.log(`[DB] addFriend`, username, friend)
+		await db.collection('friends').insertOne({ username, friend, groups: [] })
+		await db.collection('friends').insertOne({ username: friend, friend: username, groups: [] })
 	},
 
 	addContact: async function (userName, contactName, contactEmail) {
 		console.log(`[DB] addContact`, userName, contactName, contactEmail)
-		const info = await db.collection('contacts')
-			.findOne({ userName, contactEmail })
+		const info = await db.collection('contacts').findOne({ userName, contactEmail })
 		if (info != null) {
-			return Promise.reject('Contact already exists')
+			throw ('Contact already exists')
 		}
-		return db.collection('contacts').insertOne({
+
+		db.collection('contacts').insertOne({
 			userName,
 			contactName,
 			contactEmail
@@ -155,7 +173,7 @@ module.exports = {
 
 	removeContact: function (contactId) {
 		console.log(`[DB] removeContact`, contactId)
-		return db.collection('contacts').deleteOne({ _id: new ObjectID(contactId) })
+		db.collection('contacts').deleteOne({ _id: new ObjectID(contactId) })
 	},
 
 	getAppData: function (userName, appName) {
@@ -169,7 +187,7 @@ module.exports = {
 
 		const update = { '$set': { data } }
 
-		return db.collection('appData').updateOne({ userName, appName }, update, { upsert: true })
+		db.collection('appData').updateOne({ userName, appName }, update, { upsert: true })
 	},
 
 

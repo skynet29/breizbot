@@ -1,0 +1,24 @@
+.groups {
+    padding: 10px;
+
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .items {
+        margin-left: 20px;
+    }
+
+    .item {
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+
+        .w3-check {
+            top: 0px;
+            margin-right: 20px;
+        }
+    }
+}

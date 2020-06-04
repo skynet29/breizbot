@@ -13,7 +13,7 @@ $$.control.registerControl('rootPage', {
 				onAddFriend: function(ev) {
 					console.log('onAddFriend')
 					pager.pushPage('addFriendPage', {
-						title: 'Add Friend',
+						title: 'Search Friend',
 						props: {
 							friends: ctrl.scope.friends.getFriends()
 						}
@@ -21,6 +21,16 @@ $$.control.registerControl('rootPage', {
 				},
 				onUpdate: function() {
 					ctrl.scope.friends.update()
+				},
+				onItemClick: function(ev, data) {
+					console.log('onItemClick', data)
+					const friendUserName = data.userName
+					pager.pushPage('groups', {
+						title: friendUserName,
+						props: {
+							friendUserName
+						}
+					})
 				}
 
 			}

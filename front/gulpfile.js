@@ -51,11 +51,11 @@ const all = gulp.series(breizbotJs, breizbotCss, assets, doc)
 exports.default = all
 
 
-exports.watch = function() {
+exports.watch = gulp.series(all, function() {
 	gulp.watch(['./src/controls/**/*.js', './src/controls/**/*.html', './src/services/**/*.js'], breizbotJs)
 	gulp.watch(['./src/controls/**/*.scss'], breizbotCss)
 	gulp.watch(['./assets/*'], assets)
 	gulp.watch(['./doc/*.html', './doc/*.js'], doc)
 	
 
-}
+})

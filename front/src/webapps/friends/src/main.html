@@ -11,6 +11,9 @@
 		title="Add Friend"
 		bn-event="click: onAddFriend"
 
-	><i class="fa fa-user-plus"></i></button>	
+	><i class="fa fa-search"></i></button>	
 </div>
-<div bn-control="breizbot.friends" bn-iface="friends" data-show-send-message="true"></div>
+<div bn-control="breizbot.friends" 
+	bn-iface="friends" 
+	bn-event="friendclick: onItemClick"
+	data-show-send-message="true"></div>

@@ -15,6 +15,27 @@ router.get('/', async function (req, res) {
 	}
 })
 
+router.get('/getSharingGroups', async function(req, res) {
+	try {
+		const info = await db.getUserInfo(req.session.user)
+		res.json(info.sharingGroups)
+	}
+	catch (e) {
+		res.sendStatus(400)
+	}
+})
+
+router.post('/addSharingGroup', async function(req, res) {
+	const {sharingGroupName} = req.body
+	try {
+		await db.addSharingGroup(req.session.user, sharingGroupName)
+		res.sendStatus(200)
+	}
+	catch (e) {
+		res.sendStatus(400)
+	}
+})
+
 router.post('/', async function (req, res) {
 	try {
 		const data = await db.createUser(req.body)
@@ -143,6 +164,36 @@ router.get('/getFriends', async function (req, res) {
 				isConnected: wss.isUserConnected(friend)
 			}
 		}))
+	}
+	catch (e) {
+		res.sendStatus(400)
+	}
+})
+
+router.post('/getFriendGroups', async function (req, res) {
+	const { friend } = req.body
+	console.log('getFriendGroups', req.session.user)
+
+	const userName = req.session.user
+
+	try {
+		const groups = await db.getFriendGroups(userName, friend)
+		res.json(groups)
+	}
+	catch (e) {
+		res.sendStatus(400)
+	}
+})
+
+router.post('/setFriendGroups', async function (req, res) {
+	const { friend, groups } = req.body
+	console.log('setFriendGroups', req.session.user)
+
+	const userName = req.session.user
+
+	try {
+		await db.setFriendGroups(userName, friend, groups)
+		res.sendStatus(200)
 	}
 	catch (e) {
 		res.sendStatus(400)

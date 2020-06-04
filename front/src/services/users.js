@@ -2,79 +2,95 @@ $$.service.registerService('breizbot.users', {
 
 	deps: ['brainjs.resource'],
 
-	init: function(config, resource) {
+	init: function (config, resource) {
 
 		const http = resource('/api/users')
 
 		return {
-			list: function() {
+			list: function () {
 				return http.get('/')
 			},
 
-			match: function(match) {
-				return http.get('/', {match})
+			match: function (match) {
+				return http.get('/', { match })
 			},
 
-			add: function(data) {
+			add: function (data) {
 				return http.post('/', data)
 			},
 
-			remove: function(user) {
+			remove: function (user) {
 				return http.delete(`/${user}`)
 			},
 
-			update: function(user, data) {
+			update: function (user, data) {
 				return http.put(`/${user}`, data)
 			},
 
-			get: function(user) {
+			get: function (user) {
 				return http.get(`/${user}`)
 			},
 
-			activateApp: function(appName, activated) {
-				return http.post(`/activateApp`, {appName, activated})
+			activateApp: function (appName, activated) {
+				return http.post(`/activateApp`, { appName, activated })
 			},
 
-			sendNotif: function(to, notif) {
-				return http.post(`/sendNotif`, {to, notif})
+			sendNotif: function (to, notif) {
+				return http.post(`/sendNotif`, { to, notif })
 			},
 
-			removeNotif: function(notifId) {
+			removeNotif: function (notifId) {
 				return http.delete(`/removeNotif/${notifId}`)
 			},
 
-			getNotifs: function() {
+			getNotifs: function () {
 				return http.get(`/getNotifs`)
 			},
-			
-			getNotifCount: function() {
+
+			getNotifCount: function () {
 				return http.get(`/getNotifCount`)
 			},
 
-			getFriends: function() {
+			getSharingGroups: function () {
+				return http.get(`/getSharingGroups`)
+			},
+
+			addSharingGroup: function (sharingGroupName) {
+				return http.post('/addSharingGroup', { sharingGroupName })
+			},
+
+			getFriends: function () {
 				return http.get(`/getFriends`)
 			},
 
-			addFriend: function(friendUserName) {
-				return http.post(`/addFriend`, {friendUserName})
+			getFriendGroups: function (friend) {
+				return http.post('/getFriendGroups', { friend })
 			},
 
-			changePwd: function(newPwd) {
-				return http.post(`/changePwd`, {newPwd})
+			setFriendGroups: function (friend, groups) {
+				return http.post('/setFriendGroups', { friend, groups })
 			},
 
-			addContact: function(name, email) {
-				return http.post(`/addContact`, {name, email})
+			addFriend: function (friendUserName) {
+				return http.post(`/addFriend`, { friendUserName })
 			},
-			getContacts: function() {
+
+			changePwd: function (newPwd) {
+				return http.post(`/changePwd`, { newPwd })
+			},
+
+			addContact: function (name, email) {
+				return http.post(`/addContact`, { name, email })
+			},
+			getContacts: function () {
 				return http.get(`/getContacts`)
 			},
 
-			removeContact: function(contactId) {
+			removeContact: function (contactId) {
 				return http.delete(`/removeContact/${contactId}`)
 			},
-			
-			sendPosition: function(coords) {
+
+			sendPosition: function (coords) {
 				//console.log('sendFriendPosition', coords)
 				return http.post('/position', coords)
 			}

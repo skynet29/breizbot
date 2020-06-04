@@ -34,7 +34,7 @@
 	}
 
 	$$.control.registerControl('breizbot.files', {
-		deps: ['breizbot.files'],
+		deps: ['breizbot.files', 'breizbot.users'],
 		props: {
 			$pager: null,
 			showToolbar: false,
@@ -47,12 +47,13 @@
 
 		template: { gulp_inject: './files.html' },
 
-		init: function (elt, srvFiles) {
+		init: function (elt, srvFiles, users) {
 
 			const thumbnailSize = '100x?'
 			const maxUploadSize = 10 * 1024 * 2014 // 10 Mo
 
 			let selected = false
+			let sharingGroups = []
 
 			let {
 				showToolbar,
@@ -103,6 +104,21 @@
 			const ctrl = $$.viewController(elt, {
 
 				data: {
+					getShareGroups: function () {
+						return function () {
+							const items = {
+								$add: { name: 'add to new group' }
+							}
+							if (sharingGroups.length != 0) {
+								items.sep = '----'
+								sharingGroups.forEach((name) => {
+									items[name] = { name }
+								})
+							}
+							return items
+
+						}
+					},
 					downloads: [],
 					hasDownloads: function () {
 						return this.downloads.length > 0
@@ -191,17 +207,17 @@
 						return this.getPath().slice(1, scope.idx + 1).join('/')
 					},
 
-					hasGenre: function(scope) {
-						let {genre} = scope.f.mp3
+					hasGenre: function (scope) {
+						let { genre } = scope.f.mp3
 						return genre != undefined && genre != '' && !genre.startsWith('(')
 					},
 
-					hasYear: function(scope) {
-						let {year} = scope.f.mp3
+					hasYear: function (scope) {
+						let { year } = scope.f.mp3
 						return year != undefined && year != ''
 					},
 
-					getYear: function(scope) {
+					getYear: function (scope) {
 						return parseInt(scope.f.mp3.year)
 					},
 
@@ -286,6 +302,33 @@
 
 				},
 				events: {
+					onShareSelected: async function (ec, data) {
+						console.log('onShareSelected', data)
+						let name = data.cmd
+						try {
+							if (name == '$add') {
+								name = await $$.ui.showPrompt({ title: 'Add Group', label: 'Name' })
+								if (name != null) {
+									await users.addSharingGroup(name)
+									await getSharingGroups()
+								}
+							}
+							const selFiles = getSelFiles().map((i) => i.fileName)
+							await srvFiles.shareFiles(selFiles, name)
+							ctrl.setData({ selectedFiles: [], operation: 'none' })
+							loadData()
+						}
+						catch (resp) {
+							console.log('resp', resp)
+							//ctrl.setData({selectedFiles: [], operation: 'none'})
+							$$.ui.showAlert({
+								content: resp.responseText,
+								title: 'Error'
+							})
+						}
+
+
+					},
 					onToolbarContextMenu: function (ev, data) {
 						console.log('onToolbarContextMenu', data)
 						elt.find(`button[data-cmd=${data.cmd}]`).click()
@@ -454,37 +497,17 @@
 
 					},
 
-					onShareFiles: async function (ev) {
-						console.log('onShareFiles')
-						try {
-							const resp = await srvFiles.shareFiles(getSelFiles().map((i) => i.fileName))
-							console.log('resp', resp)
-							ctrl.setData({ selectedFiles: [], operation: 'none' })
-							loadData()
-						}
-						catch (resp) {
-							console.log('resp', resp)
-							//ctrl.setData({selectedFiles: [], operation: 'none'})
-							$$.ui.showAlert({
-								content: resp.responseText,
-								title: 'Error'
-							})
-						}
-					},
-
 					onPasteFiles: async function (ev) {
 						console.log('onPasteFiles')
 						const { rootDir, selectedFiles, operation } = ctrl.model
 
-						let resp = ''
 						try {
 							if (operation == 'copy') {
-								resp = await srvFiles.copyFiles(selectedFiles, rootDir)
+								await srvFiles.copyFiles(selectedFiles, rootDir)
 							}
 							else {
-								resp = await srvFiles.moveFiles(selectedFiles, rootDir)
+								await srvFiles.moveFiles(selectedFiles, rootDir)
 							}
-							console.log('resp', resp)
 							ctrl.setData({ selectedFiles: [], operation: 'none' })
 							loadData()
 						}
@@ -701,6 +724,13 @@
 			}
 
 			loadData()
+			getSharingGroups()
+
+			async function getSharingGroups() {
+				sharingGroups = await users.getSharingGroups()
+				console.log('sharingGroups', sharingGroups)
+			}
+
 
 			function insertFile(fileInfo) {
 				let idx = ctrl.model.getFiles().filter((f) => f.folder).length

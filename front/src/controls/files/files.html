@@ -44,7 +44,12 @@
 	
 			<button class="w3-button" title="Copy" bn-prop="prop1" bn-event="click: onCopyFiles"><i class="fa fa-copy"></i></button>
 	
-			<button class="w3-button" title="Share" bn-prop="prop2" bn-event="click: onShareFiles"><i class="fa fa-share-alt"></i></button>
+			<button class="w3-button" title="Share" 
+				bn-prop="prop2" 
+				bn-control="brainjs.contextmenu"
+				bn-data="{items: getShareGroups, trigger: 'left'}"
+				bn-event="contextmenuchange: onShareSelected"
+			><i class="fa fa-share-alt"></i></button>
 	
 			<button class="w3-button" title="Paste" bn-prop="prop3" bn-event="click: onPasteFiles"><i class="fa fa-paste"></i></button>
 		</div>

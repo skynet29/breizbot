@@ -53,9 +53,9 @@ $$.service.registerService('breizbot.files', {
 				return http.post('/move', {fileNames, destPath})
 			},
 
-			shareFiles: function(fileNames) {
+			shareFiles: function(fileNames, groupName) {
 				console.log('[FileService] shareFiles', fileNames)
-				return http.post('/move', {fileNames, destPath: '/share'})
+				return http.post('/move', {fileNames, destPath: `/share/${groupName}`})
 			},			
 
 			copyFiles: function(fileNames, destPath) {

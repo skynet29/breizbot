@@ -23,7 +23,7 @@ $$.control.registerControl('groups', {
             events: {
                 onAddGroup: async function() {
                     const groupName = await $$.ui.showPrompt({ title: "Add Group", label: 'Name' })
-                    console.log('groupName', groupName)
+                    //console.log('groupName', groupName)
                     if (groupName != null) {
                         await users.addSharingGroup(groupName)
                         getGroups()    
@@ -35,9 +35,9 @@ $$.control.registerControl('groups', {
 
         async function getGroups() {
             const groups = await users.getSharingGroups()
-            console.log('groups', groups)
+            //console.log('groups', groups)
             const selectedGroups = await users.getFriendGroups(friendUserName)
-            console.log('selectedGroups', selectedGroups)
+            //console.log('selectedGroups', selectedGroups)
             ctrl.setData({ groups, selectedGroups })
         }
 
@@ -50,7 +50,7 @@ $$.control.registerControl('groups', {
                     icon: 'fa fa-check',
                     onClick: async function () {
                         const {selectedGroups} = ctrl.model
-                        console.log('selectedGroups', selectedGroups)
+                        //console.log('selectedGroups', selectedGroups)
                         await users.setFriendGroups(friendUserName, selectedGroups)
                         pager.popPage()
                     }

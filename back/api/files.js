@@ -5,6 +5,7 @@ const unzipper = require('unzipper')
 const config = require('../lib/config')
 const util = require('../lib/util')
 const { genThumbnail, isImage, resizeImage, convertToMP3, getFileInfo } = util
+const db = require('../lib/db')
 
 
 const cloudPath = config.CLOUD_HOME
@@ -43,17 +44,23 @@ router.post('/list', async function (req, res) {
 			return await getFileInfo(filePath, options)
 		})
 
-		const values = await Promise.all(promises)
-		let ret = values
+		let ret = await Promise.all(promises)
+
+		if (friendUser != undefined && friendUser != '' && destPath == '/') {
+			const groups = await db.getFriendGroups(friendUser, user)
+			ret = ret.filter((info) => 
+				info.folder && groups.includes(info.name)
+			)
+		}
 
 		if (typeof options.filterExtension == 'string') {
-			ret = values.filter((info) => {
+			ret = ret.filter((info) => {
 				return info.folder === true || info.name.endsWith(options.filterExtension)
 			})
 		}
 
 		if (options.imageOnly === true) {
-			ret = values.filter((info) => {
+			ret = ret.filter((info) => {
 				return info.folder === true || isImage(info.name)
 			})
 		}

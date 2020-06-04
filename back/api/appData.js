@@ -2,37 +2,37 @@ const router = require('express').Router()
 const db = require('../lib/db')
 
 
-router.get('/', function(req, res) {
+router.get('/', async function (req, res) {
 	const userName = req.session.user
 	const appName = req.appName
-	db.getAppData(userName, appName)
-	.then((info) => {
+
+	try {
+		const info = await db.getAppData(userName, appName)
 		const data = (info && info.data) || {}
 		console.log('data', data)
 
 		res.json(data)
-		
-	})
-	.catch((e) => {
+
+	}
+	catch (e) {
 		console.log('Error', e)
 		res.status(400).send(e)
-	})
+	}
 })
 
-router.post('/', function(req, res) {
+router.post('/', async function (req, res) {
 	const userName = req.session.user
 	const appName = req.appName
 	const data = req.body
-	db.saveAppData(userName, appName, data)
-	.then(() => {
+	try {
+		db.saveAppData(userName, appName, data)
 		res.sendStatus(200)
-		
-	})
-	.catch((e) => {
+	}
+	catch (e) {
 		console.log('Error', e)
-		
+
 		res.status(400).send(e)
-	})	
+	}
 })
 
 

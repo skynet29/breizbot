@@ -157,7 +157,7 @@ module.exports = {
 			throw ('Contact already exists')
 		}
 
-		db.collection('contacts').insertOne({
+		return db.collection('contacts').insertOne({
 			userName,
 			contactName,
 			contactEmail
@@ -171,9 +171,9 @@ module.exports = {
 			.sort({ contactName: 1 }).toArray()
 	},
 
-	removeContact: function (contactId) {
+	removeContact: async function (contactId) {
 		console.log(`[DB] removeContact`, contactId)
-		db.collection('contacts').deleteOne({ _id: new ObjectID(contactId) })
+		await db.collection('contacts').deleteOne({ _id: new ObjectID(contactId) })
 	},
 
 	getAppData: function (userName, appName) {
@@ -182,12 +182,12 @@ module.exports = {
 		return db.collection('appData').findOne({ userName, appName })
 	},
 
-	saveAppData: function (userName, appName, data) {
+	saveAppData: async function (userName, appName, data) {
 		console.log(`[DB] saveAppData`, { userName, appName, data })
 
 		const update = { '$set': { data } }
 
-		db.collection('appData').updateOne({ userName, appName }, update, { upsert: true })
+		await db.collection('appData').updateOne({ userName, appName }, update, { upsert: true })
 	},
 
 

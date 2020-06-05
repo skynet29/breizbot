@@ -18,6 +18,10 @@ module.exports = function (ctx, router) {
 		return db.distinct('name', { userName })
 	}
 
+	async function removePlaylist(userName, name) {
+		return db.deleteMany({userName, name})
+	}
+
 	async function getPlaylistSongs(userName, name) {
 		const records = await db.find({ userName, name }).toArray()
 		const promises = records.map(async (f) => {
@@ -53,6 +57,18 @@ module.exports = function (ctx, router) {
 	router.post('/getPlaylist', async function (req, res) {
 		const list = await getPlaylist(req.session.user)
 		res.json(list)
+	})
+
+	router.post('/removePlaylist', async function(req, res) {
+		const { name } = req.body
+		try {
+			await removePlaylist(req.session.user, name)
+			res.sendStatus(200)	
+		}
+		catch (e) {
+			console.error(e)
+			res.status(400).send(e.message)
+		}
 	})
 
 	router.post('/getPlaylistSongs', async function (req, res) {

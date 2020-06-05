@@ -37,6 +37,8 @@ $$.control.registerControl('playlist', {
                     const id = ctrl.model.songs[idx].id
                     await http.delete('/removeSong/' + id)
                     ctrl.removeArrayItem('songs', idx, 'songs')
+                    ctrl.updateNode('nbSongs')
+                    pager.setButtonVisible({ play: ctrl.model.songs.length != 0 })
                 },
 
                 onItemClick: function (ev) {
@@ -60,6 +62,9 @@ $$.control.registerControl('playlist', {
             if (playlist.length != 0) {
                 await getPlaylistSongs(playlist[0])
             }
+            else {
+                pager.setButtonVisible({ play: false, delete: false})
+            }
         }
 
         async function getPlaylistSongs(name) {
@@ -73,6 +78,23 @@ $$.control.registerControl('playlist', {
 
         this.getButtons = function () {
             return {
+                delete: {
+                    title: 'Delete selected playlist',
+                    icon: 'fa fa-trash',
+                    onClick: function() {
+                        const name = ctrl.scope.playlist.getValue()
+                        $$.ui.showConfirm({
+                            title: 'Delete Playlist', 
+                            content: `Do you really want to delete <strong>'${name}'</strong> playlist ?`
+                        },
+                        async () => {
+                            console.log('OK')
+                            await http.post('/removePlaylist', {name})
+                            getPlaylist()
+                        })
+                    }
+
+                },
                 play: {
                     visible: false,
                     title: 'Play',

@@ -2,6 +2,7 @@
     <div class="left">
         <span>Playlist</span>
         <div 
+            bn-bind="playlist"
             bn-control="brainjs.combobox"
             bn-data="{items: playlist}"
             bn-event="comboboxchange: onPlaylistChange"
@@ -9,7 +10,7 @@
     
     </div>
     <div class="right">
-        <span bn-text="nbSongs"></span>&nbsp;Songs
+        <span bn-text="nbSongs" bn-bind="nbSongs"></span>&nbsp;Songs
     </div>
 </div>
 <div bn-show="!hasPlaylist" class="message">

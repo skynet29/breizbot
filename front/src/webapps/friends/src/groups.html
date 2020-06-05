@@ -1,10 +1,5 @@
 <div>
-    <div class="toolbar">
-        <strong>Groups</strong>
-        <button class="w3-button" title="Add group"
-            bn-event="click: onAddGroup"
-            ><i class="fa fa-user-plus"></i></button>
-    </div>
+    <strong>Groups</strong>
 
     <div bn-show="noGroups">No group available</div>
     <div bn-each="groups" class="items" bn-control="brainjs.checkgroup" bn-val="selectedGroups" bn-update="input">

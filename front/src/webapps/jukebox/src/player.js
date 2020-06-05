@@ -28,7 +28,7 @@
 
 			let shuffleIndexes = null
 			let playlist = []
-			pager.setButtonVisible({playlist: !isPlaylist})
+			pager.setButtonVisible({ playlist: !isPlaylist })
 
 			const ctrl = $$.viewController(elt, {
 				data: {
@@ -56,7 +56,7 @@
 
 				},
 				events: {
-					onVolumeChange: function(ev, value) {
+					onVolumeChange: function (ev, value) {
 						audio.volume = value
 					},
 					onLoad: function () {
@@ -168,7 +168,7 @@
 
 			function getFileUrl(idx) {
 				if (isPlaylist) {
-					const {rootDir, fileName, friendUser} = files[idx].fileInfo
+					const { rootDir, fileName, friendUser } = files[idx].fileInfo
 					return filesSrv.fileUrl(rootDir + fileName, friendUser)
 				}
 				return filesSrv.fileUrl(rootDir + files[idx].name, friendUser)
@@ -176,7 +176,7 @@
 
 			async function getPlaylist() {
 				//console.log('getPlaylist')
-				playlist  = await http.post('/getPlaylist')
+				playlist = await http.post('/getPlaylist')
 				//console.log('playlist', playlist)
 			}
 
@@ -188,10 +188,10 @@
 						visible: !isPlaylist,
 						title: 'Add to playlist',
 						icon: 'fas fa-star',
-						items: function() {
+						items: function () {
 
 							const ret = {
-								new: {name: 'Add to new playlist'}
+								new: { name: 'Add to new playlist' }
 							}
 
 							if (playlist.length != 0) {
@@ -199,28 +199,28 @@
 							}
 
 							playlist.forEach((name) => {
-								ret[name] = {name}
+								ret[name] = { name }
 							})
 							return ret
 						},
-						onClick: async function(cmd) {
+						onClick: async function (cmd) {
 							console.log('onClick', cmd)
-							const fileInfo = {rootDir, friendUser, fileName: ctrl.model.name}
-							
+							const fileInfo = { rootDir, friendUser, fileName: ctrl.model.name }
+
 							if (cmd == 'new') {
-								const name = await $$.ui.showPrompt({title: 'Add Playlist', label: 'Name:'})
-								console.log('name', name)
-								const ret = await http.post('/addSong', {name, fileInfo, checkExists:true})
-								console.log('ret', ret)
-								if (!ret) {
-									$$.ui.showAlert({title: 'Error', content: 'Playlist already exists'})
-								}
-								else {
-									await getPlaylist()
+								const name = await $$.ui.showPrompt({ title: 'Add Playlist', label: 'Name:' })
+								if (name != null) {
+									const ret = await http.post('/addSong', { name, fileInfo, checkExists: true })
+									if (!ret) {
+										$$.ui.showAlert({ title: 'Error', content: 'Playlist already exists' })
+									}
+									else {
+										await getPlaylist()
+									}
 								}
 							}
 							else {
-								await http.post('/addSong', {name: cmd, fileInfo, checkExists:false})
+								await http.post('/addSong', { name: cmd, fileInfo, checkExists: false })
 							}
 						}
 					},

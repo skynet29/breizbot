@@ -10,6 +10,7 @@ $$.control.registerControl('breizbot.pager', {
 		popPage(data)
 		pushPage(ctrlName, options)
 		setButtonVisible(buttonsVisible: {[buttonName]:boolean})
+		setButtonEnabled(buttonsEnabled: {[buttonName]:boolean})
 	`,
 
 	init: function(elt) {
@@ -29,6 +30,9 @@ $$.control.registerControl('breizbot.pager', {
 				},
 				show3: function(scope) {
 					return scope.$i.items != undefined && !(scope.$i.visible === false)
+				},
+				isEnabled(scope) {
+					return scope.$i.enabled == undefined || scope.$i.enabled === true
 				}
 			},
 			events: {
@@ -133,6 +137,19 @@ $$.control.registerControl('breizbot.pager', {
 			ctrl.setData({buttons: $$.util.objToArray(buttons, 'name')})
 		}
 
+		this.setButtonEnabled = function(buttonsEnabled) {
+			//console.log('setButtonEnabled', buttonsEnabled)
+
+			const {buttons} = curInfo
+
+			for(let btn in buttonsEnabled) {
+				if (btn in buttons) {
+					buttons[btn].enabled = buttonsEnabled[btn]
+				}
+			}
+			 				
+			ctrl.setData({buttons: $$.util.objToArray(buttons, 'name')})
+		}
 
 		this.pushPage(rootPage)
 

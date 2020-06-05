@@ -10,7 +10,7 @@ module.exports = function (ctx, router) {
 
 	async function removeSong(songId) {
 		console.log(`removeSong`, songId)
-		return db.deleteOne({_id: util.dbObjectID(songId)})
+		return db.deleteOne({ _id: util.dbObjectID(songId) })
 	}
 
 	async function getPlaylist(userName) {
@@ -19,35 +19,53 @@ module.exports = function (ctx, router) {
 	}
 
 	async function removePlaylist(userName, name) {
-		return db.deleteMany({userName, name})
+		return db.deleteMany({ userName, name })
 	}
 
 	async function getPlaylistSongs(userName, name) {
-		const records = await db.find({ userName, name }).toArray()
+		const records = await db.find({ userName, name }).sort({ idx: 1 }).toArray()
 		const promises = records.map(async (f) => {
 			const { fileName, rootDir, friendUser } = f.fileInfo
 			const filePath = util.getFilePath(userName, rootDir + fileName, friendUser)
 			//console.log('filePath', filePath)
 			const info = await util.getFileInfo(filePath, { getMP3Info: true })
-			return {mp3: info.mp3, fileInfo: f.fileInfo, id: f._id}
+			return { mp3: info.mp3, fileInfo: f.fileInfo, id: f._id }
 		})
 		return await Promise.all(promises)
 	}
 
+	async function swapSongIndex(songId1, songId2) {
+		const id1 = { _id: util.dbObjectID(songId1) }
+		const id2 = { _id: util.dbObjectID(songId2) }
+		const record1 = await db.findOne(id1)
+		const record2 = await db.findOne(id2)
+		await db.updateOne(id1, { $set: { idx: record2.idx } })
+		await db.updateOne(id2, { $set: { idx: record1.idx } })
+
+	}
+
 	async function addSong(userName, name, fileInfo, checkExists) {
 		console.log('addSong', userName, name, fileInfo, checkExists)
-		if (checkExists) {
-			const records = await db.find({ userName, name }).toArray()
-			console.log('records', records)
-			if (records.length != 0) {
-				return false
-			}
-
+		const records = await db.find({ userName, name }).toArray()
+		console.log('records', records)
+		if (checkExists && records.length != 0) {
+			return false
 		}
-		await db.insertOne({ userName, name, fileInfo })
+		await db.insertOne({ userName, name, fileInfo, idx: records.length })
 		return true
 
 	}
+
+	router.post('/swapSongIndex', async function (req, res) {
+		try {
+			const { id1, id2 } = req.body
+			await swapSongIndex(id1, id2)
+			res.sendStatus(200)
+		}
+		catch (e) {
+			res.status(400).send(e.message)
+		}
+	})
 
 	router.delete('/removeSong/:id', async function (req, res) {
 		await removeSong(req.params.id)
@@ -59,11 +77,11 @@ module.exports = function (ctx, router) {
 		res.json(list)
 	})
 
-	router.post('/removePlaylist', async function(req, res) {
+	router.post('/removePlaylist', async function (req, res) {
 		const { name } = req.body
 		try {
 			await removePlaylist(req.session.user, name)
-			res.sendStatus(200)	
+			res.sendStatus(200)
 		}
 		catch (e) {
 			console.error(e)

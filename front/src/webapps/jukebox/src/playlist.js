@@ -5,6 +5,8 @@ $$.control.registerControl('playlist', {
 
     init: function (elt, http, pager) {
 
+        let selectedIndex = -1
+
         const ctrl = $$.viewController(elt, {
             data: {
                 playlist: [],
@@ -30,8 +32,8 @@ $$.control.registerControl('playlist', {
                 }
             },
             events: {
-                onItemContextMenu: async function(ev, data) {
-                    console.log('onItemContextMenu', data)
+                onItemContextMenu: async function (ev, data) {
+                    //console.log('onItemContextMenu', data)
                     const idx = $(this).closest('.item').index()
                     //console.log('idx', idx)
                     const id = ctrl.model.songs[idx].id
@@ -42,8 +44,19 @@ $$.control.registerControl('playlist', {
                 },
 
                 onItemClick: function (ev) {
-                    const idx = $(this).index()
-                    //console.log('onItemClick', idx)
+                    const node = $(this)
+                    selectedIndex = node.index()
+                    //console.log('onItemClick', selectedIndex)
+
+                    if (node.hasClass('w3-blue')) {
+                        node.removeClass('w3-blue')
+                        selectedIndex = -1
+                    }
+                    else {
+                        node.closest('.items').find('.w3-blue').removeClass('w3-blue')
+                        node.addClass('w3-blue')
+                    }
+                    setUpDownState()
                 },
                 onPlaylistChange: async function (ev) {
                     const playlist = $(this).getValue()
@@ -54,6 +67,13 @@ $$.control.registerControl('playlist', {
 
         })
 
+        function setUpDownState() {
+            pager.setButtonEnabled({
+                moveUp: selectedIndex > 0,
+                moveDown: selectedIndex >= 0 && selectedIndex < ctrl.model.nbSongs() - 1
+            })
+        }
+
         async function getPlaylist() {
             //console.log('getPlaylist')
             const playlist = await http.post('/getPlaylist')
@@ -63,35 +83,69 @@ $$.control.registerControl('playlist', {
                 await getPlaylistSongs(playlist[0])
             }
             else {
-                pager.setButtonVisible({ play: false, delete: false})
+                pager.setButtonVisible({ play: false, delete: false })
             }
         }
 
         async function getPlaylistSongs(name) {
             const songs = await http.post('/getPlaylistSongs', { name })
-            console.log('songs', songs)
+            //console.log('songs', songs)
             ctrl.setData({ songs })
             pager.setButtonVisible({ play: songs.length != 0 })
+            selectedIndex = -1
+            setUpDownState()
         }
 
         getPlaylist()
 
         this.getButtons = function () {
             return {
+                moveUp: {
+                    title: 'Move up',
+                    icon: 'fas fa-level-up-alt',
+                    enabled: false,
+                    onClick: async function () {
+                        const id1 = ctrl.model.songs[selectedIndex].id
+                        const id2 = ctrl.model.songs[selectedIndex-1].id
+                        const item = ctrl.removeArrayItem('songs', selectedIndex, 'songs')
+                        ctrl.insertArrayItemAfter('songs', selectedIndex - 2, item, 'songs')
+                        selectedIndex--
+                        ctrl.scope.songs.find('.item').eq(selectedIndex).addClass('w3-blue')
+                        setUpDownState()
+                        await http.post('/swapSongIndex', {id1, id2})
+                    }
+                },
+                moveDown: {
+                    title: 'Move down',
+                    icon: 'fas fa-level-down-alt',
+                    enabled: false,
+                    onClick: async function () {
+                        const id1 = ctrl.model.songs[selectedIndex].id
+                        const id2 = ctrl.model.songs[selectedIndex+1].id
+                        const item = ctrl.removeArrayItem('songs', selectedIndex, 'songs')
+                        ctrl.insertArrayItemAfter('songs', selectedIndex, item, 'songs')
+                        selectedIndex++
+                        ctrl.scope.songs.find('.item').eq(selectedIndex).addClass('w3-blue')
+                        setUpDownState()
+                        await http.post('/swapSongIndex', {id1, id2})
+
+                    }
+
+                },
                 delete: {
                     title: 'Delete selected playlist',
                     icon: 'fa fa-trash',
-                    onClick: function() {
+                    onClick: function () {
                         const name = ctrl.scope.playlist.getValue()
                         $$.ui.showConfirm({
-                            title: 'Delete Playlist', 
+                            title: 'Delete Playlist',
                             content: `Do you really want to delete <strong>'${name}'</strong> playlist ?`
                         },
-                        async () => {
-                            console.log('OK')
-                            await http.post('/removePlaylist', {name})
-                            getPlaylist()
-                        })
+                            async () => {
+                                console.log('OK')
+                                await http.post('/removePlaylist', { name })
+                                getPlaylist()
+                            })
                     }
 
                 },

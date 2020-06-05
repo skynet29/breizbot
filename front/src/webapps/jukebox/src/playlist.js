@@ -158,7 +158,8 @@ $$.control.registerControl('playlist', {
                             props: {
                                 title: 'Player',
                                 isPlaylist: true,
-                                files: ctrl.model.songs
+                                files: ctrl.model.songs,
+                                firstIdx: Math.max(0, selectedIndex)
                             }
                         })
                     }

@@ -25,7 +25,10 @@ function create(account) {
         password: account.pwd,
         host: account.imapHost,
         port: 993,
-        tls: true
+        tls: true,
+        tlsOptions: {
+            servername: account.imapHost
+        }
     })
 
     function connect() {
@@ -238,7 +241,7 @@ function create(account) {
         openBox,
         addFlags,
         moveMessages,
-        appendMessage        
+        appendMessage
     }
 }
 

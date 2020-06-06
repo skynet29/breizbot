@@ -1,13 +1,14 @@
 <div class="main">
 	<form bn-event="submit: onSubmit" bn-bind="form" bn-form="data">
 
-		<label>Provider</label>
-		<span bn-control="brainjs.combobox" bn-event="comboboxchange: onProviderChange" bn-val="provider"
-			bn-data="{items: providers}" data-width="180" bn-prop="{disabled: isEdit}">
-		</span>
-
 		<label>Account Name</label>
 		<input type="text" name="name" required="" autofocus="" bn-prop="{disabled: isEdit}">
+
+		<label>Provider</label>
+		<span bn-control="brainjs.combobox" bn-event="comboboxchange: onProviderChange" bn-val="provider"
+			bn-data="{items: providers}" data-width="180">
+		</span>
+
 
 		<label>User</label>
 		<input type="text" name="user" required="">

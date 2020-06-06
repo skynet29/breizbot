@@ -32,6 +32,21 @@ module.exports = function (ctx, router) {
 
 	})
 
+	router.post('/removeMailAccount', async function (req, res) {
+		const userName = req.session.user
+		const { name } = req.body
+
+		try {
+			await db.removeMailAccount(userName, name)
+
+			res.sendStatus(200)
+		}
+		catch (e) {
+			res.sendStatus(400)
+		}
+
+	})
+
 	router.post('/updateMailAccount', async function (req, res) {
 		const userName = req.session.user
 		const data = req.body
@@ -64,7 +79,8 @@ module.exports = function (ctx, router) {
 			res.json(mailboxes)
 		}
 		catch (e) {
-			res.sendStatus(400)
+			console.log(e.message)
+			res.status(400).send(e.message)
 		}
 
 	})

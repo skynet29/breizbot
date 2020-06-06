@@ -134,7 +134,7 @@ $$.control.registerControl('breizbot.home', {
 					}
 				},
 
-				onExitFullScreen: function() {
+				onExitFullScreen: function () {
 					//console.log('onExitFullScreen')
 					document.exitFullscreen()
 				},
@@ -206,6 +206,21 @@ $$.control.registerControl('breizbot.home', {
 			}
 
 		}, false)
+
+		broker.register('breizbot.friends', (msg) => {
+			//console.log('breizbot.friends', msg)
+			if (msg.hist === true) {
+				return
+			}
+			const { isConnected, userName } = msg.data
+			if (isConnected) {
+				$.notify(`user '${userName}' is connected`,'success')
+			}
+			else {
+				$.notify(`user '${userName}' is disconnected`,'error')
+
+			}
+		})
 
 		broker.register('breizbot.notifCount', function (msg) {
 			//console.log('msg', msg)
@@ -300,21 +315,21 @@ $$.control.registerControl('breizbot.home', {
 					console.log('take wakeLock')
 					lock.addEventListener('release', () => {
 						console.log('Wake Lock was released')
-					  })
+					})
 				})
-				.catch((e) => {
-					console.error('WakeLock', e)
-				})
-		
+					.catch((e) => {
+						console.error('WakeLock', e)
+					})
+
 			}
-		
+
 		}
-		
+
 		function onVisibilityChange() {
 			console.log('visibilitychange', document.visibilityState)
 			if (document.visibilityState === 'visible') {
 				requestWakeLock()
-			}	
+			}
 		}
 
 		document.addEventListener('visibilitychange', onVisibilityChange)

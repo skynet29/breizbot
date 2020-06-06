@@ -6,6 +6,7 @@ const task = require('./task')('./dist')
 const breizbotJs = task('breizbot.js',
 	[
 		'./externals/eventemitter2.js',
+		'./externals/notify.min.js',
 		'./src/controls/**/*.js',
 		'./src/services/**/*.js',
 	],

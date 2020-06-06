@@ -6,11 +6,19 @@ const config = require('../lib/config')
 const util = require('../lib/util')
 const { genThumbnail, isImage, resizeImage, convertToMP3, getFileInfo } = util
 const db = require('../lib/db')
+const events = require('../lib/events')
+
 
 
 const cloudPath = config.CLOUD_HOME
 
 const router = require('express').Router()
+
+events.on('userdeleted', async (userName) => {
+	await fs.remove(path.join(cloudPath, userName))
+
+})
+
 
 router.post('/fileInfo', async function (req, res) {
 	//console.log('list req', req.session.user)

@@ -6,7 +6,11 @@ const path = require('path')
 
 module.exports = function (ctx, router) {
 
-	const { db, util } = ctx
+	const { db, util, events } = ctx
+
+	events.on('userdeleted', async (userName) => {
+		await db.deleteMany({ userName })
+	})
 
 	async function removeSong(songId) {
 		console.log(`removeSong`, songId)

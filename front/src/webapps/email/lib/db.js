@@ -9,6 +9,10 @@ module.exports = function (db) {
 			return db.find({ userName }).toArray()
 		},
 
+		removeMailAccounts: function (userName) {
+			return db.deleteMany({ userName })
+		},
+
 		getMailAccount: function (userName, name) {
 			//console.log(`[DB] getMailAccount`, userName, name)
 			return db.findOne({ userName, name })

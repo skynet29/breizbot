@@ -7,6 +7,8 @@ const fs = require('fs-extra')
 const parseUrl = require('url').parse
 const helmet = require('helmet')
 const util = require('./lib/util')
+const events = require('./lib/events')
+
 
 require('colors')
 
@@ -122,7 +124,7 @@ apps.forEach((appName) => {
 	//console.log('check path', appName)
 	const appPath = path.join(appsPath, appName, 'index.js')
 	if (fs.existsSync(appPath)) {
-		const ctx = {wss, config, db: db.collection('app.' + appName), util}
+		const ctx = {wss, config, db: db.collection('app.' + appName), util, events}
 		console.log(`add API router for app ${appName}`.blue)
 
 		const router = express.Router()

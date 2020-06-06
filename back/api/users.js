@@ -38,8 +38,9 @@ router.post('/addSharingGroup', async function(req, res) {
 
 router.post('/', async function (req, res) {
 	try {
-		const data = await db.createUser(req.body)
-		res.json(data)
+		await db.createUser(req.body)
+		console.log('created')
+		res.sendStatus(200)
 	}
 	catch (e) {
 		res.sendStatus(400)

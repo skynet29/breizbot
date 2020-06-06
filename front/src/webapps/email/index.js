@@ -2,7 +2,17 @@ module.exports = function (ctx, router) {
 
 	const db = require('./lib/db')(ctx.db)
 	const mails = require('./lib/mails')(ctx)
+	const { events } = ctx
 
+	events.on('userdeleted', async (userName) => {
+		try {
+			await db.removeMailAccounts(userName)
+
+		}
+		catch (e) {
+			console.error(e)
+		}
+	})
 
 	router.get('/getMailAccounts', async function (req, res) {
 		const userName = req.session.user
@@ -46,6 +56,7 @@ module.exports = function (ctx, router) {
 		}
 
 	})
+
 
 	router.post('/updateMailAccount', async function (req, res) {
 		const userName = req.session.user

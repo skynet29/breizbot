@@ -1,6 +1,7 @@
 const { MongoClient, ObjectID } = require('mongodb')
 
 const config = require('./config')
+const events = require('./events')
 
 
 var db = null
@@ -73,11 +74,13 @@ module.exports = {
 
 		console.log(`[DB] createUser`, data)
 		data.pwd = 'welcome'
-		data.apps = {}
+		data.apps = []
 		data.createDate = Date.now()
 		data.lastLoginDate = 0
 
 		await db.collection('users').insertOne(data)
+		events.emit('userAdded', data.username)
+
 	},
 
 
@@ -86,6 +89,12 @@ module.exports = {
 		console.log(`[DB] deleteUser`, username)
 
 		await db.collection('users').deleteOne({ username })
+		await db.collection('appData').deleteMany({ userName: username })
+		await db.collection('contacts').deleteMany({ userName: username })
+		await db.collection('friends').deleteMany({ $or: [{ username }, { friend: username }] })
+		await db.collection('notifs').deleteMany({ $or: [{ from: username }, { to: username }] })
+
+		events.emit('userdeleted', username)
 	},
 
 	activateApp: async function (username, appName, activated) {

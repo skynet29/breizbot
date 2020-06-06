@@ -1,6 +1,6 @@
-const path = require('path')
 const config = require('../lib/config')
 const db = require('../lib/db')
+const bcrypt = require('bcrypt')
 
 
 module.exports = function (app) {
@@ -41,7 +41,14 @@ module.exports = function (app) {
 				res.render('login', { message: 'Unknown user' })
 				return
 			}
-			if (data.pwd != pwd) {
+			let match = false
+			if (data.crypted === true) {
+				match = await bcrypt.compare(pwd, data.pwd)
+			}
+			else {
+				match = (data.pwd === pwd)
+			}
+			if (!match) {
 				res.render('login', { message: 'Bad password' })
 				return
 			}

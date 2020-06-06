@@ -1,4 +1,5 @@
 const { MongoClient, ObjectID } = require('mongodb')
+const bcrypt = require('bcrypt')
 
 const config = require('./config')
 const events = require('./events')
@@ -53,8 +54,9 @@ module.exports = {
 
 	changePassword: async function (username, newPwd) {
 
-		console.log(`[DB] changePassword`, username, newPwd)
-		var update = { '$set': { pwd: newPwd } }
+		console.log(`[DB] changePassword`, username)
+		const pwd = await bcrypt.hash(newPwd, 10)
+		var update = { '$set': { pwd, crypted: true } }
 
 		await db.collection('users').updateOne({ username }, update)
 

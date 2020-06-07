@@ -151,20 +151,7 @@ module.exports = function (ctx, router) {
 	router.post('/saveInfo', function (req, res) {
 		const { filePath, friendUser, tags } = req.body
 
-		const user = req.session.user
-
-		const cloudPath = ctx.config.CLOUD_HOME
-
-		let fullPath = ''
-
-		if (friendUser != undefined && friendUser != '') {
-			fullPath = path.join(cloudPath, friendUser, 'share', filePath)
-		}
-		else {
-			fullPath = path.join(cloudPath, user, filePath)
-		}
-
-
+		const fullPath = util.getFilePath(req.session.user, filePath, friendUser)
 
 		NodeID3.write(tags, fullPath, function (err) {
 			if (err) {
@@ -176,7 +163,4 @@ module.exports = function (ctx, router) {
 		})
 	})
 
-	router.post('createPlaylist', function (req, res) {
-
-	})
 }

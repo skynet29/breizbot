@@ -214,10 +214,10 @@ $$.control.registerControl('breizbot.home', {
 			}
 			const { isConnected, userName } = msg.data
 			if (isConnected) {
-				$.notify(`user '${userName}' is connected`,'success')
+				$.notify(`'${userName}' is connected`,'success')
 			}
 			else {
-				$.notify(`user '${userName}' is disconnected`,'error')
+				$.notify(`'${userName}' is disconnected`,'error')
 
 			}
 		})

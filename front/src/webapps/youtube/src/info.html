@@ -1,13 +1,7 @@
 <div class="details">
-    <div>
-        <strong>Title: </strong> <span bn-text="title"></span>
-    </div>
-    <div>
-        <strong>Length: </strong><span bn-text="duration"></span>
-    </div>
-    <div class="description">
-        <strong>Description: </strong><textarea bn-text="description"></textarea>
-    </div>
+
+    <strong>Title: </strong> <span bn-text="title"></span>
+    <strong>Length: </strong><span bn-text="duration"></span>
 
 </div>
 
@@ -16,4 +10,13 @@
         <iframe bn-attr="{src: videoUrl, width, height}" frameborder="0" allowfullscreen></iframe>
 
     </div>
+</div>
+
+
+<div class="description"> 
+    <strong>Description:</strong>
+</div>
+
+<div class="scrollPanel">
+    <div bn-text="description"></div>
 </div>

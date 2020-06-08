@@ -34,7 +34,7 @@ $$.control.registerControl('rootPage', {
 				buttons: {
 					search: {
 						title: 'Filter',
-						icon: 'fa fa-search',
+						icon: 'fas fa-filter',
 						onClick: function () {
 							openFilterPage(this)
 						}

@@ -86,7 +86,7 @@ $$.control.registerControl('breizbot.friends', {
 
 		this.update = function() {
 			users.getFriends().then((friends) => {
-				console.log('friends', friends)
+				//console.log('friends', friends)
 				ctrl.setData({friends})
 			})				
 		}

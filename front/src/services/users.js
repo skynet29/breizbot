@@ -63,12 +63,12 @@ $$.service.registerService('breizbot.users', {
 				return http.get(`/getFriends`)
 			},
 
-			getFriendGroups: function (friend) {
-				return http.post('/getFriendGroups', { friend })
+			getFriendInfo: function (friend) {
+				return http.post('/getFriendInfo', { friend })
 			},
 
-			setFriendGroups: function (friend, groups) {
-				return http.post('/setFriendGroups', { friend, groups })
+			setFriendInfo: function (friend, groups, positionAuth) {
+				return http.post('/setFriendInfo', { friend, groups, positionAuth })
 			},
 
 			addFriend: function (friendUserName) {

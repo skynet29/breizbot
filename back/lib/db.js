@@ -136,18 +136,25 @@ module.exports = {
 		return friends.map((f) => f.friend)
 	},
 
-	getFriendGroups: async function (username, friend) {
+	getFriendInfo: async function (username, friend) {
 		//console.log(`[DB] getFriends`, userName)
 		const info = await db.collection('friends')
 			.findOne({ username, friend })
 
-		return info.groups
+		return info
 	},
 
-	setFriendGroups: async function (username, friend, groups) {
+	getPositionAuthFriends: async function(username) {
+		const friends = await db.collection('friends')
+			.find({username, positionAuth: true}).toArray()
+
+		return friends.map((f) => f.friend)
+	},
+
+	setFriendInfo: async function (username, friend, groups, positionAuth) {
 		//console.log(`[DB] getFriends`, userName)
 		await db.collection('friends')
-			.updateOne({ username, friend }, { $set: { groups } })
+			.updateOne({ username, friend }, { $set: { groups, positionAuth } })
 
 	},
 

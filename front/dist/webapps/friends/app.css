@@ -9,10 +9,12 @@
 
 .groups {
   padding: 10px; }
-  .groups .toolbar {
+  .groups .position {
     display: flex;
-    justify-content: space-between;
+    margin-bottom: 10px;
     align-items: center; }
+    .groups .position > span {
+      margin-right: 10px; }
   .groups .items {
     margin-left: 20px; }
   .groups .item {

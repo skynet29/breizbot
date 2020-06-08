@@ -171,29 +171,29 @@ router.get('/getFriends', async function (req, res) {
 	}
 })
 
-router.post('/getFriendGroups', async function (req, res) {
+router.post('/getFriendInfo', async function (req, res) {
 	const { friend } = req.body
-	console.log('getFriendGroups', req.session.user)
+	console.log('getFriendInfo', req.session.user)
 
 	const userName = req.session.user
 
 	try {
-		const groups = await db.getFriendGroups(userName, friend)
-		res.json(groups)
+		const info = await db.getFriendInfo(userName, friend)
+		res.json(info)
 	}
 	catch (e) {
 		res.sendStatus(400)
 	}
 })
 
-router.post('/setFriendGroups', async function (req, res) {
-	const { friend, groups } = req.body
-	console.log('setFriendGroups', req.session.user)
+router.post('/setFriendInfo', async function (req, res) {
+	const { friend, groups, positionAuth } = req.body
+	console.log('setFriendInfo', req.session.user)
 
 	const userName = req.session.user
 
 	try {
-		await db.setFriendGroups(userName, friend, groups)
+		await db.setFriendInfo(userName, friend, groups, positionAuth)
 		res.sendStatus(200)
 	}
 	catch (e) {
@@ -266,9 +266,7 @@ router.post('/position', async function (req, res) {
 	//console.log('position', userName, data)
 
 	try {
-		await wss.sendToFriends(userName, 'breizbot.friendPosition', {
-			userName, coords: data
-		})
+		await wss.sendPositionToAuthFriend(userName, data)
 		res.sendStatus(200)
 	}
 	catch (e) {

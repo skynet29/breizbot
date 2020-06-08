@@ -23,7 +23,7 @@ $$.control.registerControl('rootPage', {
 					ctrl.scope.friends.update()
 				},
 				onItemClick: function(ev, data) {
-					console.log('onItemClick', data)
+					//console.log('onItemClick', data)
 					const friendUserName = data.userName
 					pager.pushPage('groups', {
 						title: friendUserName,

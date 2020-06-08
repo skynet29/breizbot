@@ -48,7 +48,7 @@ setInterval(() => {
 function init(server, store) {
 	wss = new WebSocket.Server({ server })
 
-	wss.on('connection', function(client, request) {
+	wss.on('connection', function (client, request) {
 		client.path = request.url
 		client.headers = request.headers
 		onConnect(client, store)
@@ -376,6 +376,16 @@ function isUserConnected(userName) {
 	return getHmiClients(userName).length != 0
 }
 
+
+async function sendPositionToAuthFriend(userName, coords) {
+	const data = { userName, coords }
+	const friends = await db.getPositionAuthFriends(userName)
+	//console.log('friendsAuth', userName, friends)
+	friends.forEach((friend) => {
+		sendTopic(friend, 'breizbot.friendPosition', data)
+	})
+}
+
 async function sendToFriends(userName, topic, data) {
 	const friends = await db.getFriends(userName)
 	friends.forEach((friend) => {
@@ -414,5 +424,6 @@ module.exports = {
 	sendTopic,
 	sendToFriends,
 	getClients,
-	callService
+	callService,
+	sendPositionToAuthFriend
 }

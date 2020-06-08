@@ -30,7 +30,7 @@ router.post('/fileInfo', async function (req, res) {
 	try {
 		res.json(await getFileInfo(rootPath, options))
 	}
-	catch(e) {
+	catch (e) {
 		console.log('error', e)
 		res.status(404).send(e.message)
 	}
@@ -55,8 +55,9 @@ router.post('/list', async function (req, res) {
 		let ret = await Promise.all(promises)
 
 		if (friendUser != undefined && friendUser != '' && destPath == '/') {
-			const groups = await db.getFriendGroups(friendUser, user)
-			ret = ret.filter((info) => 
+			const friendInfo = await db.getFriendInfo(friendUser, user)
+			const { groups } = friendInfo
+			ret = ret.filter((info) =>
 				info.folder && groups.includes(info.name)
 			)
 		}
@@ -279,13 +280,13 @@ router.post('/unzipFile', async function (req, res) {
 
 	try {
 		fs.createReadStream(fullZipFileName)
-		.pipe(unzipper.Extract({ path: fullFolderPath }))
-		.on('close', async () => {
-			console.log('unzip finished !')
-			res.sendStatus(200)
-	
-		})
-		
+			.pipe(unzipper.Extract({ path: fullFolderPath }))
+			.on('close', async () => {
+				console.log('unzip finished !')
+				res.sendStatus(200)
+
+			})
+
 	}
 	catch (e) {
 		console.log('error', e)

@@ -15,6 +15,7 @@ $$.control.registerControl('groups', {
         const ctrl = $$.viewController(elt, {
             data: {
                 groups: [],
+                positionAuth: false,
                 selectedGroups: [],
                 noGroups: function () {
                     return this.groups.length == 0
@@ -25,9 +26,11 @@ $$.control.registerControl('groups', {
         async function getGroups() {
             const groups = await users.getSharingGroups()
             //console.log('groups', groups)
-            const selectedGroups = await users.getFriendGroups(friendUserName)
-            //console.log('selectedGroups', selectedGroups)
-            ctrl.setData({ groups, selectedGroups: [] })
+            const info = await users.getFriendInfo(friendUserName)
+            //console.log('friendInfo', info)
+            const selectedGroups = info.groups
+            const { positionAuth } = info
+            ctrl.setData({ groups, selectedGroups: [], positionAuth })
             ctrl.setData({ selectedGroups })
         }
 
@@ -53,9 +56,9 @@ $$.control.registerControl('groups', {
                     title: 'Apply',
                     icon: 'fa fa-check',
                     onClick: async function () {
-                        const { selectedGroups } = ctrl.model
+                        const { selectedGroups, positionAuth } = ctrl.model
                         //console.log('selectedGroups', selectedGroups)
-                        await users.setFriendGroups(friendUserName, selectedGroups)
+                        await users.setFriendInfo(friendUserName, selectedGroups, positionAuth)
                         pager.popPage()
                     }
                 }

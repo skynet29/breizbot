@@ -1,3 +1,16 @@
+@media (hover: none) {
+	.w3-button:hover {
+		background-color: transparent !important;
+		color: #fff!important	  
+	}
+
+	.w3-text-blue.w3-button:hover {
+		color: #2196F3!important	  
+	}
+
+
+}
+
 .breizbot-home {
 	height: 100%;
 

@@ -20,6 +20,7 @@
     "express-favicon": "^2.0.1",
     "express-fileupload": "^1.1.6",
     "express-session": "^1.17.1",
+    "fast-glob": "^3.2.2",
     "ffmpeg": "0.0.4",
     "fs-extra": "^7.0.1",
     "greenlock": "^2.8.8",

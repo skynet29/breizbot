@@ -2,6 +2,8 @@ const path = require('path')
 const fs = require('fs-extra')
 const zipFolder = require('zip-a-folder')
 const unzipper = require('unzipper')
+const fg = require('fast-glob')
+
 const config = require('../lib/config')
 const util = require('../lib/util')
 const { genThumbnail, isImage, resizeImage, convertToMP3, getFileInfo } = util
@@ -47,7 +49,7 @@ router.post('/list', async function (req, res) {
 	try {
 		const files = await fs.readdir(rootPath)
 		//console.log('files', files)
-		const promises = files.map(async (file) => {
+		let promises = files.map(async (file) => {
 			const filePath = path.join(rootPath, file)
 			return await getFileInfo(filePath, options)
 		})
@@ -63,9 +65,17 @@ router.post('/list', async function (req, res) {
 		}
 
 		if (typeof options.filterExtension == 'string') {
-			ret = ret.filter((info) => {
-				return info.folder === true || info.name.endsWith(options.filterExtension)
+			promises = ret.map(async (info) => {
+				if (info.folder) {
+					const filterPath = path.join(rootPath, info.name, '**/*' + options.filterExtension)
+					const entries = await fg(filterPath)	
+					return entries.length > 0
+				}
+				return info.name.endsWith(options.filterExtension)
 			})
+
+			const results = await Promise.all(promises)
+			ret = ret.filter((f, idx) => results[idx])
 		}
 
 		if (options.imageOnly === true) {

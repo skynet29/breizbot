@@ -64,22 +64,17 @@ router.post('/list', async function (req, res) {
 			)
 		}
 
-		console.log('ret', ret)
-
 		if (typeof options.filterExtension == 'string') {
-			promises = ret.map(async (info) => {
+			const results = await Promise.all(ret.map(async (info) => {
 				if (info.folder) {
 					const filterPath = path.join(rootPath, info.name, '**/*' + options.filterExtension)
 					const entries = await fg(filterPath)	
 					return entries.length > 0
 				}
 				return info.name.endsWith(options.filterExtension)
-			})
+			}))
 
-			const results = await Promise.all(promises)
-			console.log('results', results)
 			ret = ret.filter((f, idx) => results[idx])
-			console.log('ret', ret)
 
 		}
 

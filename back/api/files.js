@@ -64,6 +64,8 @@ router.post('/list', async function (req, res) {
 			)
 		}
 
+		console.log('ret', ret)
+
 		if (typeof options.filterExtension == 'string') {
 			promises = ret.map(async (info) => {
 				if (info.folder) {
@@ -75,7 +77,10 @@ router.post('/list', async function (req, res) {
 			})
 
 			const results = await Promise.all(promises)
+			console.log('results', results)
 			ret = ret.filter((f, idx) => results[idx])
+			console.log('ret', ret)
+
 		}
 
 		if (options.imageOnly === true) {

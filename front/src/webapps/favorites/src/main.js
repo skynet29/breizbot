@@ -35,15 +35,20 @@ $$.control.registerControl('rootPage', {
 				},
 				source: [{ title: 'Home', folder: true, lazy: true, key: "0" }],
 				options: {
-					renderNode: function(evt, data) {
-						const {node} = data
-						if(node.data.icon){
-							var $span = $(node.span);
-							$span.find("> span.fancytree-icon").css({
-							  backgroundImage: `url(data:image/x-icon;base64,${node.data.icon})`,
-							  backgroundPosition: "0 0"
+					renderNode: function (evt, data) {
+						const { node } = data
+						if (node.data.icon) {
+							const $span = $(node.span)
+							$span.css({
+								display: 'flex',
+								alignItems: 'center'
 							})
-						  }						
+							$span.find("> span.fancytree-icon").css({
+								backgroundImage: `url(data:image/x-icon;base64,${node.data.icon})`,
+								backgroundPosition: "0 0",
+								backgroundSize: "16px 16px"
+							})
+						}
 
 					},
 					lazyLoad: function (event, data) {

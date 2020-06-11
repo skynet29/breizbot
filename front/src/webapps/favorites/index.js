@@ -15,7 +15,9 @@ module.exports = function (ctx, router) {
 
         if (type == 'link') {
             try {
-                const rep = await fetch(link + '/favicon.ico')
+                const url = new URL(link)
+                const trueUrl = `${url.protocol}//${url.host}/favicon.ico`
+                const rep = await fetch(trueUrl)
                 const buffer = await rep.buffer()
                 info.icon = buffer.toString('base64')
             }

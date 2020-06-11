@@ -1,0 +1,24 @@
+.addLink {
+  padding: 10px; }
+  .addLink form {
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 10px; }
+    .addLink form label {
+      grid-column: 1/2; }
+    .addLink form input {
+      grid-column: 2/3; }
+
+.rootPage {
+  display: flex;
+  flex-direction: column; }
+  .rootPage .toolbar {
+    background-color: #128C7E;
+    color: white;
+    display: flex;
+    justify-content: space-between; }
+  .rootPage .brainjs-tree {
+    flex: 1; }
+    .rootPage .brainjs-tree .fancytree-container {
+      border: none;
+      outline: none; }

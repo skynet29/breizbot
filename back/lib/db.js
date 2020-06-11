@@ -144,9 +144,9 @@ module.exports = {
 		return info
 	},
 
-	getPositionAuthFriends: async function(username) {
+	getPositionAuthFriends: async function (username) {
 		const friends = await db.collection('friends')
-			.find({username, positionAuth: true}).toArray()
+			.find({ username, positionAuth: true }).toArray()
 
 		return friends.map((f) => f.friend)
 	},
@@ -223,6 +223,7 @@ module.exports = {
 			.sort({ name: 1 })
 			.toArray()
 	}
+
 }
 
 

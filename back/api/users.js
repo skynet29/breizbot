@@ -15,7 +15,7 @@ router.get('/', async function (req, res) {
 	}
 })
 
-router.get('/getSharingGroups', async function(req, res) {
+router.get('/getSharingGroups', async function (req, res) {
 	try {
 		const info = await db.getUserInfo(req.session.user)
 		res.json(info.sharingGroups)
@@ -25,8 +25,8 @@ router.get('/getSharingGroups', async function(req, res) {
 	}
 })
 
-router.post('/addSharingGroup', async function(req, res) {
-	const {sharingGroupName} = req.body
+router.post('/addSharingGroup', async function (req, res) {
+	const { sharingGroupName } = req.body
 	try {
 		await db.addSharingGroup(req.session.user, sharingGroupName)
 		res.sendStatus(200)
@@ -273,5 +273,6 @@ router.post('/position', async function (req, res) {
 		res.sendStatus(400)
 	}
 })
+
 
 module.exports = router

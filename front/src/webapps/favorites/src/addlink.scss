@@ -1,0 +1,17 @@
+.addLink {
+    padding: 10px;
+
+    form {
+        display: grid;
+        grid-template-columns: 70px 1fr;
+        gap: 10px;
+
+        label {
+            grid-column: 1/2;
+        }
+
+        input {
+            grid-column: 2/3;
+        }
+    }
+}

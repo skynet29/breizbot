@@ -1,0 +1,19 @@
+.rootPage {
+    display: flex;
+    flex-direction: column;
+    .toolbar {
+        background-color: #128C7E;
+        color: white;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .brainjs-tree {
+        flex: 1;
+        .fancytree-container {
+            border: none;
+            outline: none;
+        }
+    }
+
+}

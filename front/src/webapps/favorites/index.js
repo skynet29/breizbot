@@ -1,4 +1,5 @@
 const fetch = require('node-fetch')
+const getFavicons = require('get-website-favicon')
 
 module.exports = function (ctx, router) {
 
@@ -15,12 +16,9 @@ module.exports = function (ctx, router) {
 
         if (type == 'link') {
             try {
-                const url = new URL(link)
-                const trueUrl = `${url.protocol}//${url.host}/favicon.ico`
-                const rep = await fetch(trueUrl)
-                if (rep.ok) {
-                    const buffer = await rep.buffer()
-                    info.icon = buffer.toString('base64')    
+                const data = await getFavicons(link)
+                if (data.icons.length > 0) {
+                    info.icon = data.icons[0].src    
                 }
             }
             catch (e) {

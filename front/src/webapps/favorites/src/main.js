@@ -44,7 +44,7 @@ $$.control.registerControl('rootPage', {
 								alignItems: 'center'
 							})
 							$span.find("> span.fancytree-icon").css({
-								backgroundImage: `url(data:image/x-icon;base64,${node.data.icon})`,
+								backgroundImage: `url(${node.data.icon})`,
 								backgroundPosition: "0 0",
 								backgroundSize: "16px 16px"
 							})
@@ -56,7 +56,7 @@ $$.control.registerControl('rootPage', {
 						const parentId = data.node.key
 
 						data.result = getFavorites(parentId).then((results) => {
-							//console.log('results', results)
+							console.log('results', results)
 							return results.map((i) => {
 								const { name, type, link, icon } = i.info
 								if (type == 'folder') {
@@ -123,8 +123,9 @@ $$.control.registerControl('rootPage', {
 
 							const parentId = selNode.key
 							const ret = await addFavorite(parentId, { type: 'link', name, link })
+							console.log('ret', ret)
 
-							selNode.addNode({ title: name, key: ret._id, data: { link, icon: ret.info.icon } })
+							selNode.addNode({ title: name, key: ret.id, data: { link, icon: ret.info.icon } })
 							selNode.setExpanded(true)
 						}
 					})

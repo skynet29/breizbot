@@ -97,7 +97,11 @@ $$.control.registerControl('rootPage', {
 					ctrl.setData({ isEdited: true })
 				},
 				onBack: function () {
-					ctrl.setData({ isEdited: false })
+					const { selNode } = ctrl.model
+					if (selNode != null) {
+						selNode.setActive(false)
+					}
+					ctrl.setData({ isEdited: false, selNode: null })
 				},
 				onAddFolder: async function () {
 					const title = await $$.ui.showPrompt({ title: 'Add Folder', label: 'Name:' })
@@ -131,6 +135,7 @@ $$.control.registerControl('rootPage', {
 					const { selNode } = ctrl.model
 					await removeFavorite(selNode.key)
 					selNode.remove()
+					ctrl.setData({ selNode: null })
 
 				}
 

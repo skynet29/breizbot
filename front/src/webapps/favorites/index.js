@@ -1,4 +1,4 @@
-
+const fetch = require('node-fetch')
 
 module.exports = function (ctx, router) {
 
@@ -10,9 +10,22 @@ module.exports = function (ctx, router) {
             .toArray()
     }
 
-    function addFavorite(userName, parentId, info) {
-        return db
-            .insertOne({ userName, parentId, info })
+    async function addFavorite(userName, parentId, info) {
+        const { type, link } = info
+
+        if (type == 'link') {
+            try {
+                const rep = await fetch(link + '/favicon.ico')
+                const buffer = await rep.buffer()
+                info.icon = buffer.toString('base64')
+            }
+            catch (e) {
+                console.error(e)
+            }
+        }
+
+        const ret = await db.insertOne({ userName, parentId, info })
+        return {id: ret.insertedId.toString(), info}
     }
 
     async function getIdsRecursively(parentId, result) {
@@ -58,9 +71,8 @@ module.exports = function (ctx, router) {
         console.log('addFavorite', userName, parentId, info)
 
         try {
-            const results = await addFavorite(userName, parentId, info)
-            console.log('results', results)
-            res.json({ id: results.insertedId.toString() })
+            const ret = await addFavorite(userName, parentId, info)
+            res.json(ret)
         }
         catch (e) {
             res.status(400).send(e.message)

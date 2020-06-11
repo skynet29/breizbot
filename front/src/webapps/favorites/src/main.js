@@ -35,14 +35,25 @@ $$.control.registerControl('rootPage', {
 				},
 				source: [{ title: 'Home', folder: true, lazy: true, key: "0" }],
 				options: {
+					renderNode: function(evt, data) {
+						const {node} = data
+						if(node.data.icon){
+							var $span = $(node.span);
+							$span.find("> span.fancytree-icon").css({
+							  backgroundImage: `url(data:image/x-icon;base64,${node.data.icon})`,
+							  backgroundPosition: "0 0"
+							})
+						  }						
+
+					},
 					lazyLoad: function (event, data) {
-						console.log('lazyLoad')
+						//console.log('lazyLoad')
 						const parentId = data.node.key
 
 						data.result = getFavorites(parentId).then((results) => {
-							console.log('results', results)
+							//console.log('results', results)
 							return results.map((i) => {
-								const { name, type, link } = i.info
+								const { name, type, link, icon } = i.info
 								if (type == 'folder') {
 									return {
 										title: name,
@@ -55,7 +66,7 @@ $$.control.registerControl('rootPage', {
 									return {
 										title: name,
 										key: i._id,
-										data: { link }
+										data: { link, icon }
 									}
 
 								}
@@ -104,7 +115,7 @@ $$.control.registerControl('rootPage', {
 							const parentId = selNode.key
 							const ret = await addFavorite(parentId, { type: 'link', name, link })
 
-							selNode.addNode({ title: name, key: ret._id, data: { link } })
+							selNode.addNode({ title: name, key: ret._id, data: { link, icon: ret.info.icon } })
 							selNode.setExpanded(true)
 						}
 					})

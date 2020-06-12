@@ -3,8 +3,14 @@
 	data-placeholder="What are you looking for ?" 
 	></div>
 <div class="results w3-light-grey">
-	<div bn-each="results">
-		<div class="w3-card-2 item">
+	<div bn-each="results" bn-event="contextmenuchange.item: onContextMenu">
+		<div class="w3-card-2 item" 
+			bn-control="brainjs.contextmenu" 
+			bn-data="{
+				items: {
+					add: {name: 'Add to favorites', icon: 'fas fa-star'}
+				}
+			}">
 			<div class="link">
 				<a bn-attr="{href: $scope.$i.url}" bn-html="$scope.$i.title" class="link" target="_blank"></a>
 				

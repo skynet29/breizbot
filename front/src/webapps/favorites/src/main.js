@@ -31,7 +31,7 @@ $$.control.registerControl('rootPage', {
 					return this.selNode != null
 				},
 				canAdd: function () {
-					return this.selNode != null && this.selNode.folder === true
+					return this.selNode != null && this.selNode.isFolder()
 				},
 				source: [{ title: 'Home', folder: true, lazy: true, key: "0" }],
 				options: {
@@ -85,6 +85,10 @@ $$.control.registerControl('rootPage', {
 				onItemSelected: function (ev, selNode) {
 					//console.log('onItemSelected', selNode)
 					ctrl.setData({ selNode })
+					if (selNode.folder === true) {
+						const isExpanded = selNode.isExpanded()
+						selNode.setExpanded(!isExpanded)
+					}
 					if (!ctrl.model.isEdited) {
 						const { link } = selNode.data
 						if (link != undefined) {
@@ -94,7 +98,7 @@ $$.control.registerControl('rootPage', {
 					}
 				},
 				onEdit: function () {
-					ctrl.setData({ isEdited: true })
+					ctrl.setData({ isEdited: true, selNode: null })
 				},
 				onBack: function () {
 					const { selNode } = ctrl.model
@@ -142,6 +146,11 @@ $$.control.registerControl('rootPage', {
 
 			}
 		})
+
+		this.onAppResume = function() {
+			//console.log('onAppResume')
+			ctrl.scope.tree.getRootNode().getFirstChild().load(true)
+		}
 
 	}
 

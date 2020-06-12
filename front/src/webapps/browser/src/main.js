@@ -1,10 +1,10 @@
 $$.control.registerControl('rootPage', {
 
-	template: {gulp_inject: './main.html'},
+	template: { gulp_inject: './main.html' },
 
-	deps: ['app.browser'],
+	deps: ['breizbot.http'],
 
-	init: function(elt, browser) {
+	init: function (elt, http) {
 
 
 		const ctrl = $$.viewController(elt, {
@@ -14,20 +14,33 @@ $$.control.registerControl('rootPage', {
 				showClear: false
 			},
 			events: {
-				onSearch: async function(ev, data) {					
-					console.log('onSearch', data)
+				onContextMenu: async function (ev, data) {
+					const idx = $(this).index()
+					const { title, url } = ctrl.model.results[idx]
+					const name = await $$.ui.showPrompt({
+						title: 'Add link',
+						label: 'Name',
+						value: title.replace(/<\/?b>/g, '')
+					})
+					console.log('name', name)
+					if (name != null) {
+						await http.post('/addFavorite', { name, link: url })
+					}
+				},
+				onSearch: async function (ev, data) {
+					//console.log('onSearch', data)
 					const url = data.value
 					if (url.startsWith('https://') || url.startsWith('http://')) {
-						ctrl.setData({results: [], url})	
+						ctrl.setData({ results: [], url })
 					}
 					else {
-						const results = await browser.search(url)
+						const results = await http.post(`/search`, { query: url })
 						//console.log('results', results)
 						ctrl.setData({
-							results, 
+							results,
 							url: 'about:blank'
 						})
-					}					
+					}
 				}
 
 			}

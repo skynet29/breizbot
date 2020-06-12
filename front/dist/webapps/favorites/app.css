@@ -17,8 +17,15 @@
     color: white;
     display: flex;
     justify-content: space-between; }
-  .rootPage .brainjs-tree {
-    flex: 1; }
-    .rootPage .brainjs-tree .fancytree-container {
-      border: none;
-      outline: none; }
+  .rootPage .content {
+    flex: 1;
+    overflow-x: auto; }
+  .rootPage .brainjs-tree .fancytree-container {
+    border: none;
+    outline: none; }
+    .rootPage .brainjs-tree .fancytree-container .fancytree-node {
+      display: flex;
+      align-items: center;
+      font-size: 1.3em; }
+      .rootPage .brainjs-tree .fancytree-container .fancytree-node .fancytree-icon {
+        min-width: 16px; }

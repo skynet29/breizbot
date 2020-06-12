@@ -3,7 +3,31 @@ const getFavicons = require('get-website-favicon')
 
 module.exports = function (ctx, router) {
 
-    const { db, util } = ctx
+    const { db, util, events } = ctx
+
+    events.on('userdeleted', async (userName) => {
+        try {
+            await db.deleteMany({ userName })
+        }
+        catch (e) {
+            console.error(e)
+        }
+    })
+
+    events.on('addFavorite', async (data) => {
+        console.log('addFavorite', data)
+        const { userName, name, link } = data
+        try {
+            await addFavorite(userName, "0", {
+                type: 'link',
+                link,
+                name
+            })
+        }
+        catch (e) {
+            console.error(e)
+        }
+    })
 
     function getFavorites(userName, parentId) {
         return db
@@ -18,7 +42,7 @@ module.exports = function (ctx, router) {
             try {
                 const data = await getFavicons(link)
                 if (data.icons.length > 0) {
-                    info.icon = data.icons[0].src    
+                    info.icon = data.icons[0].src
                 }
             }
             catch (e) {
@@ -27,7 +51,7 @@ module.exports = function (ctx, router) {
         }
 
         const ret = await db.insertOne({ userName, parentId, info })
-        return {id: ret.insertedId.toString(), info}
+        return { id: ret.insertedId.toString(), info }
     }
 
     async function getIdsRecursively(parentId, result) {

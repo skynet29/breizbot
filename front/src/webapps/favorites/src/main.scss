@@ -8,11 +8,27 @@
         justify-content: space-between;
     }
 
-    .brainjs-tree {
+    .content {
         flex: 1;
+        overflow-x: auto;
+    }
+
+    .brainjs-tree {
+        //flex: 1;
         .fancytree-container {
             border: none;
             outline: none;
+
+            .fancytree-node {
+                display: flex;
+                align-items: center;
+                font-size: 1.3em;
+
+                .fancytree-icon {
+                    min-width: 16px;
+                }
+            }
+
         }
     }
 

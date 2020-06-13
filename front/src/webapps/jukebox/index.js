@@ -50,12 +50,11 @@ module.exports = function (ctx, router) {
 
 	async function addSong(userName, name, fileInfo, checkExists) {
 		console.log('addSong', userName, name, fileInfo, checkExists)
-		const records = await db.find({ userName, name }).toArray()
-		console.log('records', records)
-		if (checkExists && records.length != 0) {
+		const count = await db.countDocuments({ userName, name })
+		if (checkExists && count != 0) {
 			return false
 		}
-		await db.insertOne({ userName, name, fileInfo, idx: records.length })
+		await db.insertOne({ userName, name, fileInfo, idx: count })
 		return true
 
 	}

@@ -28,13 +28,39 @@ $$.control.registerControl('rootPage', {
 					return this.isEdited ? 'visible' : 'hidden'
 				},
 				canRemove: function () {
-					return this.selNode != null
+					return this.selNode != null && this.selNode.key != "0"
 				},
 				canAdd: function () {
 					return this.selNode != null && this.selNode.isFolder()
 				},
 				source: [{ title: 'Home', folder: true, lazy: true, key: "0" }],
 				options: {
+					dnd: {
+						autoExpandMS: 400,
+						dragStart: function() {
+							//console.log('dragStart', ctrl.model.isEdited)
+							return ctrl.model.isEdited
+						},
+						dragEnter: function(node, data) {
+							//console.log('dragEnter', node.isFolder())
+							if (!node.isFolder()) {
+								return false
+							}
+							if (!node.isExpanded()) {
+								return false
+							}
+							return ['over']
+						},
+						dragDrop: function(node, data) {
+							//console.log('dragDrop')
+							data.otherNode.moveTo(node, data.hitMode)
+							node.setExpanded(true)
+							http.post('/changeParent', {
+								id: data.otherNode.key, 
+								newParentId: node.key
+							})
+						}
+					},
 					renderNode: function (evt, data) {
 						const { node } = data
 						if (node.data.icon) {
@@ -56,7 +82,7 @@ $$.control.registerControl('rootPage', {
 						const parentId = data.node.key
 
 						data.result = getFavorites(parentId).then((results) => {
-							console.log('results', results)
+							//console.log('results', results)
 							return results.map((i) => {
 								const { name, type, link, icon } = i.info
 								if (type == 'folder') {
@@ -85,10 +111,6 @@ $$.control.registerControl('rootPage', {
 				onItemSelected: function (ev, selNode) {
 					//console.log('onItemSelected', selNode)
 					ctrl.setData({ selNode })
-					if (selNode.folder === true) {
-						const isExpanded = selNode.isExpanded()
-						selNode.setExpanded(!isExpanded)
-					}
 					if (!ctrl.model.isEdited) {
 						const { link } = selNode.data
 						if (link != undefined) {
@@ -127,7 +149,6 @@ $$.control.registerControl('rootPage', {
 
 							const parentId = selNode.key
 							const ret = await addFavorite(parentId, { type: 'link', name, link })
-							console.log('ret', ret)
 
 							selNode.addNode({ title: name, key: ret.id, data: { link, icon: ret.info.icon } })
 							selNode.setExpanded(true)

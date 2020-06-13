@@ -35,8 +35,16 @@ module.exports = function (ctx, router) {
             .toArray()
     }
 
+    function changeParent(id, newParentId) {
+        const update = {parentId: newParentId, idx: 0}
+        return db.updateOne({_id: util.dbObjectID(id)}, {$set: update})
+    }
+
     async function addFavorite(userName, parentId, info) {
         const { type, link } = info
+
+        const count = await db.countDocuments({ userName, parentId })
+        console.log('count', count)
 
         if (type == 'link') {
             try {
@@ -50,19 +58,39 @@ module.exports = function (ctx, router) {
             }
         }
 
-        const ret = await db.insertOne({ userName, parentId, info })
+        const ret = await db.insertOne({ userName, parentId, info, idx: count })
         return { id: ret.insertedId.toString(), info }
     }
 
     async function getIdsRecursively(parentId, result) {
-        result.push(parentId);
-        const children = await db.find({ parentId });
+        result.push(parentId)
+        const children = await db.find({ parentId })
         while (await children.hasNext()) {
             const child = await children.next()
-            const id = child._id.toString();
+            const id = child._id.toString()
             await getIdsRecursively(id, result)
         }
     }
+
+    // async function getRecursively(parentId, result) {
+    //     const children = await db.find({ parentId })
+    //     while (await children.hasNext()) {
+    //         if (!result.folder) {
+    //             result.folder = true
+    //             result.children = []
+    //         }
+    //         const child = await children.next()
+    //         const id = child._id.toString()
+    //         const {link, icon, name, type} = child.info
+    //         const newChild = {title: name, key: id}
+    //         if (type == 'link') {
+    //             newChild.data = {icon, link}
+    //         }
+    //         result.children.push(newChild)
+    //         await getRecursively(id, newChild)
+    //     }
+    // }
+
 
     async function removeFavorite(id) {
         console.log(`removeFavorite`, id)
@@ -90,15 +118,32 @@ module.exports = function (ctx, router) {
         }
     })
 
-    router.post('/addFavorite', async function (req, res) {
+    router.post('/getFavorites', async function (req, res) {
         const userName = req.session.user
-        const { parentId, info } = req.body
+        const { parentId } = req.body
 
-        console.log('addFavorite', userName, parentId, info)
+        console.log('getFavorites', userName, parentId)
 
         try {
-            const ret = await addFavorite(userName, parentId, info)
-            res.json(ret)
+            const results = await getFavorites(userName, parentId)
+            console.log('results', results)
+            res.json(results)
+        }
+        catch (e) {
+            res.sendStatus(400)
+        }
+    })
+
+    
+    router.post('/changeParent', async function (req, res) {
+        const userName = req.session.user
+        const { id, newParentId } = req.body
+
+        console.log('changeParent', userName, id, newParentId)
+
+        try {
+            const ret = await changeParent(id, newParentId)
+            res.sendStatus(200)
         }
         catch (e) {
             res.status(400).send(e.message)

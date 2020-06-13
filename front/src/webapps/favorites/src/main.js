@@ -19,6 +19,9 @@ $$.control.registerControl('rootPage', {
 			return http.delete('/removeFavorite/' + id)
 		}
 
+		function changeParent(id, newParentId) {
+			return http.post('/changeParent', {id, newParentId})
+		}
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -55,10 +58,7 @@ $$.control.registerControl('rootPage', {
 							//console.log('dragDrop')
 							data.otherNode.moveTo(node, data.hitMode)
 							node.setExpanded(true)
-							http.post('/changeParent', {
-								id: data.otherNode.key, 
-								newParentId: node.key
-							})
+							changeParent(data.otherNode.key, node.key)
 						}
 					},
 					renderNode: function (evt, data) {

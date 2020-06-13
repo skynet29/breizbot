@@ -49,7 +49,7 @@ $$.control.registerControl('rootPage', {
 							if (!node.isFolder()) {
 								return false
 							}
-							if (!node.isExpanded()) {
+							if (!node.isLoaded()) {
 								return false
 							}
 							return ['over']

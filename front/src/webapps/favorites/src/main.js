@@ -110,6 +110,9 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onItemSelected: function (ev, selNode) {
 					//console.log('onItemSelected', selNode)
+					if (selNode.isFolder()) {
+						selNode.setExpanded(!selNode.isExpanded())
+					}
 					ctrl.setData({ selNode })
 					if (!ctrl.model.isEdited) {
 						const { link } = selNode.data

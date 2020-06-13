@@ -44,7 +44,7 @@ module.exports = function (ctx, router) {
         const { type, link } = info
 
         const count = await db.countDocuments({ userName, parentId })
-        console.log('count', count)
+        //console.log('count', count)
 
         if (type == 'link') {
             try {
@@ -96,50 +96,49 @@ module.exports = function (ctx, router) {
         console.log(`removeFavorite`, id)
         const ids = []
         await getIdsRecursively(id, ids)
-        console.log('ids', ids)
+        //console.log('ids', ids)
 
-        const ret = await db.deleteMany({ _id: { $in: ids.map((i) => util.dbObjectID(i)) } })
-        console.log('ret', ret)
+        await db.deleteMany({ _id: { $in: ids.map((i) => util.dbObjectID(i)) } })
     }
 
-    router.post('/getFavorites', async function (req, res) {
-        const userName = req.session.user
-        const { parentId } = req.body
-
-        console.log('getFavorites', userName, parentId)
-
-        try {
-            const results = await getFavorites(userName, parentId)
-            console.log('results', results)
-            res.json(results)
-        }
-        catch (e) {
-            res.sendStatus(400)
-        }
-    })
 
     router.post('/getFavorites', async function (req, res) {
         const userName = req.session.user
         const { parentId } = req.body
 
-        console.log('getFavorites', userName, parentId)
+        //console.log('getFavorites', userName, parentId)
 
         try {
             const results = await getFavorites(userName, parentId)
-            console.log('results', results)
+            //console.log('results', results)
             res.json(results)
         }
         catch (e) {
             res.sendStatus(400)
         }
+
     })
 
+    router.post('/addFavorite', async function (req, res) {
+        const userName = req.session.user
+        const { parentId, info } = req.body
+
+        //console.log('addFavorite', userName, parentId, info)
+
+        try {
+            const ret = await addFavorite(userName, parentId, info)
+            res.json(ret)
+        }
+        catch (e) {
+            res.status(400).send(e.message)
+        }
+    })
     
     router.post('/changeParent', async function (req, res) {
         const userName = req.session.user
         const { id, newParentId } = req.body
 
-        console.log('changeParent', userName, id, newParentId)
+        //console.log('changeParent', userName, id, newParentId)
 
         try {
             const ret = await changeParent(id, newParentId)
@@ -152,7 +151,7 @@ module.exports = function (ctx, router) {
 
 
     router.delete('/removeFavorite/:id', async function (req, res) {
-        console.log('removeFavorite', req.params)
+        //console.log('removeFavorite', req.params)
         const { id } = req.params
 
         try {

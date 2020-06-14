@@ -302,7 +302,7 @@
 
 				},
 				events: {
-					onShareSelected: async function (ec, data) {
+					onShareSelected: async function (ev, data) {
 						console.log('onShareSelected', data)
 						let name = data.cmd
 						try {
@@ -333,7 +333,7 @@
 
 					},
 					onToolbarContextMenu: function (ev, data) {
-						console.log('onToolbarContextMenu', data)
+						//console.log('onToolbarContextMenu', data)
 						elt.find(`button[data-cmd=${data.cmd}]`).click()
 					},
 					onToggleDownload: function () {
@@ -525,45 +525,48 @@
 					},
 					onImportFile: function (ev) {
 
-						$$.util.openFileDialog(async function (file) {
-							//console.log('fileSize', file.size / 1024)
-							console.log('Download file:', file.name)
-							// if (file.size > maxUploadSize) {
-							// 	$$.ui.showAlert({ content: 'File too big', title: 'Import file' })
-							// 	return
-							// }
-							try {
-								const data = {
-									fileName: file.name,
-									percentage: 0
-								}
-
-								const { downloads, rootDir } = ctrl.model
-								downloads.push(data)
-								ctrl.updateNodeTree('downloads')
-
-								await srvFiles.uploadFile(file, file.name, ctrl.model.rootDir, function (percentComplete) {
-									data.percentage = percentComplete
-									ctrl.updateNodeTree('downloads')
-								})
-								console.log('Download Finished: ', data.fileName)
-								const idx = downloads.indexOf(data)
-								downloads.splice(idx, 1)
-								ctrl.updateNodeTree('downloads')
-								const fileInfo = await srvFiles.fileInfo(rootDir + data.fileName)
-								insertFile(fileInfo)
-							}
-							catch (resp) {
-								console.log('resp', resp)
-								$$.ui.showAlert({ content: resp.responseText, title: 'Error' })
+						$$.util.openFileDialog((files) => {
+							console.log('files', files)
+							for(const file of files) {
+								uploadFile(file)
 							}
 
-						})
+						}, true)
 
 					}
+
+				}
+			})
+
+
+			async function uploadFile(file) {
+				try {
+					const data = {
+						fileName: file.name,
+						percentage: 0
+					}
+
+					const { downloads, rootDir } = ctrl.model
+					downloads.push(data)
+					ctrl.updateNodeTree('downloads')
+
+					await srvFiles.uploadFile(file, file.name, ctrl.model.rootDir, function (percentComplete) {
+						data.percentage = percentComplete
+						ctrl.updateNodeTree('downloads')
+					})
+					console.log('Download Finished: ', data.fileName)
+					const idx = downloads.indexOf(data)
+					downloads.splice(idx, 1)
+					ctrl.updateNodeTree('downloads')
+					const fileInfo = await srvFiles.fileInfo(rootDir + data.fileName)
+					insertFile(fileInfo)
+				}
+				catch (resp) {
+					console.log('resp', resp)
+					$$.ui.showAlert({ content: resp.responseText, title: 'Error' })
 				}
 
-			})
+			}
 
 			function deleteFiles(fileNames) {
 				console.log('deleteFiles', fileNames)
@@ -739,7 +742,7 @@
 				let idx = ctrl.model.getFiles().filter((f) => f.folder).length
 				//console.log('idx', idx)
 				ctrl.insertArrayItemAfter('files', idx - 1, fileInfo, 'files')
-				console.log('files', ctrl.model.files)
+				//console.log('files', ctrl.model.files)
 				ctrl.updateNode('info')
 
 			}

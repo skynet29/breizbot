@@ -10,7 +10,7 @@ $$.control.registerControl('rootPage', {
 		async function getFavorites() {
 			const results = await http.post('/getFavorites')
 			console.log('results', results)
-			ctrl.setData({source: [results], selNode:null})
+			ctrl.setData({ source: [results], selNode: null })
 			ctrl.scope.tree.getRootNode().getFirstChild().setExpanded(true)
 		}
 
@@ -23,8 +23,52 @@ $$.control.registerControl('rootPage', {
 		}
 
 		function changeParent(id, newParentId) {
-			return http.post('/changeParent', {id, newParentId})
+			return http.post('/changeParent', { id, newParentId })
 		}
+
+		const options = {
+			renderNode: function (evt, data) {
+				const { node } = data
+				if (node.data.icon) {
+					const $span = $(node.span)
+					$span.css({
+						display: 'flex',
+						alignItems: 'center'
+					})
+					$span.find("> span.fancytree-icon").css({
+						backgroundImage: `url(${node.data.icon})`,
+						backgroundPosition: "0 0",
+						backgroundSize: "16px 16px"
+					})
+				}
+
+			}
+		}
+
+		if (!$$.util.isTouchDevice()) {
+			options.dnd = {
+				autoExpandMS: 400,
+				dragStart: function () {
+					//console.log('dragStart', ctrl.model.isEdited)
+					return ctrl.model.isEdited
+				},
+				dragEnter: function (node, data) {
+					//console.log('dragEnter', node.isFolder())
+					if (!node.isFolder()) {
+						return false
+					}
+					return ['over']
+				},
+				dragDrop: function (node, data) {
+					//console.log('dragDrop')
+					data.otherNode.moveTo(node, data.hitMode)
+					node.setExpanded(true)
+					changeParent(data.otherNode.key, node.key)
+				}
+			}
+
+		}
+
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -40,51 +84,11 @@ $$.control.registerControl('rootPage', {
 					return this.selNode != null && this.selNode.isFolder()
 				},
 				source: [],
-				options: {
-					// dnd: {
-					// 	autoExpandMS: 400,
-					// 	dragStart: function() {
-					// 		//console.log('dragStart', ctrl.model.isEdited)
-					// 		return ctrl.model.isEdited
-					// 	},
-					// 	dragEnter: function(node, data) {
-					// 		//console.log('dragEnter', node.isFolder())
-					// 		if (!node.isFolder()) {
-					// 			return false
-					// 		}
-					// 		if (!node.isLoaded()) {
-					// 			return false
-					// 		}
-					// 		return ['over']
-					// 	},
-					// 	dragDrop: function(node, data) {
-					// 		//console.log('dragDrop')
-					// 		data.otherNode.moveTo(node, data.hitMode)
-					// 		node.setExpanded(true)
-					// 		changeParent(data.otherNode.key, node.key)
-					// 	}
-					// },
-					renderNode: function (evt, data) {
-						const { node } = data
-						if (node.data.icon) {
-							const $span = $(node.span)
-							$span.css({
-								display: 'flex',
-								alignItems: 'center'
-							})
-							$span.find("> span.fancytree-icon").css({
-								backgroundImage: `url(${node.data.icon})`,
-								backgroundPosition: "0 0",
-								backgroundSize: "16px 16px"
-							})
-						}
-
-					}
-				}
+				options
 
 			},
 			events: {
-				onUpdate: function() {
+				onUpdate: function () {
 					getFavorites()
 				},
 				onItemSelected: function (ev, selNode) {
@@ -117,7 +121,7 @@ $$.control.registerControl('rootPage', {
 						const { selNode } = ctrl.model
 						const parentId = selNode.key
 						const ret = await addFavorite(parentId, { type: 'folder', name: title })
-						selNode.addNode({ title, folder: true, lazy: true, key: ret.id })
+						selNode.addNode({ title, folder: true, key: ret.id })
 						selNode.setExpanded(true)
 					}
 				},

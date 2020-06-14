@@ -21,7 +21,8 @@
             bn-prop="{disabled: !canAdd}"
             bn-show="isEdited"><i class="fas fa-link"></i></button>
     
-        <button class="w3-button" title="Edit" bn-event="click: onEdit" bn-show="!isEdited"><i class="fas fa-edit"></i></button>
+            <button class="w3-button" title="Update" bn-event="click: onUpdate" bn-show="!isEdited"><i class="fas fa-redo-alt"></i></button>
+            <button class="w3-button" title="Edit" bn-event="click: onEdit" bn-show="!isEdited"><i class="fas fa-edit"></i></button>
     
     </div>
 
@@ -30,7 +31,7 @@
 <div class="content">
     <div bn-control="brainjs.tree" 
     bn-data="{source, options}"
-    bn-event="treeclick: onItemSelected"
+    bn-event="treeactivate: onItemSelected"
     bn-iface="tree"
     ></div>
 

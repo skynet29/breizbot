@@ -29,11 +29,6 @@ module.exports = function (ctx, router) {
         }
     })
 
-    function getFavorites(userName, parentId) {
-        return db
-            .find({ userName, parentId })
-            .toArray()
-    }
 
     function changeParent(id, newParentId) {
         const update = {parentId: newParentId, idx: 0}
@@ -72,24 +67,24 @@ module.exports = function (ctx, router) {
         }
     }
 
-    // async function getRecursively(parentId, result) {
-    //     const children = await db.find({ parentId })
-    //     while (await children.hasNext()) {
-    //         if (!result.folder) {
-    //             result.folder = true
-    //             result.children = []
-    //         }
-    //         const child = await children.next()
-    //         const id = child._id.toString()
-    //         const {link, icon, name, type} = child.info
-    //         const newChild = {title: name, key: id}
-    //         if (type == 'link') {
-    //             newChild.data = {icon, link}
-    //         }
-    //         result.children.push(newChild)
-    //         await getRecursively(id, newChild)
-    //     }
-    // }
+    async function getFavorites(result) {
+        const children = await db.find({ parentId: result.key })
+        while (await children.hasNext()) {
+            if (!result.folder) {
+                result.folder = true
+                result.children = []
+            }
+            const child = await children.next()
+            const id = child._id.toString()
+            const {link, icon, name, type} = child.info
+            const newChild = {title: name, key: id}
+            if (type == 'link') {
+                newChild.data = {icon, link}
+            }
+            result.children.push(newChild)
+            await getFavorites(newChild)
+        }
+    }
 
 
     async function removeFavorite(id) {
@@ -109,9 +104,11 @@ module.exports = function (ctx, router) {
         //console.log('getFavorites', userName, parentId)
 
         try {
-            const results = await getFavorites(userName, parentId)
+            const result = {title: 'Home', key: '0'}
+            await getFavorites(result)
+            //const results = await getFavorites(userName, parentId)
             //console.log('results', results)
-            res.json(results)
+            res.json(result)
         }
         catch (e) {
             res.sendStatus(400)

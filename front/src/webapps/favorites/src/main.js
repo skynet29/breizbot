@@ -7,8 +7,11 @@ $$.control.registerControl('rootPage', {
 
 	init: function (elt, pager, http) {
 
-		function getFavorites(parentId) {
-			return http.post('/getFavorites', { parentId })
+		async function getFavorites() {
+			const results = await http.post('/getFavorites')
+			console.log('results', results)
+			ctrl.setData({source: [results], selNode:null})
+			ctrl.scope.tree.getRootNode().getFirstChild().setExpanded(true)
 		}
 
 		function addFavorite(parentId, info) {
@@ -36,7 +39,8 @@ $$.control.registerControl('rootPage', {
 				canAdd: function () {
 					return this.selNode != null && this.selNode.isFolder()
 				},
-				source: [{ title: 'Home', folder: true, lazy: true, key: "0" }],
+				//source: [{ title: 'Home', folder: true, lazy: true, key: "0" }],
+				source: [],
 				options: {
 					dnd: {
 						autoExpandMS: 400,
@@ -108,11 +112,14 @@ $$.control.registerControl('rootPage', {
 
 			},
 			events: {
+				onUpdate: function() {
+					getFavorites()
+				},
 				onItemSelected: function (ev, selNode) {
-					//console.log('onItemSelected', selNode)
-					if (selNode.isFolder()) {
-						selNode.setExpanded(!selNode.isExpanded())
-					}
+					console.log('onItemSelected', selNode.title)
+					// if (selNode.isFolder()) {
+					// 	selNode.setExpanded(!selNode.isExpanded())
+					// }
 					ctrl.setData({ selNode })
 					if (!ctrl.model.isEdited) {
 						const { link } = selNode.data
@@ -171,10 +178,7 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		this.onAppResume = function() {
-			//console.log('onAppResume')
-			ctrl.scope.tree.getRootNode().getFirstChild().load(true)
-		}
+		getFavorites()
 
 	}
 

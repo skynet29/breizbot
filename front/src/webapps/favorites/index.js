@@ -70,16 +70,16 @@ module.exports = function (ctx, router) {
     async function getFavorites(result) {
         const children = await db.find({ parentId: result.key })
         while (await children.hasNext()) {
-            if (!result.folder) {
-                result.folder = true
-                result.children = []
-            }
             const child = await children.next()
             const id = child._id.toString()
             const {link, icon, name, type} = child.info
             const newChild = {title: name, key: id}
             if (type == 'link') {
                 newChild.data = {icon, link}
+            }
+            else {
+                newChild.folder = true
+                newChild.children = []
             }
             result.children.push(newChild)
             await getFavorites(newChild)
@@ -104,7 +104,7 @@ module.exports = function (ctx, router) {
         //console.log('getFavorites', userName, parentId)
 
         try {
-            const result = {title: 'Home', key: '0'}
+            const result = {title: 'Home', key: '0', folder: true, children: []}
             await getFavorites(result)
             //const results = await getFavorites(userName, parentId)
             //console.log('results', results)

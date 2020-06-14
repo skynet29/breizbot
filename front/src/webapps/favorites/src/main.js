@@ -39,32 +39,31 @@ $$.control.registerControl('rootPage', {
 				canAdd: function () {
 					return this.selNode != null && this.selNode.isFolder()
 				},
-				//source: [{ title: 'Home', folder: true, lazy: true, key: "0" }],
 				source: [],
 				options: {
-					dnd: {
-						autoExpandMS: 400,
-						dragStart: function() {
-							//console.log('dragStart', ctrl.model.isEdited)
-							return ctrl.model.isEdited
-						},
-						dragEnter: function(node, data) {
-							//console.log('dragEnter', node.isFolder())
-							if (!node.isFolder()) {
-								return false
-							}
-							if (!node.isLoaded()) {
-								return false
-							}
-							return ['over']
-						},
-						dragDrop: function(node, data) {
-							//console.log('dragDrop')
-							data.otherNode.moveTo(node, data.hitMode)
-							node.setExpanded(true)
-							changeParent(data.otherNode.key, node.key)
-						}
-					},
+					// dnd: {
+					// 	autoExpandMS: 400,
+					// 	dragStart: function() {
+					// 		//console.log('dragStart', ctrl.model.isEdited)
+					// 		return ctrl.model.isEdited
+					// 	},
+					// 	dragEnter: function(node, data) {
+					// 		//console.log('dragEnter', node.isFolder())
+					// 		if (!node.isFolder()) {
+					// 			return false
+					// 		}
+					// 		if (!node.isLoaded()) {
+					// 			return false
+					// 		}
+					// 		return ['over']
+					// 	},
+					// 	dragDrop: function(node, data) {
+					// 		//console.log('dragDrop')
+					// 		data.otherNode.moveTo(node, data.hitMode)
+					// 		node.setExpanded(true)
+					// 		changeParent(data.otherNode.key, node.key)
+					// 	}
+					// },
 					renderNode: function (evt, data) {
 						const { node } = data
 						if (node.data.icon) {
@@ -80,33 +79,6 @@ $$.control.registerControl('rootPage', {
 							})
 						}
 
-					},
-					lazyLoad: function (event, data) {
-						//console.log('lazyLoad')
-						const parentId = data.node.key
-
-						data.result = getFavorites(parentId).then((results) => {
-							//console.log('results', results)
-							return results.map((i) => {
-								const { name, type, link, icon } = i.info
-								if (type == 'folder') {
-									return {
-										title: name,
-										folder: true,
-										lazy: true,
-										key: i._id,
-									}
-								}
-								else {
-									return {
-										title: name,
-										key: i._id,
-										data: { link, icon }
-									}
-
-								}
-							})
-						})
 					}
 				}
 

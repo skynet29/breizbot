@@ -1,35 +1,37 @@
 .rootPage {
     display: flex;
     flex-direction: column;
-    .toolbar {
+    > .toolbar {
         background-color: #128C7E;
         color: white;
         display: flex;
         justify-content: space-between;
     }
 
-    .content {
+    > .content {
         flex: 1;
         overflow-x: auto;
-    }
 
-    .brainjs-tree {
-        //flex: 1;
-        .fancytree-container {
-            border: none;
-            outline: none;
-
-            .fancytree-node {
-                display: flex;
-                align-items: center;
-                font-size: 1.3em;
-
-                .fancytree-icon {
-                    min-width: 16px;
+        .brainjs-tree {
+            //flex: 1;
+            .fancytree-container {
+                border: none;
+                outline: none;
+    
+                .fancytree-node {
+                    display: flex;
+                    align-items: center;
+                    font-size: 1.3em;
+    
+                    .fancytree-icon {
+                        min-width: 16px;
+                    }
                 }
+    
             }
-
         }
+    
     }
+
 
 }

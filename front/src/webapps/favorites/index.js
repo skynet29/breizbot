@@ -30,9 +30,20 @@ module.exports = function (ctx, router) {
     })
 
 
-    function changeParent(id, newParentId) {
-        const update = {parentId: newParentId, idx: 0}
-        return db.updateOne({_id: util.dbObjectID(id)}, {$set: update})
+    async function changeParent(userName, id, newParentId) {
+        const count = await db.countDocuments({ userName, parentId: newParentId })
+        const update = { parentId: newParentId, idx: count }
+        return db.updateOne({ _id: util.dbObjectID(id) }, { $set: update })
+    }
+
+    async function insertBefore(userName, id, newParentId, beforeIdx) {
+        let update = { $inc: { idx: 1 } }
+        let filter = { userName, parentId: newParentId, idx: { $gte: beforeIdx } }
+        await db.updateMany(filter, update)
+
+        filter = { _id: util.dbObjectID(id) }
+        update = { $set: { parentId: newParentId, idx: beforeIdx } }
+        return db.updateOne(filter, update)
     }
 
     async function addFavorite(userName, parentId, info) {
@@ -68,14 +79,14 @@ module.exports = function (ctx, router) {
     }
 
     async function getFavorites(result) {
-        const children = await db.find({ parentId: result.key })
+        const children = await db.find({ parentId: result.key }).sort({idx: 1})
         while (await children.hasNext()) {
             const child = await children.next()
             const id = child._id.toString()
-            const {link, icon, name, type} = child.info
-            const newChild = {title: name, key: id}
+            const { link, icon, name, type } = child.info
+            const newChild = { title: name, key: id }
             if (type == 'link') {
-                newChild.data = {icon, link}
+                newChild.data = { icon, link }
             }
             else {
                 newChild.folder = true
@@ -104,7 +115,7 @@ module.exports = function (ctx, router) {
         //console.log('getFavorites', userName, parentId)
 
         try {
-            const result = {title: 'Home', key: '0', folder: true, children: []}
+            const result = { title: 'Home', key: '0', folder: true, children: [] }
             await getFavorites(result)
             //const results = await getFavorites(userName, parentId)
             //console.log('results', results)
@@ -130,7 +141,23 @@ module.exports = function (ctx, router) {
             res.status(400).send(e.message)
         }
     })
-    
+
+    router.post('/insertBefore', async function (req, res) {
+        const userName = req.session.user
+        const { id, newParentId, beforeIdx } = req.body
+
+        //console.log('changeParent', userName, id, newParentId)
+
+        try {
+            await insertBefore(userName, id, newParentId, beforeIdx)
+            res.sendStatus(200)
+        }
+        catch (e) {
+            res.status(400).send(e.message)
+        }
+    })
+
+
     router.post('/changeParent', async function (req, res) {
         const userName = req.session.user
         const { id, newParentId } = req.body
@@ -138,7 +165,7 @@ module.exports = function (ctx, router) {
         //console.log('changeParent', userName, id, newParentId)
 
         try {
-            const ret = await changeParent(id, newParentId)
+            const ret = await changeParent(userName, id, newParentId)
             res.sendStatus(200)
         }
         catch (e) {

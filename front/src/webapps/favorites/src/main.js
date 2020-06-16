@@ -26,6 +26,11 @@ $$.control.registerControl('rootPage', {
 			return http.post('/changeParent', { id, newParentId })
 		}
 
+		function insertBefore(id, newParentId, beforeIdx) {
+			return http.post('/insertBefore', { id, newParentId, beforeIdx })
+		}
+
+
 		const options = {
 			renderNode: function (evt, data) {
 				const { node } = data
@@ -53,17 +58,28 @@ $$.control.registerControl('rootPage', {
 					return ctrl.model.isEdited
 				},
 				dragEnter: function (node, data) {
+					console.log('dragEnter')
 					//console.log('dragEnter', node.isFolder())
-					if (!node.isFolder()) {
-						return false
+					if (!node.isFolder() && !data.otherNode.isFolder()) {
+						return ['before']
 					}
-					return ['over']
+					return ['before', 'over']
 				},
 				dragDrop: function (node, data) {
-					//console.log('dragDrop')
+					//console.log('dragDrop', data.hitMode)
+					const id = data.otherNode.key
+					if (data.hitMode == 'before') {
+						const beforeIdx = node.getIndex()
+						console.log('beforeIdx', beforeIdx)
+						const newParentId = node.parent.key
+						insertBefore(id, newParentId, beforeIdx)
+					}
+					else {
+						changeParent(id, node.key)
+					}
 					data.otherNode.moveTo(node, data.hitMode)
 					node.setExpanded(true)
-					changeParent(data.otherNode.key, node.key)
+					//changeParent(data.otherNode.key, node.key)
 				}
 			}
 
@@ -92,7 +108,7 @@ $$.control.registerControl('rootPage', {
 					getFavorites()
 				},
 				onItemSelected: function (ev, selNode) {
-					console.log('onItemSelected', selNode.title)
+					//console.log('onItemSelected', selNode.title)
 					// if (selNode.isFolder()) {
 					// 	selNode.setExpanded(!selNode.isExpanded())
 					// }

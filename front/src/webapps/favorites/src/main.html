@@ -11,18 +11,23 @@
             bn-show="isEdited" 
             bn-prop="{disabled: !canRemove}"><i class="fas fa-trash"></i></button>
 
+        <button class="w3-button" title="Update link" 
+            bn-event="click: onUpdateLink" 
+            bn-show="isEdited" 
+            bn-prop="{disabled: !isLink}"><i class="fas fa-edit"></i></button>
+
         <button class="w3-button" title="Add Folder" 
             bn-event="click: onAddFolder" 
-            bn-prop="{disabled: !canAdd}"
+            bn-prop="{disabled: !isFolder}"
             bn-show="isEdited"><i class="fas fa-folder-plus"></i></button>
     
         <button class="w3-button" title="Add Link" 
             bn-event="click: onAddLink" 
-            bn-prop="{disabled: !canAdd}"
+            bn-prop="{disabled: !isFolder}"
             bn-show="isEdited"><i class="fas fa-link"></i></button>
     
-            <button class="w3-button" title="Update" bn-event="click: onUpdate" bn-show="!isEdited"><i class="fas fa-redo-alt"></i></button>
-            <button class="w3-button" title="Edit" bn-event="click: onEdit" bn-show="!isEdited"><i class="fas fa-edit"></i></button>
+        <button class="w3-button" title="Update" bn-event="click: onUpdate" bn-show="!isEdited"><i class="fas fa-redo-alt"></i></button>
+        <button class="w3-button" title="Edit" bn-event="click: onEdit" bn-show="!isEdited"><i class="fas fa-edit"></i></button>
     
     </div>
 

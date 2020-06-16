@@ -46,6 +46,25 @@ module.exports = function (ctx, router) {
         return db.updateOne(filter, update)
     }
 
+    async function updateLink(id, name, link) {
+        const info = {
+            type: 'link',
+            name,
+            link,
+        }
+
+        const data = await getFavicons(link)
+        if (data.icons.length > 0) {
+            info.icon = data.icons[0].src
+        }
+
+        const filter = { _id: util.dbObjectID(id) }
+        const update = { $set: { info } }
+        await db.updateOne(filter, update)
+        return info
+
+    }
+
     async function addFavorite(userName, parentId, info) {
         const { type, link } = info
 
@@ -79,7 +98,7 @@ module.exports = function (ctx, router) {
     }
 
     async function getFavorites(result) {
-        const children = await db.find({ parentId: result.key }).sort({idx: 1})
+        const children = await db.find({ parentId: result.key }).sort({ idx: 1 })
         while (await children.hasNext()) {
             const child = await children.next()
             const id = child._id.toString()
@@ -135,6 +154,21 @@ module.exports = function (ctx, router) {
 
         try {
             const ret = await addFavorite(userName, parentId, info)
+            res.json(ret)
+        }
+        catch (e) {
+            res.status(400).send(e.message)
+        }
+    })
+
+    router.post('/updateLink', async function (req, res) {
+        const userName = req.session.user
+        const { id, name, link } = req.body
+
+        //console.log('addFavorite', userName, parentId, info)
+
+        try {
+            const ret = await updateLink(id, name, link)
             res.json(ret)
         }
         catch (e) {

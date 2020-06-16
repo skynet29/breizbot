@@ -30,10 +30,15 @@ $$.control.registerControl('rootPage', {
 			return http.post('/insertBefore', { id, newParentId, beforeIdx })
 		}
 
+		function updateLink(id, name, link) {
+			return http.post('/updateLink', { id, name, link })
+		}
+
 
 		const options = {
 			renderNode: function (evt, data) {
 				const { node } = data
+				//console.log('renderNode', node.title)
 				if (node.data.icon) {
 					const $span = $(node.span)
 					$span.css({
@@ -96,14 +101,39 @@ $$.control.registerControl('rootPage', {
 				canRemove: function () {
 					return this.selNode != null && this.selNode.key != "0"
 				},
-				canAdd: function () {
+				isFolder: function () {
 					return this.selNode != null && this.selNode.isFolder()
+				},
+				isLink: function () {
+					return this.selNode != null && !this.selNode.isFolder()
 				},
 				source: [],
 				options
 
 			},
 			events: {
+				onUpdateLink: function () {
+					const { selNode } = ctrl.model
+					pager.pushPage('addLink', {
+						title: 'Edit Link',
+						props: {
+							data: {
+								name: selNode.title,
+								link: selNode.data.link
+							}
+						},
+						onReturn: async function (data) {
+							//console.log('onReturn', data)
+							const { name, link } = data
+							const info = await updateLink(selNode.key, name, link)
+							//console.log('info', info)
+							selNode.setTitle(name)
+							selNode.data.link = link
+							selNode.data.icon = info.icon
+							selNode.render()
+						}
+					})
+				},
 				onUpdate: function () {
 					getFavorites()
 				},

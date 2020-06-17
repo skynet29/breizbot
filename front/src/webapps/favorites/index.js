@@ -97,8 +97,8 @@ module.exports = function (ctx, router) {
         }
     }
 
-    async function getFavorites(result) {
-        const children = await db.find({ parentId: result.key }).sort({ idx: 1 })
+    async function getFavorites(userName, result) {
+        const children = await db.find({ userName, parentId: result.key }).sort({ idx: 1 })
         while (await children.hasNext()) {
             const child = await children.next()
             const id = child._id.toString()
@@ -112,7 +112,7 @@ module.exports = function (ctx, router) {
                 newChild.children = []
             }
             result.children.push(newChild)
-            await getFavorites(newChild)
+            await getFavorites(userName, newChild)
         }
     }
 
@@ -129,15 +129,12 @@ module.exports = function (ctx, router) {
 
     router.post('/getFavorites', async function (req, res) {
         const userName = req.session.user
-        const { parentId } = req.body
 
         //console.log('getFavorites', userName, parentId)
 
         try {
             const result = { title: 'Home', key: '0', folder: true, children: [] }
-            await getFavorites(result)
-            //const results = await getFavorites(userName, parentId)
-            //console.log('results', results)
+            await getFavorites(userName, result)
             res.json(result)
         }
         catch (e) {

@@ -2,22 +2,41 @@
 	bn-event="searchbarsubmit: onSearch"
 	data-placeholder="What are you looking for ?" 
 	></div>
-<div class="results w3-light-grey">
-	<div bn-each="results" bn-event="contextmenuchange.item: onContextMenu">
-		<div class="w3-card-2 item" 
-			bn-control="brainjs.contextmenu" 
-			bn-data="{
-				items: {
-					add: {name: 'Add to favorites', icon: 'fas fa-star'}
-				}
-			}">
-			<div class="link">
-				<a bn-attr="{href: $scope.$i.url}" bn-html="$scope.$i.title" class="link" target="_blank"></a>
-				
+<div class="toolbar" bn-event="click.menuItem: onItemMenuClick">
+	<span class="menuItem selected" data-theme="web"><i class="fa fa-globe"></i>Web</span>
+	<span class="menuItem" data-theme="images"><i class="fa fa-image"></i>Images</span>
+</div>	
+<div bn-if="isWeb" class="test">
+	<div class="webResults w3-light-grey" >
+		<div bn-each="results" bn-event="contextmenuchange.item: onContextMenu" bn-lazzy="10">
+			<div class="w3-card-2 item" 
+				bn-control="brainjs.contextmenu" 
+				bn-data="{
+					items: {
+						add: {name: 'Add to favorites', icon: 'fas fa-star'}
+					}
+				}">
+				<div class="link">
+					<a bn-attr="{href: $scope.$i.url}" bn-html="$scope.$i.title" class="link" target="_blank"></a>
+					
+				</div>
+				<div bn-html="$scope.$i.source" class="source"></div>		
+				<div bn-html="$scope.$i.desc" class="desc"></div>	
 			</div>
-			<div bn-html="$scope.$i.source" class="source"></div>		
-			<div bn-html="$scope.$i.desc" class="desc"></div>	
 		</div>
+	
+	</div>
+	
+</div>
+
+<div bn-if="isImages" class="test" bn-event="click.item: onImageClick">
+	<div class="imagesResults" >
+		<div bn-each="results" bn-lazzy="10" class="items">
+			<div bn-style="{width: $scope.$i.thumb_width, height: $scope.$i.thumb_height}" class="item w3-card-2">
+				<img bn-attr="{src: getUrl}" style="display: none;">
+			</div>
+		</div>
+	
 	</div>
 	
 </div>

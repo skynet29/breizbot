@@ -16,19 +16,30 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/search', async function (req, res) {
-		const { query } = req.body
+		const { query, theme } = req.body
 
 		const params = {
 			q: query,
-			count: 10,
-			t: query,
-			uiv: 4
+			t: theme,
+			uiv: 4,
+			offset: 0
 		}
 
+		let ret = []
+
 		try {
-			const rep = await fetch('https://api.qwant.com/api/search/web?' + querystring.stringify(params))
-			const json = await rep.json()
-			res.json(json.data.result.items)
+			while (ret.length  < 50) {
+				const rep = await fetch(`https://api.qwant.com/api/search/${theme}?` + querystring.stringify(params))
+				const json = await rep.json()
+				console.log('results', json.data)
+				if (json.data.error_code) {
+					throw('error code ' + json.data.error_code)
+				}
+				const {items} = json.data.result
+				params.offset += items.length
+				ret = ret.concat(items)	
+			}
+			res.json(ret)
 		}
 		catch (e) {
 			console.log('error', e)

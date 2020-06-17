@@ -1,6 +1,6 @@
 $$.control.registerControl('messagePage', {
 
-	template: {gulp_inject: './message.html'},
+	template: { gulp_inject: './message.html' },
 
 	deps: ['app.mails', 'breizbot.scheduler', 'breizbot.pager', 'breizbot.files'],
 
@@ -10,9 +10,9 @@ $$.control.registerControl('messagePage', {
 		item: null
 	},
 
-	init: function(elt, srvMail, scheduler, pager, srvFiles) {
+	init: function (elt, srvMail, scheduler, pager, srvFiles) {
 
-		const {currentAccount, mailboxName, item} = this.props
+		const { currentAccount, mailboxName, item } = this.props
 
 		const savingDlg = $$.ui.progressDialog()
 
@@ -32,22 +32,22 @@ $$.control.registerControl('messagePage', {
 				text: '',
 				item,
 				attachments: [],
-				show1: function() {
+				show1: function () {
 					return this.item.to.length > 0
 				},
-				show2: function() {
+				show2: function () {
 					return this.attachments.length > 0
 				},
-				show3: function() {
+				show3: function () {
 					return this.embeddedImages.length > 0
 				},
-				show4: function() {
+				show4: function () {
 					return !this.loading && this.isHtml
 				},
-				show5: function() {
+				show5: function () {
 					return !this.loading && !this.isHtml
 				},
-				getSize: function(scope) {
+				getSize: function (scope) {
 					let size = scope.$i.size
 					//console.log('getSize', size)
 					size /= 1024
@@ -61,11 +61,11 @@ $$.control.registerControl('messagePage', {
 				}
 			},
 			events: {
-				openAttachment: async function(ev) {
+				openAttachment: async function (ev) {
 					ev.preventDefault()
 					const idx = $(this).closest('li').index()
 					const info = ctrl.model.attachments[idx]
-					const {partID, type, subtype} = info
+					const { partID, type, subtype } = info
 
 					console.log('openAttachments', info)
 
@@ -79,13 +79,13 @@ $$.control.registerControl('messagePage', {
 							title: info.name,
 							props: {
 								type: $$.util.getFileType(info.name),
-								url	
+								url
 							},
 							buttons: {
 								save: {
 									title: 'Save',
 									icon: 'fa fa-save',
-									onClick: async function() {
+									onClick: async function () {
 										const blob = $$.util.dataURLtoBlob(url)
 										try {
 											savingDlg.show()
@@ -105,18 +105,18 @@ $$.control.registerControl('messagePage', {
 										}
 									}
 								}
-							}							
-						})							
+							}
+						})
 					}
 					else {
 						$$.ui.showConfirm({
-							title: 'Open Attachment', 
+							title: 'Open Attachment',
 							okText: 'Yes',
 							cancelText: 'No',
 							content: `This attachment cannot be open with NetOS<br>
 								Do you want to download it ?`
-							},
-							async function() {
+						},
+							async function () {
 								console.log('OK')
 								waitDlg.show()
 								const message = await srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID)
@@ -126,11 +126,11 @@ $$.control.registerControl('messagePage', {
 								$$.util.downloadUrl(url, info.name)
 							}
 						)
-					
+
 					}
 
 				},
-				onToggleDiv: function(ev) {
+				onToggleDiv: function (ev) {
 					console.log('onAttachClick')
 					const $i = $(this).find('i')
 					const $ul = $(this).siblings('ul')
@@ -139,19 +139,19 @@ $$.control.registerControl('messagePage', {
 						$ul.slideDown()
 					}
 					else {
-						$i.removeClass('fa-caret-down').addClass('fa-caret-right')						
+						$i.removeClass('fa-caret-down').addClass('fa-caret-right')
 						$ul.slideUp()
 					}
 				},
-				onEmbeddedImages: function(ev) {
+				onEmbeddedImages: function (ev) {
 					ev.preventDefault()
 					const $iframe = $(ctrl.scope.iframe.get(0).contentWindow.document)
 
-					const {embeddedImages} = ctrl.model
-					ctrl.setData({embeddedImages: []})
+					const { embeddedImages } = ctrl.model
+					ctrl.setData({ embeddedImages: [] })
 
 					embeddedImages.forEach(async (e) => {
-						const {type, subtype, partID, cid} = e
+						const { type, subtype, partID, cid } = e
 						const message = await srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID)
 						const url = $$.util.buildDataURL(type, subtype, message.data)
 						const $img = $iframe.find(`img[src="cid:${cid}"]`)
@@ -159,24 +159,24 @@ $$.control.registerControl('messagePage', {
 					})
 
 				},
-				onFrameLoaded: function(ev) {
+				onFrameLoaded: function (ev) {
 					console.log('onFrameLoaded')
 					const $iframe = $(this.contentWindow.document)
 					$iframe.find('a')
-					.attr('target', '_blank')
-					.on('click', function(ev) {
-						const href = $(this).attr('href')
-						if (href.startsWith('https://youtu.be/')) {
-							ev.preventDefault()
-							scheduler.openApp('youtube', {url: href})
-						}
-					})
+						.attr('target', '_blank')
+						.on('click', function (ev) {
+							const href = $(this).attr('href')
+							if (href.startsWith('https://youtu.be/')) {
+								ev.preventDefault()
+								scheduler.openApp('youtube', { url: href })
+							}
+						})
 
 				},
-				onAddContact: function(ev) {
+				onAddContact: function (ev) {
 					console.log('onAddContact')
 					ev.preventDefault()
-					const {item} = ctrl.model
+					const { item } = ctrl.model
 					const idx = $(this).closest('li').index()
 					let from = (idx < 0) ? item.from : item.to[idx]
 					pager.pushPage('addContactPage', {
@@ -200,20 +200,38 @@ $$.control.registerControl('messagePage', {
 		async function openMessage() {
 			const message = await srvMail.openMessage(currentAccount, mailboxName, item.seqno, partID)
 			console.log('message', message)
-	
-	
-			const {text, attachments, embeddedImages} = message
+
+
+			const { text, attachments, embeddedImages } = message
 
 			attachments.forEach((a) => {
-				a.canOpen = $$.util.getFileType(a.name) != undefined && a.encoding.toUpperCase() == 'BASE64'
+				a.canOpen = canOpen(a)
 
 			})
-	
-	
-			ctrl.setData({text, attachments, embeddedImages, loading:false, isHtml})	
+
+
+			ctrl.setData({ text, attachments, embeddedImages, loading: false, isHtml })
 		}
 
 		openMessage()
+
+		function canOpen(info) {
+			const { encoding, name, subtype } = info
+			if (encoding.toUpperCase() != 'BASE64') {
+				return false
+			}
+			const type = $$.util.getFileType(name)
+			if (type == undefined) {
+				if (subtype == 'pdf') {
+					info.name += '.pdf'
+					return true
+				}
+
+				return false
+			}
+			return true
+
+		}
 
 		function replyMessage(text, to) {
 			//console.log('replyMessage', text)
@@ -227,7 +245,7 @@ $$.control.registerControl('messagePage', {
 						html: `<pre>${text}</pre>`
 					}
 				}
-			})			
+			})
 		}
 
 		function forwardMessage(text) {
@@ -241,29 +259,29 @@ $$.control.registerControl('messagePage', {
 						html: `<pre>${text}</pre>`
 					}
 				}
-			})			
+			})
 		}
 
-		this.getButtons = function() {
+		this.getButtons = function () {
 			return {
 				reply: {
 					icon: 'fa fa-reply',
 					title: 'Reply',
-					onClick: function() {
+					onClick: function () {
 						reply('reply')
 					}
 				},
 				replyAll: {
 					icon: 'fa fa-reply-all',
 					title: 'Reply All',
-					onClick: function() {
+					onClick: function () {
 						reply('replyAll')
 					}
 				},
 				forward: {
 					icon: 'fa fa-share-square',
 					title: 'Forward',
-					onClick: async function() {
+					onClick: async function () {
 						const HEADER = '\n\n----- Forwarded mail -----\n'
 
 
@@ -271,19 +289,19 @@ $$.control.registerControl('messagePage', {
 							const message = await srvMail.openMessage(currentAccount, mailboxName, item.seqno, item.partID.text)
 							forwardMessage(HEADER + message.text)
 						}
-		
+
 						else if (!ctrl.model.isHtml) {
 							forwardMessage(HEADER + ctrl.model.text)
 						}
 						else {
 							forwardMessage('')
 						}
-		
+
 					}
 				}
-			}				
+			}
 		}
-		
+
 		async function reply(action) {
 			console.log('reply')
 
@@ -293,7 +311,7 @@ $$.control.registerControl('messagePage', {
 
 				let to = item.from.email
 
-				if (action == 'replyAll' && item.to.length > 0) {					
+				if (action == 'replyAll' && item.to.length > 0) {
 					to += ',' + item.to.map((a) => a.email).join(',')
 				}
 

@@ -9,13 +9,20 @@ require('colors')
 
 function decodeString(name) {
   name = name.trim()
-  //console.log('decodeString', name)
+  console.log('decodeString', name)
 
   if (name.toUpperCase().startsWith('=?UTF-8?B?')) {
     const t = name.split('?')
     //console.log('t', t)
     const buff = new Buffer(t[3], 'base64')
     name = buff.toString('utf8')
+  }
+
+  if (name.toUpperCase().startsWith('=?ISO-8859-1?Q?')) {
+    const t = name.split('?')
+    name = quotedPrintable.decode(t[3])
+
+    name = iconv.decode(name, 'ISO-8859-1')
   }
 
   if (name.toUpperCase().startsWith('=?UTF-8?Q?')) {
@@ -26,7 +33,7 @@ function decodeString(name) {
 
   }
 
-  //console.log('decoded string', name)
+  console.log('decoded string', name)
 
   return name
 }

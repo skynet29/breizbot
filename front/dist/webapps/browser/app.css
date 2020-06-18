@@ -2,6 +2,9 @@
   display: flex;
   flex-direction: column;
   padding: 10px; }
+  .rootPage > .waiting {
+    margin-top: 10px;
+    margin-bottom: 15px; }
   .rootPage > .toolbar {
     margin-top: 10px;
     margin-bottom: 15px; }

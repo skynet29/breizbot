@@ -13,6 +13,7 @@ $$.control.registerControl('rootPage', {
 				results: [],
 				theme: 'web',
 				query: '',
+				waiting: false,
 				isWeb: function () { return this.theme == 'web' },
 				isImages: function () { return this.theme == 'images' },
 				getUrl: function (scope) { return `https:${scope.$i.thumbnail}` }
@@ -114,10 +115,12 @@ $$.control.registerControl('rootPage', {
 			const { theme, query } = ctrl.model
 			if (query != '') {
 				try {
+					ctrl.setData({ waiting: true })
 					const results = await http.post(`/search`, { query, theme })
 					console.log('results', results)
 					ctrl.setData({
-						results
+						results,
+						waiting: false
 					})
 				}
 				catch (e) {

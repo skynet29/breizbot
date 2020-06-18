@@ -8,7 +8,7 @@
 </div>	
 <div bn-if="isWeb" class="test">
 	<div class="webResults w3-light-grey" >
-		<div bn-each="results" bn-event="contextmenuchange.item: onContextMenu" bn-lazzy="10">
+		<div bn-each="results" bn-event="contextmenuchange.item: onContextMenu" bn-lazzy="20">
 			<div class="w3-card-2 item" 
 				bn-control="brainjs.contextmenu" 
 				bn-data="{
@@ -31,7 +31,7 @@
 
 <div bn-if="isImages" class="test" bn-event="click.item: onImageClick">
 	<div class="imagesResults" >
-		<div bn-each="results" bn-lazzy="10" class="items">
+		<div bn-each="results" bn-lazzy="20" class="items">
 			<div bn-style="{width: $scope.$i.thumb_width, height: $scope.$i.thumb_height}" class="item w3-card-2">
 				<img bn-attr="{src: getUrl}" style="display: none;">
 			</div>

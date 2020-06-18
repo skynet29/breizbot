@@ -28,17 +28,19 @@ module.exports = function (ctx, router) {
 		let ret = []
 
 		try {
-			while (ret.length  < 50) {
+			while(true) {
 				const rep = await fetch(`https://api.qwant.com/api/search/${theme}?` + querystring.stringify(params))
 				const json = await rep.json()
 				console.log('results', json.data)
 				if (json.data.error_code) {
-					throw('error code ' + json.data.error_code)
+					throw ('error code ' + json.data.error_code)
 				}
-				const {items} = json.data.result
+				const { items, total } = json.data.result
 				params.offset += items.length
-				ret = ret.concat(items)	
+				ret = ret.concat(items)
+				if (ret.length >= Math.min(total, 50)) break
 			}
+
 			res.json(ret)
 		}
 		catch (e) {

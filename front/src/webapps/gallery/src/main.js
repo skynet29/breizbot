@@ -10,7 +10,7 @@ $$.control.registerControl('rootPage', {
 			pager.pushPage('breizbot.files', {
 				title,
 				props: {
-					filterExtension: '.jpg',
+					filterExtension: 'jpg,png',
 					friendUser
 				},
 				events: {

@@ -27,7 +27,7 @@ $$.control.registerControl('rootPage', {
 			pager.pushPage('breizbot.files', {
 				title,
 				props: {
-					filterExtension: '.mp3',
+					filterExtension: 'mp3',
 					getMP3Info: true,
 					friendUser
 				},

@@ -23,6 +23,9 @@ $$.control.registerControl('breizbot.pdf', {
 				}
 			},
 			events: {
+				onPrint: function() {
+					ctrl.scope.pdf.print()
+				},
 				onNextPage: async function (ev) {
 					//console.log('onNextPage')
 					ctrl.setData({ wait: true })

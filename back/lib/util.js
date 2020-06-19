@@ -7,6 +7,7 @@ const fs = require('fs-extra')
 const NodeID3 = require('node-id3')
 const config = require('./config')
 const { ObjectID } = require('mongodb')
+const db = require('./db')
 
 
 const cloudPath = config.CLOUD_HOME
@@ -14,6 +15,19 @@ const cloudPath = config.CLOUD_HOME
 function getFilePath(user, filePath, friendUser) {
 	let rootPath = path.join(cloudPath, user, filePath)
 	if (friendUser != undefined && friendUser != '') {
+		rootPath = path.join(cloudPath, friendUser, 'share', filePath)
+	}
+	return rootPath
+}
+
+async function getFilePathChecked(user, filePath, friendUser) {
+	let rootPath = path.join(cloudPath, user, filePath)
+	if (friendUser != undefined && friendUser != '') {
+		const info = await db.getFriendInfo(friendUser, user)
+		const group = filePath.split('/')[1]
+		if (info == null || !info.groups.includes(group)) {
+			throw 'access not authroized'
+		}
 		rootPath = path.join(cloudPath, friendUser, 'share', filePath)
 	}
 	return rootPath
@@ -131,5 +145,6 @@ module.exports = {
 	convertToMP3,
 	getFileInfo,
 	getFilePath,
+	getFilePathChecked,
 	dbObjectID: function (id) { return new ObjectID(id) }
 }

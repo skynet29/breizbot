@@ -333,31 +333,33 @@ router.post('/copy', function (req, res) {
 
 
 
-router.get('/load', function (req, res) {
+router.get('/load', async function (req, res) {
 	//console.log('load req', req.query)
 	const { fileName, friendUser } = req.query
 	const user = req.session.user
+	try {
+		const filePath = await util.getFilePathChecked(user, fileName, friendUser)
 
-	if (friendUser != undefined && friendUser != '') {
-		res.sendFile(path.join(cloudPath, friendUser, 'share', fileName))
+		res.sendFile(filePath)	
 	}
-	else {
-		res.sendFile(path.join(cloudPath, user, fileName))
+	catch(e) {
+		res.status(400).send(e)
 	}
 })
 
-router.get('/loadThumbnail', function (req, res) {
+router.get('/loadThumbnail', async function (req, res) {
 	//console.log('load req', req.query)
 	const { fileName, size, friendUser } = req.query
 	const user = req.session.user
 
-	if (friendUser != undefined && friendUser != '') {
-		genThumbnail(path.join(cloudPath, friendUser, 'share', fileName), res, size)
-	}
-	else {
-		genThumbnail(path.join(cloudPath, user, fileName), res, size)
-	}
+	try {
+		const filePath = await util.getFilePathChecked(user, fileName, friendUser)
 
+		genThumbnail(util.getFilePath(user, fileName, friendUser), res, size)	
+	}
+	catch(e) {
+		res.status(400).send(e)
+	}	
 })
 
 module.exports = router

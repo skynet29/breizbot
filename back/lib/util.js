@@ -8,6 +8,7 @@ const NodeID3 = require('node-id3')
 const config = require('./config')
 const { ObjectID } = require('mongodb')
 const db = require('./db')
+const ExifImage = require('exif').ExifImage
 
 
 const cloudPath = config.CLOUD_HOME
@@ -70,6 +71,22 @@ function readID3(filePath) {
 
 }
 
+function getExif(fileName) {
+	return new Promise((resolve, reject)=> {
+		try {
+			new ExifImage({ image: fileName }, function (error, exifData) {
+				if (error)
+					reject(error.message)
+				else
+					resolve(exifData)
+			})			
+		}
+		catch(e) {
+			reject(error.message)
+		}
+	})
+}
+
 async function getFileInfo(filePath, options) {
 	options = options || {}
 	const statInfo = await fs.lstat(filePath)
@@ -86,6 +103,16 @@ async function getFileInfo(filePath, options) {
 		const tags = await readID3(filePath)
 
 		ret.mp3 = tags
+	}
+
+	if (!ret.folder && options.getExifInfo === true && filePath.toLowerCase().endsWith('.jpg')) {
+		try {
+			const exifInfo = await getExif(filePath)
+			ret.exif = exifInfo
+		}
+		catch(e) {
+			console.log('ExifError', e)
+		}
 	}
 
 	if (ret.isImage) {

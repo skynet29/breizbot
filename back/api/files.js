@@ -355,7 +355,7 @@ router.get('/loadThumbnail', async function (req, res) {
 	try {
 		const filePath = await util.getFilePathChecked(user, fileName, friendUser)
 
-		genThumbnail(util.getFilePath(user, fileName, friendUser), res, size)	
+		genThumbnail(filePath, res, size)	
 	}
 	catch(e) {
 		res.status(400).send(e)

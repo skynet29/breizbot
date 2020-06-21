@@ -16,11 +16,11 @@
 
 			this.registeredTopics = {}
 
-			let {hostname, pathname, protocol} = location
+			let {host, pathname, protocol} = location
 			protocol= (protocol == 'http:') ? 'ws:' : 'wss:'
 
 
-			this.url = `${protocol}//${hostname}/hmi${pathname}`
+			this.url = `${protocol}//${host}/hmi${pathname}`
 		}
 
 		checkPing() {

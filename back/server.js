@@ -8,6 +8,7 @@ const parseUrl = require('url').parse
 const helmet = require('helmet')
 const util = require('./lib/util')
 const events = require('./lib/events')
+const http = require('http')
 
 
 require('colors')
@@ -141,7 +142,6 @@ app.use(express.static(path.join(__dirname, '../front/dist')))
 if (config.USESSL) {
 	const Greenlock = require('greenlock');
 	const redir = require('redirect-https')();
-	const http = require('http')
 	const https = require('https')	
 
 	var greenlock = Greenlock.create({
@@ -163,11 +163,9 @@ if (config.USESSL) {
 	wss.init(server, store)
 }
 else {
-	app.listen(config.httpPort, function() {
-		console.log('Server listening on port ' + config.httpPort)
-	})	
+	const server = http.createServer(app).listen(config.httpPort)	
 
-	wss.init({}, store)
+	wss.init(server, store)
 }
 
 }

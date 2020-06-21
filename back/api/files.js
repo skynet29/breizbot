@@ -73,7 +73,7 @@ router.post('/list', async function (req, res) {
 					const entries = await fg(filterPath)	
 					return entries.length > 0
 				}
-				const regex = new RegExp(`\\.(${ext.join('|')})$`, 'g')
+				const regex = new RegExp(`\\.(${ext.join('|')})$`, 'i')
 				const ret = regex.test(info.name)
 				console.log('name', info.name, ret)
 				return ret

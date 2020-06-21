@@ -66,7 +66,6 @@ router.post('/list', async function (req, res) {
 
 		if (typeof options.filterExtension == 'string') {
 			const ext = options.filterExtension.split(',')
-			const regex = new RegExp(`\\.(${ext.join('|')})$`, 'g')
 			const results = await Promise.all(ret.map(async (info) => {
 				if (info.folder) {
 					const filter = (ext.length == 1) ? ext[0] : `{${ext.join(',')}}`
@@ -74,6 +73,7 @@ router.post('/list', async function (req, res) {
 					const entries = await fg(filterPath)	
 					return entries.length > 0
 				}
+				const regex = new RegExp(`\\.(${ext.join('|')})$`, 'g')
 				const ret = regex.test(info.name)
 				console.log('name', info.name, ret)
 				return ret

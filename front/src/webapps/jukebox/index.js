@@ -113,7 +113,7 @@ module.exports = function (ctx, router) {
 			limit: 1
 		}
 
-		console.log('query', params.q)
+		//console.log('query', params.q)
 
 		try {
 			let rep = await fetch('https://api.deezer.com/search?' + querystring.stringify(params))
@@ -124,10 +124,10 @@ module.exports = function (ctx, router) {
 			//console.log('info', info)
 			if (info != undefined) {
 				const album = info.album.id
-				console.log('album', album)
+				//console.log('album', album)
 				rep = await fetch('https://api.deezer.com/album/' + album)
 				json = await rep.json()
-				console.log('json', json)
+				//console.log('json', json)
 				const genre = (json.genres.data[0]) ? json.genres.data[0].name : 'unknown'
 
 				ret = {

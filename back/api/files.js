@@ -74,7 +74,9 @@ router.post('/list', async function (req, res) {
 					const entries = await fg(filterPath)	
 					return entries.length > 0
 				}
-				return regex.test(info.name)
+				const ret = regex.test(info.name)
+				console.log('name', info.name, ret)
+				return ret
 			}))
 
 			ret = ret.filter((f, idx) => results[idx])

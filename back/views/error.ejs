@@ -12,9 +12,15 @@
 	}
 </style>	
 
+<script>
+	function reload() {
+		window.parent.postMessage({type: 'reload'}, location.href)
+	}
+</script>
+
 <div id="main">
 	<p class="message"><%= message %></p>
-	<a href="/" class="w3-btn w3-blue">Go Home</a>
+	<a href="javascript:void(0)" onclick="reload()" class="w3-btn w3-blue">Reconnect</a>
 </div>
 
 

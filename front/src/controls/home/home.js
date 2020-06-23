@@ -204,6 +204,9 @@ $$.control.registerControl('breizbot.home', {
 				const { appName, appParams } = data
 				openApp(appName, appParams)
 			}
+			if (type == 'reload') {
+				location.reload()
+			}
 
 		}, false)
 

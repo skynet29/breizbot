@@ -34,104 +34,49 @@
 	}
 
 	$$.control.registerControl('breizbot.files', {
-		deps: ['breizbot.files', 'breizbot.users'],
+		deps: ['breizbot.files'],
 		props: {
 			$pager: null,
-			showToolbar: false,
+			selectionEnabled: false,
 			imageOnly: false,
 			filterExtension: undefined,
 			getMP3Info: false,
 			friendUser: '',
-			mp3Filters: null
+			mp3Filters: null,
+			menuItems: function (data) {
+				return {}
+			}
 		},
 
 		template: { gulp_inject: './files.html' },
 
-		init: function (elt, srvFiles, users) {
+		init: function (elt, srvFiles) {
 
 			const thumbnailSize = '100x?'
 			const maxUploadSize = 10 * 1024 * 2014 // 10 Mo
 
 			let selected = false
-			let sharingGroups = []
 
 			let {
-				showToolbar,
+				selectionEnabled,
 				filterExtension,
 				friendUser,
 				imageOnly,
 				getMP3Info,
-				mp3Filters
+				mp3Filters,
+				menuItems
 			} = this.props
-
-			if (friendUser != '') {
-				showToolbar = false
-			}
-
-			function getSelFiles() {
-				const selFiles = []
-				elt.find('.check:checked').each(function () {
-					const idx = $(this).closest('.thumbnail').index()
-					const { name, folder } = ctrl.model.files[idx]
-
-					selFiles.push({ fileName: ctrl.model.rootDir + name, idx, folder })
-				})
-				//console.log('selFiles', selFiles)	
-				return selFiles
-			}
-
-
-			function getNbSelFiles() {
-				return elt.find('.check:checked').length
-			}
-
-			function toggleSelection() {
-				selected = !selected
-				elt.find('.check').prop('checked', selected)
-			}
-
-			if (showToolbar) {
-				const resizeObserver = new ResizeObserver(entries => {
-					ctrl.model.isMobileDevice = $$.util.isMobileDevice()
-					ctrl.updateNodeTree('toolbar')
-				})
-
-				resizeObserver.observe(elt.get(0));
-
-			}
-
 
 			const ctrl = $$.viewController(elt, {
 
 				data: {
-					getShareGroups: function () {
-						return function () {
-							const items = {
-								$add: { name: 'add to new group' }
-							}
-							if (sharingGroups.length != 0) {
-								items.sep = '----'
-								sharingGroups.forEach((name) => {
-									items[name] = { name }
-								})
-							}
-							return items
-
-						}
+					getItems: function (scope) {
+						return menuItems(scope.f)
 					},
-					downloads: [],
-					hasDownloads: function () {
-						return this.downloads.length > 0
-					},
-					isMobileDevice: false,
 					loading: false,
-					showToolbar,
+					selectionEnabled,
 					rootDir: '/',
 					files: [],
-					selectedFiles: [],
-					operation: 'none',
-					nbSelection: 0,
-					isShareSelected: false,
 					mp3Filters,
 					info: function () {
 						let nbFiles = 0
@@ -221,31 +166,6 @@
 						return parseInt(scope.f.mp3.year)
 					},
 
-					getItems: function (scope) {
-						const ret = {}
-						if (showToolbar && scope.f.name != '..') {
-							ret.delete = { name: 'Delete', icon: 'fas fa-trash' }
-							ret.rename = { name: 'Rename', icon: 'fas fa-i-cursor' }
-							if (scope.f.isImage) {
-								ret.makeResizedCopy = { name: 'Make resized copy', icon: 'fas fa-compress-arrows-alt' }
-							}
-							if (!scope.f.folder) {
-								ret.download = { name: 'Download', icon: 'fas fa-download' }
-							}
-							if (scope.f.name.toLowerCase().endsWith('.mp4')) {
-								ret.convertToMP3 = { name: 'Convert to MP3' }
-							}
-							if (scope.f.folder) {
-								ret.zipFolder = { name: 'Zip Folder', icon: 'fas fa-compress' }
-							}
-							if (!scope.f.folder && scope.f.name.endsWith('.zip')) {
-								ret.unzipFile = { name: 'Unzip File', icon: 'fas fa-expand-alt' }
-							}
-
-						}
-						return ret
-
-					},
 					getThumbnailUrl: function (scope) {
 						return srvFiles.fileThumbnailUrl(this.rootDir + scope.f.name, thumbnailSize, friendUser)
 					},
@@ -288,68 +208,11 @@
 						const date = new Date(scope.f.mtime).toLocaleDateString()
 						return 'Last Modif: ' + date
 
-					},
-
-					prop1: function () {
-						return { disabled: this.nbSelection == 0 }
-					},
-					prop2: function () {
-						return { disabled: this.nbSelection == 0 || this.rootDir.startsWith('/share/') || this.isShareSelected }
-					},
-					prop3: function () {
-						return { disabled: this.selectedFiles.length == 0 }
 					}
+
 
 				},
 				events: {
-					onShareSelected: async function (ev, data) {
-						console.log('onShareSelected', data)
-						let name = data.cmd
-						try {
-							if (name == '$add') {
-								name = await $$.ui.showPrompt({ title: 'Add Group', label: 'Name' })
-								if (name != null) {
-									await users.addSharingGroup(name)
-									await getSharingGroups()
-								}
-								else {
-									return
-								}
-							}
-							const selFiles = getSelFiles().map((i) => i.fileName)
-							await srvFiles.shareFiles(selFiles, name)
-							ctrl.setData({ selectedFiles: [], operation: 'none' })
-							loadData()
-						}
-						catch (resp) {
-							console.log('resp', resp)
-							//ctrl.setData({selectedFiles: [], operation: 'none'})
-							$$.ui.showAlert({
-								content: resp.responseText,
-								title: 'Error'
-							})
-						}
-
-
-					},
-					onToolbarContextMenu: function (ev, data) {
-						//console.log('onToolbarContextMenu', data)
-						elt.find(`button[data-cmd=${data.cmd}]`).click()
-					},
-					onToggleDownload: function () {
-						console.log('onToggleDownload')
-						const $i = $(this).find('i')
-						const panel = $(this).siblings('.downloadItems')
-						if ($i.hasClass('fa-caret-right')) {
-							$i.removeClass('fa-caret-right').addClass('fa-caret-down')
-							panel.slideDown()
-						}
-						else {
-							$i.removeClass('fa-caret-down').addClass('fa-caret-right')
-							panel.slideUp()
-						}
-
-					},
 					onPathItem: function (ev) {
 						const pathItem = $(this).data('info')
 						console.log('onPathItem', pathItem)
@@ -357,47 +220,15 @@
 
 						loadData(pathItem == '' ? '/' : '/' + pathItem + '/')
 					},
-					onReload: function (ev) {
-						loadData()
-					},
 
 					onContextMenu: async function (ev, data) {
-						const idx = $(this).closest('.thumbnail').index()
-						const info = ctrl.model.files[idx]
 						const { cmd } = data
+						const idx = $(this).closest('.thumbnail').index()
+						const { name } = ctrl.model.files[idx]
 
 						const { rootDir } = ctrl.model
-
-						if (cmd == 'download') {
-							const url = srvFiles.fileUrl(rootDir + info.name)
-							$$.util.downloadUrl(url, info.name)
-						}
-
-						if (cmd == 'rename') {
-							rename(info, idx)
-						}
-
-						if (cmd == 'makeResizedCopy') {
-							makeResizedCopy(info, idx)
-						}
-
-						if (cmd == 'convertToMP3') {
-							convertToMP3(info, idx)
-						}
-
-						if (cmd == 'zipFolder') {
-							zipFolder(info, idx)
-						}
-
-						if (cmd == 'unzipFile') {
-							unzipFile(info, idx)
-						}
-
-						if (cmd == 'delete') {
-							const { name, folder } = info
-							deleteFiles([{ fileName: rootDir + name, idx, folder }])
-						}
-
+						ev.stopPropagation()
+						elt.trigger('contextmenuItem', { cmd, idx, name, rootDir })
 
 					},
 
@@ -417,12 +248,14 @@
 					onCheckClick: function (ev) {
 						const idx = $(this).closest('.thumbnail').index()
 						const info = ctrl.model.getFiles()[idx]
-
+						let isShareSelected = false
 						if (info.name == 'share' && ctrl.model.rootDir == '/') {
-							ctrl.model.isShareSelected = $(this).getValue()
+							isShareSelected = $(this).getValue()
 						}
 
-						ctrl.setData({ nbSelection: getNbSelFiles() })
+						ev.stopPropagation()
+						elt.trigger('selchange', { isShareSelected })
+
 					},
 					onFolderClick: function (ev) {
 
@@ -430,170 +263,25 @@
 						const info = ctrl.model.getFiles()[idx]
 
 						const dirName = info.name
+						let newDir
 						//console.log('onFolderClick', dirName)
 						if (dirName == '..') {
 							const split = ctrl.model.rootDir.split('/')
 							split.pop()
 							split.pop()
-							loadData(split.join('/') + '/')
-						}
-						else {
-							loadData(ctrl.model.rootDir + dirName + '/')
-						}
-					},
-					onCreateFolder: async function () {
-						var rootDir = ctrl.model.rootDir
-						const folderName = await $$.ui.showPrompt({
-							label: 'Folder name:',
-							title: 'New Folder'
-						})
-						console.log('folderName', folderName)
-						if (folderName == null) return
-
-						try {
-							const resp = await srvFiles.mkdir(rootDir + folderName)
-							console.log('resp', resp)
-							insertFile(resp)
-						}
-						catch (resp) {
-							console.log('resp', resp)
-							$$.ui.showAlert({
-								content: resp.responseText,
-								title: 'Error'
-							})
-						}
-					},
-					onTogleSelection: function () {
-						toggleSelection()
-						ctrl.setData({ nbSelection: getNbSelFiles() })
-					},
-
-					onDeleteFiles: function (ev) {
-
-						const selFiles = getSelFiles()
-
-						if (selFiles.length == 0) {
-							$$.ui.showAlert({
-								title: 'Delete files',
-								content: 'No files selected'
-							})
-							return
-						}
-
-						deleteFiles(selFiles)
-
-					},
-					onCutFiles: function (ev) {
-						console.log('onCutFiles')
-						ctrl.setData({
-							selectedFiles: getSelFiles().map((i) => i.fileName),
-							operation: 'cut'
-						})
-					},
-
-					onCopyFiles: function (ev) {
-						console.log('onCopyFiles')
-						ctrl.setData({
-							selectedFiles: getSelFiles().map((i) => i.fileName),
-							operation: 'copy'
-						})
-
-					},
-
-					onPasteFiles: async function (ev) {
-						console.log('onPasteFiles')
-						const { rootDir, selectedFiles, operation } = ctrl.model
-
-						try {
-							if (operation == 'copy') {
-								await srvFiles.copyFiles(selectedFiles, rootDir)
-							}
-							else {
-								await srvFiles.moveFiles(selectedFiles, rootDir)
-							}
-							ctrl.setData({ selectedFiles: [], operation: 'none' })
+							newDir = split.join('/') + '/'
 							loadData()
 						}
-						catch (resp) {
-							console.log('resp', resp)
-							//ctrl.setData({selectedFiles: [], operation: 'none'})
-							$$.ui.showAlert({
-								content: resp.responseText,
-								title: 'Error'
-							})
+						else {
+							newDir = ctrl.model.rootDir + dirName + '/'
 						}
-					},
-					onImportFile: function (ev) {
-
-						$$.util.openFileDialog((files) => {
-							console.log('files', files)
-							for(const file of files) {
-								uploadFile(file)
-							}
-
-						}, true)
-
+						ev.stopPropagation()
+						elt.trigger('dirchange', { newDir })
+						loadData(newDir)
 					}
 
 				}
 			})
-
-
-			async function uploadFile(file) {
-				try {
-					const data = {
-						fileName: file.name,
-						percentage: 0
-					}
-
-					const { downloads, rootDir } = ctrl.model
-					downloads.push(data)
-					ctrl.updateNodeTree('downloads')
-
-					await srvFiles.uploadFile(file, file.name, ctrl.model.rootDir, function (percentComplete) {
-						data.percentage = percentComplete
-						ctrl.updateNodeTree('downloads')
-					})
-					console.log('Download Finished: ', data.fileName)
-					const idx = downloads.indexOf(data)
-					downloads.splice(idx, 1)
-					ctrl.updateNodeTree('downloads')
-					const fileInfo = await srvFiles.fileInfo(rootDir + data.fileName)
-					insertFile(fileInfo)
-				}
-				catch (resp) {
-					console.log('resp', resp)
-					$$.ui.showAlert({ content: resp.responseText, title: 'Error' })
-				}
-
-			}
-
-			function deleteFiles(fileNames) {
-				console.log('deleteFiles', fileNames)
-				$$.ui.showConfirm({
-					content: 'Are you sure ?',
-					title: 'Delete files'
-				}, async function () {
-					try {
-						const resp = await srvFiles.removeFiles(fileNames.map((i) => i.fileName))
-						console.log('resp', resp)
-						//loadData()	
-						fileNames.reverse().forEach((i) => {
-							ctrl.removeArrayItem('files', i.idx, 'files')
-						})
-						ctrl.updateNode('info')
-						console.log('files', ctrl.model.files)
-					}
-					catch (resp) {
-						console.log('resp', resp)
-						$$.ui.showAlert({
-							content: resp.responseText,
-							title: 'Error'
-						})
-					}
-				})
-			}
-
 
 			async function loadData(rootDir, resetFilters) {
 				if (rootDir == undefined) {
@@ -626,125 +314,65 @@
 
 			}
 
-			async function unzipFile(info, idx) {
-				try {
-					const resp = await srvFiles.unzipFile(ctrl.model.rootDir, info.name)
-					//console.log('resp', resp)
-					loadData()
-				}
-				catch (resp) {
-					console.log('resp', resp)
-					$$.ui.showAlert({
-						content: resp.responseText,
-						title: 'Error'
-					})
-				}
-
-			}
-
-			async function zipFolder(info, idx) {
-				try {
-					const resp = await srvFiles.zipFolder(ctrl.model.rootDir, info.name)
-					//console.log('resp', resp)
-					ctrl.insertArrayItemAfter('files', idx, resp, 'files')
-					console.log('files', ctrl.model.files)
-					ctrl.updateNode('info')
-
-				}
-				catch (resp) {
-					console.log('resp', resp)
-					$$.ui.showAlert({
-						content: resp.responseText,
-						title: 'Error'
-					})
-				}
-			}
-
-			async function convertToMP3(info, idx) {
-				try {
-					const resp = await srvFiles.convertToMP3(ctrl.model.rootDir, info.name)
-					//console.log('resp', resp)
-					ctrl.insertArrayItemAfter('files', idx, resp, 'files')
-					ctrl.updateNode('info')
-					console.log('files', ctrl.model.files)
-
-				}
-				catch (resp) {
-					console.log('resp', resp)
-					$$.ui.showAlert({
-						content: resp.responseText,
-						title: 'Error'
-					})
-				}
-			}
-
-			async function makeResizedCopy(info, idx) {
-				const percentage = await $$.ui.showPrompt({
-					label: 'Rescale percentage:',
-					title: 'Make resized copy',
-					attrs: { min: 10, max: 90, type: 'number' },
-					value: 50
-				})
-
-				if (percentage != null) {
-					const { rootDir } = ctrl.model
-					try {
-						const resp = await srvFiles.resizeImage(rootDir, info.name, percentage + '%')
-						//console.log('resp', resp)
-						ctrl.insertArrayItemAfter('files', idx, resp, 'files')
-						console.log('files', ctrl.model.files)
-						ctrl.updateNode('info')
-
-					}
-					catch (resp) {
-						console.log('resp', resp)
-						$$.ui.showAlert({
-							content: resp.responseText,
-							title: 'Error'
-						})
-					}
-				}
-
-			}
-
-			async function rename(info, idx) {
-				const oldFileName = info.name
-				const newFileName = await $$.ui.showPrompt({ label: 'New name', title: 'Rename', value: oldFileName })
-				console.log('newFileName', newFileName)
-				if (newFileName != null && newFileName != oldFileName) {
-					try {
-						const resp = await srvFiles.renameFile(ctrl.model.rootDir, oldFileName, newFileName)
-						//console.log('resp', resp)
-						ctrl.updateArrayItem('files', idx, resp, 'files')
-						console.log('files', ctrl.model.files)
-					}
-					catch (resp) {
-						console.log('resp', resp)
-						$$.ui.showAlert({
-							content: resp.responseText,
-							title: 'Error'
-						})
-
-					}
-				}
-			}
-
 			loadData()
-			getSharingGroups()
 
-			async function getSharingGroups() {
-				sharingGroups = await users.getSharingGroups()
-				console.log('sharingGroups', sharingGroups)
+			this.getSelFiles = function () {
+				const selFiles = []
+				elt.find('.check:checked').each(function () {
+					const idx = $(this).closest('.thumbnail').index()
+					const { name, folder } = ctrl.model.files[idx]
+
+					selFiles.push({ fileName: ctrl.model.rootDir + name, idx, folder })
+				})
+				//console.log('selFiles', selFiles)	
+				return selFiles
 			}
 
+			this.getSelFileNames = () => {
+				return this.getSelFiles().map((f) => f.fileName)
+			}
 
-			function insertFile(fileInfo) {
-				let idx = ctrl.model.getFiles().filter((f) => f.folder).length
-				//console.log('idx', idx)
-				ctrl.insertArrayItemAfter('files', idx - 1, fileInfo, 'files')
+			this.getNbSelFiles = function () {
+				return elt.find('.check:checked').length
+			}
+
+			this.toggleSelection = function () {
+				selected = !selected
+				elt.find('.check').prop('checked', selected)
+				if (selected && ctrl.model.rootDir == '/') {
+					elt.trigger('selchange', { isShareSelected: true })
+				}
+			}
+
+			this.getRootDir = function () {
+				return ctrl.model.rootDir
+			}
+
+			this.insertFile = function (fileInfo, idx) {
+				if (idx) {
+					ctrl.insertArrayItemAfter('files', idx, fileInfo, 'files')
+				}
+				else {
+					idx = ctrl.model.getFiles().filter((f) => f.folder).length
+					//console.log('idx', idx)
+					ctrl.insertArrayItemAfter('files', idx - 1, fileInfo, 'files')
+				}
 				//console.log('files', ctrl.model.files)
 				ctrl.updateNode('info')
 
+			}
+
+			this.removeFiles = function (indexes) {
+				indexes.reverse().forEach((i) => {
+					ctrl.removeArrayItem('files', i, 'files')
+				})
+				ctrl.updateNode('info')
+				//console.log('files', ctrl.model.files)
+
+			}
+
+			this.updateFile = function (idx, info) {
+				ctrl.updateArrayItem('files', idx, info, 'files')
 			}
 
 			this.getFiles = function () {
@@ -755,20 +383,9 @@
 				return ctrl.model.getFiles().filter((f) => !f.folder)
 			}
 
-			this.update = function () {
+			this.reload = function () {
 				//console.log('[FileCtrl] update')
 				loadData(undefined, false)
-			}
-
-			this.updateFile = async function (fileName, options) {
-				const { files, rootDir } = ctrl.model
-				let idx = ctrl.model.getFiles().findIndex((i) => i.name == fileName)
-				//console.log('[FileCtrl] updateFile', idx, fileName, options)
-				const info = await srvFiles.fileInfo(rootDir + fileName, friendUser, options)
-				ctrl.updateArrayItem('files', idx, info)
-				idx = files.findIndex((i) => i.name == fileName)
-				files[idx] = info
-				//console.log('files', files)
 			}
 
 			this.setMP3Filters = function (mp3Filters) {
@@ -781,14 +398,21 @@
 		},
 
 		$iface: `
-			update();
-			updateFile(fileName: string, options);
+			reload();
+			updateFile(idx, fileInfo);
+			insertFile(fileInfo, idx);
+			removeFiles([number]);
 			setMP3Filters(mp3Filter);
 			getMP3Filters(): Mp3Filter;
 			getFiles(): [FileInfo];
-			getFilteredFiles(): [FileInfo]
+			getFilteredFiles(): [FileInfo];
+			getSelFiles(): [{fileName, idx}];
+			getSelFileNames() :[string];
+			getNbSelFiles(): number;
+			toggleSelection();
+			getRootDir(): string;
 		`,
-		$events: 'fileclick'
+		$events: 'fileclick;contextmenuItem,selchnage,dirchange'
 
 	});
 

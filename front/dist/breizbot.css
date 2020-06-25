@@ -75,28 +75,6 @@
             flex-direction: column;
             overflow: hidden;
             margin-left: 5px; }
-  .breizbot-files > .download {
-    margin: 10px;
-    display: flex;
-    flex-direction: column; }
-    .breizbot-files > .download .downloadItems {
-      margin-top: 10px;
-      margin-left: 20px; }
-    .breizbot-files > .download progress {
-      width: 100%; }
-  .breizbot-files > .toolbar {
-    display: flex;
-    justify-content: space-between;
-    background-color: #128C7E;
-    color: white; }
-    .breizbot-files > .toolbar .left {
-      display: flex; }
-    .breizbot-files > .toolbar .group {
-      display: flex;
-      align-items: center; }
-      .breizbot-files > .toolbar .group .separator {
-        border-left: 1px solid white;
-        height: 80%; }
   .breizbot-files > .pathPanel {
     margin-left: 10px; }
     .breizbot-files > .pathPanel .fa-chevron-right {

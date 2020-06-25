@@ -1,6 +1,92 @@
+<div class="toolbar" bn-bind="toolbar">
+	<div class="left">
+		<div class="group" bn-show="!isMobileDevice">
+			<button 
+				class="w3-button" 
+				title="New folder" 
+				bn-event="click: onCreateFolder" 
+				data-cmd="newFolder">
+					<i class="fas fa-folder-plus"></i>
+				</button>
+	
+			<button 
+				class="w3-button" 
+				title="Import file" 
+				data-cmd="importFile"
+				bn-event="click: onImportFile">
+					<i class="fa fa-upload"></i>
+				</button>
+
+			<button 
+				class="w3-button" 
+				title="Reload" 
+				data-cmd="reload"
+				bn-event="click: onReload">
+					<i class="fa fa-sync-alt"></i>
+				</button>
+
+			<span class="separator"></span>
+	
+	
+		</div>
+	
+		<div class="group">
+			<button class="w3-button" title="Toggle Selection" bn-event="click: onToggleSelection"><i class="fa fa-check"></i></button>
+			<span class="separator"></span>
+	
+	
+		</div>
+	
+		<div class="group">
+			<button class="w3-button" title="Delete" bn-event="click: onDeleteFiles" bn-prop="prop1"><i class="fa fa-trash"></i></button>
+	
+			<button class="w3-button" title="Cut" bn-prop="prop1" bn-event="click: onCutFiles"><i class="fa fa-cut"></i></button>
+	
+			<button class="w3-button" title="Copy" bn-prop="prop1" bn-event="click: onCopyFiles"><i class="fa fa-copy"></i></button>
+	
+			<button class="w3-button" title="Share" 
+				bn-prop="canShare" 
+				bn-control="brainjs.contextmenu"
+				bn-data="{items: getShareGroups, trigger: 'left'}"
+				bn-event="contextmenuchange: onShareSelected"
+			><i class="fa fa-share-alt"></i></button>
+	
+			<button class="w3-button" title="Paste" bn-prop="canPaste" bn-event="click: onPasteFiles"><i class="fa fa-paste"></i></button>
+		</div>
+	
+	
+	</div>
+	<div bn-show="isMobileDevice">
+		<button class="w3-button" title="More actions" 
+			bn-control="brainjs.contextmenu"
+			bn-event="contextmenuchange: onToolbarContextMenu"
+			bn-data="{
+				trigger: 'left',
+				items: {
+				 	newFolder: {name: 'New folder', icon: 'fas fa-folder-plus'},
+				 	importFile: {name: 'Import file', icon: 'fas fa-upload'},
+				 	reload: {name: 'Reload', icon: 'fas fa-sync-alt'}
+				}
+			}">
+			<i class="fa fa-ellipsis-v"></i></button>
+
+	</div>
+</div>
+
+<div class="download" bn-show="hasDownloads" bn-bind="downloads">
+	<strong bn-event="click: onToggleDownload"><i class="fa fa-caret-down fa-fw"></i>
+			Uploads</strong>
+	<div bn-each="downloads" class="downloadItems">
+		<div class="w3-card w3-padding-small">
+			<div bn-text="$scope.$i.fileName"></div>
+			<progress max="1" bn-val="$scope.$i.percentage"></progress>
+		</div>
+	</div>
+</div>
+
 <div bn-control="breizbot.files" 
-	style="height: 100%"
-	bn-event="fileclick: onFileClick"
+	bn-event="fileclick: onFileClick, dirchange: onDirChange, selchange: onSelChange, contextmenuItem: onContextMenu"
 	bn-iface="files"
-	data-show-toolbar="true"
+	data-selection-enabled="true"
+	bn-data="{menuItems: getItems}"
 	></div>

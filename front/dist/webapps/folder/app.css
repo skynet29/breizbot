@@ -1,13 +1,25 @@
-.soundPage {
-  margin: 10px; }
-  .soundPage audio {
-    width: 100%; }
-
-.videoPage {
-  height: 100%; }
-  .videoPage div {
-    height: 100%; }
-    .videoPage div video {
-      object-fit: scale-down;
-      width: 100%;
-      height: 100%; }
+.rootPage {
+  display: flex;
+  flex-direction: column; }
+  .rootPage > .download {
+    margin: 10px;
+    display: flex;
+    flex-direction: column; }
+    .rootPage > .download .downloadItems {
+      margin-top: 10px;
+      margin-left: 20px; }
+    .rootPage > .download progress {
+      width: 100%; }
+  .rootPage > .toolbar {
+    display: flex;
+    justify-content: space-between;
+    background-color: #128C7E;
+    color: white; }
+    .rootPage > .toolbar .left {
+      display: flex; }
+    .rootPage > .toolbar .group {
+      display: flex;
+      align-items: center; }
+      .rootPage > .toolbar .group .separator {
+        border-left: 1px solid white;
+        height: 80%; }

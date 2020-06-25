@@ -1,0 +1,39 @@
+.rootPage {
+    display: flex;
+    flex-direction: column;
+
+	> .download {
+		margin: 10px;
+		display: flex;
+		flex-direction: column;
+		
+		.downloadItems {
+			margin-top: 10px;
+			margin-left: 20px;
+		}
+
+		progress {
+			width: 100%;
+		}
+	}
+
+	> .toolbar {
+		display: flex;
+		justify-content: space-between;
+		background-color: #128C7E;
+		color: white;
+
+		.left {
+			display: flex;
+		}
+		.group {
+			//border-right: 1px solid white;	
+			display: flex;	
+			align-items: center;
+			.separator {
+				border-left: 1px solid white;
+				height: 80%;
+			}
+		}
+	}    
+}

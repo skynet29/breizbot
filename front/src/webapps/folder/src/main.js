@@ -225,7 +225,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onDirChange: function (ev, data) {
 					//console.log('onDirChange', data)
-					ctrl.setData({ rootDir: data.newDir })
+					ctrl.setData({ rootDir: data.newDir, nbSelection: 0 })
 				},
 				onFileClick: function (ev, data) {
 					//console.log('onFileClick', data)

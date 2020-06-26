@@ -1,6 +1,10 @@
 .rootPage {
     display: flex;
-    flex-direction: column;
+	flex-direction: column;
+	
+	> .breizbot-files {
+		flex: 1;
+	}
 
 	> .download {
 		margin: 10px;

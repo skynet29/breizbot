@@ -1,8 +1,10 @@
 const path = require('path')
 const fs = require('fs-extra')
 const zipFolder = require('zip-a-folder')
-const unzipper = require('unzipper')
+//const unzipper = require('unzipper')
 const ffmpeg = require('fluent-ffmpeg')
+const unpacker = require('unpacker-with-progress')
+
 
 module.exports = function (ctx, router) {
 
@@ -147,7 +149,7 @@ module.exports = function (ctx, router) {
             })
             .run()
 
-        res.status(200).json({outFileName: path.join(filePath, outFileName)})
+        res.status(200).json({ outFileName: path.join(filePath, outFileName) })
     })
 
     router.post('/zipFolder', async function (req, res) {
@@ -184,7 +186,7 @@ module.exports = function (ctx, router) {
 
     router.post('/unzipFile', async function (req, res) {
         console.log('unzipFile', req.body)
-        const { folderPath, fileName } = req.body
+        const { folderPath, fileName, srcId } = req.body
 
         const user = req.session.user
 
@@ -192,20 +194,20 @@ module.exports = function (ctx, router) {
         const fullZipFileName = path.join(fullFolderPath, fileName)
 
         try {
-            fs.createReadStream(fullZipFileName)
-                .pipe(unzipper.Extract({ path: fullFolderPath }))
-                .on('close', async () => {
-                    console.log('unzip finished !')
-                    res.sendStatus(200)
+            unpacker(fullZipFileName, fullFolderPath, {
+                onprogress: (data) => {
+                    //console.log('data', data)
+                    wss.sendToClient(srcId, { topic: 'breizbot.unzip.progress', data: { percent: data.percent * 100 } })
 
-                })
-
+                }
+            })
+            res.sendStatus(200)
         }
         catch (e) {
-            console.log('error', e)
             res.status(400).send(e.message)
         }
 
+        
     })
 
     router.post('/copy', function (req, res) {

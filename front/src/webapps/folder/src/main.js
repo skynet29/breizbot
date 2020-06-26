@@ -7,7 +7,7 @@ $$.control.registerControl('rootPage', {
 
 	init: function (elt, pager, srvFiles, users, folder, broker) {
 
-        const progressDlg = $$.ui.progressDialog('Converting...')
+		const progressDlg = $$.ui.progressDialog()
 
 		let sharingGroups = []
 
@@ -142,7 +142,7 @@ $$.control.registerControl('rootPage', {
 					if (cmd == 'convertToMP3') {
 						try {
 							progressDlg.setPercentage(0)
-							progressDlg.show()
+							progressDlg.show('Converting...')
 							const resp = await folder.convertToMP3(rootDir, name)
 							//console.log('resp', resp)
 							broker.onTopic('breizbot.mp3.progress', async (msg) => {
@@ -150,8 +150,8 @@ $$.control.registerControl('rootPage', {
 									return
 								}
 								//console.log('progress', msg.data)
-								const {percent} = msg.data
-								progressDlg.setPercentage(percent/100)
+								const { percent } = msg.data
+								progressDlg.setPercentage(percent / 100)
 								if (Math.floor(percent) == 100) {
 									await $$.util.wait(500)
 									progressDlg.hide()
@@ -160,7 +160,7 @@ $$.control.registerControl('rootPage', {
 									ctrl.scope.files.insertFile(info, idx)
 								}
 							})
-												
+
 						}
 						catch (resp) {
 							console.log('resp', resp)
@@ -188,9 +188,24 @@ $$.control.registerControl('rootPage', {
 
 					if (cmd == 'unzipFile') {
 						try {
+							progressDlg.setPercentage(0)
+							progressDlg.show('Unzipping...')
 							const resp = await folder.unzipFile(rootDir, name)
 							//console.log('resp', resp)
-							ctrl.scope.files.reload()
+							broker.onTopic('breizbot.unzip.progress', async (msg) => {
+								if (msg.hist == true) {
+									return
+								}
+								//console.log('progress', msg.data)
+								const { percent } = msg.data
+								progressDlg.setPercentage(percent / 100)
+								if (Math.floor(percent) == 100) {
+									await $$.util.wait(500)
+									progressDlg.hide()
+									ctrl.scope.files.reload()
+								}
+							})
+
 						}
 						catch (resp) {
 							console.log('resp', resp)

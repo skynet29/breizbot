@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "fluent-ffmpeg": "^2.1.2",
-    "unzipper": "^0.10.11",
+    "unpacker-with-progress": "^2.0.3",
     "zip-a-folder": "0.0.12"
   }
 }

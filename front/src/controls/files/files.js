@@ -247,6 +247,7 @@
 					onCheckClick: function (ev) {
 						const idx = $(this).closest('.thumbnail').index()
 						const info = ctrl.model.getFiles()[idx]
+						info.checked = $(this).getValue()
 						let isShareSelected = false
 						if (info.name == 'share' && ctrl.model.rootDir == '/') {
 							isShareSelected = $(this).getValue()

@@ -371,7 +371,7 @@ $$.control.registerControl('rootPage', {
 							}
 						}
 						const selFiles = ctrl.scope.files.getSelFileNames()
-						await shareFiles(selFiles, name)
+						await folder.shareFiles(selFiles, name)
 						reload()
 					}
 					catch (resp) {

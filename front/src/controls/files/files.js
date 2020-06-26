@@ -317,13 +317,19 @@
 
 			this.getSelFiles = function () {
 				const selFiles = []
-				elt.find('.check:checked').each(function () {
-					const idx = $(this).closest('.thumbnail').index()
-					const { name, folder } = ctrl.model.files[idx]
-
-					selFiles.push({ fileName: ctrl.model.rootDir + name, idx, folder })
+				ctrl.model.files.forEach((f, idx) => {	
+					const { name, checked }	= f			
+					if (checked === true) {
+						selFiles.push({ fileName: ctrl.model.rootDir + name, idx})
+					}
 				})
-				//console.log('selFiles', selFiles)	
+				// elt.find('.check:checked').each(function () {
+				// 	const idx = $(this).closest('.thumbnail').index()
+				// 	const { name, folder } = ctrl.model.files[idx]
+
+				// 	selFiles.push({ fileName: ctrl.model.rootDir + name, idx, folder })
+				// })
+				console.log('selFiles', selFiles)	
 				return selFiles
 			}
 
@@ -338,6 +344,8 @@
 			this.toggleSelection = function () {
 				selected = !selected
 				elt.find('.check').prop('checked', selected)
+				ctrl.model.files.forEach((f) => {f.checked = selected})
+				ctrl.updateArrayValue('files', 'files')
 				if (selected && ctrl.model.rootDir == '/') {
 					elt.trigger('selchange', { isShareSelected: true })
 				}

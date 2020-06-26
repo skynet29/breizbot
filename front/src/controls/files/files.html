@@ -34,7 +34,8 @@
 		<div class="thumbnail w3-card-2" bn-control="brainjs.contextmenu" bn-data="{items: getItems}">
 
 			<span bn-if="if1">
-				<input type="checkbox" bn-show="selectionEnabled" class="check w3-check">
+				<input type="checkbox" bn-show="selectionEnabled" class="check w3-check"
+					bn-prop="{checked: $scope.f.checked}">
 			</span>
 			<div bn-if="$scope.f.folder" class="folder item">
 				<div class="icon">

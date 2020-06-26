@@ -1,9 +1,10 @@
 const path = require('path')
 const fs = require('fs-extra')
-const zipFolder = require('zip-a-folder')
+//const zipFolder = require('zip-a-folder')
 //const unzipper = require('unzipper')
 const ffmpeg = require('fluent-ffmpeg')
 const unpacker = require('unpacker-with-progress')
+const archiver = require('archiver')
 
 
 module.exports = function (ctx, router) {
@@ -153,7 +154,7 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/zipFolder', async function (req, res) {
-        const { folderPath, folderName } = req.body
+        const { folderPath, folderName, srcId } = req.body
 
         const user = req.session.user
 
@@ -164,17 +165,41 @@ module.exports = function (ctx, router) {
         const fullZipFilePath = path.join(userFilePath, fileName)
 
         try {
-            await zipFolder.zip(fullFolderPath, fullZipFilePath)
-            const statInfo = await fs.lstat(fullZipFilePath)
-            //console.log('statInfo', statInfo)
+            var output = fs.createWriteStream(fullZipFilePath)
+            var zipArchive = archiver('zip')
+            let started = false
 
-            res.json({
-                name: fileName,
-                folder: false,
-                size: statInfo.size,
-                isImage: false,
-                mtime: statInfo.mtimeMs,
+            output.on('close', function () {
+                console.log('finished')
+            });
+
+            zipArchive.on('entry', (data) => {
+                const { name, type } = data
+                //console.log('entry', type, name)
+                if (type == 'file') {
+                    started = true
+                }
             })
+
+            zipArchive.on('progress', (data) => {
+                //console.log('progress', data)
+                const { total, processed } = data.entries
+                if (started) {
+                    wss.sendToClient(srcId, {
+                        topic: 'breizbot.zip.progress', 
+                        data: {
+                            percent: (processed / total) * 100
+                        }
+                    })
+                }
+            })
+
+            zipArchive.pipe(output)
+            zipArchive.directory(fullFolderPath, false)
+            zipArchive.finalize()
+
+            res.status(200).json({outFileName: path.join(folderPath, fileName)})
+
 
         }
         catch (e) {
@@ -207,7 +232,7 @@ module.exports = function (ctx, router) {
             res.status(400).send(e.message)
         }
 
-        
+
     })
 
     router.post('/copy', function (req, res) {

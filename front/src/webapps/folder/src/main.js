@@ -173,9 +173,27 @@ $$.control.registerControl('rootPage', {
 
 					if (cmd == 'zipFolder') {
 						try {
+							progressDlg.setPercentage(0)
+							progressDlg.show('Zipping...')
 							const resp = await folder.zipFolder(rootDir, name)
 							//console.log('resp', resp)
-							ctrl.scope.files.insertFile(resp, idx)
+							broker.onTopic('breizbot.zip.progress', async (msg) => {
+								if (msg.hist == true) {
+									return
+								}
+								const { percent } = msg.data
+								//console.log('progress', percent)
+								progressDlg.setPercentage(percent / 100)
+								if (Math.floor(percent) == 100) {
+									await $$.util.wait(500)
+									progressDlg.hide()
+									const info = await srvFiles.fileInfo(resp.outFileName)
+									//console.log('info', info)
+									ctrl.scope.files.insertFile(info, idx)
+								}
+							})
+
+							//ctrl.scope.files.insertFile(resp, idx)
 						}
 						catch (resp) {
 							console.log('resp', resp)

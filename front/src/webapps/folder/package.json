@@ -9,8 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "archiver": "^4.0.1",
     "fluent-ffmpeg": "^2.1.2",
-    "unpacker-with-progress": "^2.0.3",
-    "zip-a-folder": "0.0.12"
+    "unpacker-with-progress": "^2.0.3"
   }
 }

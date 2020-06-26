@@ -51,7 +51,7 @@ $$.service.registerService('app.folder', {
 
             zipFolder: function (folderPath, folderName) {
                 console.log('[FileService] zipFolder', folderPath, folderName)
-                return http.post('/zipFolder', { folderPath, folderName })
+                return http.post('/zipFolder', { folderPath, folderName, srcId })
             },
 
             unzipFile: function (folderPath, fileName) {

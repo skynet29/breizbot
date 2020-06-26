@@ -2,12 +2,12 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'breizbot.files', 'breizbot.users', 'app.folder'],
+	deps: ['breizbot.pager', 'breizbot.files', 'breizbot.users', 'app.folder', 'breizbot.broker'],
 
 
-	init: function (elt, pager, srvFiles, users, folder) {
+	init: function (elt, pager, srvFiles, users, folder, broker) {
 
-
+        const progressDlg = $$.ui.progressDialog('Converting...')
 
 		let sharingGroups = []
 
@@ -141,9 +141,26 @@ $$.control.registerControl('rootPage', {
 
 					if (cmd == 'convertToMP3') {
 						try {
+							progressDlg.setPercentage(0)
+							progressDlg.show()
 							const resp = await folder.convertToMP3(rootDir, name)
 							//console.log('resp', resp)
-							ctrl.scope.files.insertFile(resp, idx)
+							broker.onTopic('breizbot.mp3.progress', async (msg) => {
+								if (msg.hist == true) {
+									return
+								}
+								//console.log('progress', msg.data)
+								const {percent} = msg.data
+								progressDlg.setPercentage(percent/100)
+								if (Math.floor(percent) == 100) {
+									await $$.util.wait(500)
+									progressDlg.hide()
+									const info = await srvFiles.fileInfo(resp.outFileName)
+									//console.log('info', info)
+									ctrl.scope.files.insertFile(info, idx)
+								}
+							})
+												
 						}
 						catch (resp) {
 							console.log('resp', resp)
@@ -416,7 +433,7 @@ $$.control.registerControl('rootPage', {
 		}
 
 		function deleteFiles(fileNames) {
-			console.log('deleteFiles', fileNames)
+			//console.log('deleteFiles', fileNames)
 			$$.ui.showConfirm({
 				content: 'Are you sure ?',
 				title: 'Delete files'

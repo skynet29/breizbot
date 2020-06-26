@@ -1,8 +1,12 @@
 $$.service.registerService('app.folder', {
 
-    deps: ['breizbot.http'],
+    deps: ['breizbot.http', 'breizbot.broker'],
 
-    init: function (config, http) {
+    init: function (config, http, broker) {
+
+		let srcId
+
+		broker.on('ready', (msg) => { srcId = msg.clientId})
 
         return {
             removeFiles: function (fileNames) {
@@ -42,7 +46,7 @@ $$.service.registerService('app.folder', {
 
             convertToMP3: function (filePath, fileName) {
                 console.log('[FileService] convertToMP3', filePath, fileName)
-                return http.post('/convertToMP3', { filePath, fileName })
+                return http.post('/convertToMP3', { filePath, fileName, srcId })
             },
 
             zipFolder: function (folderPath, folderName) {

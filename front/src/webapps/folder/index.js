@@ -2,64 +2,25 @@ const path = require('path')
 const fs = require('fs-extra')
 const zipFolder = require('zip-a-folder')
 const unzipper = require('unzipper')
-const ffmpeg = require('ffmpeg')
+const ffmpeg = require('fluent-ffmpeg')
 
 module.exports = function (ctx, router) {
 
-    const { util } = ctx
+    const { util, wss } = ctx
     const { getFileInfo } = util
 
 
     async function resizeImage(filePath, fileName, resizeFormat) {
         const extname = path.extname(fileName)
         const basename = path.basename(fileName, extname)
-    
+
         const fullName = path.join(filePath, fileName)
         const resizedFileName = basename + '_resized' + extname
         const resizedFullName = path.join(filePath, resizedFileName)
         await util.genThumbnail(fullName, resizedFullName, resizeFormat)
         return getFileInfo(resizedFullName)
-    
-    }
 
-    function convertToMP3(filePath, fileName) {
-        return new Promise((resolve, reject) => {
-            try {
-                const extname = path.extname(fileName)
-                const basename = path.basename(fileName, extname)
-    
-                const outFileName = path.join(filePath, basename + '.mp3')
-                console.log('outFileName', outFileName)
-    
-                var process = new ffmpeg(path.join(filePath, fileName))
-                process.then(function (video) {
-                    // Callback mode
-                    video.fnExtractSoundToMP3(outFileName, async function (error, file) {
-                        if (!error) {
-                            console.log('Audio file: ' + file);
-                            const info = await getFileInfo(outFileName)
-                            //console.log('statInfo', statInfo)
-    
-                            resolve(info)
-    
-                        }
-                        else {
-                            console.log('error', error)
-                            reject(error)
-                        }
-                    })
-                }, function (err) {
-                    console.log('Error: ' + err)
-                    reject(err)
-                })
-            } catch (e) {
-                console.log(e.code)
-                console.log(e.msg)
-                reject(e)
-            }
-        })
     }
-
 
     router.post('/mkdir', async function (req, res) {
         console.log('mkdir req', req.body)
@@ -161,20 +122,32 @@ module.exports = function (ctx, router) {
 
     router.post('/convertToMP3', async function (req, res) {
         console.log('convertToMP3', req.body)
-        const { filePath, fileName } = req.body
+        const { filePath, fileName, srcId } = req.body
 
         const user = req.session.user
 
         const fullPath = util.getFilePath(user, filePath)
 
-        try {
-            const resp = await convertToMP3(fullPath, fileName)
-            res.json(resp)
-        }
-        catch (e) {
-            console.log('error', e)
-            res.status(400).send(e.message)
-        }
+        const extname = path.extname(fileName)
+        const basename = path.basename(fileName, extname)
+
+        const outFileName = basename + '.mp3'
+        console.log('outFileName', outFileName)
+
+        var process = new ffmpeg()
+
+        ffmpeg(path.join(fullPath, fileName))
+            .output(path.join(fullPath, outFileName))
+            .noVideo()
+            .format('mp3')
+            .outputOptions('-ab', '192k')
+            .on('progress', (event) => {
+                const { percent } = event
+                wss.sendToClient(srcId, { topic: 'breizbot.mp3.progress', data: { percent } })
+            })
+            .run()
+
+        res.status(200).json({outFileName: path.join(filePath, outFileName)})
     })
 
     router.post('/zipFolder', async function (req, res) {

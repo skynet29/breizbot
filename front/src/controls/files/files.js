@@ -36,7 +36,6 @@
 	$$.control.registerControl('breizbot.files', {
 		deps: ['breizbot.files'],
 		props: {
-			$pager: null,
 			selectionEnabled: false,
 			imageOnly: false,
 			filterExtension: undefined,

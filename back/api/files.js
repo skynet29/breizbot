@@ -19,8 +19,7 @@ events.on('userdeleted', async (userName) => {
 
 
 router.post('/fileInfo', async function (req, res) {
-	//console.log('list req', req.session.user)
-	//console.log('params', req.body)
+	console.log('fileInfo', req.body)
 	const user = req.session.user
 	const { filePath, friendUser, options } = req.body
 	const rootPath = util.getFilePath(user, filePath, friendUser)

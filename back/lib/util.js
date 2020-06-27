@@ -8,7 +8,9 @@ const config = require('./config')
 const { ObjectID } = require('mongodb')
 const db = require('./db')
 const ExifImage = require('exif').ExifImage
-
+const fetch = require('node-fetch')
+const querystring = require('querystring')
+const { off } = require('gulp')
 
 const cloudPath = config.CLOUD_HOME
 
@@ -115,6 +117,44 @@ async function getFileInfo(filePath, options) {
 
 }
 
+function getEncodedUrl(url, params) {
+	return url + '?' + querystring.stringify(params)
+}
+
+function search(theme, query, options) {
+	console.log('search', theme, options)
+	const scraperapiKey = '36a62a3d7ef78359360098cfeba82c3d'
+
+	options = options || {}
+	const {count, offset} = options
+
+	const params = {
+		q: query,
+		t: theme,
+		uiv: 4
+	}
+
+	if (count) {
+		params.count = count
+	}
+
+	if (offset) {
+		params.offset = offset
+	}
+
+	const qwantUrl = getEncodedUrl(`https://api.qwant.com/api/search/${theme}`, params)
+	//console.log('qwantUrl', qwantUrl)
+
+	const scraperapiParams = {
+		api_key: scraperapiKey,
+		url: qwantUrl
+	}
+	const url = getEncodedUrl('http://api.scraperapi.com', scraperapiParams)
+	//console.log('url', url)
+
+	return fetch(url)
+
+}
 
 module.exports = {
 	isImage,
@@ -122,5 +162,6 @@ module.exports = {
 	getFileInfo,
 	getFilePath,
 	getFilePathChecked,
-	dbObjectID: function (id) { return new ObjectID(id) }
+	dbObjectID: function (id) { return new ObjectID(id) },
+	search
 }

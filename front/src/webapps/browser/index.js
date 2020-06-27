@@ -1,10 +1,7 @@
-const fetch = require('node-fetch')
-const querystring = require('querystring')
-
 
 module.exports = function (ctx, router) {
 
-	const { events } = ctx
+	const { events, util } = ctx
 
 	router.post('/addFavorite', async function (req, res) {
 		const { name, link } = req.body
@@ -18,25 +15,23 @@ module.exports = function (ctx, router) {
 	router.post('/search', async function (req, res) {
 		const { query, theme } = req.body
 
-		const params = {
-			q: query,
-			t: theme,
-			uiv: 4,
+
+		let ret = []
+		const options = {
 			offset: 0
 		}
 
-		let ret = []
-
 		try {
-			while(true) {
-				const rep = await fetch(`https://api.qwant.com/api/search/${theme}?` + querystring.stringify(params))
+			while (true) {
+				const rep = await util.search(theme, query, options)
+				console.log('repStatus', rep.ok)
 				const json = await rep.json()
 				console.log('results', json.data)
 				if (json.data.error_code) {
 					throw ('error code ' + json.data.error_code)
 				}
 				const { items, total } = json.data.result
-				params.offset += items.length
+				options.offset += items.length
 				ret = ret.concat(items)
 				if (ret.length >= Math.min(total, 50)) break
 			}

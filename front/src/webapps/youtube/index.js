@@ -2,38 +2,28 @@ const ytdl = require('ytdl-core');
 
 const path = require('path')
 const fs = require('fs-extra')
-const fetch = require('node-fetch')
-const querystring = require('querystring')
 
 module.exports = function (ctx, router) {
 
 	console.log('start API youtube')
 
-	const { wss, config } = ctx
+	const { wss, config, util } = ctx
 
-	const url = 'https://api.qwant.com/api/search/videos?'
-	
 
 	router.post('/search', async function (req, res) {
 		console.log('youtube/search', req.body)
 
 		const { query, maxResults } = req.body
 
-		const params = {
-			count: 100,
-			uiv: 4,
-			t: 'videos',
-			q: query
-		}
-
 		try {
-			const rep = await fetch(url + querystring.stringify(params))
+			const rep = await util.search('videos', query, { count: 100 })
+			console.log('repStatus', rep.ok)
 			const json = await rep.json()
 			if (json.error) {
 				res.json(json.error.message)
 			}
 			else {
-				const {items} = json.data.result
+				const { items } = json.data.result
 
 				res.json(items
 					.filter((i) => i.source == 'youtube')

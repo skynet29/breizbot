@@ -17,6 +17,10 @@ module.exports = function (ctx, router) {
 		const {url}	 = req.query
 
 		const resp = await fetch(url)
+		for(const [key, value] of resp.headers) {
+			res.append(key, value)
+		}
+		//res.set(resp.headers)
 		resp.body.pipe(res)
 		resp.body.on('end', () => {
 			console.log('Ended!')

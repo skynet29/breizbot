@@ -79,13 +79,14 @@ $$.control.registerControl('rootPage', {
 		})
 
 		async function saveImage(url) {
-			const fileName = 'SNAP' + Date.now() + '.png'
-			console.log('fileName', fileName)
 			try {
 				savingDlg.setPercentage(0)
 				savingDlg.show()
 				const resp = await http.fetch('/getImage', {url})
 				const blob = await resp.blob()
+				const ext = blob.type.split('/')[1]
+				const fileName = 'SNAP' + Date.now() + '.' + ext
+	
 				await srvFiles.uploadFile(blob, fileName, '/apps/browser', (percentage) => {
 					savingDlg.setPercentage(percentage)
 				})

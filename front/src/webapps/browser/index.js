@@ -1,3 +1,4 @@
+const { default: fetch } = require("node-fetch")
 
 module.exports = function (ctx, router) {
 
@@ -9,6 +10,18 @@ module.exports = function (ctx, router) {
 
 		events.emit('addFavorite', { userName, name, link })
 		res.sendStatus(200)
+
+	})
+
+	router.get('/getImage', async function(req, res) {
+		const {url}	 = req.query
+
+		const resp = await fetch(url)
+		resp.body.pipe(res)
+		resp.body.on('end', () => {
+			console.log('Ended!')
+			res.end()
+		})
 
 	})
 

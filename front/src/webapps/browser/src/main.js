@@ -37,7 +37,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onContextMenu: async function (ev, data) {
 					const idx = $(this).index()
-					const { title, url } = ctrl.model.results[idx]
+					const { title, url } = ctrl.model.results.web[idx]
 					const name = await $$.ui.showPrompt({
 						title: 'Add link',
 						label: 'Name',
@@ -56,7 +56,7 @@ $$.control.registerControl('rootPage', {
 				onImageClick: function () {
 					const idx = $(this).index()
 					//console.log('onImageClick', idx)
-					const info = ctrl.model.results[idx]
+					const info = ctrl.model.results.images[idx]
 					const url = info.media
 					pager.pushPage('breizbot.viewer', {
 						title: info.title,
@@ -84,8 +84,9 @@ $$.control.registerControl('rootPage', {
 			try {
 				savingDlg.setPercentage(0)
 				savingDlg.show()
-				const blob = await $$.util.imageUrlToBlob(url)
-				const resp = await srvFiles.uploadFile(blob, fileName, '/apps/browser', (percentage) => {
+				const resp = await http.fetch('/getImage', {url})
+				const blob = await resp.blob()
+				await srvFiles.uploadFile(blob, fileName, '/apps/browser', (percentage) => {
 					savingDlg.setPercentage(percentage)
 				})
 				await $$.util.wait(1000)

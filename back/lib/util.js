@@ -121,7 +121,7 @@ function getEncodedUrl(url, params) {
 	return url + '?' + querystring.stringify(params)
 }
 
-function search(theme, query, options) {
+async function search(theme, query, options) {
 	console.log('search', theme, options)
 	const scraperapiKey = '36a62a3d7ef78359360098cfeba82c3d'
 
@@ -152,7 +152,10 @@ function search(theme, query, options) {
 	const url = getEncodedUrl('http://api.scraperapi.com', scraperapiParams)
 	//console.log('url', url)
 
-	return fetch(url)
+	const resp = await fetch(url)
+	const json = await resp.json()
+	console.log('json', json)
+	return json.data
 
 }
 

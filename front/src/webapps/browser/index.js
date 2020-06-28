@@ -23,14 +23,12 @@ module.exports = function (ctx, router) {
 		}
 
 		try {
-			const rep = await util.search(theme, query, options)
-			console.log('repStatus', rep.ok)
-			const json = await rep.json()
-			console.log('results', json.data)
-			if (json.data.error_code) {
-				throw ('error code ' + json.data.error_code)
+			const data = await util.search(theme, query, options)
+			console.log('results', data)
+			if (data.error_code) {
+				throw ('error code ' + data.error_code)
 			}
-			const { items, total } = json.data.result
+			const { items, total } = data.result
 			// options.offset += items.length
 			// ret = ret.concat(items)
 			// if (ret.length >= Math.min(total, 50)) break

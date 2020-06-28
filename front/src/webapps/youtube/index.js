@@ -11,19 +11,17 @@ module.exports = function (ctx, router) {
 
 
 	router.post('/search', async function (req, res) {
-		console.log('youtube/search', req.body)
+		//console.log('youtube/search', req.body)
 
 		const { query, maxResults } = req.body
 
 		try {
-			const rep = await util.search('videos', query, { count: 100 })
-			console.log('repStatus', rep.ok)
-			const json = await rep.json()
-			if (json.error) {
-				res.json(json.error.message)
+			const data = await util.search('videos', query, { count: 100 })
+			if (data.error) {
+				res.json(data.error.message)
 			}
 			else {
-				const { items } = json.data.result
+				const { items } = data.result
 
 				res.json(items
 					.filter((i) => i.source == 'youtube')

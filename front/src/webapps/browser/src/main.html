@@ -9,9 +9,9 @@
 <div bn-show="waiting" class="waiting">
 	<span><i class="fa fa-spinner fa-pulse"></i>&nbsp;Searching...</span>
 </div>
-<div bn-if="isWeb" class="test">
+<div bn-show="isWeb" class="test">
 	<div class="webResults w3-light-grey" >
-		<div bn-each="results" bn-event="contextmenuchange.item: onContextMenu" bn-lazzy="20">
+		<div bn-each="results.web" bn-event="contextmenuchange.item: onContextMenu" bn-lazzy="getResults">
 			<div class="w3-card-2 item" 
 				bn-control="brainjs.contextmenu" 
 				bn-data="{
@@ -32,9 +32,9 @@
 	
 </div>
 
-<div bn-if="isImages" class="test" bn-event="click.item: onImageClick">
+<div bn-show="isImages" class="test" bn-event="click.item: onImageClick">
 	<div class="imagesResults" >
-		<div bn-each="results" bn-lazzy="20" class="items">
+		<div bn-each="results.images" bn-lazzy="getResults" class="items">
 			<div bn-style="{width: $scope.$i.thumb_width, height: $scope.$i.thumb_height}" class="item w3-card-2">
 				<img bn-attr="{src: getUrl}" style="display: none;">
 			</div>

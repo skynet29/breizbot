@@ -7,10 +7,15 @@ $$.control.registerControl('rootPage', {
 	init: function (elt, http, pager, srvFiles) {
 
 		const savingDlg = $$.ui.progressDialog()
+		let total = 0
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				results: [],
+				getResults: async function(idx) {
+					//console.log('getResults', idx)
+					return (idx != total) ? search(idx): null
+				},
+				results: {web: [], images: []},
 				theme: 'web',
 				query: '',
 				waiting: false,
@@ -22,12 +27,12 @@ $$.control.registerControl('rootPage', {
 				onItemMenuClick: function () {
 					const elt = $(this)
 					const theme = elt.data('theme')
-					console.log('onItemMenuClick', theme)
+					//console.log('onItemMenuClick', theme)
 					elt.closest('.toolbar').find('.menuItem.selected').removeClass('selected')
 					elt.addClass('selected')
 					if (theme != ctrl.model.theme) {
 						ctrl.setData({ theme })
-						search()
+						search(0)
 					}
 				},
 				onContextMenu: async function (ev, data) {
@@ -46,7 +51,7 @@ $$.control.registerControl('rootPage', {
 				onSearch: function (ev, data) {
 					//console.log('onSearch', data)
 					ctrl.setData({ query: data.value })
-					search()
+					search(0)
 				},
 				onImageClick: function () {
 					const idx = $(this).index()
@@ -110,20 +115,29 @@ $$.control.registerControl('rootPage', {
 			true // <-- useCapture
 		)
 
-		async function search() {
-			ctrl.setData({ results: [] })
+		async function search(offset) {
+			if (offset == 0) {
+				ctrl.setData({ results: {web:[], images: [] }})
+			}
 			const { theme, query } = ctrl.model
 			if (query != '') {
 				try {
 					ctrl.setData({ waiting: true })
-					const results = await http.post(`/search`, { query, theme })
-					console.log('results', results)
-					ctrl.setData({
-						results,
-						waiting: false
-					})
+					const results = await http.post(`/search`, { query, theme, offset, count: 10 })
+					//console.log('results', results)
+					total = results.total
+					if (offset == 0) {
+						ctrl.model.results[theme] = results.items
+						ctrl.model.waiting = false
+						ctrl.update()
+					}
+					else {
+						ctrl.setData({waiting: false})
+					}
+					return results.items
 				}
 				catch (e) {
+					ctrl.setData({waiting: false})
 					$$.ui.showAlert({ title: 'Error', content: e.responseText })
 				}
 

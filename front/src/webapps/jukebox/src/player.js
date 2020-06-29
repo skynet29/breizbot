@@ -245,7 +245,7 @@
 										friendUser,
 										tags
 									})
-									await fileCtrl.updateFile(name, { getMP3Info: true })
+									await fileCtrl.updateFileInfo(name, { getMP3Info: true })
 								}
 							})
 

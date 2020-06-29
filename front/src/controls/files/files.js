@@ -383,6 +383,17 @@
 				ctrl.updateArrayItem('files', idx, info, 'files')
 			}
 
+			this.updateFileInfo = async function (fileName, options) {
+				const { files, rootDir } = ctrl.model
+				let idx = ctrl.model.getFiles().findIndex((i) => i.name == fileName)
+				//console.log('[FileCtrl] updateFile', idx, fileName, options)
+				const info = await srvFiles.fileInfo(rootDir + fileName, friendUser, options)
+				ctrl.updateArrayItem('files', idx, info)
+				idx = files.findIndex((i) => i.name == fileName)
+				files[idx] = info
+				//console.log('files', files)
+			}			
+
 			this.getFiles = function () {
 				return ctrl.model.files.filter((f) => !f.folder)
 			}

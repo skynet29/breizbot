@@ -32,8 +32,13 @@ module.exports = function (ctx, router) {
 			const { fileName, rootDir, friendUser } = f.fileInfo
 			const filePath = util.getFilePath(userName, rootDir + fileName, friendUser)
 			//console.log('filePath', filePath)
-			const info = await util.getFileInfo(filePath, { getMP3Info: true })
-			return { mp3: info.mp3, fileInfo: f.fileInfo, id: f._id }
+			try {
+				const info = await util.getFileInfo(filePath, { getMP3Info: true })
+				return { mp3: info.mp3, fileInfo: f.fileInfo, id: f._id, status: 'ok' }	
+			}
+			catch(e) {
+				return { fileInfo: f.fileInfo, id: f._id, status: 'ko' }
+			}
 		})
 		return await Promise.all(promises)
 	}

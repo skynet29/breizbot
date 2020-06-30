@@ -214,10 +214,15 @@
 				events: {
 					onPathItem: function (ev) {
 						const pathItem = $(this).data('info')
-						console.log('onPathItem', pathItem)
+						//console.log('onPathItem', pathItem)
 						ev.preventDefault()
+						const newDir = pathItem == '' ? '/' : '/' + pathItem + '/'
 
-						loadData(pathItem == '' ? '/' : '/' + pathItem + '/')
+						ev.stopPropagation()
+						elt.trigger('dirchange', { newDir })
+
+
+						loadData(newDir)
 					},
 
 					onContextMenu: async function (ev, data) {
@@ -270,7 +275,6 @@
 							split.pop()
 							split.pop()
 							newDir = split.join('/') + '/'
-							loadData()
 						}
 						else {
 							newDir = ctrl.model.rootDir + dirName + '/'
@@ -287,7 +291,7 @@
 				if (rootDir == undefined) {
 					rootDir = ctrl.model.rootDir
 				}
-				console.log('loadData', rootDir)
+				//console.log('loadData', rootDir)
 				ctrl.setData({ loading: true })
 				const files = await srvFiles.list(rootDir, { filterExtension, imageOnly, getMP3Info }, friendUser)
 				//console.log('files', files)
@@ -324,13 +328,7 @@
 						selFiles.push({ fileName: ctrl.model.rootDir + name, idx})
 					}
 				})
-				// elt.find('.check:checked').each(function () {
-				// 	const idx = $(this).closest('.thumbnail').index()
-				// 	const { name, folder } = ctrl.model.files[idx]
-
-				// 	selFiles.push({ fileName: ctrl.model.rootDir + name, idx, folder })
-				// })
-				console.log('selFiles', selFiles)	
+				//console.log('selFiles', selFiles)	
 				return selFiles
 			}
 

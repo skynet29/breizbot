@@ -318,7 +318,7 @@ $$.control.registerControl('rootPage', {
 
 				onCopyFiles: function (ev) {
 					const selectedFiles = ctrl.scope.files.getSelFileNames()
-					console.log('onCopyFiles', selectedFiles)
+					//console.log('onCopyFiles', selectedFiles)
 					ctrl.setData({
 						selectedFiles,
 						operation: 'copy'
@@ -345,7 +345,7 @@ $$.control.registerControl('rootPage', {
 
 				onCutFiles: function (ev) {
 					const selectedFiles = ctrl.scope.files.getSelFileNames()
-					console.log('onCutFiles', selectedFiles)
+					//console.log('onCutFiles', selectedFiles)
 					ctrl.setData({
 						selectedFiles,
 						operation: 'cut'
@@ -353,8 +353,8 @@ $$.control.registerControl('rootPage', {
 				},
 
 				onPasteFiles: async function (ev) {
-					console.log('onPasteFiles')
 					const { rootDir, selectedFiles, operation } = ctrl.model
+					//console.log('onPasteFiles', rootDir)
 
 					try {
 						if (operation == 'copy') {

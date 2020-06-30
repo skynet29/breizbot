@@ -18,17 +18,29 @@ $$.control.registerControl('playlist', {
                     return this.playlist.length != 0
                 },
                 hasGenre: function (scope) {
-                    let { genre } = scope.f.mp3
+                    let { genre } = scope.f.mp3 || {} 
                     return genre != undefined && genre != '' && !genre.startsWith('(')
                 },
 
+                hasTitle: function(scope) {
+                    let { title } = scope.f.mp3 || {}
+                    return title != undefined && title != ''
+                },
+
+                hasArtist: function(scope) {
+                    let { artist } = scope.f.mp3 || {}
+                    return artist != undefined && artist != ''
+                },
                 hasYear: function (scope) {
-                    let { year } = scope.f.mp3
+                    let { year } = scope.f.mp3 || {}
                     return year != undefined && year != ''
                 },
 
                 getYear: function (scope) {
-                    return parseInt(scope.f.mp3.year)
+                    return parseInt(scope.f.mp3 && scope.f.mp3.year)
+                },
+                isOk: function(scope) {
+                    return scope.f.status === 'ok'
                 }
             },
             events: {
@@ -89,7 +101,7 @@ $$.control.registerControl('playlist', {
 
         async function getPlaylistSongs(name) {
             const songs = await http.post('/getPlaylistSongs', { name })
-            //console.log('songs', songs)
+            console.log('songs', songs)
             ctrl.setData({ songs })
             pager.setButtonVisible({ play: songs.length != 0 })
             selectedIndex = -1

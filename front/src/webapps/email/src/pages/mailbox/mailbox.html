@@ -29,7 +29,7 @@
 				<th>Date</th>
 			</tr>
 		</thead>
-		<tbody bn-each="messages" bn-event="click.item: onItemClick">
+		<tbody bn-each="messages" bn-event="click.item: onItemClick" bn-bind="messages">
 			<tr bn-class="{unseen: !isSeen}">
 				<td><input type="checkbox" class="check" ></td>
 				<td bn-text="$scope.$i.from.name" bn-attr="{title: $scope.$i.from.email}" bn-show="!isSentBox"></td>

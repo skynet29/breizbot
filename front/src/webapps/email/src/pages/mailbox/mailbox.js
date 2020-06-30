@@ -65,7 +65,11 @@ $$.control.registerControl('mailboxPage', {
 							mailboxName,
 							item							
 						},
-						onBack: load
+						onBack: function() {
+							console.log('onBack')
+							item.flags = ['\\Seen']
+							ctrl.updateArrayItem('messages', idx, item)
+						}
 					})
 				},
 

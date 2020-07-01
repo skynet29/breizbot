@@ -40,7 +40,7 @@ $$.control.registerControl('rootPage', {
 					pager.pushPage('breizbot.files', {
 						title: 'Open File',
 						props: {
-							filterExtension: '.hdoc'
+							filterExtension: 'hdoc'
 						},
 						events: {
 							fileclick: function(ev, data) {

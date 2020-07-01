@@ -49,13 +49,13 @@ function create(account) {
         })
     }
 
-    function fetch(query, options) {
+    function fetch(query, options, useSeq = false) {
 
         return new Promise((resolve, reject) => {
 
             options.struct = true
 
-            const f = imap.seq.fetch(query, options)
+            const f = (useSeq) ? imap.seq.fetch(query, options) : imap.fetch(query, options)
 
             const ret = []
 
@@ -160,7 +160,7 @@ function create(account) {
     function addFlags(seqNos, flags) {
         return new Promise((resolve, reject) => {
 
-            imap.seq.addFlags(seqNos, flags, function (err) {
+            imap.addFlags(seqNos, flags, function (err) {
                 if (err) {
                     imap.end()
                     reject(err)
@@ -180,7 +180,7 @@ function create(account) {
 
         return new Promise((resolve, reject) => {
 
-            imap.seq.move(seqNos, targetName, function (err) {
+            imap.move(seqNos, targetName, function (err) {
                 imap.end()
                 if (err) {
                     reject(err)

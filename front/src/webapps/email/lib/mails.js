@@ -85,7 +85,7 @@ function decodeHeaders(buffer, myEmail) {
 
 
 function decodeBody(body, info) {
-  console.log('decodeBody', info)
+  //console.log('decodeBody', info)
   const { encoding, params } = info
   const charset = (params != null) ? params.charset : 'utf8'
 
@@ -117,7 +117,7 @@ function decodeBody(body, info) {
 }
 
 function getPartIDByType(parts, type, subtype) {
-  const info = parts.find((p) => p.type == type && p.subtype == subtype && p.id == null)
+  const info = parts.find((p) => p.type == type && p.subtype == subtype /*&& p.id == null*/)
   return (info != undefined) ? info.partID : false
 }
 
@@ -248,7 +248,7 @@ module.exports = function (ctx) {
     const query = `${firstMsg}:${lastMsg}`
     console.log('query', query)
 
-    const data = await imap.fetch(query, { bodies: ['HEADER.FIELDS (FROM TO SUBJECT DATE)'] })
+    const data = await imap.fetch(query, { bodies: ['HEADER.FIELDS (FROM TO SUBJECT DATE)'] }, true)
 
     const messages = []
 
@@ -257,7 +257,7 @@ module.exports = function (ctx) {
       const text = getPartIDByType(parts, 'text', 'plain')
       const html = getPartIDByType(parts, 'text', 'html')
       const header = decodeHeaders(buffer, account.email)
-      header.seqno = seqno
+      header.seqno = attrs.uid
       header.partID = { text, html }
       header.flags = attrs.flags
       header.nbAttachments = getAttachments(parts).length
@@ -278,11 +278,7 @@ module.exports = function (ctx) {
     const imap = Imap.create(account)
     await imap.connect()
 
-    const nbMsg = await imap.openBox(mailboxName, false)
-
-    if (seqNo > nbMsg) {
-      throw ('seqNo out of range')
-    }
+    await imap.openBox(mailboxName, false)
 
     const data = await imap.fetch(seqNo, { bodies: [partID], markSeen: true })
 
@@ -306,11 +302,7 @@ module.exports = function (ctx) {
     const imap = Imap.create(account)
     await imap.connect()
 
-    const nbMsg = await imap.openBox(mailboxName, true)
-
-    if (seqNo > nbMsg) {
-      throw ('seqNo out of range')
-    }
+    await imap.openBox(mailboxName, true)
 
     const data = await imap.fetch(seqNo, { bodies: [partID] })
 
@@ -326,7 +318,7 @@ module.exports = function (ctx) {
     const imap = Imap.create(account)
     await imap.connect()
 
-    const nbMsg = await imap.openBox(mailboxName, false)
+    await imap.openBox(mailboxName, false)
 
     await imap.addFlags(seqNos, '\\Deleted')
 
@@ -340,7 +332,7 @@ module.exports = function (ctx) {
     const imap = Imap.create(account)
     await imap.connect()
 
-    const nbMsg = await imap.openBox(mailboxName, false)
+    await imap.openBox(mailboxName, false)
 
     await imap.moveMessages(targetName, seqNos)
 

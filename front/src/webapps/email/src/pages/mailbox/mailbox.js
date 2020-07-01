@@ -61,7 +61,7 @@ $$.control.registerControl('mailboxPage', {
 					const item = ctrl.model.messages[idx]
 					console.log('onItemClick', idx, item)
 					pager.pushPage('messagePage', {
-						title: `Message #${ctrl.model.nbMsg - item.seqno + 1}`,
+						title: item.subject,
 						props: {
 							currentAccount,
 							mailboxName,

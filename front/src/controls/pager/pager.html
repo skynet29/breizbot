@@ -6,7 +6,7 @@
 		<span bn-text="title" class="title"></span>
 	
 	</div>
-	<div bn-each="buttons" bn-event="click.action: onAction, contextmenuchange.menu: onContextMenu">
+	<div bn-each="buttons" class="right" bn-event="click.action: onAction, contextmenuchange.menu: onContextMenu">
 		<button bn-show="show1" class="w3-button action" bn-text="$scope.$i.label"
 			bn-data="{cmd: $scope.$i.name}" bn-prop="{disabled: !isEnabled}"></button>
 		<button bn-show="show2" class="w3-button action" bn-data="{cmd: $scope.$i.name}"

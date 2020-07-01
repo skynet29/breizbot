@@ -139,6 +139,9 @@
     align-items: center;
     background-color: #128C7E;
     color: white; }
+    .breizbot-pager > .toolbar > .right {
+      display: flex;
+      align-items: center; }
     .breizbot-pager > .toolbar > .left {
       display: flex;
       align-items: center;

@@ -33,8 +33,8 @@ $$.service.registerService('app.mails', {
 				return http.post(`/addMailbox`, { name, mailboxName })
 			},
 
-			openMailbox: function (name, mailboxName, pageNo) {
-				return http.post(`/openMailbox`, { name, mailboxName, pageNo })
+			openMailbox: function (name, mailboxName, idx) {
+				return http.post(`/openMailbox`, { name, mailboxName, idx })
 			},
 
 			openMessage: function (name, mailboxName, seqNo, partID) {

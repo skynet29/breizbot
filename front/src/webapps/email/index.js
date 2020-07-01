@@ -113,10 +113,10 @@ module.exports = function (ctx, router) {
 
 	router.post('/openMailbox', async function (req, res) {
 		const userName = req.session.user
-		const { name, mailboxName, pageNo } = req.body
+		const { name, mailboxName, idx } = req.body
 
 		try {
-			const messages = await mails.openMailbox(userName, name, mailboxName, pageNo)
+			const messages = await mails.openMailbox(userName, name, mailboxName, idx)
 			res.json(messages)
 		}
 		catch (e) {

@@ -1,6 +1,6 @@
 $$.control.registerControl('mailboxPage', {
 
-	template: {gulp_inject: './mailbox.html'},
+	template: { gulp_inject: './mailbox.html' },
 
 	deps: ['app.mails', 'breizbot.pager'],
 
@@ -9,33 +9,31 @@ $$.control.registerControl('mailboxPage', {
 		mailboxName: ''
 	},
 
-	init: function(elt, srvMail, pager) {
+	init: function (elt, srvMail, pager) {
 
-		const {currentAccount, mailboxName} = this.props
+		const { currentAccount, mailboxName } = this.props
+
+		let nbLoadedMessages = 0
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				messages: [],
+				getMessages: async function (idx) {
+					//console.log('getMessages', idx)
+					return load(idx + 1)
+				},
 				nbMsg: 0,
-				pageNo: 0,
-				nbPage: 0,
 				check: false,
 				loading: false,
 				mailboxName,
-				show1: function() {
-					return !this.loading && this.nbMsg > 0
-				},
-				text1: function() {
-					return `${this.pageNo} / ${this.nbPage}`
-				},
-				text2: function(scope) {
+				text2: function (scope) {
 					return scope.$i.to[0] && scope.$i.to[0].name
 				},
-				attr1: function(scope) {
-					return {title: scope.$i.to[0] && scope.$i.to[0].email}
+				attr1: function (scope) {
+					return { title: scope.$i.to[0] && scope.$i.to[0].email }
 				},
 
-				getDate: function(scope) {
+				getDate: function (scope) {
 					//console.log('getDate', date)
 					const date = scope.$i.date
 					const d = new Date(date)
@@ -43,29 +41,33 @@ $$.control.registerControl('mailboxPage', {
 					return d.toLocaleDateString('fr-FR')
 				},
 
-				isSeen: function(scope) {
+				isSeen: function (scope) {
 					return scope.$i.flags.includes('\\Seen')
 				},
 
-				isSentBox: function() {
+				isSentBox: function () {
 					return this.mailboxName == 'Sent'
 				}
 
 			},
 			events: {
-				onItemClick: function(ev) {
+				onCheckClick: function() {
+					ctrl.setData({check: false})
+				},
+				onItemClick: function (ev) {
 					// $(this).closest('tbody').find('tr').removeClass('w3-blue')
 					// $(this).addClass('w3-blue')
 					const idx = $(this).closest('tr').index()
 					const item = ctrl.model.messages[idx]
+					console.log('onItemClick', idx, item)
 					pager.pushPage('messagePage', {
 						title: `Message #${ctrl.model.nbMsg - item.seqno + 1}`,
 						props: {
 							currentAccount,
 							mailboxName,
-							item							
+							item
 						},
-						onBack: function() {
+						onBack: function () {
 							console.log('onBack')
 							item.flags = ['\\Seen']
 							ctrl.updateArrayItem('messages', idx, item)
@@ -73,75 +75,90 @@ $$.control.registerControl('mailboxPage', {
 					})
 				},
 
-				onMainCheckBoxClick: function(ev) {
+				onMainCheckBoxClick: function (ev) {
 					elt.find('.check').prop('checked', $(this).prop('checked'))
 				},
 
-				onPrevPage: function(ev) {
-					const {nbPage, pageNo} = ctrl.model
-
-					if (pageNo > 1) {
-						load(pageNo - 1)
-					}					
-				},
-
-				onNextPage: function(ev) {
-					const {nbPage, pageNo} = ctrl.model
-
-					if (pageNo < nbPage) {
-						load(pageNo + 1)
-					}				
-				}				
 			}
 		})
 
-		async function load(pageNo) {
-			if (pageNo == undefined) {
-				pageNo = ctrl.model.pageNo
+		async function load(idx) {
+			console.log('load', idx)
+
+			if (idx != 1 && ctrl.model.messages.length == ctrl.model.nbMsg) {
+				console.log('No more data')
+				return null
 			}
 
-			ctrl.setData({loading: true})
+			ctrl.setData({ loading: true })
 
-			const data = await srvMail.openMailbox(currentAccount, mailboxName, pageNo)
+			const data = await srvMail.openMailbox(currentAccount, mailboxName, idx)
 			console.log('data', data)
-			const {messages, nbMsg} = data
-			ctrl.setData({
-				loading: false,
-				check: false,
-				pageNo,
-				nbPage: Math.ceil(nbMsg / 20),
-				nbMsg,
-				messages: messages.reverse()
-			})
+			let { messages, nbMsg } = data
+			messages.forEach((i) => { i.checked = ctrl.model.check })
+			if (idx == 1) {
+				ctrl.setData({
+					loading: false,
+					nbMsg,
+					messages: messages.reverse()
+				})
+
+			}
+			else {
+				ctrl.enableNode('messages', false)
+				messages = messages.reverse()
+				ctrl.model.messages = ctrl.model.messages.concat(messages)
+				ctrl.setData({ loading: false })
+				console.log('nbLoadedMessages', ctrl.model.messages.length)
+				return messages
+			}
 		}
 
 		function getSeqNos() {
 			const items = elt.find('.check:checked')
 			const seqNos = []
-			items.each(function() {
+			items.each(function () {
 				const idx = $(this).closest('tr').index()
-				seqNos.push(ctrl.model.messages[idx].seqno)
+				seqNos.push({ seqno: ctrl.model.messages[idx].seqno, idx })
 			})
-			console.log('seqNos', seqNos)
+			//console.log('seqNos', seqNos)
 			return seqNos
+		}
+
+		function update(seqNos) {
+			seqNos.reverse().forEach((i) => {
+				ctrl.removeArrayItem('messages', i.idx, 'messages')
+			})
+			ctrl.model.nbMsg -= seqNos.length
+			ctrl.update()
+			const { nbMsg, messages } = ctrl.model
+			console.log('nbMsg', nbMsg, 'length', messages.length)
+			if (nbMsg == 0) {
+				ctrl.setData({check: false})
+			}
+			if (messages.length < 20 && nbMsg > messages.length) {
+				ctrl.enableNode('messages', true)
+				load(messages.length + 1)
+			}
+
 		}
 
 		async function deleteMessage() {
 			const seqNos = getSeqNos()
 			if (seqNos.length == 0) {
-				$$.ui.showAlert({title: 'Delete Message', content: 'Please select one or severall messages !'})
+				$$.ui.showAlert({ title: 'Delete Message', content: 'Please select one or severall messages !' })
 				return
 			}
 
-			await srvMail.deleteMessage(currentAccount, mailboxName, seqNos)
+			await srvMail.deleteMessage(currentAccount, mailboxName, seqNos.map((i) => i.seqno))
 			console.log('Messages deleted')
-			load()
+			update(seqNos)
 		}
 
 		function moveMessage() {
 			const seqNos = getSeqNos()
 			if (seqNos.length == 0) {
-				$$.ui.showAlert({title: 'Move Message', content: 'Please select one or severall messages !'})
+				$$.ui.showAlert({ title: 'Move Message', content: 'Please select one or severall messages !' })
 				return
 			}
 
@@ -150,17 +167,17 @@ $$.control.registerControl('mailboxPage', {
 				props: {
 					currentAccount
 				},
-				onReturn: async function(targetName) {
+				onReturn: async function (targetName) {
 					if (targetName == mailboxName) {
-						$$.ui.showAlert({title: 'Select Target Mailbox', content: 'Target mailbox must be different from current mailbox'})
+						$$.ui.showAlert({ title: 'Select Target Mailbox', content: 'Target mailbox must be different from current mailbox' })
 						return
 					}
 
-					await srvMail.moveMessage(currentAccount, mailboxName, targetName, seqNos)
-					load()
+					await srvMail.moveMessage(currentAccount, mailboxName, targetName, seqNos.map((i) => i.seqno))
+					update(seqNos)
 				}
 			})
-		}		
+		}
 
 		load(1)
 
@@ -170,20 +187,21 @@ $$.control.registerControl('mailboxPage', {
 				props: {
 					accountName: currentAccount
 				},
-				onReturn: function() {
+				onReturn: function () {
 					if (mailboxName == 'Sent') {
 						load()
 					}
 				}
-			})			
+			})
 		}
 
-		this.getButtons = function() {
+		this.getButtons = function () {
 			return {
 				reload: {
 					icon: 'fa fa-sync-alt',
 					title: 'Update',
-					onClick: function() {
+					onClick: function () {
+						ctrl.enableNode('messages', true)
 						load(1)
 					}
 				},
@@ -201,9 +219,9 @@ $$.control.registerControl('mailboxPage', {
 					icon: 'fa fa-trash',
 					title: 'Delete selected messages',
 					onClick: deleteMessage
-				}	
-			}	
-				
+				}
+			}
+
 		}
 
 	}

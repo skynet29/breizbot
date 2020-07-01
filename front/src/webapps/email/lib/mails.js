@@ -9,7 +9,7 @@ require('colors')
 
 function decodeString(name) {
   name = name.trim()
-  console.log('decodeString', name)
+  //console.log('decodeString', name)
 
   if (name.toUpperCase().startsWith('=?UTF-8?B?')) {
     const t = name.split('?')
@@ -33,7 +33,7 @@ function decodeString(name) {
 
   }
 
-  console.log('decoded string', name)
+  //console.log('decoded string', name)
 
   return name
 }
@@ -231,8 +231,8 @@ module.exports = function (ctx) {
   const nbMsgPerPage = 20
 
 
-  async function openMailbox(userName, name, mailboxName, pageNo) {
-    console.log('openMailbox', userName, name, mailboxName, pageNo)
+  async function openMailbox(userName, name, mailboxName, idx) {
+    console.log('openMailbox', userName, name, mailboxName, idx)
 
     const account = await db.getMailAccount(userName, name)
     const imap = Imap.create(account)
@@ -242,9 +242,9 @@ module.exports = function (ctx) {
       return { nbMsg, messages: [] }
     }
 
-    const firstMsg = nbMsg - (pageNo - 1) * nbMsgPerPage
+    const firstMsg = nbMsg - idx + 1
 
-    const lastMsg = Math.max(1, firstMsg - nbMsgPerPage)
+    const lastMsg = Math.max(1, firstMsg - nbMsgPerPage + 1)
     const query = `${firstMsg}:${lastMsg}`
     console.log('query', query)
 

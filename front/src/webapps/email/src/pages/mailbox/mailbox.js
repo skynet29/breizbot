@@ -100,13 +100,12 @@ $$.control.registerControl('mailboxPage', {
 				ctrl.setData({
 					loading: false,
 					nbMsg,
-					messages: messages.reverse()
+					messages
 				})
 
 			}
 			else {
 				ctrl.enableNode('messages', false)
-				messages = messages.reverse()
 				ctrl.model.messages = ctrl.model.messages.concat(messages)
 				ctrl.setData({ loading: false })
 				console.log('nbLoadedMessages', ctrl.model.messages.length)

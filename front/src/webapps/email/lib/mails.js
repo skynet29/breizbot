@@ -89,7 +89,7 @@ function decodeBody(body, info) {
   const { encoding, params } = info
   const charset = (params != null) ? params.charset : 'utf8'
 
-  console.log('body.length', body.length)
+  //console.log('body.length', body.length)
 
   if (encoding.toUpperCase() === 'BASE64') {
     const buff = new Buffer(body.toString('utf8'), 'base64')
@@ -252,7 +252,7 @@ module.exports = function (ctx) {
 
     const messages = []
 
-    data.forEach((d) => {
+    data.reverse().forEach((d) => {
       const { attrs, seqno, parts, buffer } = d
       const text = getPartIDByType(parts, 'text', 'plain')
       const html = getPartIDByType(parts, 'text', 'html')

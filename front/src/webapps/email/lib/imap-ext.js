@@ -5,14 +5,14 @@ const mimemessage = require('mimemessage')
 function parseStruct(struct, parts) {
     //console.log('parseStruct', struct)
 
-    const info = struct.shift()
+    const info = struct[0]
 
 
     if (info.partID != undefined) {
         parts.push(info)
     }
 
-    struct.forEach((s) => {
+    struct.slice(1).forEach((s) => {
         parseStruct(s, parts)
     })
 

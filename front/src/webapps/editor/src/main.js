@@ -56,28 +56,6 @@ $$.control.registerControl('rootPage', {
 							ctrl.scope.editor.load(url)
 						}						
 					})
-				},
-				onInsertImage: function(ev) {
-					console.log('onInsertImage')
-
-					pager.pushPage('breizbot.files', {
-						title: 'Insert Image',
-						props: {
-							imageOnly: true,
-							showThumbnail: true
-						},
-						events: {
-							fileclick: function(ev, data) {
-								pager.popPage(data)
-							}
-						},
-						onReturn: function(data) {
-							console.log('onReturn', data)
-							const {fileName, rootDir} = data
-							const url = files.fileUrl(rootDir + fileName)
-							ctrl.scope.editor.insertImage(url)
-						}						
-					})					
 				}
 			}
 		})

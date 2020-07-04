@@ -41,6 +41,30 @@
     height: 100%;
     overflow-y: auto; }
 
+.breizbot-htmleditor {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; }
+  .breizbot-htmleditor > .scrollPanel {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid lightgray; }
+    .breizbot-htmleditor > .scrollPanel .editor {
+      min-height: 100%;
+      padding: 10px;
+      outline: none; }
+  .breizbot-htmleditor > .toolbar {
+    display: flex;
+    flex-direction: row;
+    background-color: #128C7E;
+    color: white; }
+    .breizbot-htmleditor > .toolbar .group {
+      display: flex;
+      align-items: center; }
+      .breizbot-htmleditor > .toolbar .group .separator {
+        border-left: 1px solid white;
+        height: 80%; }
+
 .breizbot-files {
   overflow: hidden;
   display: flex;

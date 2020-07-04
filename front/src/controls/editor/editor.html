@@ -1,0 +1,80 @@
+<div bn-event="click.cmd: onCommand" class="toolbar">
+	<div class="group">
+		<button class="cmd w3-button" data-cmd="bold" title="Bold"><i class="fa fa-bold"></i></button>
+		<button class="cmd w3-button" data-cmd="italic" title="Italic"><i class="fa fa-italic"></i></button>
+		<button class="cmd w3-button" data-cmd="underline" title="Underline"><i class="fa fa-underline"></i></button>
+		<span class="separator"></span>
+
+	</div>
+
+	<div class="group">
+
+		<button class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onCommand"
+			title="Title"
+			data-cmd="formatBlock" bn-data="{
+				trigger: 'left',
+				items: {
+					h1: {name: 'Title 1'},
+					h2: {name: 'Title 2'},
+					h3: {name: 'Title 3'}
+				}
+			}">
+			§&nbsp;
+			<i class="fas fa-caret-down"></i>
+		</button>
+
+		<button title="Alignment" class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onCommand" bn-data="{
+			trigger: 'left',
+			items: {
+				justifyLeft: {name: 'Left', icon: 'fas fa-align-left'},
+				justifyCenter: {name: 'Center', icon: 'fas fa-align-center'},
+				justifyRight: {name: 'Right', icon: 'fas fa-align-right'}
+			}
+		}">
+			<i class="fas fa-align-left"></i>
+			<i class="fas fa-caret-down"></i>
+		</button>
+
+		<button class="w3-button" title="Text color" bn-control="brainjs.contextmenu"
+			bn-data="{items: colorItems, iconColorCls: false, trigger: 'left'}"
+			bn-event="contextmenuchange: onColorMenuChange">
+			<i class="fas fa-paint-brush" bn-style="{color}"></i>
+		</button>
+
+		<span class="separator"></span>
+	</div>
+
+	<div class="group">
+		<button title="Indent" class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onCommand" bn-data="{
+				trigger: 'left',
+				items: {
+					indent: {name: 'Indent', icon: 'fas fa-indent'},
+					outdent: {name: 'Outdent', icon: 'fas fa-outdent'}
+				}
+			}">
+			<i class="fas fa-indent"></i>
+			<i class="fas fa-caret-down"></i>
+		</button>
+
+
+		<button title="List" class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onCommand" bn-data="{
+				trigger: 'left',
+				items: {
+					insertUnorderedList: {name: 'Unordered', icon: 'fas fa-list-ul'},
+					insertOrderedList: {name: 'Ordered', icon: 'fas fa-list-ol'}
+				}
+			}">
+			<i class="fas fa-list-ol"></i>
+			<i class="fas fa-caret-down"></i>
+		</button>
+
+	</div>
+
+
+</div>
+
+
+</div>
+<div class="scrollPanel" bn-event="click: onScrollClick">
+	<div contenteditable="true" bn-bind="editor" class="editor" bn-html="html"></div>
+</div>

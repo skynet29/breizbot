@@ -1,16 +1,18 @@
 <div class="titlebar"><strong bn-text="fileName"></strong></div>
 <div class="toolbar">
-	<div bn-control="brainjs.controlgroup">
-		<button title="New File" bn-event="click: onNewFile">
+	<div class="group">
+		<button title="New File" bn-event="click: onNewFile" class="w3-button">
 			<i class="fa fa-file"></i></button>
-		<button title="Save File" bn-event="click: onSaveFile">
+		<button title="Save File" bn-event="click: onSaveFile" class="w3-button">
 			<i class="fa fa-save"></i></button>
-		<button title="Open File" bn-event="click: onOpenFile">
+		<button title="Open File" bn-event="click: onOpenFile" class="w3-button">
 			<i class="fa fa-folder-open"></i></button>
+
+		<span class="separator"></span>
 	</div>
-	<div bn-control="brainjs.controlgroup">
-		<button title="Insert image" bn-event="click: onInsertImage">
+	<div class="group">
+		<button title="Insert image" bn-event="click: onInsertImage" class="w3-button">
 			<i class="fa fa-image"></i></button>
 	</div>
 </div>
-<div bn-control="brainjs.htmleditor" bn-iface="editor"></div>
+<div bn-control="breizbot.htmleditor" bn-iface="editor"></div>

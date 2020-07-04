@@ -14,9 +14,11 @@
 			data-cmd="formatBlock" bn-data="{
 				trigger: 'left',
 				items: {
-					h1: {name: 'Title 1'},
-					h2: {name: 'Title 2'},
-					h3: {name: 'Title 3'}
+					p: {name: 'Normal'},
+					h1: {name: 'Heading 1'},
+					h2: {name: 'Heading 2'},
+					h3: {name: 'Heading 3'},
+					h4: {name: 'Heading 4'}
 				}
 			}">
 			§&nbsp;
@@ -67,6 +69,14 @@
 			<i class="fas fa-list-ol"></i>
 			<i class="fas fa-caret-down"></i>
 		</button>
+
+		<span class="separator"></span>
+
+	</div>
+
+	<div class="group">
+		<button class="w3-button cmd" title="Horizontal Rule" data-cmd="insertHorizontalRule"><i class="fas fa-minus"></i></button>
+		<button class="w3-button" title="Insert Link" bn-event="click: onCreateLink"><i class="fas fa-link"></i></button>
 
 	</div>
 

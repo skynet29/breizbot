@@ -31,6 +31,33 @@ $$.control.registerControl('breizbot.htmleditor', {
 				html: elt.val()
 			},
 			events: {
+				onCreateLink: async function() {
+					const selObj = window.getSelection()
+					console.log('selObj', selObj)
+					const {anchorNode, anchorOffset, focusOffset } = selObj
+
+					if (!isEditable(anchorNode)) {
+						$$.ui.showAlert({title: 'Error', content: 'Please select a text before'})
+						return
+					}
+
+					const href = await $$.ui.showPrompt({
+						title: 'Insert Link',
+						label: 'Link Target',
+						attrs: {type: 'url'}
+					})
+					console.log('href', href)
+					if (href != null) {
+						const range = document.createRange()
+						range.setStart(anchorNode, anchorOffset)
+						range.setEnd(anchorNode, focusOffset)
+						selObj.removeAllRanges()
+						selObj.addRange(range)
+
+							document.execCommand('createLink', false, href)
+					}
+
+				},
 				onScrollClick: function() {
 					ctrl.scope.editor.focus()
 				},
@@ -68,6 +95,19 @@ $$.control.registerControl('breizbot.htmleditor', {
 			}
 
 		})	
+
+		function isEditable(node) {
+
+			const editable = ctrl.scope.editor.get(0)
+
+			while(node && node != document.documentElement) {
+				if(node == editable) {
+					return true
+				}
+				node = node.parentNode;
+			}	
+			return false		
+		}
 
 		this.html = function(htmlString) {
 			if (htmlString == undefined) {

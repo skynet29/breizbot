@@ -53,6 +53,10 @@
       min-height: 100%;
       padding: 10px;
       outline: none; }
+      .breizbot-htmleditor > .scrollPanel .editor p {
+        margin: 0; }
+      .breizbot-htmleditor > .scrollPanel .editor a {
+        color: #0000ee; }
   .breizbot-htmleditor > .toolbar {
     display: flex;
     flex-direction: row;

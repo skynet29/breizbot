@@ -11,7 +11,15 @@
 		.editor {
 			min-height: 100%;			
 			padding: 10px;
-			outline: none;
+			outline: none; 
+
+			p {
+				margin: 0;			
+			}
+
+			a {
+				color: rgb(0, 0, 238)
+			}
 		}
 	
 	}

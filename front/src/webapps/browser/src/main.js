@@ -2,9 +2,9 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.http', 'breizbot.pager', 'breizbot.files'],
+	deps: ['breizbot.http', 'breizbot.pager', 'breizbot.files', 'breizbot.scheduler'],
 
-	init: function (elt, http, pager, srvFiles) {
+	init: function (elt, http, pager, srvFiles, scheduler) {
 
 		const savingDlg = $$.ui.progressDialog()
 		let total = 0
@@ -12,7 +12,7 @@ $$.control.registerControl('rootPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				getResults: async function(idx) {
-					//console.log('getResults', idx)
+					//console.log('getResults', idx, total)
 					return (idx != total) ? search(idx): null
 				},
 				results: {web: [], images: []},
@@ -24,6 +24,13 @@ $$.control.registerControl('rootPage', {
 				getUrl: function (scope) { return `https:${scope.$i.thumbnail}` }
 			},
 			events: {
+				onLinkClicked: function(ev) {
+					//console.log('onLinkClicked', this.href)
+					if (this.href.startsWith('https://www.youtube.com/watch?v=')) {
+						ev.preventDefault()
+						scheduler.openApp('youtube', {url: this.href})
+					}
+				},
 				onItemMenuClick: function () {
 					const elt = $(this)
 					const theme = elt.data('theme')

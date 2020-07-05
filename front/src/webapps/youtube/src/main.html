@@ -3,8 +3,11 @@
 	bn-event="searchbarsubmit: onStart"
 	data-placeholder="Search or paste video link url here"></div>
 
-
-<div class="results w3-light-grey" bn-show="!showInfo">
+<div bn-show="waiting" class="waiting">
+	<span><i class="fa fa-spinner fa-pulse"></i>&nbsp;Searching...</span>
+</div>
+	
+<div class="results w3-light-grey" bn-show="!waiting">
 	<div bn-each="results" bn-event="click.item: onItemInfo">
 		<div class="item w3-card-2 w3-hover-shadow">
 			<div class="imgWrapper">

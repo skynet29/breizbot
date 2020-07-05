@@ -11,7 +11,9 @@
 </div>
 <div bn-show="isWeb" class="test">
 	<div class="webResults w3-light-grey" >
-		<div bn-each="results.web" bn-event="contextmenuchange.item: onContextMenu" bn-lazzy="getResults">
+		<div bn-each="results.web" 
+			bn-event="contextmenuchange.item: onContextMenu, click.linkUrl: onLinkClicked"
+			bn-lazzy="getResults">
 			<div class="w3-card-2 item" 
 				bn-control="brainjs.contextmenu" 
 				bn-data="{
@@ -20,7 +22,7 @@
 					}
 				}">
 				<div class="link">
-					<a bn-attr="{href: $scope.$i.url}" bn-html="$scope.$i.title" class="link" target="_blank"></a>
+					<a bn-attr="{href: $scope.$i.url}" bn-html="$scope.$i.title" target="_blank" class="linkUrl"></a>
 					
 				</div>
 				<div bn-html="$scope.$i.source" class="source"></div>		

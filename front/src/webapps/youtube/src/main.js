@@ -6,10 +6,13 @@ $$.control.registerControl('rootPage', {
 
 	init: function(elt ,ytdl, params, pager) {
 
+		const url1 = 'https://www.youtube.com/watch?v='
+		const url2 = 'https://youtu.be/'
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				results: [],
-				showInfo: true,
+				waiting: false,
 				getDate: function(scope) {
 					return new Date(scope.$i.date * 1000).toLocaleDateString('fr-FR')
 				}
@@ -17,9 +20,8 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onStart: function(ev, data) {
 					const url = data.value
-					const startUrl = 'https://youtu.be/'
-					if (url.startsWith(startUrl)) {
-						showInfo(url.replace('https://youtu.be/', ''))	
+					if (url.startsWith(url1) || url.startsWith(url2)) {
+						showInfo(url)	
 					}
 					else {
 						searchInfo(url)
@@ -28,16 +30,23 @@ $$.control.registerControl('rootPage', {
 				onItemInfo: function(ev) {
 					const idx = $(this).index()
 					const videoId = ctrl.model.results[idx].id
-					console.log('onItemInfo', videoId)
-					showInfo(videoId)
+					//console.log('onItemInfo', videoId)
+					showInfo(url2 + videoId)
 				}
 
 			}
 		})
 
-		async function showInfo(videoId) {
-			//console.log('showInfo', url)
-			const videoUrl = 'https://youtu.be/' + videoId
+		async function showInfo(videoUrl) {
+			//console.log('showInfo', videoUrl)
+			let videoId
+			if (videoUrl.startsWith(url1)) {
+				videoId = videoUrl.replace(url1, '')
+			}
+			else {
+				videoId = videoUrl.replace(url2, '')
+			}
+			//console.log('videoId', videoId)
 			const info = await ytdl.info(videoUrl)
 			info.videoUrl = videoUrl
 			info.videoId = videoId
@@ -53,13 +62,14 @@ $$.control.registerControl('rootPage', {
 
 		async function searchInfo(query) {
 			//console.log('searchInfo', query)
+			ctrl.setData({waiting: true})
 			const results = await ytdl.search(query, 20)
 			//console.log('results', results)
 			if (typeof results == 'string') {
 				$$.ui.showAlert({title: 'Error', content: results})
 			}
 			else {
-				ctrl.setData({results, showInfo: false})
+				ctrl.setData({results, waiting: false})
 			}
 		}
 

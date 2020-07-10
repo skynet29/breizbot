@@ -108,16 +108,19 @@ $$.control.registerControl('rootPage', {
 
 					const node = tree.getActiveNode()
 
-					const mailboxName = tree.getNodePath(node)
+					const mailboxName = tree.getNodePath(node, (node) => node.data.name)
 					console.log('mailboxName', mailboxName)
 					const { currentAccount } = ctrl.model
 					pager.pushPage('mailboxPage', {
-						title: node.title,
+						title: node.data.name,
 						props: {
 							currentAccount,
 							mailboxName
 						},
 						onBack: function () {
+							if (mailboxName == 'INBOX') {
+								loadMailboxes()
+							}
 							const activeNode = ctrl.scope.tree.getActiveNode()
 							if (activeNode != null) {
 								activeNode.setActive(false)

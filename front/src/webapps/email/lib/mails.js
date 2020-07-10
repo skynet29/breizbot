@@ -191,16 +191,23 @@ module.exports = function (ctx) {
     const ret = []
     for (let k in boxes) {
       const { children } = boxes[k]
-      const data = { title: k, icon: 'fa fa-folder' }
+      const data = { title: k, icon: 'fa fa-folder', data: { name: k } }
+
       if (k.toUpperCase() == 'INBOX') {
         data.icon = 'fa fa-inbox'
+        await imap.openBox(k, true)
+        const results = await imap.search(['UNSEEN'])
+        console.log('results', results)
+        if (results.length != 0) {
+          data.title = `<strong>${k} (${results.length})</strong>`
+        }
       }
       else if (k.toUpperCase() == 'TRASH') {
         data.icon = 'fa fa-trash'
       }
       if (children != null) {
         data.children = Object.keys(children).map((i) => {
-          return { title: i, icon: 'fa fa-folder' }
+          return { title: i, icon: 'fa fa-folder',  data: { name: i } }
         })
         data.folder = true
       }
@@ -228,6 +235,7 @@ module.exports = function (ctx) {
     const imap = Imap.create(account)
     await imap.connect()
     await imap.addBox(mailboxName)
+    imap.close()
 
   }
 
@@ -268,6 +276,8 @@ module.exports = function (ctx) {
 
     })
 
+    imap.close()
+
     return { nbMsg, messages }
   }
 
@@ -293,6 +303,8 @@ module.exports = function (ctx) {
     const attachments = getAttachments(parts)
     const embeddedImages = getEmbeddedImages(parts)
 
+    imap.close()
+
     return { text, attachments, embeddedImages }
   }
 
@@ -308,6 +320,8 @@ module.exports = function (ctx) {
     await imap.openBox(mailboxName, true)
 
     const data = await imap.fetch(seqNo, { bodies: [partID] })
+
+    imap.close()
 
     return { data: data[0].buffer.toString('utf8') }
   }
@@ -325,6 +339,8 @@ module.exports = function (ctx) {
 
     await imap.addFlags(seqNos, '\\Deleted')
 
+    imap.close()
+
   }
 
   async function moveMessage(userName, name, mailboxName, targetName, seqNos) {
@@ -339,6 +355,8 @@ module.exports = function (ctx) {
 
     await imap.moveMessages(targetName, seqNos)
 
+    imap.close()
+
   }
 
   async function appendMsg(account, data) {
@@ -348,6 +366,8 @@ module.exports = function (ctx) {
     await imap.openBox('Sent', false)
 
     await imap.appendMessage(data)
+
+    imap.close()
 
   }
 

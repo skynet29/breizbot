@@ -99,7 +99,6 @@ function create(account) {
 
             f.once('end', function () {
                 console.log('Done !')
-                imap.end()
                 resolve(ret)
             })
 
@@ -110,7 +109,7 @@ function create(account) {
     function getBoxes() {
         return new Promise((resolve, reject) => {
             imap.getBoxes(function (err, mailbox) {
-                imap.end()
+                //imap.end()
                 if (err) {
                     reject(err)
                     return
@@ -126,7 +125,6 @@ function create(account) {
     function addBox(mailboxName) {
         return new Promise((resolve, reject) => {
             imap.addBox(mailboxName, function (err) {
-                imap.end()
                 if (err) {
                     console.log('err', err)
 
@@ -137,6 +135,10 @@ function create(account) {
             })
 
         })
+    }
+
+    function close() {
+        imap.end()
     }
 
     function openBox(mailboxName, readOnly) {
@@ -157,6 +159,26 @@ function create(account) {
         })
     }
 
+    function search(query) {
+
+        return new Promise((resolve, reject) => {
+            imap.search(query, function (err, results) {
+                //console.log('openBox', err, mailbox)
+                if (err) {
+                    console.log('err', err)
+                    //imap.end()
+                    reject(err)
+                }
+                else {
+                    resolve(results)
+                }
+
+                
+
+            })
+        })
+    }
+
     function addFlags(seqNos, flags) {
         return new Promise((resolve, reject) => {
 
@@ -168,7 +190,6 @@ function create(account) {
                 }
                 else {
                     imap.closeBox(true, function () {
-                        imap.end()
                         resolve()
                     })
                 }
@@ -181,7 +202,6 @@ function create(account) {
         return new Promise((resolve, reject) => {
 
             imap.move(seqNos, targetName, function (err) {
-                imap.end()
                 if (err) {
                     reject(err)
                 }
@@ -218,7 +238,6 @@ function create(account) {
 
             imap.append(msg.toString(), function (err) {
                 console.log('err', err)
-                imap.end()
 
                 if (err) {
                     reject(err)
@@ -236,12 +255,14 @@ function create(account) {
     return {
         connect,
         fetch,
+        search,
         getBoxes,
         addBox,
         openBox,
         addFlags,
         moveMessages,
-        appendMessage
+        appendMessage,
+        close
     }
 }
 

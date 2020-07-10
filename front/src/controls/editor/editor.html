@@ -8,6 +8,28 @@
 	</div>
 
 	<div class="group">
+		<button class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onFontNameChange"
+			title="Font Name"
+			bn-html="getFontName"
+			bn-data="{
+				trigger: 'left',
+				items: fontNameItems
+			}">
+			<i class="fas fa-caret-down"></i>`
+
+		</button>
+
+		<button class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onFontSizeChange"
+			title="Font Size"
+			bn-html="getFontSize"
+			bn-data="{
+				trigger: 'left',
+				items: fontSizeItems
+			}">
+			<i class="fas fa-caret-down"></i>`
+
+		</button>
+
 
 		<button class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onCommand"
 			title="Title"
@@ -39,19 +61,11 @@
 
 		<button class="w3-button" title="Text color" bn-control="brainjs.contextmenu"
 			bn-data="{
-				items: {
-					black: { name: 'Black', icon: 'fas fa-square-full w3-text-black' },
-					red: { name: 'Red', icon: 'fas fa-square-full w3-text-red' },
-					green: { name: 'Green', icon: 'fas fa-square-full w3-text-green' },
-					blue: { name: 'Blue', icon: 'fas fa-square-full w3-text-blue' },
-					yellow: { name: 'Yellow', icon: 'fas fa-square-full w3-text-yellow' },
-					cyan: { name: 'Cyan', icon: 'fas fa-square-full w3-text-cyan' },
-					pink: { name: 'Magenta', icon: 'fas fa-square-full w3-text-pink' }
-				},
+				items: colorItems,
 				trigger: 'left'
 			}"
 			bn-event="contextmenuchange: onColorMenuChange">
-			<i class="fas fa-paint-brush"></i>
+			<i class="fas fa-paint-brush" bn-style="{color}"></i>
 		</button>
 
 		<span class="separator"></span>
@@ -88,8 +102,6 @@
 	<div class="group">
 		<button class="w3-button cmd" title="Horizontal Rule" data-cmd="insertHorizontalRule"><i class="fas fa-minus"></i></button>
 		<button class="w3-button" title="Insert Link" bn-event="click: onCreateLink"><i class="fas fa-link"></i></button>
-		<button title="Insert image" bn-event="click: onInsertImage" class="w3-button">
-			<i class="fa fa-image"></i></button>
 
 	</div>
 

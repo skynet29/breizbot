@@ -51,6 +51,11 @@ $$.control.registerControl('mailboxPage', {
 
 			},
 			events: {
+				onFromClick: function() {
+					console.log('onFromClick')
+					const check = $(this).closest('tr').find('.check')
+					check.click()
+				},
 				onCheckClick: function() {
 					ctrl.setData({check: false})
 				},

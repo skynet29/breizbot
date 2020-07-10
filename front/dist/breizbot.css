@@ -52,7 +52,9 @@
     .breizbot-htmleditor > .scrollPanel .editor {
       min-height: 100%;
       padding: 10px;
-      outline: none; }
+      outline: none;
+      font-family: Arial;
+      font-size: 12pt; }
       .breizbot-htmleditor > .scrollPanel .editor p {
         margin: 0; }
       .breizbot-htmleditor > .scrollPanel .editor a {

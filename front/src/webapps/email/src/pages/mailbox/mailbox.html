@@ -18,11 +18,13 @@
 				<th>Date</th>
 			</tr>
 		</thead>
-		<tbody bn-each="messages" bn-event="click.item: onItemClick, click.check: onCheckClick" bn-bind="messages" bn-lazzy="getMessages">
+		<tbody bn-each="messages"
+			bn-event="click.item: onItemClick, click.check: onCheckClick, click.from: onFromClick" 
+			bn-bind="messages" bn-lazzy="getMessages">
 			<tr bn-class="{unseen: !isSeen}">
 				<td><input type="checkbox" class="check" bn-val="$scope.$i.checked"></td>
-				<td bn-text="$scope.$i.from.name" bn-attr="{title: $scope.$i.from.email}" bn-show="!isSentBox"></td>
-				<td bn-text="text2" bn-attr="attr1" bn-show="isSentBox"></td>
+				<td bn-text="$scope.$i.from.name" bn-attr="{title: $scope.$i.from.email}" bn-show="!isSentBox" class="from"></td>
+				<td bn-text="text2" bn-attr="attr1" bn-show="isSentBox" class="from"></td>
 				<td bn-text="$scope.$i.subject" class="item" ></td>
 				<td bn-text="$scope.$i.nbAttachments"></td>
 				<td bn-text="getDate"></td>

@@ -116,6 +116,8 @@
         color: white; }
       .mailboxPage .scrollPanelTable table .item {
         cursor: pointer; }
+      .mailboxPage .scrollPanelTable table .from {
+        cursor: pointer; }
       .mailboxPage .scrollPanelTable table tr.unseen {
         font-weight: bold; }
 

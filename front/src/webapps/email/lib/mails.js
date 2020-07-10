@@ -215,13 +215,13 @@ module.exports = function (ctx) {
     }
 
     ret.sort((a, b) => {
-      if (a.title.toUpperCase() == 'INBOX') {
+      if (a.data.name.toUpperCase() == 'INBOX') {
         return -1
       }
-      if (b.title.toUpperCase() == 'INBOX') {
+      if (b.data.name.toUpperCase() == 'INBOX') {
         return 1
       }
-      return a.title > b.title
+      return a.data.name > b.data.name
     })
 
     return ret

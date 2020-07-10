@@ -250,7 +250,10 @@ $$.control.registerControl('rootPage', {
 					const { fileName, rootDir } = data
 					const fullName = rootDir + fileName
 
-					const type = $$.util.getFileType(fileName)
+					let type = $$.util.getFileType(fileName)
+					if (fileName.endsWith('.hdoc')) {
+						type = 'hdoc'
+					}
 					if (type != undefined) {
 						pager.pushPage('breizbot.viewer', {
 							title: fileName,

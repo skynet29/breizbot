@@ -21,4 +21,15 @@
 			width: 100%;
 		}
 	}
+
+	.doc {
+		.scrollPanel {
+			height: 100%;
+			overflow-y: auto;
+
+			.html {
+				padding: 10px;
+			}
+		}
+	}
 }

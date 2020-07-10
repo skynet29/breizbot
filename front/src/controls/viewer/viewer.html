@@ -1,4 +1,4 @@
-<div bn-if="if1">
+<div bn-if="isImage">
 	<div 
 		class="image" 
 		bn-control="brainjs.image" 
@@ -11,7 +11,7 @@
 </div>
 
 
-<div bn-if="if2">
+<div bn-if="isPdf">
 	<div 
 		class="pdf" 
 		bn-control="breizbot.pdf" 
@@ -22,10 +22,16 @@
 		</div>		
 </div>
 
-<div bn-if="if3" class="audio">
+<div bn-if="isAudio" class="audio">
 	<audio bn-attr="{src: url}" controls="" controlsList=nodownload></audio>
 </div>
 
-<div bn-if="if4" class="video">
+<div bn-if="isVideo" class="video">
 	<video bn-attr="{src: url}" controls="" controlsList=nodownload></video>
+</div>
+
+<div bn-if="isDoc" class="doc">
+	<div class="scrollPanel">
+		<div bn-load="url" class="html"></div>
+	</div>
 </div>

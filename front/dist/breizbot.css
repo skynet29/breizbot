@@ -268,3 +268,8 @@
     margin: 10px; }
     .breizbot-viewer .audio audio {
       width: 100%; }
+  .breizbot-viewer .doc .scrollPanel {
+    height: 100%;
+    overflow-y: auto; }
+    .breizbot-viewer .doc .scrollPanel .html {
+      padding: 10px; }

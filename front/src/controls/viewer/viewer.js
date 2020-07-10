@@ -17,17 +17,20 @@ $$.control.registerControl('breizbot.viewer', {
 			data: {
 				url,
 				type,
-				if1: function() {
+				isImage: function() {
 					return this.type == 'image'
 				},
-				if2: function() {
+				isPdf: function() {
 					return this.type == 'pdf'
 				},
-				if3: function() {
+				isAudio: function() {
 					return this.type == 'audio'
 				},
-				if4: function() {
+				isVideo: function() {
 					return this.type == 'video'
+				},
+				isDoc: function() {
+					return this.type == 'hdoc'
 				}
 
 			}

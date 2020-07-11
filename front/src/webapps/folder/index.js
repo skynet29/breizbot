@@ -150,7 +150,7 @@ module.exports = function (ctx, router) {
             })
             .on('end', () => {
                 console.log('Finsihed!')
-                wss.sendToClient(srcId, { topic: 'breizbot.mp3.progress', data: { percent: 100 } })                
+                wss.sendToClient(srcId, { topic: 'breizbot.mp3.progress', data: { finish: true } })                
             })
             .run()
 

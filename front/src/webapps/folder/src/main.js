@@ -150,14 +150,16 @@ $$.control.registerControl('rootPage', {
 									return
 								}
 								//console.log('progress', msg.data)
-								const { percent } = msg.data
-								progressDlg.setPercentage(percent / 100)
-								if (Math.floor(percent) == 100) {
+								const { percent, finish } = msg.data
+								if (finish === true) {
 									await $$.util.wait(500)
 									progressDlg.hide()
 									const info = await srvFiles.fileInfo(resp.outFileName)
 									//console.log('info', info)
 									ctrl.scope.files.insertFile(info, idx)
+								}
+								else {
+									progressDlg.setPercentage(percent / 100)
 								}
 							})
 

@@ -17,14 +17,14 @@ $$.control.registerControl('breizbot.htmleditor', {
 
 		}
 
-		const fontSizes = '8,10,12,14,18,24,36'
+		const fontSizes = '8,10,12,14,18,24,36'.split(',')
 		const fontNames = ["Arial", "Courier New", "Times New Roman"]
 
 
 		function getFontSizeItems() {
 			const ret = {}
-			fontSizes.split(',').forEach((i, idx) => {
-				ret[idx + 1] = { name: `${i} pt` }
+			fontSizes.forEach((i, idx) => {
+				ret[idx + 1] = { name: `<font size="${idx+1}">${i} pt</font>`, isHtmlName: true }
 			})
 			return ret
 		}
@@ -32,7 +32,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 		function getFontNameItems() {
 			const ret = {}
 			fontNames.forEach((i) => {
-				ret[i] = { name: i }
+				ret[i] = { name: `<font face="${i}">${i}</font>`, isHtmlName: true }
 			})
 			return ret
 		}
@@ -62,9 +62,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 				fontSize: defaultFontSize,
 				fontName: defaultFontName,
 				getFontSize: function () {
-					const fontSizeItem = fontSizeItems[this.fontSize]
-
-					return `${fontSizeItem.name}&nbsp;<i class="fas fa-caret-down"></i>`
+					return `${fontSizes[this.fontSize-1]} pt&nbsp;<i class="fas fa-caret-down"></i>`
 				},
 				getFontName: function () {
 					return `${this.fontName}&nbsp;<i class="fas fa-caret-down"></i>`
@@ -85,41 +83,6 @@ $$.control.registerControl('breizbot.htmleditor', {
 					ctrl.setData({ fontSize: data.cmd })
 					document.execCommand('fontSize', false, data.cmd)
 				},
-				onInsertImage: function () {
-					const selObj = window.getSelection()
-					//console.log('selObj', selObj)
-
-					if (!isEditable(selObj.anchorNode)) {
-						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
-						return
-					}
-
-					const range = selObj.getRangeAt(0)
-
-					pager.pushPage('breizbot.files', {
-						title: 'Insert Image',
-						props: {
-							filterExtension: 'jpg,jpeg,png,gif'
-						},
-						events: {
-							fileclick: function (ev, data) {
-								pager.popPage(data)
-							}
-						},
-						onReturn: async function (data) {
-							console.log('onReturn', data)
-							const { fileName, rootDir } = data
-							const url = files.fileUrl(rootDir + fileName)
-							//console.log('url', url)
-							const dataUrl = await $$.util.imageUrlToDataUrl(url)
-							const img = document.createElement('img')
-							img.src = dataUrl
-							range.insertNode(img)
-
-						}
-					})
-
-				},
 				onCreateLink: async function () {
 					const selObj = window.getSelection()
 
@@ -134,7 +97,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 						label: 'Link Target',
 						attrs: { type: 'url' }
 					})
-					console.log('href', href)
+					//console.log('href', href)
 					if (href != null) {
 						selObj.removeAllRanges()
 						selObj.addRange(range)

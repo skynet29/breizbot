@@ -149,11 +149,11 @@ $$.control.registerControl('rootPage', {
 								if (msg.hist == true) {
 									return
 								}
-								//console.log('progress', msg.data)
+								console.log('progress', msg.data)
 								const { percent, finish } = msg.data
 								if (finish === true) {
 									await $$.util.wait(500)
-									progressDlg.hide()
+									progressDlg.hide()									
 									const info = await srvFiles.fileInfo(resp.outFileName)
 									//console.log('info', info)
 									ctrl.scope.files.insertFile(info, idx)

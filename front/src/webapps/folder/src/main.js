@@ -149,7 +149,7 @@ $$.control.registerControl('rootPage', {
 								if (msg.hist == true) {
 									return
 								}
-								console.log('progress', msg.data)
+								//console.log('progress', msg.data)
 								const { percent } = msg.data
 								progressDlg.setPercentage(percent / 100)
 								if (Math.floor(percent) == 100) {

@@ -145,6 +145,10 @@
 			this.topics.on(topic, callback)
 		}
 
+		offTopic(topic, callback) {
+			this.topics.off(topic, callback)
+		}
+
 		register(topic, callback) {
 			//console.log('[Broker] register', topic)
 			if (this.registeredTopics[topic] == undefined) {

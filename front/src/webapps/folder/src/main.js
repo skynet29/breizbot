@@ -145,7 +145,9 @@ $$.control.registerControl('rootPage', {
 							progressDlg.show('Converting...')
 							const resp = await folder.convertToMP3(rootDir, name)
 							//console.log('resp', resp)
-							broker.onTopic('breizbot.mp3.progress', async (msg) => {
+
+							async function onProgress(msg) {
+
 								if (msg.hist == true) {
 									return
 								}
@@ -157,11 +159,14 @@ $$.control.registerControl('rootPage', {
 									const info = await srvFiles.fileInfo(resp.outFileName)
 									//console.log('info', info)
 									ctrl.scope.files.insertFile(info, idx)
+									broker.offTopic('breizbot.mp3.progress', onProgress)
 								}
 								else {
 									progressDlg.setPercentage(percent / 100)
 								}
-							})
+							}
+							broker.onTopic('breizbot.mp3.progress', onProgress)
+
 
 						}
 						catch (resp) {
@@ -179,7 +184,7 @@ $$.control.registerControl('rootPage', {
 							progressDlg.show('Zipping...')
 							const resp = await folder.zipFolder(rootDir, name)
 							//console.log('resp', resp)
-							broker.onTopic('breizbot.zip.progress', async (msg) => {
+							async function onProgress(msg) {
 								if (msg.hist == true) {
 									return
 								}
@@ -192,8 +197,12 @@ $$.control.registerControl('rootPage', {
 									const info = await srvFiles.fileInfo(resp.outFileName)
 									//console.log('info', info)
 									ctrl.scope.files.insertFile(info, idx)
+									broker.offTopic('breizbot.zip.progress', onProgress)
 								}
-							})
+							}
+
+							broker.onTopic('breizbot.zip.progress', onProgress)
+
 
 							//ctrl.scope.files.insertFile(resp, idx)
 						}
@@ -212,7 +221,7 @@ $$.control.registerControl('rootPage', {
 							progressDlg.show('Unzipping...')
 							const resp = await folder.unzipFile(rootDir, name)
 							//console.log('resp', resp)
-							broker.onTopic('breizbot.unzip.progress', async (msg) => {
+							async function onProgress(msg) {
 								if (msg.hist == true) {
 									return
 								}
@@ -222,9 +231,13 @@ $$.control.registerControl('rootPage', {
 								if (Math.floor(percent) == 100) {
 									await $$.util.wait(500)
 									progressDlg.hide()
+									broker.offTopic('breizbot.unzip.progress', onProgress)
+
 									ctrl.scope.files.reload()
 								}
-							})
+							}
+							broker.onTopic('breizbot.unzip.progress', onProgress)
+
 
 						}
 						catch (resp) {

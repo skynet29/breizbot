@@ -148,6 +148,10 @@ module.exports = function (ctx, router) {
                 const { percent } = event
                 wss.sendToClient(srcId, { topic: 'breizbot.mp3.progress', data: { percent } })
             })
+            .on('end', () => {
+                console.log('Finsihed!')
+                wss.sendToClient(srcId, { topic: 'breizbot.mp3.progress', data: { percent: 100 } })                
+            })
             .run()
 
         res.status(200).json({ outFileName: path.join(filePath, outFileName) })

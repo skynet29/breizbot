@@ -20,6 +20,15 @@ $$.control.registerControl('breizbot.htmleditor', {
 		const fontSizes = '8,10,12,14,18,24,36'.split(',')
 		const fontNames = ["Arial", "Courier New", "Times New Roman"]
 
+		function getHeadingItems() {
+			const ret = {
+				p: {name: 'Normal'}
+			}
+			for(let i = 1; i <=6 ; i++ ) {
+				ret['h'+i] = {name: `<h${i}>Heading ${i}</h${i}>`, isHtmlName: true}
+			}
+			return ret
+		}
 
 		function getFontSizeItems() {
 			const ret = {}
@@ -70,7 +79,8 @@ $$.control.registerControl('breizbot.htmleditor', {
 				fontSizeItems,
 				fontNameItems,
 				colorItems,
-				color: defaultColor
+				color: defaultColor,
+				headingItems: getHeadingItems()
 			},
 			events: {
 				onFontNameChange: function (ev, data) {

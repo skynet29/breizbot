@@ -183,7 +183,7 @@
 			getPlaylist()
 
 			this.getButtons = function () {
-				return {
+				const ret = {
 					playlist: {
 						visible: !isPlaylist,
 						title: 'Add to playlist',
@@ -223,8 +223,11 @@
 								await http.post('/addSong', { name: cmd, fileInfo, checkExists: false })
 							}
 						}
-					},
-					editInfo: {
+					}
+				}
+
+				if (friendUser === '') {
+					ret.editInfo = {
 						visible: !isPlaylist,
 						title: 'Edit Info',
 						icon: 'fa fa-edit',
@@ -251,7 +254,10 @@
 
 						}
 					}
+
 				}
+
+				return ret
 			}
 
 		}

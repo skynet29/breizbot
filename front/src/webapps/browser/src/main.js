@@ -11,11 +11,11 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				getResults: async function(idx) {
+				getResults: async function (idx) {
 					//console.log('getResults', idx, total)
-					return (idx != total) ? search(idx): null
+					return (idx != total) ? search(idx) : null
 				},
-				results: {web: [], images: []},
+				results: { web: [], images: [] },
 				theme: 'web',
 				query: '',
 				waiting: false,
@@ -24,11 +24,11 @@ $$.control.registerControl('rootPage', {
 				getUrl: function (scope) { return `https:${scope.$i.thumbnail}` }
 			},
 			events: {
-				onLinkClicked: function(ev) {
+				onLinkClicked: function (ev) {
 					//console.log('onLinkClicked', this.href)
 					if (this.href.startsWith('https://www.youtube.com/watch?v=')) {
 						ev.preventDefault()
-						scheduler.openApp('youtube', {url: this.href})
+						scheduler.openApp('youtube', { url: this.href })
 					}
 				},
 				onItemMenuClick: function () {
@@ -89,11 +89,11 @@ $$.control.registerControl('rootPage', {
 			try {
 				savingDlg.setPercentage(0)
 				savingDlg.show()
-				const resp = await http.fetch('/getImage', {url})
+				const resp = await http.fetch('/getImage', { url })
 				const blob = await resp.blob()
 				const ext = blob.type.split('/')[1]
 				const fileName = 'SNAP' + Date.now() + '.' + ext
-	
+
 				await srvFiles.uploadFile(blob, fileName, '/apps/browser', (percentage) => {
 					savingDlg.setPercentage(percentage)
 				})
@@ -126,7 +126,7 @@ $$.control.registerControl('rootPage', {
 
 		async function search(offset) {
 			if (offset == 0) {
-				ctrl.setData({ results: {web:[], images: [] }})
+				ctrl.setData({ results: { web: [], images: [] } })
 			}
 			const { theme, query } = ctrl.model
 			if (query != '') {
@@ -135,18 +135,14 @@ $$.control.registerControl('rootPage', {
 					const results = await http.post(`/search`, { query, theme, offset, count: 10 })
 					//console.log('results', results)
 					total = results.total
-					if (offset == 0) {
-						ctrl.model.results[theme] = results.items
-						ctrl.model.waiting = false
-						ctrl.update()
-					}
-					else {
-						ctrl.setData({waiting: false})
-					}
+					ctrl.model.results[theme] = ctrl.model.results[theme].concat(results.items)
+					ctrl.model.waiting = false
+					ctrl.enableNode('images', (offset == 0))
+					ctrl.update()
 					return results.items
 				}
 				catch (e) {
-					ctrl.setData({waiting: false})
+					ctrl.setData({ waiting: false })
 					$$.ui.showAlert({ title: 'Error', content: e.responseText })
 				}
 

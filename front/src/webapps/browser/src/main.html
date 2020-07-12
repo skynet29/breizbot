@@ -36,7 +36,7 @@
 
 <div bn-show="isImages" class="test" bn-event="click.item: onImageClick">
 	<div class="imagesResults" >
-		<div bn-each="results.images" bn-lazzy="getResults" class="items">
+		<div bn-each="results.images" bn-lazzy="getResults" class="items" bn-bind="images">
 			<div bn-style="{width: $scope.$i.thumb_width, height: $scope.$i.thumb_height}" class="item w3-card-2">
 				<img bn-attr="{src: getUrl}" style="display: none;">
 			</div>

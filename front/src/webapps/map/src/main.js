@@ -106,6 +106,7 @@ $$.control.registerControl('rootPage', {
 			//console.log('addMarker', shapeId, latlng, tooltip)
 			ctrl.scope.map.addShape(shapeId, {
 				type: 'marker',
+				layer: 'markers',
 				latlng,
 				icon: {
 					type: 'font',

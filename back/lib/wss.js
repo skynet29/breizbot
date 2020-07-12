@@ -4,6 +4,8 @@ const cookie = require('cookie')
 const auth = require('basic-auth')
 const uniqid = require('uniqid')
 const EventEmitter = require('events')
+const bcrypt = require('bcrypt')
+
 
 require('colors')
 
@@ -72,7 +74,7 @@ function sendError(client, text) {
 	sendMsg(client, { type: 'error', text })
 }
 
-function onConnect(client, store) {
+async function  onConnect(client, store) {
 
 	const { path, headers } = client
 	//console.log('onConnect', path)
@@ -87,19 +89,27 @@ function onConnect(client, store) {
 		const credentials = auth.parse(headers.authorization)
 		//console.log('credentials', credentials)
 		const userName = credentials.name
-		db.getUserInfo(userName)
-			.then((userInfo) => {
-				const { pwd } = userInfo
-				if (pwd === credentials.pass) {
-					addHomeboxClient(client, userName)
-				}
-				else {
-					sendError(client, 'Bad password')
-				}
-			})
-			.catch((e) => {
-				sendError(client, e)
-			})
+		try {
+			const userInfo = await db.getUserInfo(userName)
+			const { pwd, crypted } = userInfo
+			let match
+			if (crypted) {
+				match = await bcrypt.compare(credentials.pass, pwd)
+			}
+			else {
+				match = (credentials.pass == pwd)
+			}
+			if (match) {
+				addHomeboxClient(client, userName)
+			}
+			else {
+				sendError(client, 'Bad password')
+			}
+
+		}
+		catch(e) {
+			sendError(client, e)
+		}
 	}
 	else if (path.startsWith('/hmi/')) {
 

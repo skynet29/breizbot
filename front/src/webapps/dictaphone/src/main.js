@@ -50,7 +50,7 @@ $$.control.registerControl('rootPage', {
 						const ret = await fetch(data.url)
 						const blob = await ret.blob()
 						savingDlg.show()
-						const resp = await files.uploadFile(blob, data.name + '.ogg', '/apps/micro', (value) => {
+						const resp = await files.saveFile(blob, data.name + '.ogg', (value) => {
 							savingDlg.setPercentage(value)
 						})
 						await $$.util.wait(1000)

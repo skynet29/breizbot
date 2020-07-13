@@ -89,7 +89,7 @@ $$.control.registerControl('messagePage', {
 										const blob = $$.util.dataURLtoBlob(url)
 										try {
 											savingDlg.show()
-											const resp = await srvFiles.uploadFile(blob, info.name, '/apps/email', (value) => {
+											const resp = await srvFiles.saveFile(blob, info.name, (value) => {
 												savingDlg.setPercentage(value)
 											})
 											console.log('resp', resp)

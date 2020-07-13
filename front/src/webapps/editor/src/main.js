@@ -6,8 +6,6 @@ $$.control.registerControl('rootPage', {
 
 	init: function(elt, files, pager) {
 
-		let range
-
 		const savingDlg = $$.ui.progressDialog()
 
 		const ctrl = $$.viewController(elt, {

@@ -4,7 +4,7 @@ var gulp = require('gulp')
 const task = require('../../../task')(__dirname.replace('src', 'dist'))
 
 
-const appJs = task(
+const appJs = task('app.js',
 	[
 		'./src/**/*.js'
 	],
@@ -12,19 +12,19 @@ const appJs = task(
 
 )
 
-const appCss = task(
+const appCss = task('app.css',
 	[
 		'./src/**/*.scss',
 	],
 	{concat: 'app.css', isSass:true}
 )
 
+const app = gulp.series(appJs, appCss)
+exports.default = app
 
-exports.default = gulp.series(appJs, appCss)
 
-
-exports.watch = function() {
+exports.watch = gulp.series(app, function() {
 	gulp.watch(['./src/**/*.js', './src/**/*.html'], appJs)
 	gulp.watch(['./src/**/*.scss'], appCss)
 
-}
+})

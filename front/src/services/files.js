@@ -1,8 +1,8 @@
 $$.service.registerService('breizbot.files', {
 
-	deps: ['brainjs.resource'],
+	deps: ['brainjs.resource', 'breizbot.params'],
 
-	init: function(config, resource) {
+	init: function(config, resource, params) {
 		const http = resource('/api/files')
 		
 		return {
@@ -36,6 +36,11 @@ $$.service.registerService('breizbot.files', {
 				fd.append('file', blob, saveAsfileName)
 				fd.append('destPath', destPath)
 				return http.postFormData('/save', fd, onUploadProgress)
+			},
+
+			saveFile: function(blob, saveAsfileName, onUploadProgress) {
+				const destPath = `/apps/${params.$appName}`
+				this.uploadFile(blob, saveAsfileName, destPath, onUploadProgress)
 			}
 
 		}
@@ -47,6 +52,7 @@ $$.service.registerService('breizbot.files', {
 		fileUrl(fileName, friendUser):string;
 		fileThumbnailUrl(fileName, size, friendUser):string;
 		uploadFile(blob, saveAsfileName, destPath, onUploadProgress):Promise;
+		saveFile(blob, saveAsfileName, onUploadProgress):Promise;
 	`
 
 });

@@ -94,7 +94,7 @@ $$.control.registerControl('rootPage', {
 				const ext = blob.type.split('/')[1]
 				const fileName = 'SNAP' + Date.now() + '.' + ext
 
-				await srvFiles.uploadFile(blob, fileName, '/apps/browser', (percentage) => {
+				await srvFiles.saveFile(blob, fileName, (percentage) => {
 					savingDlg.setPercentage(percentage)
 				})
 				await $$.util.wait(1000)

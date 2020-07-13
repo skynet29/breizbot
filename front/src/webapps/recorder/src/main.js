@@ -18,7 +18,7 @@ $$.control.registerControl('rootPage', {
 			console.log('fileName', fileName)
 			try {
 				savingDlg.show()
-				const resp = await srvFiles.uploadFile(blob, fileName, '/apps/recorder', (percentage) => {
+				const resp = await srvFiles.saveFile(blob, fileName, (percentage) => {
 					savingDlg.setPercentage(percentage)
 				})
 				await $$.util.wait(1000)

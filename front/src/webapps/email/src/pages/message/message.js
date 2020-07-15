@@ -14,8 +14,6 @@ $$.control.registerControl('messagePage', {
 
 		const { currentAccount, mailboxName, item } = this.props
 
-		const savingDlg = $$.ui.progressDialog()
-
 		const waitDlg = $$.dialogController({
 			title: 'Loading ...',
 			template: `<div class="w3-center w3-padding-16"><i class="fa fa-redo-alt fa-2x fa-pulse w3-text-blue"></i></div>`,
@@ -87,22 +85,7 @@ $$.control.registerControl('messagePage', {
 									icon: 'fa fa-save',
 									onClick: async function () {
 										const blob = $$.util.dataURLtoBlob(url)
-										try {
-											savingDlg.show()
-											const resp = await srvFiles.saveFile(blob, info.name, (value) => {
-												savingDlg.setPercentage(value)
-											})
-											console.log('resp', resp)
-											await $$.util.wait(1000)
-											savingDlg.hide()
-										}
-										catch (e) {
-											savingDlg.hide()
-											$$.ui.showAlert({
-												title: 'Error',
-												content: resp.responseText
-											})
-										}
+										await srvFiles.saveFile(blob, info.name)
 									}
 								}
 							}

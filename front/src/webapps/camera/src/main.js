@@ -7,31 +7,12 @@ $$.control.registerControl('rootPage', {
 
 	init: function (elt, srvFiles, pager) {
 
-		const savingDlg = $$.ui.progressDialog()
-
 		const audio = new Audio('/webapps/camera/assets/camera_shutter.mp3')
 
 		async function saveImage(blob) {
 			const fileName = 'SNAP' + Date.now() + '.png'
-			console.log('fileName', fileName)
-			try {
-				savingDlg.show()
-				const resp = await srvFiles.saveFile(blob, fileName, (percentage) => {
-					savingDlg.setPercentage(percentage)
-				})
-				await $$.util.wait(1000)
-				savingDlg.hide()
-				console.log('resp', resp)
-				//pager.popPage()
-			}
-			catch (resp) {
-				savingDlg.hide()
-				$$.ui.showAlert({
-					title: 'Error',
-					content: resp.responseText
-				})
-
-			}
+			//console.log('fileName', fileName)
+			await srvFiles.saveFile(blob, fileName)
 		}
 
 		const ctrl = $$.viewController(elt, {

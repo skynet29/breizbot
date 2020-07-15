@@ -6,7 +6,6 @@ $$.control.registerControl('rootPage', {
 
 	init: function (elt, http, pager, srvFiles, scheduler) {
 
-		const savingDlg = $$.ui.progressDialog()
 		let total = 0
 
 		const ctrl = $$.viewController(elt, {
@@ -86,29 +85,13 @@ $$.control.registerControl('rootPage', {
 		})
 
 		async function saveImage(url) {
-			try {
-				savingDlg.setPercentage(0)
-				savingDlg.show()
-				const resp = await http.fetch('/getImage', { url })
-				const blob = await resp.blob()
-				const ext = blob.type.split('/')[1]
-				const fileName = 'SNAP' + Date.now() + '.' + ext
+			const resp = await http.fetch('/getImage', { url })
+			const blob = await resp.blob()
+			const ext = blob.type.split('/')[1]
+			const fileName = 'SNAP' + Date.now() + '.' + ext
 
-				await srvFiles.saveFile(blob, fileName, (percentage) => {
-					savingDlg.setPercentage(percentage)
-				})
-				await $$.util.wait(1000)
-				savingDlg.hide()
-				//console.log('resp', resp)
-			}
-			catch (e) {
-				savingDlg.hide()
-				$$.ui.showAlert({
-					title: 'Error',
-					content: e
-				})
-
-			}
+			await srvFiles.saveFile(blob, fileName)
+			//console.log('resp', resp)
 		}
 
 

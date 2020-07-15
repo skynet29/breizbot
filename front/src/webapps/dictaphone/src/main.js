@@ -9,8 +9,6 @@ $$.control.registerControl('rootPage', {
 		let mediaRecorder = null
 		let chunks = []
 
-		const savingDlg = $$.ui.progressDialog()
-
 		const ctrl = $$.viewController(elt, {
 			data: {
 				recording: false,
@@ -46,26 +44,12 @@ $$.control.registerControl('rootPage', {
 					const data = ctrl.model.clips[index]
 
 					//console.log('data', data)
-					try {
-						const ret = await fetch(data.url)
-						const blob = await ret.blob()
-						savingDlg.show()
-						const resp = await files.saveFile(blob, data.name + '.ogg', (value) => {
-							savingDlg.setPercentage(value)
-						})
-						await $$.util.wait(1000)
-						savingDlg.hide()
-						data.saved = true
-						ctrl.update()
+					const ret = await fetch(data.url)
+					const blob = await ret.blob()
+					await files.saveFile(blob, data.name + '.ogg')
+					data.saved = true
+					ctrl.update()
 
-					}
-					catch (e) {
-						savingDlg.hide()
-						$$.ui.showAlert({
-							title: 'Error',
-							content: ev.responseText
-						})
-					}
 				}
 
 			}

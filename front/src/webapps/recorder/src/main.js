@@ -7,33 +7,14 @@ $$.control.registerControl('rootPage', {
 
 	init: function (elt, srvFiles, pager) {
 
-		const savingDlg = $$.ui.progressDialog()
-
 		let timer = null
 		let startTime = 0
 
 
 		async function saveVideo(blob) {
 			const fileName = 'VIDEO' + Date.now() + '.webm'
-			console.log('fileName', fileName)
-			try {
-				savingDlg.show()
-				const resp = await srvFiles.saveFile(blob, fileName, (percentage) => {
-					savingDlg.setPercentage(percentage)
-				})
-				await $$.util.wait(1000)
-				savingDlg.hide()
-				console.log('resp', resp)
-				//pager.popPage()
-			}
-			catch (resp) {
-				savingDlg.hide()
-				$$.ui.showAlert({
-					title: 'Error',
-					content: resp.responseText
-				})
-
-			}
+			//console.log('fileName', fileName)
+			await srvFiles.saveFile(blob, fileName)
 		}
 
 		const ctrl = $$.viewController(elt, {
@@ -78,7 +59,7 @@ $$.control.registerControl('rootPage', {
 					ctrl.setData({ recording: false })
 				},
 				onVideoRecord: function (ev, blob) {
-					console.log('onVideoRecord', blob)
+					//console.log('onVideoRecord', blob)
 
 					const url = URL.createObjectURL(blob)
 
@@ -101,10 +82,10 @@ $$.control.registerControl('rootPage', {
 
 				},
 				onCameraReady: async function () {
-					console.log('onCameraReady')
+					//console.log('onCameraReady')
 					const iface = $(this).iface()
 					const capabilities = await iface.getCapabilities()
-					console.log('capabilities', capabilities)
+					//console.log('capabilities', capabilities)
 
 					if (capabilities.zoom) {
 						const settings = iface.getSettings()

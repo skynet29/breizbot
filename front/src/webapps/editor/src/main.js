@@ -12,9 +12,6 @@ $$.control.registerControl('rootPage', {
 				rootDir: ''
 			},
 			events: {
-				onInsertImage: function () {
-					ctrl.scope.editor.insertImage()
-				},
 				onNewFile: function (ev) {
 					//console.log('onNewFile')
 					ctrl.scope.editor.html('')

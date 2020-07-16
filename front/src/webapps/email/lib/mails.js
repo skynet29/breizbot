@@ -129,8 +129,9 @@ function getAttachments(parts) {
   //console.log('getAttachments', parts)
   const ret = []
   parts.forEach((p) => {
-    const { params, disposition, type, subtype, size, partID, encoding } = p
-    if (disposition == null || (disposition.type.toUpperCase() != 'ATTACHMENT' && disposition.type.toUpperCase() != 'INLINE')) {
+    const { id, params, disposition, type, subtype, size, partID, encoding } = p
+    if (id != null || disposition == null || 
+      (disposition.type.toUpperCase() != 'ATTACHMENT' && disposition.type.toUpperCase() != 'INLINE')) {
       return
     }
 
@@ -153,8 +154,9 @@ function getEmbeddedImages(parts) {
   //console.log('getEmbeddedImages', parts)
   const ret = []
   parts.forEach((p) => {
-    const { id, type, subtype, size, partID, encoding, disposition } = p
-    if (disposition != null && disposition.type.toUpperCase() != 'INLINE') {
+    const { id, type, subtype, size, partID, encoding, disposition } = p  
+    if (disposition != null &&
+       disposition.type.toUpperCase() != 'INLINE' && disposition.type.toUpperCase() != 'ATTACHMENT') {
       return
     }
     if (id == null || type != 'image') {
@@ -389,12 +391,11 @@ module.exports = function (ctx) {
 
     data.from = account.email
 
-    if (data.attachments != undefined) {
-      data.attachments = data.attachments.map((a) => {
-        return { path: path.join(cloudPath, userName, a) }
+     data.attachments.forEach((a) => {
+       a.path = path.join(cloudPath, userName, a.path)
       })
-    }
-    console.log('data', data)
+
+      console.log('data', data)
 
     if (account.makeCopy === true) {
       console.log('Make a copy to Sent folder')

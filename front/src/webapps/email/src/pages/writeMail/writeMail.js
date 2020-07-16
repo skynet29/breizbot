@@ -1,6 +1,6 @@
 $$.control.registerControl('writeMailPage', {
 
-	template: {gulp_inject: './writeMail.html'},
+	template: { gulp_inject: './writeMail.html' },
 
 	deps: ['app.mails', 'breizbot.pager'],
 
@@ -9,39 +9,64 @@ $$.control.registerControl('writeMailPage', {
 		data: {}
 	},
 
-	init: function(elt, srvMail, pager) {
+	init: function (elt, srvMail, pager) {
 
-		const {accountName, data} = this.props
+		const { accountName, data } = this.props
 		console.log('data', data)
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				data,
 				attachments: [],
-				show1: function() {return this.attachments.length > 0},
-				prop1: function() {return {autofocus: this.data.html == undefined}}
+				show1: function () { return this.attachments.length > 0 },
+				prop1: function () { return { autofocus: this.data.html == undefined } }
 			},
 			events: {
-				onSend: async function(ev) {
+				onKeyPress: function (ev) {
+					//console.log('onKeyPress', ev.which)
+					if (ev.which == '13') {
+						ev.preventDefault()
+					}
+				},
+				onSend: async function (ev) {
 					console.log('onSend')
 					ev.preventDefault()
 					const data = $(this).getFormData()
 					console.log('data', data)
-					const {attachments} = ctrl.model
-					if (attachments.length > 0) {
-						data.attachments = attachments.map((a) => a.rootDir + a.fileName)
-					}
+					const { attachments } = ctrl.model
+					data.attachments = attachments.map((a) => {
+						return { path: a.rootDir + a.fileName }
+					})
+
+					const $html = $('<div>').append(data.html)
+					$html.find('img').each(function () {
+						const src = $(this).attr('src')
+						const urlParams = src.split('?')[1]
+						const { fileName } = $$.util.parseUrlParams(urlParams)
+						//console.log('fileName', fileName)
+						const cid = 'IMG' + Date.now()
+						data.attachments.push({
+							path: fileName,
+							cid
+						})
+						$(this).attr('src', 'cid:' + cid)
+					})
+
+					data.html = $html.html()
+
+
+					//console.log('html', data)
 
 					try {
 						await srvMail.sendMail(accountName, data)
-						pager.popPage()	
+						pager.popPage()
 					}
-					catch(e) {
-						$$.ui.showAlert({title: 'Error', content: e.responseText})
+					catch (e) {
+						$$.ui.showAlert({ title: 'Error', content: e.responseText })
 					}
 
 				},
-				openContact: function() {
+				openContact: function () {
 					console.log('openContact')
 					pager.pushPage('breizbot.contacts', {
 						title: 'Select a contact',
@@ -52,13 +77,13 @@ $$.control.registerControl('writeMailPage', {
 							ok: {
 								title: 'Apply',
 								icon: 'fa fa-check',
-								onClick: function() {
+								onClick: function () {
 									pager.popPage(this.getSelection())
-			
+
 								}
 							}
 						},
-						onReturn: function(friends) {
+						onReturn: function (friends) {
 							const contacts = friends.map((a) => a.contactEmail)
 							console.log('contacts', contacts)
 							const to = ctrl.scope.to.val()
@@ -67,11 +92,11 @@ $$.control.registerControl('writeMailPage', {
 							if (to != '') {
 								contacts.unshift(to)
 							}
-							ctrl.setData({data: {to: contacts.join(',')}})							
+							ctrl.setData({ data: { to: contacts.join(',') } })
 						}
 					})
 				},
-				onRemoveAttachment: function(ev) {
+				onRemoveAttachment: function (ev) {
 					const idx = $(this).closest('li').index()
 					console.log('onRemoveAttachment', idx)
 					ctrl.model.attachments.splice(idx, 1)
@@ -84,41 +109,41 @@ $$.control.registerControl('writeMailPage', {
 
 		if (data.html != undefined) {
 			ctrl.scope.content.focus()
-		}		
+		}
 
-		this.getButtons = function() {
+		this.getButtons = function () {
 			return {
 				attachment: {
 					icon: 'fa fa-paperclip',
 					title: 'Add attachment',
-					onClick: function() {
+					onClick: function () {
 						pager.pushPage('breizbot.files', {
 							title: 'Select a file to attach',
 							props: {
 								showThumbnail: true
 							},
 							events: {
-								fileclick: function(ev, data) {
+								fileclick: function (ev, data) {
 									pager.popPage(data)
 								}
 							},
-							onReturn: function(data) {
-								const {fileName, rootDir} = data
-								ctrl.model.attachments.push({fileName, rootDir})
-								ctrl.update()						
+							onReturn: function (data) {
+								const { fileName, rootDir } = data
+								ctrl.model.attachments.push({ fileName, rootDir })
+								ctrl.update()
 							}
 						})
-		
+
 					}
 				},
 				send: {
 					icon: 'fa fa-paper-plane',
 					title: 'Send Message',
-					onClick: function() {
+					onClick: function () {
 						ctrl.scope.submit.click()
 					}
 				}
-			}				
+			}
 		}
 
 	}

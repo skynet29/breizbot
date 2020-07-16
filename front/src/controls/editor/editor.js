@@ -4,7 +4,14 @@ $$.control.registerControl('breizbot.htmleditor', {
 
 	deps: ['breizbot.pager', 'breizbot.files'],
 
+	props: {
+		useDataUrlForImg: false
+	},
+
 	init: function (elt, pager, files) {
+
+		const { useDataUrlForImg } = this.props
+		console.log('useDataUrlForImg', useDataUrlForImg)
 
 		const colorMap = {
 			black: '#000000',
@@ -22,10 +29,10 @@ $$.control.registerControl('breizbot.htmleditor', {
 
 		function getHeadingItems() {
 			const ret = {
-				p: {name: 'Normal'}
+				p: { name: 'Normal' }
 			}
-			for(let i = 1; i <=6 ; i++ ) {
-				ret['h'+i] = {name: `<h${i}>Heading ${i}</h${i}>`, isHtmlName: true}
+			for (let i = 1; i <= 6; i++) {
+				ret['h' + i] = { name: `<h${i}>Heading ${i}</h${i}>`, isHtmlName: true }
 			}
 			return ret
 		}
@@ -33,7 +40,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 		function getFontSizeItems() {
 			const ret = {}
 			fontSizes.forEach((i, idx) => {
-				ret[idx + 1] = { name: `<font size="${idx+1}">${i} pt</font>`, isHtmlName: true }
+				ret[idx + 1] = { name: `<font size="${idx + 1}">${i} pt</font>`, isHtmlName: true }
 			})
 			return ret
 		}
@@ -71,7 +78,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 				fontSize: defaultFontSize,
 				fontName: defaultFontName,
 				getFontSize: function () {
-					return `${fontSizes[this.fontSize-1]} pt&nbsp;<i class="fas fa-caret-down"></i>`
+					return `${fontSizes[this.fontSize - 1]} pt&nbsp;<i class="fas fa-caret-down"></i>`
 				},
 				getFontName: function () {
 					return `${this.fontName}&nbsp;<i class="fas fa-caret-down"></i>`
@@ -83,6 +90,9 @@ $$.control.registerControl('breizbot.htmleditor', {
 				headingItems: getHeadingItems()
 			},
 			events: {
+				onInsertImage: function (ev) {
+					insertImage()
+				},
 				onFontNameChange: function (ev, data) {
 					//console.log('onFontNameChange', data)
 					ctrl.setData({ fontName: data.cmd })
@@ -220,7 +230,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 			ctrl.scope.editor.get(0).focus()
 		}
 
-		this.insertImage = function() {
+		function insertImage() {
 			const selObj = window.getSelection()
 			//console.log('selObj', selObj)
 
@@ -244,11 +254,13 @@ $$.control.registerControl('breizbot.htmleditor', {
 				onReturn: async function (data) {
 					console.log('onReturn', data)
 					const { fileName, rootDir } = data
-					const url = files.fileUrl(rootDir + fileName)
+					let url = files.fileUrl(rootDir + fileName)
 					//console.log('url', url)
-					const dataUrl = await $$.util.imageUrlToDataUrl(url)
+					if (useDataUrlForImg) {
+						url = await $$.util.imageUrlToDataUrl(url)
+					}
 					const img = document.createElement('img')
-					img.src = dataUrl
+					img.src = url
 					range.insertNode(img)
 
 				}

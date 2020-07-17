@@ -114,9 +114,9 @@ $$.control.registerControl('messagePage', {
 
 				},
 				onToggleDiv: function (ev) {
-					console.log('onAttachClick')
+					//console.log('onAttachClick')
 					const $i = $(this).find('i')
-					const $ul = $(this).siblings('ul')
+					const $ul = $(this).siblings('.scrollPanel')
 					if ($i.hasClass('fa-caret-right')) {
 						$i.removeClass('fa-caret-right').addClass('fa-caret-down')
 						$ul.slideDown()
@@ -143,7 +143,7 @@ $$.control.registerControl('messagePage', {
 
 				},
 				onFrameLoaded: function (ev) {
-					console.log('onFrameLoaded')
+					//console.log('onFrameLoaded')
 					const $iframe = $(this.contentWindow.document)
 					$iframe.find('a')
 						.attr('target', '_blank')
@@ -157,7 +157,7 @@ $$.control.registerControl('messagePage', {
 
 				},
 				onAddContact: function (ev) {
-					console.log('onAddContact')
+					//console.log('onAddContact')
 					ev.preventDefault()
 					const { item } = ctrl.model
 					const idx = $(this).closest('li').index()

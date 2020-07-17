@@ -6,13 +6,19 @@
 	.header {
 		padding: 10px;
 
+		.scrollPanel {
+			max-height: 100px;
+			overflow-y: auto;
+		}
+
 		.to {
 			ul {
 				margin: 0;
 			}
 			strong {
 				cursor: pointer;
-			}				
+			}	
+			
 		}
 
 		.attachments {

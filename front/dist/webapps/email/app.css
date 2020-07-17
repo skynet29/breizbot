@@ -126,6 +126,9 @@
   flex-direction: column; }
   .messagePage .header {
     padding: 10px; }
+    .messagePage .header .scrollPanel {
+      max-height: 100px;
+      overflow-y: auto; }
     .messagePage .header .to ul {
       margin: 0; }
     .messagePage .header .to strong {

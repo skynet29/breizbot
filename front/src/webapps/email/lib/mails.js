@@ -130,10 +130,15 @@ function getAttachments(parts) {
   const ret = []
   parts.forEach((p) => {
     const { id, params, disposition, type, subtype, size, partID, encoding } = p
-    if (id != null || disposition == null || 
+    if (disposition == null || 
       (disposition.type.toUpperCase() != 'ATTACHMENT' && disposition.type.toUpperCase() != 'INLINE')) {
       return
     }
+
+    if (id != null && type == 'image') {
+      return
+    }
+
 
     let name = disposition.params && disposition.params.filename
 

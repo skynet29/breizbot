@@ -45,9 +45,15 @@
 					curTime: 0,
 					playing: false,
 					isFirst: function () {
+						if (shuffleIndexes != null) {
+							return true
+						}
 						return (this.idx == 0)
 					},
 					isLast: function () {
+						if (shuffleIndexes != null) {
+							return (shuffleIndexes.length == 0)
+						}
 						return (this.idx == this.nbFiles - 1)
 					},
 					getTimeInfo: function () {
@@ -100,6 +106,7 @@
 						else {
 							shuffleIndexes = null
 						}
+						ctrl.update()
 					},
 
 					onEnded: next,
@@ -122,6 +129,7 @@
 				if (shuffleIndexes != null) {
 					if (shuffleIndexes.length > 0) {
 						setIndex(shuffleIndexes.pop())
+						//console.log('shuffleIndexes', shuffleIndexes.length)
 					}
 					return
 				}
@@ -133,6 +141,7 @@
 			}
 
 			function setIndex(idx) {
+				//console.log('idx', idx)
 				ctrl.setData({
 					src: getFileUrl(idx),
 					title: getTitle(idx),

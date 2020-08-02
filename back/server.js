@@ -47,6 +47,8 @@ store.on('error', function(error) {
 
 const app = express()
 
+require('./controllers/alexa')(app)
+
 app.use(helmet({
   frameguard: {
     action: 'sameorigin'
@@ -72,6 +74,7 @@ app.use(fileUpload())
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))	
+
 
 // forbid acces to REST API when no user connected
 app.all('/api/*' , function(req, res, next) {
@@ -103,7 +106,6 @@ app.all('/api/app/:appName/*' , function(req, res, next) {
 
 require('./controllers/login')(app)
 require('./controllers/app')(app)
-require('./controllers/alexa')(app)
 
 
 app.use('/api/users', require('./api/users'))

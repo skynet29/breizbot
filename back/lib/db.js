@@ -7,6 +7,10 @@ const events = require('./events')
 
 var db = null
 
+function buildId(id) {
+	return { _id: new ObjectID(id) }
+}
+
 module.exports = {
 	init: function () {
 		return new Promise((resolve, reject) => {
@@ -51,6 +55,17 @@ module.exports = {
 		return db.collection('users').findOne({ username })
 	},
 
+	getUserInfoByAlexaId: function (alexaUserId) {
+		return db.collection('users').findOne({ alexaUserId })
+	},
+
+	getMusicByArtist(owner, artist) {
+		return db.collection('music-songs').find({owner, artist: {$regex: artist, $options: 'i'}}).toArray()
+	},
+
+	getSongById(id) {
+		return db.collection('music-songs').findOne(buildId(id))
+	},
 
 	changePassword: async function (username, newPwd) {
 

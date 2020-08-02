@@ -56,11 +56,11 @@ module.exports = {
 	},
 
 	getUserInfoByAlexaId: function (alexaUserId) {
-		return db.collection('users').findOne({ alexaUserId })
+		return db.collection('users').findOne({ alexaUserId }, { projection: { username: 1, _id: 0 } })
 	},
 
 	getMusicByArtist(owner, artist) {
-		return db.collection('music-songs').find({owner, artist: {$regex: artist, $options: 'i'}}).toArray()
+		return db.collection('music-songs').find({ owner, artist: { $regex: artist, $options: 'i' } }).toArray()
 	},
 
 	getSongById(id) {
@@ -71,10 +71,16 @@ module.exports = {
 
 		console.log(`[DB] changePassword`, username)
 		const pwd = await bcrypt.hash(newPwd, 10)
-		var update = { '$set': { pwd, crypted: true } }
+		const update = { '$set': { pwd, crypted: true } }
 
 		await db.collection('users').updateOne({ username }, update)
 
+	},
+
+	setAlexaUserId: async function (username, alexaUserId) {
+		const update = { '$set': { alexaUserId } }
+
+		await db.collection('users').updateOne({ username }, update)
 	},
 
 	updateLastLoginDate: async function (username) {
@@ -139,7 +145,7 @@ module.exports = {
 
 	removeNotif: async function (notifId) {
 		console.log(`[DB] removeNotif`, notifId)
-		await db.collection('notifs').deleteOne({ _id: new ObjectID(notifId) })
+		await db.collection('notifs').deleteOne(buildId(notifId))
 	},
 
 	getFriends: async function (username) {
@@ -206,7 +212,7 @@ module.exports = {
 
 	removeContact: async function (contactId) {
 		console.log(`[DB] removeContact`, contactId)
-		await db.collection('contacts').deleteOne({ _id: new ObjectID(contactId) })
+		await db.collection('contacts').deleteOne(buildId(contactId))
 	},
 
 	getAppData: function (userName, appName) {

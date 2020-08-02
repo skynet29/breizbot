@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const db = require('../lib/db')
 const wss = require('../lib/wss')
+const fetch = require('node-fetch')
 
 
 router.get('/', async function (req, res) {
@@ -59,6 +60,28 @@ router.post('/changePwd', async function (req, res) {
 		res.sendStatus(400)
 	}
 })
+
+router.post('/computeAlexaUserId', async function (req, res) {
+	const { accessToken } = req.body
+	const userName = req.session.user
+
+	try {
+		const amazonProfileURL = 'https://api.amazon.com/user/profile?access_token=' + accessToken
+		const resp = await fetch(amazonProfileURL)
+		console.log('resp', resp)
+		const { user_id } = await resp.json()
+		console.log('user_id', user_id)
+
+		await db.setAlexaUserId(userName, user_id)
+
+		res.sendStatus(200)
+	}
+	catch (e) {
+		res.sendStatus(400)
+	}
+})
+
+
 
 
 router.delete('/:userName', async function (req, res) {

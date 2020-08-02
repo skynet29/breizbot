@@ -1,11 +1,14 @@
 const Alexa = require('ask-sdk-core')
 const AmazonSpeech = require('ssml-builder/amazon_speech')
+const fetch = require('node-fetch')
+
 const db = require('../lib/db.js')
 const { getPersistenceAdapter } = require('./persistence.js')
 const { domain } = require('../lib/config.js')
 
 const OS = { word: 'OS', interpret: 'characters' }
 const USER_NOT_REGISTERD = 'User not registered'
+const SKILL_NOT_LINKED = 'Skill not linked'
 
 
 function getRegisteredErrorMessage() {
@@ -273,9 +276,24 @@ const ErrorHandler = {
         console.log(`Error handled: ${error.message}`)
         let message = 'Désolé, il y a un bug dans la machine'
         if (error.message == USER_NOT_REGISTERD) {
-            message = getRegisteredErrorMessage()
-            const userId = Alexa.getUserId(handlerInput.requestEnvelope)
-            handlerInput.responseBuilder.withSimpleCard('Registration', `User Id: ${userId} `)
+            const speech = new AmazonSpeech()
+            message = 'Utilisateur non identifié'
+            // .say('Utilisateur non identifié')
+            // .pause('500ms')
+            // .say('Rendez vous sur votre compte Net')
+            // .sayAs(OS)
+            // .say('dans la menu settings')
+            // .pause('500ms')
+            // .say('Renseigner cette identifiant sur votre compte Net')
+        }
+
+        if (error.message == SKILL_NOT_LINKED) {
+            const speech = new AmazonSpeech()
+            speech
+                .say('La skill Net')
+                .sayAs(OS)
+                .say(`n'est pas associé avec votre compte Amazon`)
+            message = speech.ssml()
         }
 
         return handlerInput.responseBuilder
@@ -288,7 +306,7 @@ const ErrorHandler = {
 const RequestInterceptor = {
     async process(handlerInput) {
         const { requestEnvelope, attributesManager } = handlerInput
-        //console.log('requestEnvelope', requestEnvelope)
+        console.log('requestEnvelope', requestEnvelope)
         const type = Alexa.getRequestType(requestEnvelope)
         //const name = Alexa.getIntentName(requestEnvelope)
         console.log('type', type)
@@ -297,9 +315,19 @@ const RequestInterceptor = {
         }
         if (requestEnvelope.session && requestEnvelope.session.new === true) {
             const userId = Alexa.getUserId(requestEnvelope)
-            console.log('userId', userId)
-            const userInfo = await db.getUserInfoByAlexaId(userId)
-            //console.log('userInfo', userInfo)
+            const { accessToken } = requestEnvelope.session.user
+            if (accessToken == undefined) {
+                throw new Error(SKILL_NOT_LINKED)
+            }
+            //console.log('accessToken', accessToken)
+            const amazonProfileURL = 'https://api.amazon.com/user/profile?access_token=' + accessToken
+
+            const resp = await fetch(amazonProfileURL)
+            const { user_id } = await resp.json()
+            console.log('user_id', user_id)
+
+            const userInfo = await db.getUserInfoByAlexaId(user_id)
+            console.log('userInfo', userInfo)
             if (userInfo == null) {
                 throw new Error(USER_NOT_REGISTERD)
             }

@@ -79,6 +79,10 @@ $$.service.registerService('breizbot.users', {
 				return http.post(`/changePwd`, { newPwd })
 			},
 
+			computeAlexaUserId: function(accessToken) {
+				return http.post(`/computeAlexaUserId`, { accessToken })
+			},
+
 			addContact: function (name, email) {
 				return http.post(`/addContact`, { name, email })
 			},

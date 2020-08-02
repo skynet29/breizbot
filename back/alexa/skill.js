@@ -36,7 +36,7 @@ const PlayRequestHandler = {
     async handle(handlerInput) {
         const { requestEnvelope, attributesManager } = handlerInput
         const { userName } = attributesManager.getSessionAttributes()
-        console.log('userName', userName)
+        //console.log('userName', userName)
 
         const song = Alexa.getSlotValue(requestEnvelope, 'song')
         const artist = Alexa.getSlotValue(requestEnvelope, 'artist')
@@ -44,7 +44,7 @@ const PlayRequestHandler = {
         console.log('song', song)
         console.log('artist', artist)
         const songs = await db.getMusicByArtist(userName, artist)
-        console.log('songs', songs)
+        //console.log('songs', songs)
         if (songs.length == 0) {
             return handlerInput.responseBuilder
                 .speak(`Désolé, je n'ai pas trouvé de titre par ${artist}`)
@@ -288,7 +288,7 @@ const ErrorHandler = {
 const RequestInterceptor = {
     async process(handlerInput) {
         const { requestEnvelope, attributesManager } = handlerInput
-        console.log('requestEnvelope', requestEnvelope)
+        //console.log('requestEnvelope', requestEnvelope)
         const type = Alexa.getRequestType(requestEnvelope)
         //const name = Alexa.getIntentName(requestEnvelope)
         console.log('type', type)
@@ -299,7 +299,7 @@ const RequestInterceptor = {
             const userId = Alexa.getUserId(requestEnvelope)
             console.log('userId', userId)
             const userInfo = await db.getUserInfoByAlexaId(userId)
-            console.log('userInfo', userInfo)
+            //console.log('userInfo', userInfo)
             if (userInfo == null) {
                 throw new Error(USER_NOT_REGISTERD)
             }
@@ -311,7 +311,7 @@ const RequestInterceptor = {
 
 const SavePersistentAttributesResponseInterceptor = {
     async process(handlerInput) {
-        console.log('SAVE ATTRIBUTES')
+        //console.log('SAVE ATTRIBUTES')
         await handlerInput.attributesManager.savePersistentAttributes()
     }
 }

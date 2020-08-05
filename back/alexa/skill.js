@@ -293,7 +293,8 @@ const ErrorHandler = {
             speech
                 .say('La skill Net')
                 .sayAs(OS)
-                .say(`n'est pas associé avec votre compte Amazon`)
+                .say(`n'est pas associé avec votre compte Net`)
+                .sayAs(OS)
             message = speech.ssml()
 
             responseBuilder.withLinkAccountCard()

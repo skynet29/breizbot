@@ -55,8 +55,8 @@ module.exports = {
 		return db.collection('users').findOne({ username })
 	},
 
-	getUserInfoByAlexaId: function (alexaUserId) {
-		return db.collection('users').findOne({ alexaUserId }, { projection: { username: 1, _id: 0 } })
+	getUserInfoById: function (id) {
+		return db.collection('users').findOne(buildId(id), { projection: { username: 1, _id: 0 } })
 	},
 
 	getMusicByArtist(owner, artist) {

@@ -1,9 +1,5 @@
-const { ExpressAdapter } = require('ask-sdk-express-adapter')
-
 const db = require('../lib/db.js')
 const util = require('../lib/util.js')
-const skill = require('../alexa/skill.js')
-const adapter = new ExpressAdapter(skill, true, true)
 
 
 module.exports = function (app) {
@@ -13,7 +9,34 @@ module.exports = function (app) {
 		res.render('alexa', {})
 	})
 
-	app.post('/alexa', adapter.getRequestHandlers())
+
+	app.get('/alexa/login', function (req, res) {
+		console.log('get alexa login', req.query)
+		const { client_id, state, redirect_uri } = req.query
+
+		if (client_id != 'amzn1.application-oa2-client.7b7722f7e9a14eebb757ad630b9ea63e') {
+			res.sendStatus(401)
+			return
+		}
+
+		util.renderLogin(res, { state, redirect_uri })
+	})
+
+	app.post('/alexa/login', async function (req, res) {
+
+		console.log('post alexa login', req.body)
+
+		const data = await util.checkLogin(req, res)
+		console.log('data', data)
+		if (data === false) {
+			return
+		}
+		const { state, redirect_uri } = req.body
+		const accessToken = data._id.toString()
+
+		res.redirect(`${redirect_uri}#state=${state}&token_type=token&access_token=${accessToken}`)
+
+	})
 
 	app.get('/alexa/music/:id', async function (req, res) {
 		//console.log('alexa music', req.params)

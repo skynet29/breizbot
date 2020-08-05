@@ -10,7 +10,7 @@ const db = require('./db')
 const ExifImage = require('exif').ExifImage
 const fetch = require('node-fetch')
 const querystring = require('querystring')
-const { off } = require('gulp')
+const bcrypt = require('bcrypt')
 
 const cloudPath = config.CLOUD_HOME
 
@@ -62,16 +62,16 @@ function readID3(filePath) {
 }
 
 function getExif(fileName) {
-	return new Promise((resolve, reject)=> {
+	return new Promise((resolve, reject) => {
 		try {
 			new ExifImage({ image: fileName }, function (error, exifData) {
 				if (error)
 					reject(error.message)
 				else
 					resolve(exifData)
-			})			
+			})
 		}
-		catch(e) {
+		catch (e) {
 			reject(error.message)
 		}
 	})
@@ -100,7 +100,7 @@ async function getFileInfo(filePath, options) {
 			const exifInfo = await getExif(filePath)
 			ret.exif = exifInfo
 		}
-		catch(e) {
+		catch (e) {
 			console.log('ExifError', e)
 		}
 	}
@@ -126,7 +126,7 @@ async function search(theme, query, options) {
 	const scraperapiKey = '36a62a3d7ef78359360098cfeba82c3d'
 
 	options = options || {}
-	const {count, offset} = options
+	const { count, offset } = options
 
 	const params = {
 		q: query,
@@ -159,6 +159,42 @@ async function search(theme, query, options) {
 
 }
 
+function renderLogin(res, options) {
+
+	options = Object.assign({
+		message: '',
+		state: '',
+		redirect_uri: ''
+	}, options)
+
+	console.log('render login', options)
+	res.render('login', options)
+}
+
+async function checkLogin(req, res) {
+	const { user, pwd } = req.body
+
+	const data = await db.getUserInfo(user)
+	//console.log('data', data)
+	if (data == null) {
+		renderLogin(res, { message: 'Unknown user' })
+		return false
+	}
+	let match = false
+	if (data.crypted === true) {
+		match = await bcrypt.compare(pwd, data.pwd)
+	}
+	else {
+		match = (data.pwd === pwd)
+	}
+	if (!match) {
+		renderLogin(res, { message: 'Bad password' })
+		return false
+	}
+
+	return data
+}
+
 module.exports = {
 	isImage,
 	genThumbnail,
@@ -166,5 +202,7 @@ module.exports = {
 	getFilePath,
 	getFilePathChecked,
 	dbObjectID: function (id) { return new ObjectID(id) },
-	search
+	search,
+	renderLogin,
+	checkLogin
 }

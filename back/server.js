@@ -9,6 +9,11 @@ const helmet = require('helmet')
 const util = require('./lib/util')
 const events = require('./lib/events')
 const http = require('http')
+const { ExpressAdapter } = require('ask-sdk-express-adapter')
+
+const skill = require('./alexa/skill.js')
+
+const adapter = new ExpressAdapter(skill, true, true)
 
 
 require('colors')
@@ -47,7 +52,8 @@ store.on('error', function(error) {
 
 const app = express()
 
-require('./controllers/alexa')(app)
+app.post('/alexa', adapter.getRequestHandlers())
+
 
 app.use(helmet({
   frameguard: {
@@ -106,6 +112,7 @@ app.all('/api/app/:appName/*' , function(req, res, next) {
 
 require('./controllers/login')(app)
 require('./controllers/app')(app)
+require('./controllers/alexa')(app)
 
 
 app.use('/api/users', require('./api/users'))

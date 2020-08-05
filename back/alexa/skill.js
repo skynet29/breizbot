@@ -274,6 +274,7 @@ const ErrorHandler = {
     },
     handle(handlerInput, error) {
         console.log(`Error handled: ${error.message}`)
+        const { responseBuilder } = handlerInput
         let message = 'Désolé, il y a un bug dans la machine'
         if (error.message == USER_NOT_REGISTERD) {
             const speech = new AmazonSpeech()
@@ -294,9 +295,12 @@ const ErrorHandler = {
                 .sayAs(OS)
                 .say(`n'est pas associé avec votre compte Amazon`)
             message = speech.ssml()
+
+            responseBuilder.withLinkAccountCard()
+
         }
 
-        return handlerInput.responseBuilder
+        return responseBuilder
             .speak(message)
             //.withShouldEndSession(true)
             .getResponse()
@@ -308,26 +312,19 @@ const RequestInterceptor = {
         const { requestEnvelope, attributesManager } = handlerInput
         console.log('requestEnvelope', requestEnvelope)
         const type = Alexa.getRequestType(requestEnvelope)
-        //const name = Alexa.getIntentName(requestEnvelope)
         console.log('type', type)
         if (type === 'IntentRequest') {
             console.log('name', Alexa.getIntentName(requestEnvelope))
         }
         if (requestEnvelope.session && requestEnvelope.session.new === true) {
-            const userId = Alexa.getUserId(requestEnvelope)
             const { accessToken } = requestEnvelope.session.user
             if (accessToken == undefined) {
                 throw new Error(SKILL_NOT_LINKED)
             }
-            //console.log('accessToken', accessToken)
-            const amazonProfileURL = 'https://api.amazon.com/user/profile?access_token=' + accessToken
+            console.log('accessToken', accessToken)
 
-            const resp = await fetch(amazonProfileURL)
-            const { user_id } = await resp.json()
-            console.log('user_id', user_id)
-
-            const userInfo = await db.getUserInfoByAlexaId(user_id)
-            console.log('userInfo', userInfo)
+            const userInfo = await db.getUserInfoById(accessToken)
+            //console.log('userInfo', userInfo)
             if (userInfo == null) {
                 throw new Error(USER_NOT_REGISTERD)
             }

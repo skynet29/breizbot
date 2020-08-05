@@ -1,7 +1,6 @@
 const config = require('../lib/config')
 const db = require('../lib/db')
-const bcrypt = require('bcrypt')
-
+const { renderLogin, checkLogin } = require('../lib/util')
 
 module.exports = function (app) {
 
@@ -17,7 +16,7 @@ module.exports = function (app) {
 			}
 		}
 		else {
-			res.render('login', { message: '' })
+			renderLogin(res)
 		}
 	})
 
@@ -31,25 +30,12 @@ module.exports = function (app) {
 				res.redirect('/')
 			}
 			else {
-				res.render('login', { message: 'Bad password' })
+				renderLogin(res, { message: 'Bad password' })
 			}
 		}
 		else {
-			const data = await db.getUserInfo(user)
-			//console.log('data', data)
-			if (data == null) {
-				res.render('login', { message: 'Unknown user' })
-				return
-			}
-			let match = false
-			if (data.crypted === true) {
-				match = await bcrypt.compare(pwd, data.pwd)
-			}
-			else {
-				match = (data.pwd === pwd)
-			}
-			if (!match) {
-				res.render('login', { message: 'Bad password' })
+			const data = await checkLogin(req, res)
+			if (data === false) {
 				return
 			}
 			db.updateLastLoginDate(user)

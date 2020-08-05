@@ -116,6 +116,9 @@ input {
 			<i class="fa fa-lock fa-2x w3-text-indigo"></i>
 			<input type="password" name="pwd" placeholder="Password" required>	
 		</div>
+
+		<input type="text" hidden name="state" value="<%= state %>">
+		<input type="text" hidden name="redirect_uri" value="<%= redirect_uri %>">
 	
 		<button type="submit" class="w3-btn w3-indigo"><strong>Connect</strong></button>
 		<span class="message"><%= message %></span>

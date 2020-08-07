@@ -1,5 +1,4 @@
 const Alexa = require('ask-sdk-core')
-const AmazonSpeech = require('ssml-builder/amazon_speech')
 
 const db = require('../lib/db.js')
 const { getPersistenceAdapter } = require('./persistence.js')
@@ -7,10 +6,25 @@ const { domain } = require('../lib/config.js')
 const { buildDbId, collection } = require('../lib/dbUtil.js')
 const util = require('../lib/util.js')
 
-const OS = { word: 'OS', interpret: 'characters' }
 const USER_NOT_REGISTERD = 'User not registered'
 const SKILL_NOT_LINKED = 'Skill not linked'
 
+const ssml = {
+    sayAs: function(interpret, word) {
+        return `<say-as interpret-as="${interpret}">${word}</say-as>`
+    },
+    pause: function(duration) {
+        return `<break time="${duration}" />`
+    },
+    say: function(lang, text) {
+        return `<lang xml:lang="${lang}">${text}</lang>`
+    },
+    toSpeak: function(text) {
+        return `<speak>${text}</speak>`
+    }
+}
+
+const NETOS = 'Net' + ssml.sayAs('characters', 'OS')
 
 function getIndex(songs, token) {
     return songs.findIndex((item) => {
@@ -119,18 +133,35 @@ const LaunchRequestHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest'
     },
-    handle(handlerInput) {
+    async handle(handlerInput) {
         const { responseBuilder, attributesManager } = handlerInput
 
-        const speech = new AmazonSpeech()
-            .say("Bienvenue sur l'interface vocale du système Net")
-            .sayAs(OS)
+        const attributes = await attributesManager.getPersistentAttributes()
+        console.log('attributes', attributes)
+        const { inPlayback, isLast, token, songs } = attributes
 
-        const speakOutput = speech.ssml()
+        let reprompt = `Que puis je faire pour vous aujourd'hui ?`
+
+        let speech = `Bienvenue sur l'interface vocale du système ${NETOS}`
+
+        if (inPlayback === true && token != undefined) {
+            const index = getIndex(songs, token)
+            const { title, artist } = songs[index]
+
+            speech += ssml.pause('100ms')
+            speech += `Vous étiez en train d'écouter ${ssml.say('en-US', title)} par ${artist}`
+            speech += ssml.pause('100ms')
+            speech += `Voulez vous reprendre ?`
+
+            reprompt = `Vous pouvez repondre par oui ou par non`
+
+        }
+
+        //console.log('speech', speech)
 
         return responseBuilder
-            .speak(speakOutput)
-            .reprompt(`Que puis je faire pour vous aujourd'hui ?`)
+            .speak(ssml.toSpeak(speech))
+            .reprompt(reprompt)
             .getResponse()
     }
 }
@@ -193,6 +224,8 @@ function playNext(handlerInput, attributes, enQueue = false) {
         return playSong(handlerInput, songs[index + 1], { prevToken: (enQueue) ? token : null, action })
     }
 
+    attributes.isLast = true
+
     if (!enQueue) {
         responseBuilder.addAudioPlayerStopDirective()
         responseBuilder.speak('Vous avez atteint la fin de la liste')
@@ -227,8 +260,11 @@ const AudioPlayerEventHandler = {
         switch (audioPlayerEventName) {
             case 'PlaybackStarted':
                 attributes.token = token
+                attributes.inPlayback = true
+                attributes.isLast = false
                 break
             case 'PlaybackFinished':
+                attributes.inPlayback = false
                 break
             case 'PlaybackStopped':
                 attributes.offsetInMilliseconds = offsetInMilliseconds
@@ -266,36 +302,57 @@ const ErrorHandler = {
         const { responseBuilder } = handlerInput
         let message = 'Désolé, il y a un bug dans la machine'
         if (error.message == USER_NOT_REGISTERD) {
-            const speech = new AmazonSpeech()
             message = 'Utilisateur non identifié'
-            // .say('Utilisateur non identifié')
-            // .pause('500ms')
-            // .say('Rendez vous sur votre compte Net')
-            // .sayAs(OS)
-            // .say('dans la menu settings')
-            // .pause('500ms')
-            // .say('Renseigner cette identifiant sur votre compte Net')
         }
 
         if (error.message == SKILL_NOT_LINKED) {
-            const speech = new AmazonSpeech()
-            speech
-                .say('La skill Net')
-                .sayAs(OS)
-                .say(`n'est pas associé avec votre compte Net`)
-                .sayAs(OS)
-            message = speech.ssml()
+            message = `La skill ${NETOS} n'est pas associée avec votre compte ${NETOS}`
 
             responseBuilder.withLinkAccountCard()
 
         }
 
         return responseBuilder
-            .speak(message)
+            .speak(ssml.toSpeak(message))
             //.withShouldEndSession(true)
             .getResponse()
     },
 }
+
+const YesHandler = {
+    async canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request
+
+        return request.type === 'IntentRequest' && request.intent.name === 'AMAZON.YesIntent'
+    },
+    async handle(handlerInput) {
+        const attributes = await handlerInput.attributesManager.getPersistentAttributes()
+        const { token, songs, offsetInMilliseconds, action } = attributes
+        const index = getIndex(songs, token)
+
+        handlerInput.responseBuilder.speak(`C'est parti`)
+
+        return playSong(handlerInput, songs[index], { offsetInMilliseconds, action })
+    }
+}
+
+const NoHandler = {
+    async canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request
+
+        return request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NoIntent'
+    },
+    async handle(handlerInput) {
+        const { responseBuilder, attributesManager } = handlerInput
+        const attributes = await attributesManager.getPersistentAttributes()
+        attributes.inPlayback = false
+        return responseBuilder
+            .speak(`D'accord`)
+            .reprompt(`Que puis je faire pour vous aujourd'hui ?`)
+            .getResponse()
+    }
+}
+
 
 const RequestInterceptor = {
     async process(handlerInput) {
@@ -342,6 +399,8 @@ skillBuilder
         PreviousPlaybackHandler,
         PausePlaybackHandler,
         ResumePlaybackHandler,
+        YesHandler,
+        NoHandler,
         SessionEndedRequestHandler
     )
     .addRequestInterceptors(RequestInterceptor)

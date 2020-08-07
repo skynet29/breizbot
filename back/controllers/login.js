@@ -1,3 +1,5 @@
+require('colors')
+
 const config = require('../lib/config')
 const db = require('../lib/db')
 const { renderLogin, checkLogin } = require('../lib/util')

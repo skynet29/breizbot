@@ -175,7 +175,7 @@ async function checkLogin(req, res) {
 	const { user, pwd } = req.body
 
 	const data = await db.getUserInfo(user)
-	//console.log('data', data)
+	console.log('checkLogin', user.blue)
 	if (data == null) {
 		renderLogin(res, { message: 'Unknown user' })
 		return false
@@ -189,6 +189,7 @@ async function checkLogin(req, res) {
 	}
 	if (!match) {
 		renderLogin(res, { message: 'Bad password' })
+		console.log('pwd', pwd.red)
 		return false
 	}
 

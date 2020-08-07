@@ -137,7 +137,7 @@ const LaunchRequestHandler = {
         const { responseBuilder, attributesManager } = handlerInput
 
         const attributes = await attributesManager.getPersistentAttributes()
-        console.log('attributes', attributes)
+        //console.log('attributes', attributes)
         const { inPlayback, isLast, token, songs } = attributes
 
         let reprompt = `Que puis je faire pour vous aujourd'hui ?`
@@ -357,7 +357,7 @@ const NoHandler = {
 const RequestInterceptor = {
     async process(handlerInput) {
         const { requestEnvelope, attributesManager } = handlerInput
-        console.log('requestEnvelope', requestEnvelope)
+        //console.log('requestEnvelope', requestEnvelope)
         const type = Alexa.getRequestType(requestEnvelope)
         console.log('type', type)
         if (type === 'IntentRequest') {

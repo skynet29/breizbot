@@ -49,7 +49,7 @@ const PlayRequestHandler = {
 
         attributesManager.setPersistentAttributes({ songs, action: 'music' })
 
-        handlerInput.speak(`J'ai trouvé ${songs.length} titres par ${artist}`)
+        responseBuilder.speak(`J'ai trouvé ${songs.length} titres par ${artist}`)
 
         return playSong(handlerInput, songs[0])
     }

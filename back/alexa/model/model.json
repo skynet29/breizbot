@@ -50,6 +50,21 @@
                 {
                     "name": "AMAZON.ResumeIntent",
                     "samples": []
+                },
+                {
+                    "name": "PlayPlaylistIntent",
+                    "slots": [
+                        {
+                            "name": "playlist",
+                            "type": "AMAZON.SearchQuery"
+                        }
+                    ],
+                    "samples": [
+                        "lance ma playlist {playlist}",
+                        "de lancer ma playlist {playlist}",
+                        "de lancer la playlist {playlist}",
+                        "lance la playlist {playlist}"
+                    ]
                 }
             ],
             "types": []

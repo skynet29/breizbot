@@ -65,6 +65,14 @@
                         "de lancer la playlist {playlist}",
                         "lance la playlist {playlist}"
                     ]
+                },
+                {
+                    "name": "AMAZON.YesIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NoIntent",
+                    "samples": []
                 }
             ],
             "types": []

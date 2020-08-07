@@ -6,63 +6,14 @@ const path = require('path')
 
 module.exports = function (ctx, router) {
 
-	const { db, util, events } = ctx
+	const { util, events } = ctx
+
+	const db = require('./lib/db.js')(ctx)
 
 	events.on('userdeleted', async (userName) => {
-		await db.deleteMany({ userName })
+		await db.cleanDb(userName)
 	})
 
-	async function removeSong(songId) {
-		console.log(`removeSong`, songId)
-		return db.deleteOne({ _id: util.dbObjectID(songId) })
-	}
-
-	async function getPlaylist(userName) {
-
-		return db.distinct('name', { userName })
-	}
-
-	async function removePlaylist(userName, name) {
-		return db.deleteMany({ userName, name })
-	}
-
-	async function getPlaylistSongs(userName, name) {
-		const records = await db.find({ userName, name }).sort({ idx: 1 }).toArray()
-		const promises = records.map(async (f) => {
-			const { fileName, rootDir, friendUser } = f.fileInfo
-			const filePath = util.getFilePath(userName, rootDir + fileName, friendUser)
-			//console.log('filePath', filePath)
-			try {
-				const info = await util.getFileInfo(filePath, { getMP3Info: true })
-				return { mp3: info.mp3, fileInfo: f.fileInfo, id: f._id, status: 'ok' }	
-			}
-			catch(e) {
-				return { fileInfo: f.fileInfo, id: f._id, status: 'ko' }
-			}
-		})
-		return await Promise.all(promises)
-	}
-
-	async function swapSongIndex(songId1, songId2) {
-		const id1 = { _id: util.dbObjectID(songId1) }
-		const id2 = { _id: util.dbObjectID(songId2) }
-		const record1 = await db.findOne(id1)
-		const record2 = await db.findOne(id2)
-		await db.updateOne(id1, { $set: { idx: record2.idx } })
-		await db.updateOne(id2, { $set: { idx: record1.idx } })
-
-	}
-
-	async function addSong(userName, name, fileInfo, checkExists) {
-		console.log('addSong', userName, name, fileInfo, checkExists)
-		const count = await db.countDocuments({ userName, name })
-		if (checkExists && count != 0) {
-			return false
-		}
-		await db.insertOne({ userName, name, fileInfo, idx: count })
-		return true
-
-	}
 
 	router.post('/swapSongIndex', async function (req, res) {
 		try {

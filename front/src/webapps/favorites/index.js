@@ -3,7 +3,7 @@ const getFavicons = require('get-website-favicon')
 
 module.exports = function (ctx, router) {
 
-    const { db, util, events } = ctx
+    const { db, buildDbId, events } = ctx
 
     events.on('userdeleted', async (userName) => {
         try {
@@ -33,7 +33,7 @@ module.exports = function (ctx, router) {
     async function changeParent(userName, id, newParentId) {
         const count = await db.countDocuments({ userName, parentId: newParentId })
         const update = { parentId: newParentId, idx: count }
-        return db.updateOne({ _id: util.dbObjectID(id) }, { $set: update })
+        return db.updateOne(buildDbId(id), { $set: update })
     }
 
     async function insertBefore(userName, id, newParentId, beforeIdx) {
@@ -41,9 +41,8 @@ module.exports = function (ctx, router) {
         let filter = { userName, parentId: newParentId, idx: { $gte: beforeIdx } }
         await db.updateMany(filter, update)
 
-        filter = { _id: util.dbObjectID(id) }
         update = { $set: { parentId: newParentId, idx: beforeIdx } }
-        return db.updateOne(filter, update)
+        return db.updateOne(buildDbId(id), update)
     }
 
     async function updateLink(id, name, link) {
@@ -58,9 +57,8 @@ module.exports = function (ctx, router) {
             info.icon = data.icons[0].src
         }
 
-        const filter = { _id: util.dbObjectID(id) }
         const update = { $set: { info } }
-        await db.updateOne(filter, update)
+        await db.updateOne(buildDbId(id), update)
         return info
 
     }
@@ -123,7 +121,7 @@ module.exports = function (ctx, router) {
         await getIdsRecursively(id, ids)
         //console.log('ids', ids)
 
-        await db.deleteMany({ _id: { $in: ids.map((i) => util.dbObjectID(i)) } })
+        await db.deleteMany(buildDbId(ids))
     }
 
 

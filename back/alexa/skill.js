@@ -1,29 +1,16 @@
 const Alexa = require('ask-sdk-core')
 const AmazonSpeech = require('ssml-builder/amazon_speech')
-const fetch = require('node-fetch')
 
 const db = require('../lib/db.js')
 const { getPersistenceAdapter } = require('./persistence.js')
 const { domain } = require('../lib/config.js')
+const { buildDbId, collection } = require('../lib/dbUtil.js')
+const util = require('../lib/util.js')
 
 const OS = { word: 'OS', interpret: 'characters' }
 const USER_NOT_REGISTERD = 'User not registered'
 const SKILL_NOT_LINKED = 'Skill not linked'
 
-
-function getRegisteredErrorMessage() {
-
-    const speech = new AmazonSpeech()
-        .say('Utilisateur non identifié')
-        .pause('500ms')
-        .say('Rendez vous sur votre application Alexa pour connaitre votre identifiant')
-        .pause('500ms')
-        .say('Renseigner cette identifiant sur votre compte Net')
-        .sayAs(OS)
-
-    return speech.ssml()
-
-}
 
 function getIndex(songs, token) {
     return songs.findIndex((item) => {
@@ -31,13 +18,14 @@ function getIndex(songs, token) {
     })
 }
 
+
 const PlayRequestHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
             Alexa.getIntentName(handlerInput.requestEnvelope) === 'PlayIntent'
     },
     async handle(handlerInput) {
-        const { requestEnvelope, attributesManager } = handlerInput
+        const { requestEnvelope, attributesManager, responseBuilder } = handlerInput
         const { userName } = attributesManager.getSessionAttributes()
         //console.log('userName', userName)
 
@@ -49,7 +37,7 @@ const PlayRequestHandler = {
         const songs = await db.getMusicByArtist(userName, artist)
         //console.log('songs', songs)
         if (songs.length == 0) {
-            return handlerInput.responseBuilder
+            return responseBuilder
                 .speak(`Désolé, je n'ai pas trouvé de titre par ${artist}`)
                 .getResponse()
 
@@ -59,10 +47,9 @@ const PlayRequestHandler = {
             item._id = item._id.toString()
         })
 
-        attributesManager.setPersistentAttributes({ songs })
+        attributesManager.setPersistentAttributes({ songs, action: 'music' })
 
-        handlerInput.responseBuilder
-            .speak(`J'ai trouvé ${songs.length} titres par ${artist}`)
+        handlerInput.speak(`J'ai trouvé ${songs.length} titres par ${artist}`)
 
         return playSong(handlerInput, songs[0])
     }
@@ -105,11 +92,11 @@ const ResumePlaybackHandler = {
             (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.ResumeIntent'))
     },
     async handle(handlerInput) {
-        const { songs, token, offsetInMilliseconds } = await handlerInput.attributesManager.getPersistentAttributes()
+        const { songs, token, offsetInMilliseconds, action } = await handlerInput.attributesManager.getPersistentAttributes()
         const index = getIndex(songs, token)
         const song = songs[index]
 
-        return playSong(handlerInput, song, { offsetInMilliseconds })
+        return playSong(handlerInput, song, { offsetInMilliseconds, action })
     }
 }
 
@@ -143,6 +130,7 @@ const LaunchRequestHandler = {
 
         return responseBuilder
             .speak(speakOutput)
+            .reprompt(`Que puis je faire pour vous aujourd'hui ?`)
             .getResponse()
     }
 }
@@ -151,12 +139,13 @@ function playSong(handlerInput, song, options) {
     options = options || {}
     const offsetInMilliseconds = options.offsetInMilliseconds || 0
     const prevToken = options.prevToken || null
+    const action = options.action || 'music'
 
     const { responseBuilder, requestEnvelope } = handlerInput
     const { artist, title, _id } = song
     console.log('playSong', artist, title, options)
     const newToken = _id
-    const url = `https://${domain}/alexa/music/${newToken}`
+    const url = `https://${domain}/alexa/${action}/${newToken}`
     //console.log('url', url)
     const playBehavior = (prevToken == null) ? 'REPLACE_ALL' : 'ENQUEUE'
     const type = Alexa.getRequestType(requestEnvelope)
@@ -174,13 +163,13 @@ function playSong(handlerInput, song, options) {
 function playPrevious(handlerInput, attributes) {
     const { responseBuilder } = handlerInput
 
-    const { token, songs } = attributes
+    const { token, songs, action } = attributes
 
     const index = getIndex(songs, token)
     console.log('index', index)
 
     if (index > 0) {
-        return playSong(handlerInput, songs[index - 1])
+        return playSong(handlerInput, songs[index - 1], { action })
     }
 
     return responseBuilder
@@ -195,13 +184,13 @@ function playNext(handlerInput, attributes, enQueue = false) {
 
     const { responseBuilder } = handlerInput
 
-    const { token, songs } = attributes
+    const { token, songs, action } = attributes
 
     const index = getIndex(songs, token)
     console.log('index', index)
 
     if (index < songs.length - 1) {
-        return playSong(handlerInput, songs[index + 1], { prevToken: (enQueue) ? token : null })
+        return playSong(handlerInput, songs[index + 1], { prevToken: (enQueue) ? token : null, action })
     }
 
     if (!enQueue) {
@@ -342,7 +331,9 @@ const SavePersistentAttributesResponseInterceptor = {
     }
 }
 
-module.exports = Alexa.SkillBuilders.custom()
+const skillBuilder = Alexa.SkillBuilders.custom()
+
+skillBuilder
     .addRequestHandlers(
         LaunchRequestHandler,
         AudioPlayerEventHandler,
@@ -357,5 +348,10 @@ module.exports = Alexa.SkillBuilders.custom()
     .addResponseInterceptors(SavePersistentAttributesResponseInterceptor)
     .addErrorHandlers(ErrorHandler)
     .withPersistenceAdapter(getPersistenceAdapter())
-    .create()
 
+
+
+module.exports = {
+    skillBuilder,
+    playSong
+}

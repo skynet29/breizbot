@@ -195,13 +195,14 @@ async function checkLogin(req, res) {
 	return data
 }
 
+
+
 module.exports = {
 	isImage,
 	genThumbnail,
 	getFileInfo,
 	getFilePath,
 	getFilePathChecked,
-	dbObjectID: function (id) { return new ObjectID(id) },
 	search,
 	renderLogin,
 	checkLogin

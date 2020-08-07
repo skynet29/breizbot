@@ -35,7 +35,8 @@ module.exports = function (ctx) {
             //console.log('songs', songs)
             if (songs.length == 0) {
                 return responseBuilder
-                    .speak(`Désolé, je n'ai pas trouvé la playlist ${playlist}`)
+                    .speak(`Désolé, je n'ai pas trouvé la playlist ${playlist}`)   
+                    .reprompt(`Que puis je faire pour vous aujourd'hui ?`)                 
                     .getResponse()
 
             }

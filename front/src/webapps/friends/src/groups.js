@@ -2,13 +2,13 @@ $$.control.registerControl('groups', {
 
     template: { gulp_inject: './groups.html' },
 
-    deps: ['breizbot.users', 'breizbot.pager'],
+    deps: ['breizbot.users', 'breizbot.friends', 'breizbot.pager'],
 
     props: {
         friendUserName: ''
     },
 
-    init: function (elt, users, pager) {
+    init: function (elt, users, friendsSrv, pager) {
 
         const { friendUserName } = this.props
 
@@ -26,7 +26,7 @@ $$.control.registerControl('groups', {
         async function getGroups() {
             const groups = await users.getSharingGroups()
             //console.log('groups', groups)
-            const info = await users.getFriendInfo(friendUserName)
+            const info = await friendsSrv.getFriendInfo(friendUserName)
             //console.log('friendInfo', info)
             const selectedGroups = info.groups
             const { positionAuth } = info
@@ -58,7 +58,7 @@ $$.control.registerControl('groups', {
                     onClick: async function () {
                         const { selectedGroups, positionAuth } = ctrl.model
                         //console.log('selectedGroups', selectedGroups)
-                        await users.setFriendInfo(friendUserName, selectedGroups, positionAuth)
+                        await friendsSrv.setFriendInfo(friendUserName, selectedGroups, positionAuth)
                         pager.popPage()
                     }
                 }

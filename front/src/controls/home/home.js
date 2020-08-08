@@ -3,6 +3,8 @@ $$.control.registerControl('breizbot.home', {
 	deps: [
 		'breizbot.broker',
 		'breizbot.users',
+		'breizbot.notifs',
+		'breizbot.position',
 		'breizbot.rtc',
 		'breizbot.apps',
 		'breizbot.scheduler'
@@ -14,7 +16,7 @@ $$.control.registerControl('breizbot.home', {
 
 	template: { gulp_inject: './home.html' },
 
-	init: function (elt, broker, users, rtc, srvApps, scheduler) {
+	init: function (elt, broker, users, notifsSrv, positionSrv, rtc, srvApps, scheduler) {
 
 		function createAudio() {
 			let audio = null
@@ -262,7 +264,7 @@ $$.control.registerControl('breizbot.home', {
 
 		}
 
-		users.getNotifCount().then(updateNotifs)
+		notifsSrv.getNotifCount().then(updateNotifs)
 
 		function loadApp() {
 			srvApps.listAll().then((apps) => {
@@ -305,7 +307,7 @@ $$.control.registerControl('breizbot.home', {
 		function sendPosition() {
 			//console.log('sendPosition', coords)
 			if (coords != null) {
-				users.sendPosition({
+				positionSrv.sendPosition({
 					lat: coords.latitude,
 					lng: coords.longitude
 				})

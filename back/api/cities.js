@@ -1,9 +1,9 @@
 const router = require('express').Router()
-const db = require('../lib/db')
+const dbCities = require('../db/cities.js')
 
 
 router.get('/countries', function(req, res) {
-	db.getCountries()
+	dbCities.getCountries()
 	.then((countries) => {
 
 
@@ -19,7 +19,7 @@ router.get('/countries', function(req, res) {
 router.post('/cities', function(req, res) {
 	const {country, search} = req.body
 
-	db.getCities(country, search)
+	dbCities.getCities(country, search)
 	.then((cities) => {
 
 

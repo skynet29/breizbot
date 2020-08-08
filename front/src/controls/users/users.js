@@ -1,5 +1,5 @@
 $$.control.registerControl('breizbot.users', {
-	deps: ['breizbot.users'],
+	deps: ['breizbot.users', 'breizbot.notifs'],
 
 	template: { gulp_inject: './users.html' },
 
@@ -7,7 +7,7 @@ $$.control.registerControl('breizbot.users', {
 		$pager: null
 	},
 
-	init: function (elt, users) {
+	init: function (elt, users, notifsSrv) {
 
 		const { $pager } = this.props
 
@@ -54,7 +54,7 @@ $$.control.registerControl('breizbot.users', {
 					const { username } = ctrl.model.data[idx]
 					const text = await $$.ui.showPrompt({ title: 'Send Notification', label: 'Message' })
 					if (text != null) {
-						users.sendNotif(username, { text })
+						notifsSrv.sendNotif(username, { text })
 					}
 				},
 				onUpdate: function () {

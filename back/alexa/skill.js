@@ -1,28 +1,15 @@
 const Alexa = require('ask-sdk-core')
 
-const db = require('../lib/db.js')
+const dbUsers = require('../db/users.js')
+const dbSongs = require('../db/songs.js')
+
 const { getPersistenceAdapter } = require('./persistence.js')
 const { domain } = require('../lib/config.js')
-const { buildDbId, collection } = require('../lib/dbUtil.js')
-const util = require('../lib/util.js')
 
 const USER_NOT_REGISTERD = 'User not registered'
 const SKILL_NOT_LINKED = 'Skill not linked'
 
-const ssml = {
-    sayAs: function(interpret, word) {
-        return `<say-as interpret-as="${interpret}">${word}</say-as>`
-    },
-    pause: function(duration) {
-        return `<break time="${duration}" />`
-    },
-    say: function(lang, text) {
-        return `<lang xml:lang="${lang}">${text}</lang>`
-    },
-    toSpeak: function(text) {
-        return `<speak>${text}</speak>`
-    }
-}
+const ssml = require('./ssml.js')
 
 const NETOS = 'Net' + ssml.sayAs('characters', 'OS')
 
@@ -48,7 +35,7 @@ const PlayRequestHandler = {
 
         console.log('song', song)
         console.log('artist', artist)
-        const songs = await db.getMusicByArtist(userName, artist)
+        const songs = await dbSongs.getMusicByArtist(userName, artist)
         //console.log('songs', songs)
         if (songs.length == 0) {
             return responseBuilder
@@ -370,7 +357,7 @@ const RequestInterceptor = {
             }
             console.log('accessToken', accessToken)
 
-            const userInfo = await db.getUserInfoById(accessToken)
+            const userInfo = await dbUsers.getUserInfoById(accessToken)
             //console.log('userInfo', userInfo)
             if (userInfo == null) {
                 throw new Error(USER_NOT_REGISTERD)

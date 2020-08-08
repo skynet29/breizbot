@@ -1,6 +1,6 @@
 $$.control.registerControl('addFriendPage', {
 
-	deps: ['breizbot.users', 'breizbot.params'],
+	deps: ['breizbot.users', 'breizbot.notifs', 'breizbot.params'],
 
 	template: {gulp_inject: './addFriend.html'},
 
@@ -8,7 +8,7 @@ $$.control.registerControl('addFriendPage', {
 		friends: []
 	},
 
-	init: function(elt, users, params) {
+	init: function(elt, users, notifsSrv, params) {
 
 		const currentFriends = this.props.friends
 
@@ -33,7 +33,7 @@ $$.control.registerControl('addFriendPage', {
 						return
 					}
 
-					await users.sendNotif(friendUserName, {
+					await notifsSrv.sendNotif(friendUserName, {
 						type: 'invit',
 					})
 					$$.ui.showAlert({title: 'Add Friend', content: `An invitation was sent to user <strong>${friendUserName}</strong>`})

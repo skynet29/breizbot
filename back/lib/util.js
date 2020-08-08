@@ -6,11 +6,13 @@ const fs = require('fs-extra')
 const NodeID3 = require('node-id3')
 const config = require('./config')
 const { ObjectID } = require('mongodb')
-const db = require('./db')
 const ExifImage = require('exif').ExifImage
 const fetch = require('node-fetch')
 const querystring = require('querystring')
 const bcrypt = require('bcrypt')
+
+const dbUsers = require('../db/users.js')
+const dbFriends = require('../db/friends.js')
 
 const cloudPath = config.CLOUD_HOME
 
@@ -25,7 +27,7 @@ function getFilePath(user, filePath, friendUser) {
 async function getFilePathChecked(user, filePath, friendUser) {
 	let rootPath = path.join(cloudPath, user, filePath)
 	if (friendUser != undefined && friendUser != '') {
-		const info = await db.getFriendInfo(friendUser, user)
+		const info = await dbFriends.getFriendInfo(friendUser, user)
 		const group = filePath.split('/')[1]
 		if (info == null || !info.groups.includes(group)) {
 			throw 'access not authroized'
@@ -174,7 +176,7 @@ function renderLogin(res, options) {
 async function checkLogin(req, res) {
 	const { user, pwd } = req.body
 
-	const data = await db.getUserInfo(user)
+	const data = await dbUsers.getUserInfo(user)
 	console.log('checkLogin', user.blue)
 	if (data == null) {
 		renderLogin(res, { message: 'Unknown user' })

@@ -1,4 +1,4 @@
-const db = require('../lib/db.js')
+const dbSongs = require('../db/songs.js')
 const util = require('../lib/util.js')
 
 
@@ -43,7 +43,7 @@ module.exports = function (app) {
 
 		const { id } = req.params
 
-		const info = await db.getSongById(id)
+		const info = await dbSongs.getSongById(id)
 		const { owner, fileName } = info
 
 		const filePath = util.getFilePath(owner, fileName)

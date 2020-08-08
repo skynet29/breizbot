@@ -9,7 +9,8 @@ const bcrypt = require('bcrypt')
 
 require('colors')
 
-const db = require('./db')
+const dbUsers = require('../db/users.js')
+const dbFriends = require('../db/friends.js')
 
 const history = {}
 const pingInterval = 30 * 1000 // 30 sec
@@ -90,7 +91,7 @@ async function  onConnect(client, store) {
 		//console.log('credentials', credentials)
 		const userName = credentials.name
 		try {
-			const userInfo = await db.getUserInfo(userName)
+			const userInfo = await dbUsers.getUserInfo(userName)
 			const { pwd, crypted } = userInfo
 			let match
 			if (crypted) {
@@ -389,7 +390,7 @@ function isUserConnected(userName) {
 
 async function sendPositionToAuthFriend(userName, coords) {
 	const data = { userName, coords }
-	const friends = await db.getPositionAuthFriends(userName)
+	const friends = await dbFriends.getPositionAuthFriends(userName)
 	//console.log('friendsAuth', userName, friends)
 	friends.forEach((friend) => {
 		sendTopic(friend, 'breizbot.friendPosition', data)
@@ -397,7 +398,7 @@ async function sendPositionToAuthFriend(userName, coords) {
 }
 
 async function sendToFriends(userName, topic, data) {
-	const friends = await db.getFriends(userName)
+	const friends = await dbFriends.getFriends(userName)
 	friends.forEach((friend) => {
 		sendTopic(friend, topic, data)
 	})

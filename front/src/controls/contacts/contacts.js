@@ -1,6 +1,6 @@
 $$.control.registerControl('breizbot.contacts', {
 
-	deps: ['breizbot.users'],
+	deps: ['breizbot.contacts'],
 
 	props: {
 		showSelection: false,
@@ -9,7 +9,7 @@ $$.control.registerControl('breizbot.contacts', {
 
 	template: {gulp_inject: './contacts.html'},
 
-	init: function(elt, users) {
+	init: function(elt, contactsSrv) {
 
 		const {showSelection, showDeleteButton} = this.props
 
@@ -42,7 +42,7 @@ $$.control.registerControl('breizbot.contacts', {
 					const idx =  $(this).closest('li').index()
 					const data = ctrl.model.contacts[idx]
 					console.log('onDeleteItem', data)
-					await users.removeContact(data._id)
+					await contactsSrv.removeContact(data._id)
 					load()
 
 				}
@@ -50,7 +50,7 @@ $$.control.registerControl('breizbot.contacts', {
 		})	
 
 		async function load() {
-			const contacts = await users.getContacts()
+			const contacts = await contactsSrv.getContacts()
 			console.log('contacts', contacts)
 			ctrl.setData({contacts})
 		}

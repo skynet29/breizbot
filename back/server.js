@@ -18,6 +18,9 @@ require('colors')
 const appsPath = path.join(__dirname, '../front/src/webapps')
 const apps = fs.readdirSync(appsPath)
 
+const apisPath = path.join(__dirname, './api')
+const apis = fs.readdirSync(apisPath)
+
 
 
 dbUtil.init().then(dbReady)
@@ -138,16 +141,16 @@ function dbReady() {
 	require('./controllers/app')(app)
 	require('./controllers/alexa')(app)
 
+	apis.forEach((apiName) => {
+		const apiPath = path.join(apisPath, apiName)
 
-	app.use('/api/users', require('./api/users'))
-	app.use('/api/apps', require('./api/apps'))
-	app.use('/api/files', require('./api/files'))
-	app.use('/api/rtc', require('./api/rtc'))
-	app.use('/api/debug', require('./api/debug'))
-	app.use('/api/appData', require('./api/appData'))
-	app.use('/api/cities', require('./api/cities'))
-	app.use('/api/logout', require('./api/logout'))
-	app.use('/api/alexa', require('./api/alexa'))
+		apiName = apiName.replace('.js', '')
+		console.log(`add API ${apiName}`)
+
+		app.use(`/api/${apiName}`, require(apiPath))
+
+	})
+
 
 
 	//console.log('apps', apps)

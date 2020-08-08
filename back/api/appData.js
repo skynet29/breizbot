@@ -1,5 +1,5 @@
 const router = require('express').Router()
-const db = require('../lib/db')
+const dbAppData = require('../db/appData.js')
 
 
 router.get('/', async function (req, res) {
@@ -7,7 +7,7 @@ router.get('/', async function (req, res) {
 	const appName = req.appName
 
 	try {
-		const info = await db.getAppData(userName, appName)
+		const info = await dbAppData.getAppData(userName, appName)
 		const data = (info && info.data) || {}
 		console.log('data', data)
 
@@ -25,7 +25,7 @@ router.post('/', async function (req, res) {
 	const appName = req.appName
 	const data = req.body
 	try {
-		db.saveAppData(userName, appName, data)
+		dbAppData.saveAppData(userName, appName, data)
 		res.sendStatus(200)
 	}
 	catch (e) {

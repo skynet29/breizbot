@@ -5,7 +5,7 @@ const fg = require('fast-glob')
 const config = require('../lib/config')
 const util = require('../lib/util')
 const { genThumbnail, isImage, getFileInfo } = util
-const db = require('../lib/db')
+const dbFriends = require('../db/friends')
 const events = require('../lib/events')
 
 const cloudPath = config.CLOUD_HOME
@@ -52,7 +52,7 @@ router.post('/list', async function (req, res) {
 		let ret = await Promise.all(promises)
 
 		if (friendUser != undefined && friendUser != '' && destPath == '/') {
-			const friendInfo = await db.getFriendInfo(friendUser, user)
+			const friendInfo = await dbFriends.getFriendInfo(friendUser, user)
 			const { groups } = friendInfo
 			ret = ret.filter((info) =>
 				info.folder && groups.includes(info.name)

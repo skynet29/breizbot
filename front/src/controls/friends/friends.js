@@ -6,11 +6,11 @@ $$.control.registerControl('breizbot.friends', {
 		showConnectionState: true
 	},
 
-	deps: ['breizbot.users', 'breizbot.broker'],
+	deps: ['breizbot.friends', 'breizbot.notifs', 'breizbot.broker'],
 
 	template: {gulp_inject: './friends.html'},
 
-	init: function(elt, users, broker) {
+	init: function(elt, friendsSrv, notifsSrv, broker) {
 
 		const {showSelection, showSendMessage, showConnectionState} = this.props
 
@@ -56,7 +56,7 @@ $$.control.registerControl('breizbot.friends', {
 					const text = await $$.ui.showPrompt({title: 'Send Message', label: 'Message:'})
 
 					if (text != null) {
-						users.sendNotif(userName, {text, reply: true})
+						notifsSrv.sendNotif(userName, {text, reply: true})
 					}
 				}
 			}
@@ -85,7 +85,7 @@ $$.control.registerControl('breizbot.friends', {
 		}
 
 		this.update = function() {
-			users.getFriends().then((friends) => {
+			friendsSrv.getFriends().then((friends) => {
 				//console.log('friends', friends)
 				ctrl.setData({friends})
 			})				

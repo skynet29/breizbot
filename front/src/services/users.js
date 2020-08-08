@@ -35,21 +35,6 @@ $$.service.registerService('breizbot.users', {
 				return http.post(`/activateApp`, { appName, activated })
 			},
 
-			sendNotif: function (to, notif) {
-				return http.post(`/sendNotif`, { to, notif })
-			},
-
-			removeNotif: function (notifId) {
-				return http.delete(`/removeNotif/${notifId}`)
-			},
-
-			getNotifs: function () {
-				return http.get(`/getNotifs`)
-			},
-
-			getNotifCount: function () {
-				return http.get(`/getNotifCount`)
-			},
 
 			getSharingGroups: function () {
 				return http.get(`/getSharingGroups`)
@@ -59,36 +44,11 @@ $$.service.registerService('breizbot.users', {
 				return http.post('/addSharingGroup', { sharingGroupName })
 			},
 
-			getFriends: function () {
-				return http.get(`/getFriends`)
-			},
-
-			getFriendInfo: function (friend) {
-				return http.post('/getFriendInfo', { friend })
-			},
-
-			setFriendInfo: function (friend, groups, positionAuth) {
-				return http.post('/setFriendInfo', { friend, groups, positionAuth })
-			},
-
-			addFriend: function (friendUserName) {
-				return http.post(`/addFriend`, { friendUserName })
-			},
-
 			changePwd: function (newPwd) {
 				return http.post(`/changePwd`, { newPwd })
 			},
 
-			addContact: function (name, email) {
-				return http.post(`/addContact`, { name, email })
-			},
-			getContacts: function () {
-				return http.get(`/getContacts`)
-			},
 
-			removeContact: function (contactId) {
-				return http.delete(`/removeContact/${contactId}`)
-			},
 
 			sendPosition: function (coords) {
 				//console.log('sendFriendPosition', coords)

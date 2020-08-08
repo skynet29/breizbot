@@ -1,10 +1,10 @@
 $$.control.registerControl('rootPage', {
 
-	deps: ['breizbot.users', 'breizbot.broker'],
+	deps: ['breizbot.notifs', 'breizbot.friends', 'breizbot.broker'],
 
 	template: {gulp_inject: './main.html'},
 
-	init: function(elt, users, broker) {
+	init: function(elt, notifsSrv, friendsSrv, broker) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -19,24 +19,24 @@ $$.control.registerControl('rootPage', {
 				onDelete: function() {
 					const item = getItem(this)
 					console.log('onDelete', item)
-					users.removeNotif(item._id)
+					notifsSrv.removeNotif(item._id)
 				},
 				onAccept: async function() {
 					const item = getItem(this)
 					console.log('onAccept', item)
 
 					const friendUserName = item.from
-					await users.addFriend(friendUserName)
-					await users.removeNotif(item._id)
-					await users.sendNotif(friendUserName, {text: 'User has accepted your invitation'})
+					await friendsSrv.addFriend(friendUserName)
+					await notifsSrv.removeNotif(item._id)
+					await notifsSrv.sendNotif(friendUserName, {text: 'User has accepted your invitation'})
 				},
 				onDecline: async function() {
 					const item = getItem(this)
 					console.log('onDecline', item)
 					const friendUserName = item.from
 
-					await users.removeNotif(item._id)
-					await users.sendNotif(friendUserName, {text: `User has declined your invitation`})
+					await notifsSrv.removeNotif(item._id)
+					await notifsSrv.sendNotif(friendUserName, {text: `User has declined your invitation`})
 				},
 				onReply: async function(ev) {
 					const item = getItem(this)
@@ -44,8 +44,8 @@ $$.control.registerControl('rootPage', {
 					const friendUserName = item.from	
 					const text = await $$.ui.showPrompt({title: 'Reply', label: 'Message:'})
 					if (text != null) {
-						await users.removeNotif(item._id)
-						await users.sendNotif(friendUserName, {text, reply:true})
+						await notifsSrv.removeNotif(item._id)
+						await notifsSrv.sendNotif(friendUserName, {text, reply:true})
 					}
 				}
 			}
@@ -57,7 +57,7 @@ $$.control.registerControl('rootPage', {
 		}
 
 		async function updateNotifs() {
-			const notifs = await users.getNotifs()
+			const notifs = await notifsSrv.getNotifs()
 			console.log('notifs', notifs)
 			ctrl.setData({notifs})
 		}

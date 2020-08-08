@@ -1,7 +1,7 @@
 require('colors')
 
 const config = require('../lib/config')
-const db = require('../lib/db')
+const dbUsers = require('../db/users.js')
 const { renderLogin, checkLogin } = require('../lib/util')
 
 module.exports = function (app) {
@@ -40,7 +40,7 @@ module.exports = function (app) {
 			if (data === false) {
 				return
 			}
-			db.updateLastLoginDate(user)
+			dbUsers.updateLastLoginDate(user)
 			req.session.connected = true
 			req.session.user = user
 			req.session.userInfo = data

@@ -10,7 +10,7 @@ module.exports = function (ctx, router) {
 
 	const db = require('./lib/db.js')(ctx)
 
-	events.on('userdeleted', async (userName) => {
+	events.on('userDeleted', async (userName) => {
 		await db.cleanDb(userName)
 	})
 

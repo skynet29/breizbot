@@ -12,7 +12,7 @@ const cloudPath = config.CLOUD_HOME
 
 const router = require('express').Router()
 
-events.on('userdeleted', async (userName) => {
+events.on('userDeleted', async (userName) => {
 	await fs.remove(path.join(cloudPath, userName))
 
 })

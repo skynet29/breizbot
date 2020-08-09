@@ -5,7 +5,7 @@ module.exports = function (ctx, router) {
 
     const { db, buildDbId, events } = ctx
 
-    events.on('userdeleted', async (userName) => {
+    events.on('userDeleted', async (userName) => {
         try {
             await db.deleteMany({ userName })
         }

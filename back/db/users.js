@@ -4,6 +4,7 @@ const events = require('../lib/events')
 
 const { collection, buildDbId } = require('../lib/dbUtil.js')
 
+const db = collection('users')
 
 module.exports = {
 
@@ -19,7 +20,7 @@ module.exports = {
 		}
 
 		console.log('getUserList')
-		return collection('users').find(filter, {
+		return db.find(filter, {
 			projection: { pwd: 0, _id: 0 }
 		}).toArray()
 	},
@@ -27,11 +28,11 @@ module.exports = {
 	getUserInfo: function (username) {
 
 		//console.log('getUserInfo', username)
-		return collection('users').findOne({ username })
+		return db.findOne({ username })
 	},
 
 	getUserInfoById: function (id) {
-		return collection('users').findOne(buildDbId(id), { projection: { username: 1, _id: 0 } })
+		return db.findOne(buildDbId(id), { projection: { username: 1, _id: 0 } })
 	},
 
 	changePassword: async function (username, newPwd) {
@@ -40,7 +41,7 @@ module.exports = {
 		const pwd = await bcrypt.hash(newPwd, 10)
 		const update = { '$set': { pwd, crypted: true } }
 
-		await collection('users').updateOne({ username }, update)
+		await db.updateOne({ username }, update)
 
 	},
 
@@ -49,7 +50,7 @@ module.exports = {
 		//console.log(`[DB] updateLastLoginDate`, username)
 		var update = { '$set': { lastLoginDate: Date.now() } }
 
-		await collection('users').updateOne({ username }, update)
+		await db.updateOne({ username }, update)
 
 	},
 
@@ -62,23 +63,18 @@ module.exports = {
 		data.createDate = Date.now()
 		data.lastLoginDate = 0
 
-		await collection('users').insertOne(data)
+		await db.insertOne(data)
 		events.emit('userAdded', data.username)
 
 	},
 
 
 	deleteUser: async function (username) {
-
 		console.log(`[DB] deleteUser`, username)
 
-		await collection('users').deleteOne({ username })
-		await collection('appData').deleteMany({ userName: username })
-		await collection('contacts').deleteMany({ userName: username })
-		await collection('friends').deleteMany({ $or: [{ username }, { friend: username }] })
-		await collection('notifs').deleteMany({ $or: [{ from: username }, { to: username }] })
-
-		events.emit('userdeleted', username)
+		await db.deleteOne({ username })
+		
+		events.emit('userDeleted', username)
 	},
 
 	activateApp: async function (username, appName, activated) {
@@ -86,11 +82,11 @@ module.exports = {
 		const data = { apps: appName }
 		let update = (activated) ? { $push: data } : { $pull: data }
 
-		await collection('users').updateOne({ username }, update)
+		await db.updateOne({ username }, update)
 	},
 
 	addSharingGroup: async function (username, sharingGroupName) {
-		await collection('users').update({ username }, { $addToSet: { sharingGroups: sharingGroupName } })
+		await db.update({ username }, { $addToSet: { sharingGroups: sharingGroupName } })
 	}
 
 

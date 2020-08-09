@@ -1,12 +1,19 @@
 
 const { collection } = require('../lib/dbUtil.js')
 
+const db = collection('friends')
+
+const events = require('../lib/events')
+
+events.on('userDeleted', async (userName) => {
+    await db.deleteMany({ $or: [{ username }, { friend: username }] })
+})
 
 module.exports = {
 
 	getFriends: async function (username) {
 		console.log(`[DB] getFriends`, username)
-		const friends = await collection('friends')
+		const friends = await db
 			.find({ username })
 			.toArray()
 
@@ -15,14 +22,14 @@ module.exports = {
 
 	getFriendInfo: async function (username, friend) {
 		//console.log(`[DB] getFriends`, userName)
-		const info = await collection('friends')
+		const info = await db
 			.findOne({ username, friend })
 
 		return info
 	},
 
 	getPositionAuthFriends: async function (username) {
-		const friends = await collection('friends')
+		const friends = await db
 			.find({ username, positionAuth: true }).toArray()
 
 		return friends.map((f) => f.friend)
@@ -30,7 +37,7 @@ module.exports = {
 
 	setFriendInfo: async function (username, friend, groups, positionAuth) {
 		//console.log(`[DB] getFriends`, userName)
-		await collection('friends')
+		await db
 			.updateOne({ username, friend }, { $set: { groups, positionAuth } })
 
 	},
@@ -38,8 +45,8 @@ module.exports = {
 
 	addFriend: async function (username, friend) {
 		console.log(`[DB] addFriend`, username, friend)
-		await collection('friends').insertOne({ username, friend, groups: [] })
-		await collection('friends').insertOne({ username: friend, friend: username, groups: [] })
+		await db.insertOne({ username, friend, groups: [] })
+		await db.insertOne({ username: friend, friend: username, groups: [] })
 	}
 
 

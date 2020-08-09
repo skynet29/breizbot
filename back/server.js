@@ -2,12 +2,9 @@ const config = require('./lib/config')
 console.log('config', config)
 
 const dbUtil = require('./lib/dbUtil')
-const wss = require('./lib/wss')
 const fs = require('fs-extra')
 const parseUrl = require('url').parse
 const helmet = require('helmet')
-const util = require('./lib/util')
-const events = require('./lib/events')
 const http = require('http')
 const { ExpressAdapter } = require('ask-sdk-express-adapter')
 const path = require('path')
@@ -34,7 +31,10 @@ function dbReady() {
 
 	console.log('dbReady')
 
-
+	const wss = require('./lib/wss')
+	const util = require('./lib/util')
+	const events = require('./lib/events')
+	
 	const express = require('express')
 	const session = require('express-session')
 	const bodyParser = require('body-parser')

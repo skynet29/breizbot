@@ -4,7 +4,7 @@ module.exports = function (ctx, router) {
 	const mails = require('./lib/mails')(ctx)
 	const { events } = ctx
 
-	events.on('userdeleted', async (userName) => {
+	events.on('userDeleted', async (userName) => {
 		try {
 			await db.removeMailAccounts(userName)
 

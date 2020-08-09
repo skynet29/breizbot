@@ -1,13 +1,20 @@
 
 const { collection } = require('../lib/dbUtil.js')
 
+const db = collection('appData')
+
+const events = require('../lib/events')
+
+events.on('userDeleted', async (userName) => {
+    await db.deleteMany({ userName: username })
+})
 
 module.exports = {
 
 	getAppData: function (userName, appName) {
 		//console.log(`[DB] getAppData`, {userName, appName})
 
-		return collection('appData').findOne({ userName, appName })
+		return db.findOne({ userName, appName })
 	},
 
 	saveAppData: async function (userName, appName, data) {
@@ -15,7 +22,7 @@ module.exports = {
 
 		const update = { '$set': { data } }
 
-		await collection('appData').updateOne({ userName, appName }, update, { upsert: true })
+		await db.updateOne({ userName, appName }, update, { upsert: true })
 	}
 
 }

@@ -253,13 +253,9 @@
 						const idx = $(this).closest('.thumbnail').index()
 						const info = ctrl.model.getFiles()[idx]
 						info.checked = $(this).getValue()
-						let isShareSelected = false
-						if (info.name == 'share' && ctrl.model.rootDir == '/') {
-							isShareSelected = $(this).getValue()
-						}
 
 						ev.stopPropagation()
-						elt.trigger('selchange', { isShareSelected })
+						elt.trigger('selchange', { isShareSelected: isShareSelected() })
 
 					},
 					onFolderClick: function (ev) {
@@ -312,13 +308,18 @@
 					loading: false,
 					files,
 					rootDir,
-					nbSelection: 0,
-					isShareSelected: false
+					nbSelection: 0
 				})
 
 			}
 
 			loadData()
+
+			function isShareSelected() {
+				return ctrl.model.rootDir == '/' &&
+						(ctrl.model.files.findIndex((f) => f.name == 'share' && f.folder && f.checked) != -1)
+
+			}
 
 			this.getSelFiles = function () {
 				const selFiles = []
@@ -345,9 +346,7 @@
 				elt.find('.check').prop('checked', selected)
 				ctrl.model.files.forEach((f) => {f.checked = selected})
 				ctrl.updateArrayValue('files', 'files')
-				if (selected && ctrl.model.rootDir == '/') {
-					elt.trigger('selchange', { isShareSelected: true })
-				}
+				elt.trigger('selchange', { isShareSelected: isShareSelected() })
 			}
 
 			this.getRootDir = function () {
@@ -429,7 +428,7 @@
 			toggleSelection();
 			getRootDir(): string;
 		`,
-		$events: 'fileclick;contextmenuItem,selchnage,dirchange'
+		$events: 'fileclick;contextmenuItem,selchange,dirchange'
 
 	});
 

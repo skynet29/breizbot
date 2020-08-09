@@ -28,15 +28,10 @@
                         }
                     ],
                     "samples": [
-                        "joue de la musique de {artist}",
                         "joue les titres par {artist}",
-                        "de jouer de la musique par {artist}",
-                        "de jouer les titres par {artist}",
-                        "de jouer {song}",
-                        "de jouer {song} par {artist}",
-                        "joue {song} par {artist}",
-                        "joue {song}",
-                        "joue {song} de {artist}"
+                        "joue le titre {song} par {artist}",
+                        "joue le titre {song}",
+                        "joue le titre {song} de {artist}"
                     ]
                 },
                 {
@@ -61,8 +56,6 @@
                     ],
                     "samples": [
                         "lance ma playlist {playlist}",
-                        "de lancer ma playlist {playlist}",
-                        "de lancer la playlist {playlist}",
                         "lance la playlist {playlist}"
                     ]
                 },

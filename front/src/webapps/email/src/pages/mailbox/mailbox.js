@@ -96,6 +96,7 @@ $$.control.registerControl('mailboxPage', {
 			}
 
 			ctrl.setData({ loading: true })
+			pager.setButtonEnabled(false)
 
 			const data = await srvMail.openMailbox(currentAccount, mailboxName, idx)
 			console.log('data', data)
@@ -107,12 +108,14 @@ $$.control.registerControl('mailboxPage', {
 					nbMsg,
 					messages
 				})
+				pager.setButtonEnabled(true)
 
 			}
 			else {
 				ctrl.enableNode('messages', false)
 				ctrl.model.messages = ctrl.model.messages.concat(messages)
 				ctrl.setData({ loading: false })
+				pager.setButtonEnabled(true)
 				console.log('nbLoadedMessages', ctrl.model.messages.length)
 				return messages
 			}
@@ -204,6 +207,7 @@ $$.control.registerControl('mailboxPage', {
 				reload: {
 					icon: 'fa fa-sync-alt',
 					title: 'Update',
+					enabled: false,
 					onClick: function () {
 						ctrl.enableNode('messages', true)
 						load(1)
@@ -212,16 +216,19 @@ $$.control.registerControl('mailboxPage', {
 				newMail: {
 					icon: 'fa fa-envelope',
 					title: 'New Message',
+					enabled: false,
 					onClick: newMessage
 				},
 				move: {
 					icon: 'fa fa-file-export',
 					title: 'Move selected messages',
+					enabled: false,
 					onClick: moveMessage
 				},
 				delete: {
 					icon: 'fa fa-trash',
 					title: 'Delete selected messages',
+					enabled: false,
 					onClick: deleteMessage
 				}
 			}

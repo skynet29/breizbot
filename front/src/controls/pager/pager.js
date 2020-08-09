@@ -4,7 +4,7 @@ $$.control.registerControl('breizbot.pager', {
 	props: {
 		rootPage: ''
 	},
-	template: {gulp_inject: './pager.html'},
+	template: { gulp_inject: './pager.html' },
 
 	$iface: `
 		popPage(data)
@@ -13,22 +13,22 @@ $$.control.registerControl('breizbot.pager', {
 		setButtonEnabled(buttonsEnabled: {[buttonName]:boolean})
 	`,
 
-	init: function(elt) {
+	init: function (elt) {
 
-		const {rootPage} = this.props
+		const { rootPage } = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				showBack: false,
 				title: '',
 				buttons: [],
-				show1: function(scope) {
+				show1: function (scope) {
 					return scope.$i.items == undefined && scope.$i.icon == undefined && !(scope.$i.visible === false)
 				},
-				show2: function(scope) {
+				show2: function (scope) {
 					return scope.$i.items == undefined && scope.$i.icon != undefined && !(scope.$i.visible === false)
 				},
-				show3: function(scope) {
+				show3: function (scope) {
 					return scope.$i.items != undefined && !(scope.$i.visible === false)
 				},
 				isEnabled(scope) {
@@ -36,11 +36,11 @@ $$.control.registerControl('breizbot.pager', {
 				}
 			},
 			events: {
-				onBack: function(ev) {
+				onBack: function (ev) {
 					//console.log('onBack')
 					restorePage(true)
 				},
-				onAction: function(ev) {
+				onAction: function (ev) {
 					const cmd = $(this).data('cmd')
 					const pageCtrlIface = curInfo.ctrl.iface()
 					//console.log('onAction', cmd)
@@ -49,7 +49,7 @@ $$.control.registerControl('breizbot.pager', {
 						fn.call(pageCtrlIface)
 					}
 				},
-				onContextMenu: function(ev, data) {
+				onContextMenu: function (ev, data) {
 					console.log('onContextMenu', data)
 					const cmd = $(this).data('cmd')
 					const pageCtrlIface = curInfo.ctrl.iface()
@@ -68,7 +68,7 @@ $$.control.registerControl('breizbot.pager', {
 
 
 		function restorePage(isBack, data) {
-			
+
 			const iface = curInfo.ctrl.iface()
 			//console.log('popPage', pageCtrl)
 			curInfo.ctrl.safeEmpty().remove()
@@ -83,16 +83,16 @@ $$.control.registerControl('breizbot.pager', {
 
 			curInfo = stack.pop()
 			curInfo.ctrl.show()
-			const {title, buttons} = curInfo
-			ctrl.setData({showBack: stack.length > 0, title, buttons: $$.util.objToArray(buttons, 'name')})
+			const { title, buttons } = curInfo
+			ctrl.setData({ showBack: stack.length > 0, title, buttons: $$.util.objToArray(buttons, 'name') })
 
 		}
 
-		this.popPage = function(data) {
+		this.popPage = function (data) {
 			return restorePage(false, data)
 		}
 
-		this.pushPage = function(ctrlName, options) {
+		this.pushPage = function (ctrlName, options) {
 			//console.log('[pager] pushPage', ctrlName, options)
 
 
@@ -103,9 +103,9 @@ $$.control.registerControl('breizbot.pager', {
 
 			options = options || {}
 
-			let {title, props, onReturn, onBack, events} = options
+			let { title, props, onReturn, onBack, events } = options
 
-			const control = content.addControl(ctrlName, $.extend({$pager: this}, props), events)
+			const control = content.addControl(ctrlName, $.extend({ $pager: this }, props), events)
 
 			let buttons = {}
 
@@ -119,36 +119,45 @@ $$.control.registerControl('breizbot.pager', {
 				}
 			}
 
-			curInfo = {title, buttons, onReturn, onBack, ctrl: control}
+			curInfo = { title, buttons, onReturn, onBack, ctrl: control }
 
-			ctrl.setData({showBack: stack.length > 0, title, buttons: $$.util.objToArray(buttons, 'name')})
-		}	
+			ctrl.setData({ showBack: stack.length > 0, title, buttons: $$.util.objToArray(buttons, 'name') })
+		}
 
-		this.setButtonVisible = function(buttonsVisible) {
+		this.setButtonVisible = function (buttonsVisible) {
 
-			const {buttons} = curInfo
+			const { buttons } = curInfo
 
-			for(let btn in buttonsVisible) {
+			for (let btn in buttonsVisible) {
 				if (btn in buttons) {
 					buttons[btn].visible = buttonsVisible[btn]
 				}
 			}
-			 				
-			ctrl.setData({buttons: $$.util.objToArray(buttons, 'name')})
+
+			ctrl.setData({ buttons: $$.util.objToArray(buttons, 'name') })
 		}
 
-		this.setButtonEnabled = function(buttonsEnabled) {
+		this.setButtonEnabled = function (buttonsEnabled) {
 			//console.log('setButtonEnabled', buttonsEnabled)
 
-			const {buttons} = curInfo
+			const { buttons } = curInfo
 
-			for(let btn in buttonsEnabled) {
-				if (btn in buttons) {
-					buttons[btn].enabled = buttonsEnabled[btn]
+			if (typeof buttonsEnabled === 'boolean') {
+				for (let btn in buttons) {
+					buttons[btn].enabled = buttonsEnabled
 				}
+
 			}
-			 				
-			ctrl.setData({buttons: $$.util.objToArray(buttons, 'name')})
+			else {
+				for (let btn in buttonsEnabled) {
+					if (btn in buttons) {
+						buttons[btn].enabled = buttonsEnabled[btn]
+					}
+				}
+
+			}
+
+			ctrl.setData({ buttons: $$.util.objToArray(buttons, 'name') })
 		}
 
 		this.pushPage(rootPage)

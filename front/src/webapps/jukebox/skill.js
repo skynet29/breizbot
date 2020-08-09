@@ -45,6 +45,8 @@ module.exports = function (ctx) {
 
             attributesManager.setPersistentAttributes({ songs, action })
 
+            responseBuilder.speak(`c'est parti`)
+
             return skillInterface.playSong(handlerInput, songs[0], { action })
 
         }

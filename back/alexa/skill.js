@@ -30,18 +30,50 @@ const PlayRequestHandler = {
         const { userName } = attributesManager.getSessionAttributes()
         //console.log('userName', userName)
 
-        const song = Alexa.getSlotValue(requestEnvelope, 'song')
+        const title = Alexa.getSlotValue(requestEnvelope, 'song')
         const artist = Alexa.getSlotValue(requestEnvelope, 'artist')
 
-        console.log('song', song)
+        console.log('title', title)
         console.log('artist', artist)
-        const songs = await dbSongs.getMusicByArtist(userName, artist)
-        //console.log('songs', songs)
-        if (songs.length == 0) {
-            return responseBuilder
-                .speak(`Désolé, je n'ai pas trouvé de titre par ${artist}`)
-                .getResponse()
+        let songs = []
+        if (title != undefined) {
+            let song = null
+            const titleName = ssml.english(title)
+            if (artist == undefined) {
+                song = await dbSongs.getMusicByTitle(userName, title)
+                if (song == null) {
+                    return responseBuilder
+                        .speak(`Désolé, je n'ai pas trouvé le titre ${titleName}`)
+                        .getResponse()
 
+                }
+                const artistName = ssml.english(song.artist)
+                responseBuilder.speak(`${titleName} par ${artistName} ${ssml.pause('100ms')} C'est parti`)
+            }
+            else {
+                const artistName = ssml.english(artist)
+                song = await dbSongs.getMusicByTitleAndArtist(userName, title, artist)
+                if (song == null) {
+                    return responseBuilder
+                        .speak(`Désolé, je n'ai pas trouvé le titre ${titleName} par ${artistName}`)
+                        .getResponse()
+
+                }
+
+                responseBuilder.speak(`C'est parti`)
+
+
+            }
+            songs = [song]
+        }
+        else {
+            songs = await dbSongs.getMusicByArtist(userName, artist)
+            if (songs.length == 0) {
+                return responseBuilder
+                    .speak(`Désolé, je n'ai pas trouvé de titre par ${artist}`)
+                    .getResponse()
+
+            }
         }
 
         songs.forEach((item) => {
@@ -50,7 +82,9 @@ const PlayRequestHandler = {
 
         attributesManager.setPersistentAttributes({ songs, action: 'music' })
 
-        responseBuilder.speak(`J'ai trouvé ${songs.length} titres par ${artist}`)
+        if (title == undefined) {
+            responseBuilder.speak(`J'ai trouvé ${songs.length} titres par ${artist}`)
+        }
 
         return playSong(handlerInput, songs[0])
     }
@@ -136,7 +170,7 @@ const LaunchRequestHandler = {
             const { title, artist } = songs[index]
 
             speech += ssml.pause('100ms')
-            speech += `Vous étiez en train d'écouter ${ssml.say('en-US', title)} par ${artist}`
+            speech += `Vous étiez en train d'écouter ${ssml.english(title)} par ${artist}`
             speech += ssml.pause('100ms')
             speech += `Voulez vous reprendre ?`
 

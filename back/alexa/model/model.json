@@ -55,8 +55,10 @@
                         }
                     ],
                     "samples": [
+                        "lance la playlist {playlist}",
                         "lance ma playlist {playlist}",
-                        "lance la playlist {playlist}"
+                        "lance ma playliste {playlist}",
+                        "lance la playliste {playlist}"
                     ]
                 },
                 {

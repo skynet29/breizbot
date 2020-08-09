@@ -60,7 +60,10 @@ router.post('/list', async function (req, res) {
 		}
 
 		if (typeof options.filterExtension == 'string') {
-			const ext = options.filterExtension.split(',')
+			let ext = options.filterExtension.split(',')
+			ext = ext.concat(ext.map((e) => e.toUpperCase()))
+			//console.log('ext', ext)
+
 			const regex = new RegExp(`\\.(${ext.join('|')})$`, 'i')
 			const results = await Promise.all(ret.map(async (info) => {
 				if (info.folder) {

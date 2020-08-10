@@ -329,7 +329,7 @@
 						selFiles.push({ fileName: ctrl.model.rootDir + name, idx})
 					}
 				})
-				console.log('selFiles', selFiles)	
+				//console.log('selFiles', selFiles)	
 				return selFiles
 			}
 

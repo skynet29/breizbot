@@ -85,6 +85,10 @@ router.post('/list', async function (req, res) {
 			})
 		}
 
+		if (options.folderOnly === true) {
+			ret = ret.filter((info) => info.folder === true)
+		}
+
 		res.json(ret)
 	}
 	catch (e) {

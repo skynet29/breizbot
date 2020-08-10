@@ -35,15 +35,6 @@ $$.service.registerService('breizbot.users', {
 				return http.post(`/activateApp`, { appName, activated })
 			},
 
-
-			getSharingGroups: function () {
-				return http.get(`/getSharingGroups`)
-			},
-
-			addSharingGroup: function (sharingGroupName) {
-				return http.post('/addSharingGroup', { sharingGroupName })
-			},
-
 			changePwd: function (newPwd) {
 				return http.post(`/changePwd`, { newPwd })
 			},
@@ -63,16 +54,6 @@ $$.service.registerService('breizbot.users', {
 		update(user, data):Promise;
 		get(user):Promise;
 		activateApp(appName, activated):Promise;
-		sendNotif(to, notif):Promise;
-		removeNotif(notifId):Promise;
-		getNotifs():Promise;
-		getNotifCount():Promise;
-		getFriends():Promise;
-		addFriend(friendUserName):Promise;
 		changePwd(newPwd):Promise;
-		addContact(name, email):Promise;
-		getContacts():Promise(contacts);
-		removeContact(contactId):Promise;
-		sendPosition(coords):Promise
 	`
 });

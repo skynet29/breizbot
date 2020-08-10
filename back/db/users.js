@@ -83,12 +83,7 @@ module.exports = {
 		let update = (activated) ? { $push: data } : { $pull: data }
 
 		await db.updateOne({ username }, update)
-	},
-
-	addSharingGroup: async function (username, sharingGroupName) {
-		await db.update({ username }, { $addToSet: { sharingGroups: sharingGroupName } })
 	}
-
 
 }
 

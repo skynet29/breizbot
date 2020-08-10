@@ -3,9 +3,9 @@
         <span>Share position with this friend</span>
         <div bn-control="brainjs.flipswitch" bn-val="positionAuth" bn-update="flipswitchchange"></div>
     </div>
-    <strong>Groups</strong>
+    <strong>Shared folders</strong>
 
-    <div bn-show="noGroups">No group available</div>
+    <div bn-show="noGroups">No folders available</div>
     <div bn-each="groups" class="items" bn-control="brainjs.checkgroup" bn-val="selectedGroups" bn-update="input">
         <div class="item">
             <input type="checkbox" bn-attr="{value: $scope.$i}" class="w3-check">

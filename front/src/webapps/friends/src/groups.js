@@ -2,13 +2,13 @@ $$.control.registerControl('groups', {
 
     template: { gulp_inject: './groups.html' },
 
-    deps: ['breizbot.users', 'breizbot.friends', 'breizbot.pager'],
+    deps: ['breizbot.friends', 'breizbot.pager', 'breizbot.files'],
 
     props: {
         friendUserName: ''
     },
 
-    init: function (elt, users, friendsSrv, pager) {
+    init: function (elt, friendsSrv, pager, filesSrv) {
 
         const { friendUserName } = this.props
 
@@ -24,8 +24,9 @@ $$.control.registerControl('groups', {
         })
 
         async function getGroups() {
-            const groups = await users.getSharingGroups()
-            //console.log('groups', groups)
+            let groups = await filesSrv.list('/share', {folderOnly: true})
+            groups = groups.map((f) => f.name)
+            console.log('groups', groups)
             const info = await friendsSrv.getFriendInfo(friendUserName)
             //console.log('friendInfo', info)
             const selectedGroups = info.groups
@@ -38,20 +39,6 @@ $$.control.registerControl('groups', {
 
         this.getButtons = function () {
             return {
-                addGroup: {
-                    title: 'Add Group',
-                    icon: 'fa fa-user-plus',
-                    onClick: async function () {
-                        const groupName = await $$.ui.showPrompt({ title: "Add Group", label: 'Name' })
-                        //console.log('groupName', groupName)
-                        if (groupName != null) {
-                            await users.addSharingGroup(groupName)
-                            getGroups()
-                        }
-
-
-                    }
-                },
                 apply: {
                     title: 'Apply',
                     icon: 'fa fa-check',

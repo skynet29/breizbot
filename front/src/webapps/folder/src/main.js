@@ -2,10 +2,10 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'breizbot.files', 'breizbot.users', 'app.folder', 'breizbot.broker'],
+	deps: ['breizbot.pager', 'breizbot.files', 'app.folder', 'breizbot.broker'],
 
 
-	init: function (elt, pager, srvFiles, users, folder, broker) {
+	init: function (elt, pager, srvFiles, folder, broker) {
 
 		const progressDlg = $$.ui.progressDialog()
 
@@ -29,7 +29,7 @@ $$.control.registerControl('rootPage', {
 				getShareGroups: function () {
 					return function () {
 						const items = {
-							$add: { name: 'add to new group' }
+							$add: { name: 'add to new folder' }
 						}
 						if (sharingGroups.length != 0) {
 							items.sep = '----'
@@ -414,7 +414,6 @@ $$.control.registerControl('rootPage', {
 						if (name == '$add') {
 							name = await $$.ui.showPrompt({ title: 'Add Group', label: 'Name' })
 							if (name != null) {
-								await users.addSharingGroup(name)
 								await getSharingGroups()
 							}
 							else {
@@ -449,7 +448,8 @@ $$.control.registerControl('rootPage', {
 		}
 
 		async function getSharingGroups() {
-			sharingGroups = await users.getSharingGroups()
+			sharingGroups = await srvFiles.list('/share', {folderOnly: true})
+			sharingGroups = sharingGroups.map((f) => f.name)
 			//console.log('sharingGroups', sharingGroups)
 		}
 

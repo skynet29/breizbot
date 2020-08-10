@@ -325,11 +325,11 @@
 				const selFiles = []
 				ctrl.model.files.forEach((f, idx) => {	
 					const { name, checked }	= f			
-					if (checked === true) {
+					if (checked === true && name != '..') {
 						selFiles.push({ fileName: ctrl.model.rootDir + name, idx})
 					}
 				})
-				//console.log('selFiles', selFiles)	
+				console.log('selFiles', selFiles)	
 				return selFiles
 			}
 

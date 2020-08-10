@@ -95,19 +95,8 @@ $$.control.registerControl('breizbot.home', {
 					if (data.cmd == 'apps') {
 						openApp('store')
 					}
-
-					if (data.cmd == 'pwd') {
-						const newPwd = await $$.ui.showPrompt({ title: 'Change Password', label: 'New Password:' })
-						console.log('newPwd', newPwd)
-						if (newPwd != null) {
-							try {
-								await users.changePwd(newPwd)
-								$$.ui.showAlert({ title: 'Change Password', content: 'Password has been changed' })
-							}
-							catch (e) {
-								$$.ui.showAlert({ title: 'Error', content: e.responseText })
-							}
-						}
+					if (data.cmd == 'settings') {
+						openApp('settings')
 					}
 
 				},

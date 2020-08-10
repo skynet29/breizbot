@@ -14,12 +14,7 @@ $$.control.registerControl('messagePage', {
 
 		const { currentAccount, mailboxName, item } = this.props
 
-		const waitDlg = $$.dialogController({
-			title: 'Loading ...',
-			template: `<div class="w3-center w3-padding-16"><i class="fa fa-redo-alt fa-2x fa-pulse w3-text-blue"></i></div>`,
-			width: 100,
-			canClose: false
-		})
+		const waitDlg = $$.ui.waitDialog('Loading ...')
 
 
 		const ctrl = $$.viewController(elt, {

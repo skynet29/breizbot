@@ -1,4 +1,6 @@
 const Alexa = require('ask-sdk-core')
+const ssml = require('../../../../back/alexa/ssml.js')
+const PROMPT = `Que puis je faire pour vous aujourd'hui ?`
 
 module.exports = function (ctx) {
 
@@ -36,7 +38,7 @@ module.exports = function (ctx) {
             if (songs.length == 0) {
                 return responseBuilder
                     .speak(`Désolé, je n'ai pas trouvé la playlist ${playlist}`)   
-                    .reprompt(`Que puis je faire pour vous aujourd'hui ?`)                 
+                    .reprompt(PROMPT)                 
                     .getResponse()
 
             }
@@ -52,8 +54,46 @@ module.exports = function (ctx) {
         }
     }
 
+
+    const GetPlayListRequestHandler = {
+        canHandle(handlerInput) {
+            return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+                Alexa.getIntentName(handlerInput.requestEnvelope) === 'GetPlaylistIntent'
+        },
+        async handle(handlerInput) {
+            const { requestEnvelope, attributesManager, responseBuilder } = handlerInput
+            const { userName } = attributesManager.getSessionAttributes()
+            //console.log('userName', userName)
+
+            let playlists = await db.getPlaylist(userName)
+            console.log('playlists', playlists)
+
+            let speech = ''
+            if (playlists.length == 0) {
+                speech = `Vous n'avez pas encore de playlist`
+            }
+            else {
+                speech = `Vous avez ${playlists.length} playlist` 
+                speech += ssml.pause('100ms')
+                speech += `Voici la liste`
+                playlists.forEach((name) => {
+                    speech += ssml.pause('500ms')
+                    speech += name
+                })
+    
+            }
+
+            return responseBuilder
+                .speak(speech)
+                .reprompt(PROMPT)
+                .getResponse()
+
+        }
+    }
+
     skillInterface.skillBuilder.addRequestHandlers(
-        PlayPlayListRequestHandler
+        PlayPlayListRequestHandler,
+        GetPlayListRequestHandler
     )
 
     app.get('/alexa/playlist/:id', async function (req, res) {

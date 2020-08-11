@@ -55,10 +55,8 @@
                         }
                     ],
                     "samples": [
-                        "lance la playlist {playlist}",
                         "lance ma playlist {playlist}",
-                        "lance ma playliste {playlist}",
-                        "lance la playliste {playlist}"
+                        "lance la playlist {playlist}"
                     ]
                 },
                 {
@@ -68,6 +66,14 @@
                 {
                     "name": "AMAZON.NoIntent",
                     "samples": []
+                },
+                {
+                    "name": "GetPlaylistIntent",
+                    "slots": [],
+                    "samples": [
+                        "quelles sont mes playlists",
+                        "donne moi la liste de mes playlists"
+                    ]
                 }
             ],
             "types": []

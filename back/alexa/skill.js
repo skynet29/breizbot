@@ -309,7 +309,9 @@ const SessionEndedRequestHandler = {
     },
     handle(handlerInput) {
         console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`)
-
+        if  (handlerInput.requestEnvelope.request.error) {
+            console.log('error:', handlerInput.requestEnvelope.request.error.message)
+        }
         return handlerInput.responseBuilder.getResponse()
     }
 }

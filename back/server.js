@@ -18,7 +18,7 @@ const apps = fs.readdirSync(appsPath)
 const apisPath = path.join(__dirname, './api')
 const apis = fs.readdirSync(apisPath)
 
-
+const ssml = require('./alexa/ssml.js')
 
 dbUtil.init().then(dbReady)
 	.catch((e) => {
@@ -66,6 +66,7 @@ function dbReady() {
 
 			require(appPath)({
 				skillInterface,
+				ssml,
 				db: dbUtil.collection('app.' + appName),
 				buildDbId: dbUtil.buildDbId,
 				util,

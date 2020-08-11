@@ -1,10 +1,9 @@
 const Alexa = require('ask-sdk-core')
-const ssml = require('../../../../back/alexa/ssml.js')
 const PROMPT = `Que puis je faire pour vous aujourd'hui ?`
 
 module.exports = function (ctx) {
 
-    const { skillInterface, app, util } = ctx
+    const { skillInterface, app, util, ssml } = ctx
 
     const db = require('./lib/db.js')(ctx)
 

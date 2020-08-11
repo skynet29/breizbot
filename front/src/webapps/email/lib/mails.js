@@ -188,6 +188,24 @@ module.exports = function (ctx) {
 
   const db = require('./db')(ctx.db)
 
+  async function getUnreadInboxMessages(userName, name) {
+    console.log('getUnreadInboxMessages', userName, name)
+    const account = await db.getMailAccount(userName, name)
+    const imap = Imap.create(account)
+    await imap.connect()
+    const boxes = await imap.getBoxes()
+
+    for (let k in boxes) {
+
+      if (k.toUpperCase() == 'INBOX') {
+        await imap.openBox(k, true)
+        const results = await imap.search(['UNSEEN'])
+        console.log('results', results)
+        return results.length
+      }
+    }
+  }
+
   async function getMailboxes(userName, name) {
     console.log('getMailboxes', userName, name)
     const account = await db.getMailAccount(userName, name)
@@ -421,7 +439,8 @@ module.exports = function (ctx) {
     deleteMessage,
     moveMessage,
     sendMail,
-    addMailbox
+    addMailbox,
+    getUnreadInboxMessages
   }
 
 }

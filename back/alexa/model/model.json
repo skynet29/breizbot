@@ -76,6 +76,14 @@
                         "quelles sont mes playlists",
                         "donne moi la liste de mes playlists"
                     ]
+                },
+                {
+                    "name": "MessageIntent",
+                    "slots": [],
+                    "samples": [
+                        "y a t'il de nouveaux messages",
+                        "est ce que j'ai de nouveaux messages"
+                    ]
                 }
             ],
             "types": []

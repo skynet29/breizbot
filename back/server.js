@@ -69,6 +69,7 @@ function dbReady() {
 				db: dbUtil.collection('app.' + appName),
 				buildDbId: dbUtil.buildDbId,
 				util,
+				config,
 				app
 			})
 		}

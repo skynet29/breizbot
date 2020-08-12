@@ -143,10 +143,13 @@ const ResumePlaybackHandler = {
 
 
 const PausePlaybackHandler = {
-    canHandle(handlerInput) {
+    async canHandle(handlerInput) {
         const { request } = handlerInput.requestEnvelope
 
-        return request.type === 'IntentRequest' &&
+        const { inPlayback } = await handlerInput.attributesManager.getPersistentAttributes()
+
+        return inPlayback &&
+            request.type === 'IntentRequest' &&
             (request.intent.name === 'AMAZON.StopIntent' ||
                 request.intent.name === 'AMAZON.CancelIntent' ||
                 request.intent.name === 'AMAZON.PauseIntent')
@@ -345,6 +348,24 @@ const ErrorHandler = {
             .speak(ssml.toSpeak(message))
             //.withShouldEndSession(true)
             .getResponse()
+    }
+}
+
+const ExitHandler = {
+    async canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request
+
+        const { inPlayback } = await handlerInput.attributesManager.getPersistentAttributes()
+
+        return !inPlayback &&
+            request.type === 'IntentRequest' &&
+            (request.intent.name === 'AMAZON.StopIntent' ||
+                request.intent.name === 'AMAZON.CancelIntent')
+    },
+    handle(handlerInput) {
+        return handlerInput.responseBuilder
+            .speak('Au revoir !')
+            .getResponse()
     },
 }
 
@@ -482,7 +503,8 @@ skillBuilder
         YesHandler,
         NoHandler,
         SessionEndedRequestHandler,
-        ConnectedFriendsRequestHandler
+        ConnectedFriendsRequestHandler,
+        ExitHandler
     )
     .addRequestInterceptors(RequestInterceptor)
     .addResponseInterceptors(SavePersistentAttributesResponseInterceptor)

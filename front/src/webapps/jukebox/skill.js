@@ -9,6 +9,7 @@ module.exports = function (ctx) {
 
     skillInterface.addHelpMessage(`Vous pouvez dire aussi`)
     skillInterface.addCommand(`quelles sont mes playlists`, `pour connaitre la liste de vos playlistes`)
+    skillInterface.addCommand(`lance ma playliste Acropole`, `pour lancer votre playliste Acropole`)
 
     const PlayPlayListRequestHandler = {
         canHandle(handlerInput) {

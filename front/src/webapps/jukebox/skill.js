@@ -7,6 +7,9 @@ module.exports = function (ctx) {
 
     const db = require('./lib/db.js')(ctx)
 
+    skillInterface.addHelpMessage(`Vous pouvez dire aussi`)
+    skillInterface.addCommand(`quelles sont mes playlists`, `pour connaitre la liste de vos playlistes`)
+
     const PlayPlayListRequestHandler = {
         canHandle(handlerInput) {
             return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&

@@ -78,7 +78,7 @@ function dbReady() {
 	})
 
 
-	const adapter = new ExpressAdapter(skillInterface.skillBuilder.create(), true, true)
+	const adapter = new ExpressAdapter(skillInterface.start(), true, true)
 
 
 	app.post('/alexa', adapter.getRequestHandlers())

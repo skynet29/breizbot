@@ -7,6 +7,11 @@ module.exports = function (ctx) {
 
     const { skillInterface } = ctx
 
+    skillInterface.addPause('500ms')
+    skillInterface.addHelpMessage(`Vous pouvez dire aussi`)
+    skillInterface.addCommand(`est ce que j'ai des nouveaux messages`, `pour savoir si vous avez de nouveaux emails non lus`)
+
+
     const db = require('./lib/db.js')(ctx.db)
     const mails = require('./lib/mails.js')(ctx)
 

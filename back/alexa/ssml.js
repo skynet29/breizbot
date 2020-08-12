@@ -13,5 +13,20 @@ module.exports = {
     },
     toSpeak: function(text) {
         return `<speak>${text}</speak>`
+    },
+    sentence: function(text) {
+        return `<s>${text}</s>`
+    },
+    emphasis: function(text) {
+        return `<emphasis level="strong">${text}</emphasis> `        
+    },
+    // emotion(text, name, intensity = 'medium') {
+    //     return ` <amazon:emotion name="${name}" intensity="${intensity}">${text}</amazon:emotion>`
+    // },
+    whispered: function(text) {
+        return `<amazon:effect name="whispered">${text}</amazon:effect>`
     }
+    
+   
+    
 }

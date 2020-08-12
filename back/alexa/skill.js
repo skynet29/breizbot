@@ -16,6 +16,9 @@ const ssml = require('./ssml.js')
 
 const NETOS = 'Net' + ssml.sayAs('characters', 'OS')
 
+let helpMessage = ''
+
+
 function getIndex(songs, token) {
     return songs.findIndex((item) => {
         return (item._id == token)
@@ -450,6 +453,21 @@ const SavePersistentAttributesResponseInterceptor = {
     }
 }
 
+
+const HelpHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
+            handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent'
+    },
+    async handle(handlerInput) {
+
+        return handlerInput.responseBuilder
+            .speak(helpMessage)
+            .reprompt(`Que voulez vous faire ?`)
+            .getResponse()
+    },
+}
+
 const skillBuilder = Alexa.SkillBuilders.custom()
 
 skillBuilder
@@ -472,8 +490,49 @@ skillBuilder
     .withPersistenceAdapter(getPersistenceAdapter())
 
 
+function addHelpMessage(text) {
+    helpMessage += ssml.sentence(text)
+}
+
+function addPause(duration) {
+    helpMessage += ssml.pause(duration)
+}
+
+function addCommand(commandText, explainText) {
+    helpMessage += ssml.sentence(ssml.whispered(commandText) + explainText)
+}
+
+function help() {
+    addHelpMessage(`Bienvenue sur l'aide de ${NETOS}`)
+    addPause('500ms')
+
+    addHelpMessage(`Vous pouvez dire par exemple:`)
+    addHelpMessage(`joue le titre ${ssml.english('Beat it')}`)
+    addHelpMessage(`joue les titres par Depeche Mode`)
+    addHelpMessage(`Quand vous écouter un titre, vous pouvez dire à tout moment`)
+    addPause('500ms')
+    addCommand(`Alexa suivant`, `pour écouter le titre suivant`)
+    addCommand(`Alexa précedant`, `pour écouter le titre précédant`)
+    addCommand(`Alexa pause ou Alexa stop`, `pour metrre en pause`)
+    addCommand(`Alexa reprendre`, `pour reprendre la lecture là où elle s'est arrêtés`)
+
+    addPause('500ms')
+    addHelpMessage(`Vous pouvez aussi dire`)
+    addCommand(`Est ce que j'ai des amis connectés ?`, `pour savoir si vous avez des amis conectés à ${NETOS}`)
+
+}
+
+help()
 
 module.exports = {
     skillBuilder,
-    playSong
+    playSong,
+    addHelpMessage,
+    addPause,
+    addCommand,
+    start: function () {
+        return skillBuilder
+            .addRequestHandlers(HelpHandler)
+            .create()
+    }
 }

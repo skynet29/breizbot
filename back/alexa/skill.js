@@ -2,6 +2,9 @@ const Alexa = require('ask-sdk-core')
 
 const dbUsers = require('../db/users.js')
 const dbSongs = require('../db/songs.js')
+const dbFriends = require('../db/friends.js')
+const wss = require('../lib/wss')
+
 
 const { getPersistenceAdapter } = require('./persistence.js')
 const { domain } = require('../lib/config.js')
@@ -309,7 +312,7 @@ const SessionEndedRequestHandler = {
     },
     handle(handlerInput) {
         console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`)
-        if  (handlerInput.requestEnvelope.request.error) {
+        if (handlerInput.requestEnvelope.request.error) {
             console.log('error:', handlerInput.requestEnvelope.request.error.message)
         }
         return handlerInput.responseBuilder.getResponse()
@@ -376,6 +379,42 @@ const NoHandler = {
     }
 }
 
+const ConnectedFriendsRequestHandler = {
+    async canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request
+
+        return request.type === 'IntentRequest' && request.intent.name === 'ConnectedFriendsIntent'
+    },
+    async handle(handlerInput) {
+        const { responseBuilder, attributesManager } = handlerInput
+
+        const { userName } = attributesManager.getSessionAttributes()
+
+        const friends = await dbFriends.getFriends(userName)
+        const connectedFriends = friends
+            .filter((f) => wss.isUserConnected(f))
+
+        let speech = ''
+        if (connectedFriends.length == 0) {
+            speech = `Vous n'avez pas d'amis connectés`
+        }
+        else {
+            speech = `Vous avez ${connectedFriends.length} amis connectés`
+            connectedFriends.forEach((name) => {
+                speech += ssml.pause('500ms')
+                speech += name
+            })
+        }
+
+
+        return responseBuilder
+            .speak(ssml.toSpeak(speech))
+            .reprompt(`Que puis je faire pour vous aujourd'hui ?`)
+            .getResponse()
+    }
+}
+
+
 
 const RequestInterceptor = {
     async process(handlerInput) {
@@ -424,7 +463,8 @@ skillBuilder
         ResumePlaybackHandler,
         YesHandler,
         NoHandler,
-        SessionEndedRequestHandler
+        SessionEndedRequestHandler,
+        ConnectedFriendsRequestHandler
     )
     .addRequestInterceptors(RequestInterceptor)
     .addResponseInterceptors(SavePersistentAttributesResponseInterceptor)

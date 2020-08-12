@@ -81,8 +81,16 @@
                     "name": "MessageIntent",
                     "slots": [],
                     "samples": [
-                        "y a t'il de nouveaux messages",
+                        "y a t'il de nouveux messages",
                         "est ce que j'ai de nouveaux messages"
+                    ]
+                },
+                {
+                    "name": "ConnectedFriendsIntent",
+                    "slots": [],
+                    "samples": [
+                        "est ce que j'ai des amis connectés",
+                        "quels sont mes amis connectés"
                     ]
                 }
             ],

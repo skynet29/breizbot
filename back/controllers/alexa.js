@@ -9,6 +9,10 @@ module.exports = function (app) {
 		res.render('alexa', {})
 	})
 
+	app.get('/alexa/privacy', function (req, res) {
+		console.log('privacy')
+		res.render('privacy', {})
+	})
 
 	app.get('/alexa/login', function (req, res) {
 		console.log('get alexa login', req.query)

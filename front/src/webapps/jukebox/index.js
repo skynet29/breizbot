@@ -18,7 +18,7 @@ module.exports = function (ctx, router) {
 	router.post('/swapSongIndex', async function (req, res) {
 		try {
 			const { id1, id2 } = req.body
-			await swapSongIndex(id1, id2)
+			await db.swapSongIndex(id1, id2)
 			res.sendStatus(200)
 		}
 		catch (e) {
@@ -27,19 +27,19 @@ module.exports = function (ctx, router) {
 	})
 
 	router.delete('/removeSong/:id', async function (req, res) {
-		await removeSong(req.params.id)
+		await db.removeSong(req.params.id)
 		res.sendStatus(200)
 	})
 
 	router.post('/getPlaylist', async function (req, res) {
-		const list = await getPlaylist(req.session.user)
+		const list = await db.getPlaylist(req.session.user)
 		res.json(list)
 	})
 
 	router.post('/removePlaylist', async function (req, res) {
 		const { name } = req.body
 		try {
-			await removePlaylist(req.session.user, name)
+			await db.removePlaylist(req.session.user, name)
 			res.sendStatus(200)
 		}
 		catch (e) {
@@ -50,14 +50,14 @@ module.exports = function (ctx, router) {
 
 	router.post('/getPlaylistSongs', async function (req, res) {
 		const { name } = req.body
-		const list = await getPlaylistSongs(req.session.user, name)
+		const list = await db.getPlaylistSongs(req.session.user, name)
 		res.json(list)
 	})
 
 	router.post('/addSong', async function (req, res) {
 		const { name, fileInfo, checkExists } = req.body
 
-		const ret = await addSong(req.session.user, name, fileInfo, checkExists)
+		const ret = await db.addSong(req.session.user, name, fileInfo, checkExists)
 		res.json(ret)
 	})
 

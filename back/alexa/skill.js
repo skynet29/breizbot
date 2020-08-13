@@ -41,6 +41,13 @@ const PlayRequestHandler = {
 
         console.log('title', title)
         console.log('artist', artist)
+        if (title == undefined && artist == undefined) {
+            return responseBuilder
+                .speak(`Désolé, je n'ai pas compris`)
+                .withShouldEndSession(true)
+                .getResponse()
+        }
+
         let songs = []
         if (title != undefined) {
             let song = null
@@ -49,6 +56,7 @@ const PlayRequestHandler = {
                 song = await dbSongs.getMusicByTitle(userName, title)
                 if (song == null) {
                     return responseBuilder
+                        .withShouldEndSession(true)
                         .speak(`Désolé, je n'ai pas trouvé le titre ${titleName}`)
                         .getResponse()
 
@@ -61,6 +69,7 @@ const PlayRequestHandler = {
                 song = await dbSongs.getMusicByTitleAndArtist(userName, title, artist)
                 if (song == null) {
                     return responseBuilder
+                        .withShouldEndSession(true)
                         .speak(`Désolé, je n'ai pas trouvé le titre ${titleName} par ${artistName}`)
                         .getResponse()
 
@@ -77,6 +86,7 @@ const PlayRequestHandler = {
             if (songs.length == 0) {
                 return responseBuilder
                     .speak(`Désolé, je n'ai pas trouvé de titre par ${artist}`)
+                    .withShouldEndSession(true)
                     .getResponse()
 
             }
@@ -91,6 +101,8 @@ const PlayRequestHandler = {
         if (title == undefined) {
             responseBuilder.speak(`J'ai trouvé ${songs.length} titres par ${artist}`)
         }
+
+        responseBuilder.withShouldEndSession(true)
 
         return playSong(handlerInput, songs[0])
     }
@@ -168,11 +180,11 @@ const LaunchRequestHandler = {
 
         const attributes = await attributesManager.getPersistentAttributes()
         //console.log('attributes', attributes)
-        const { inPlayback, isLast, token, songs } = attributes
+        const { inPlayback, isFirstVisit, token, songs } = attributes
 
         let reprompt = `Que puis je faire pour vous aujourd'hui ?`
 
-        let speech = `Bienvenue sur l'interface vocale du système ${NETOS}`
+        let speech = ''
 
         if (inPlayback === true && token != undefined) {
             const index = getIndex(songs, token)
@@ -185,6 +197,26 @@ const LaunchRequestHandler = {
 
             reprompt = `Vous pouvez repondre par oui ou par non`
 
+        }
+
+        else if (isFirstVisit === undefined) {
+            attributes.isFirstVisit = false
+            speech = `Bienvenue sur l'interface vocale du système ${NETOS}`
+            speech += ssml.sentence(`Comme c'est votre première visite,je vais vous 
+                expliquer certaines choses que vous pouvez faire.`)
+
+            speech += ssml.sentence(`Vous pouvez dire par exemple:`)
+            speech += ssml.sentence(`joue le titre ${ssml.english('Beat it')} pour écouter le titre ${ssml.english('Beat it')} de Michael Jackson`)
+            speech += ssml.sentence(`ou encore`)
+            speech += ssml.sentence(`joue les titres par Depeche Mode`)
+            speech += ssml.sentence(`pour écouter tous les titres de Depeche Mode présent dans votre bibliothèque`)
+            speech += ssml.sentence(`Vous pouvez demander de l’aide à tout moment.`)
+            speech += ssml.sentence(`Que voulez vous faire maintenant ?`)
+        }
+        else {
+            speech = ssml.sentence(`Bon retour sur l'interface vocale du système ${NETOS}`)
+            speech += ssml.sentence(`C'est bon de vous revoir`)
+            speech += ssml.sentence(`Que puis je faire pour vous aujourd'hui ?`)
         }
 
         //console.log('speech', speech)
@@ -348,7 +380,7 @@ const ErrorHandler = {
 
         return responseBuilder
             .speak(ssml.toSpeak(message))
-            //.withShouldEndSession(true)
+            .withShouldEndSession(true)
             .getResponse()
     }
 }
@@ -367,6 +399,7 @@ const ExitHandler = {
     handle(handlerInput) {
         return handlerInput.responseBuilder
             .speak('Au revoir !')
+            .withShouldEndSession(true)
             .getResponse()
     },
 }
@@ -382,7 +415,7 @@ const YesHandler = {
         const { token, songs, offsetInMilliseconds, action } = attributes
         const index = getIndex(songs, token)
 
-        handlerInput.responseBuilder.speak(`C'est parti`)
+        handlerInput.responseBuilder.speak(`C'est parti`).withShouldEndSession(true)
 
         return playSong(handlerInput, songs[index], { offsetInMilliseconds, action })
     }
@@ -398,8 +431,10 @@ const NoHandler = {
         const { responseBuilder, attributesManager } = handlerInput
         const attributes = await attributesManager.getPersistentAttributes()
         attributes.inPlayback = false
+        let message = ssml.sentence(`D'accord`)
+        message += `Que puis je faire pour vous aujourd'hui ?`
         return responseBuilder
-            .speak(`D'accord`)
+            .speak(ssml.toSpeak(message))
             .reprompt(`Que puis je faire pour vous aujourd'hui ?`)
             .getResponse()
     }
@@ -435,7 +470,7 @@ const ConnectedFriendsRequestHandler = {
 
         return responseBuilder
             .speak(ssml.toSpeak(speech))
-            .reprompt(`Que puis je faire pour vous aujourd'hui ?`)
+            .withShouldEndSession(true)
             .getResponse()
     }
 }
@@ -456,7 +491,7 @@ const RequestInterceptor = {
             if (accessToken == undefined) {
                 throw new Error(SKILL_NOT_LINKED)
             }
-            console.log('accessToken', accessToken)
+            //console.log('accessToken', accessToken)
 
             const userInfo = await dbUsers.getUserInfoById(accessToken)
             //console.log('userInfo', userInfo)
@@ -527,11 +562,13 @@ function addCommand(commandText, explainText) {
 }
 
 function help() {
-    addHelpMessage(`Bienvenue sur l'aide de ${NETOS}`)
+    addHelpMessage(`Je vais vous expliquer certaines choses que vous pouvez faire
+         et garder à l’esprit, vous pouvez demander de l’aide à tout moment.`)
     addPause('500ms')
 
     addHelpMessage(`Vous pouvez dire par exemple:`)
     addHelpMessage(`joue le titre ${ssml.english('Beat it')}`)
+    addHelpMessage(`ou encore`)
     addHelpMessage(`joue les titres par Depeche Mode`)
     addHelpMessage(`Quand vous écouter un titre, vous pouvez dire à tout moment`)
     addPause('500ms')

@@ -41,7 +41,7 @@ module.exports = function (ctx) {
             if (songs.length == 0) {
                 return responseBuilder
                     .speak(`Désolé, je n'ai pas trouvé la playlist ${playlist}`)   
-                    .reprompt(PROMPT)                 
+                    .withShouldEndSession(true)
                     .getResponse()
 
             }
@@ -50,7 +50,8 @@ module.exports = function (ctx) {
 
             attributesManager.setPersistentAttributes({ songs, action })
 
-            responseBuilder.speak(`c'est parti`)
+            responseBuilder.speak(`c'est parti`).withShouldEndSession(true)
+
 
             return skillInterface.playSong(handlerInput, songs[0], { action })
 
@@ -88,7 +89,7 @@ module.exports = function (ctx) {
 
             return responseBuilder
                 .speak(speech)
-                .reprompt(PROMPT)
+                .withShouldEndSession(true)
                 .getResponse()
 
         }

@@ -1,7 +1,7 @@
 const Alexa = require('ask-sdk-core')
 const ssml = require('../../../../back/alexa/ssml.js')
 
-const PROMPT = `Que puis je faire pour vous aujourd'hui ?`
+//const PROMPT = `Que puis je faire pour vous aujourd'hui ?`
 
 module.exports = function (ctx) {
 
@@ -49,7 +49,7 @@ module.exports = function (ctx) {
 
             return responseBuilder
                 .speak(speech)
-                .reprompt(PROMPT)
+                .withShouldEndSession(true)
                 .getResponse()
 
         }

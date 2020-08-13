@@ -338,7 +338,9 @@ const ErrorHandler = {
         }
 
         if (error.message == SKILL_NOT_LINKED) {
-            message = `La skill ${NETOS} n'est pas associée avec votre compte ${NETOS}`
+            message = `La skill ${NETOS} n'est pas associée avec votre compte ${NETOS}.`
+            message += ssml.pause('100ms')
+            message += `Rendez vous sur l'application Alexa pour associer votre compte Amazon avec votre compte ${NETOS}.`
 
             responseBuilder.withLinkAccountCard()
 

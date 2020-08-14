@@ -119,8 +119,8 @@ $$.control.registerControl('playlist', {
                     onClick: async function () {
                         const id1 = ctrl.model.songs[selectedIndex].id
                         const id2 = ctrl.model.songs[selectedIndex-1].id
-                        const item = ctrl.removeArrayItem('songs', selectedIndex, 'songs')
-                        ctrl.insertArrayItemAfter('songs', selectedIndex - 2, item, 'songs')
+                        const items = ctrl.removeArrayItem('songs', selectedIndex, 'songs')
+                        ctrl.insertArrayItemAfter('songs', selectedIndex - 2, items[0], 'songs')
                         selectedIndex--
                         ctrl.scope.songs.find('.item').eq(selectedIndex).addClass('w3-blue')
                         setUpDownState()
@@ -134,8 +134,8 @@ $$.control.registerControl('playlist', {
                     onClick: async function () {
                         const id1 = ctrl.model.songs[selectedIndex].id
                         const id2 = ctrl.model.songs[selectedIndex+1].id
-                        const item = ctrl.removeArrayItem('songs', selectedIndex, 'songs')
-                        ctrl.insertArrayItemAfter('songs', selectedIndex, item, 'songs')
+                        const items = ctrl.removeArrayItem('songs', selectedIndex, 'songs')
+                        ctrl.insertArrayItemAfter('songs', selectedIndex, items[0], 'songs')
                         selectedIndex++
                         ctrl.scope.songs.find('.item').eq(selectedIndex).addClass('w3-blue')
                         setUpDownState()

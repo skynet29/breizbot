@@ -49,13 +49,13 @@ $$.control.registerControl('mailboxPage', {
 
 			},
 			events: {
-				onFromClick: function() {
-					console.log('onFromClick')
+				onFromClick: function () {
+					//console.log('onFromClick')
 					const check = $(this).closest('tr').find('.check')
 					check.click()
 				},
-				onCheckClick: function() {
-					ctrl.setData({check: false})
+				onCheckClick: function () {
+					ctrl.setData({ check: false })
 					updateButtonState()
 				},
 				onItemClick: function (ev) {
@@ -63,7 +63,7 @@ $$.control.registerControl('mailboxPage', {
 					// $(this).addClass('w3-blue')
 					const idx = $(this).closest('tr').index()
 					const item = ctrl.model.messages[idx]
-					console.log('onItemClick', idx, item)
+					//console.log('onItemClick', idx, item)
 					pager.pushPage('messagePage', {
 						title: item.subject,
 						props: {
@@ -92,7 +92,7 @@ $$.control.registerControl('mailboxPage', {
 			const nbChecked = elt.find('.check:checked').length
 			//console.log('nbChecked', nbChecked)
 			const enabled = (nbChecked != 0)
-			pager.setButtonEnabled({move: enabled, delete: enabled, reload: true, newMail: true})
+			pager.setButtonEnabled({ move: enabled, delete: enabled, reload: true, newMail: true })
 
 
 		}
@@ -113,16 +113,18 @@ $$.control.registerControl('mailboxPage', {
 			let { messages, nbMsg } = data
 			messages.forEach((i) => { i.checked = ctrl.model.check })
 			if (idx == 1) {
+				ctrl.enableNode('messages', true)
 				ctrl.setData({
 					loading: false,
 					nbMsg,
 					messages
 				})
+				ctrl.enableNode('messages', false)
 				updateButtonState()
 
 			}
 			else {
-				ctrl.enableNode('messages', false)
+				//ctrl.enableNode('messages', false)
 				ctrl.model.messages = ctrl.model.messages.concat(messages)
 				ctrl.setData({ loading: false })
 				updateButtonState()
@@ -143,15 +145,16 @@ $$.control.registerControl('mailboxPage', {
 		}
 
 		function update(seqNos) {
-			seqNos.reverse().forEach((i) => {
-				ctrl.removeArrayItem('messages', i.idx, 'messages')
-			})
+			ctrl.removeArrayItem('messages', seqNos.map((i) => i.idx), 'messages')
 			ctrl.model.nbMsg -= seqNos.length
 			ctrl.update()
 			const { nbMsg, messages } = ctrl.model
 			console.log('nbMsg', nbMsg, 'length', messages.length)
 			if (nbMsg == 0) {
-				ctrl.setData({check: false})
+				ctrl.setData({ check: false })
+			}
+			if (messages.length == 0 && nbMsg > 0) {
+				load(1)
 			}
 
 		}

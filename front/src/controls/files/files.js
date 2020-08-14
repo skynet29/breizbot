@@ -368,9 +368,7 @@
 			}
 
 			this.removeFiles = function (indexes) {
-				indexes.reverse().forEach((i) => {
-					ctrl.removeArrayItem('files', i, 'files')
-				})
+				ctrl.removeArrayItem('files', indexes, 'files')
 				ctrl.updateNode('info')
 				//console.log('files', ctrl.model.files)
 

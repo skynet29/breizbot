@@ -42,17 +42,21 @@
   .rootPage > .message {
     margin: 10px; }
 
-.addContactPage {
+.accountPage {
   margin: 10px;
   display: flex;
   justify-content: center; }
-  .addContactPage label {
-    display: inline-block;
-    min-width: 120px; }
-  .addContactPage .brainjs-inputgroup {
-    margin-bottom: 5px; }
-    .addContactPage .brainjs-inputgroup input {
-      padding: 5px; }
+  .accountPage form {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    grid-gap: 10px;
+    align-items: center; }
+    .accountPage form label {
+      grid-column: 1 / 2; }
+    .accountPage form input {
+      grid-column: 2 / 3;
+      padding: 5px;
+      max-width: 180px; }
 
 .boxesPage {
   padding: 10px;
@@ -75,6 +79,18 @@
         font-size: 1.3em; }
       .boxesPage .scrollPanelTree .tree span.fa {
         color: #607d8b; }
+
+.addContactPage {
+  margin: 10px;
+  display: flex;
+  justify-content: center; }
+  .addContactPage label {
+    display: inline-block;
+    min-width: 120px; }
+  .addContactPage .brainjs-inputgroup {
+    margin-bottom: 5px; }
+    .addContactPage .brainjs-inputgroup input {
+      padding: 5px; }
 
 .mailboxPage {
   display: flex;
@@ -104,22 +120,6 @@
         cursor: pointer; }
       .mailboxPage .scrollPanelTable table tr.unseen {
         font-weight: bold; }
-
-.accountPage {
-  margin: 10px;
-  display: flex;
-  justify-content: center; }
-  .accountPage form {
-    display: grid;
-    grid-template-columns: 130px 1fr;
-    grid-gap: 10px;
-    align-items: center; }
-    .accountPage form label {
-      grid-column: 1 / 2; }
-    .accountPage form input {
-      grid-column: 2 / 3;
-      padding: 5px;
-      max-width: 180px; }
 
 .messagePage {
   display: flex;

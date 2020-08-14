@@ -13,8 +13,6 @@ $$.control.registerControl('mailboxPage', {
 
 		const { currentAccount, mailboxName } = this.props
 
-		let nbLoadedMessages = 0
-
 		const ctrl = $$.viewController(elt, {
 			data: {
 				messages: [],
@@ -58,6 +56,7 @@ $$.control.registerControl('mailboxPage', {
 				},
 				onCheckClick: function() {
 					ctrl.setData({check: false})
+					updateButtonState()
 				},
 				onItemClick: function (ev) {
 					// $(this).closest('tbody').find('tr').removeClass('w3-blue')
@@ -82,10 +81,21 @@ $$.control.registerControl('mailboxPage', {
 
 				onMainCheckBoxClick: function (ev) {
 					elt.find('.check').prop('checked', $(this).prop('checked'))
+					updateButtonState()
 				},
 
 			}
 		})
+
+
+		function updateButtonState() {
+			const nbChecked = elt.find('.check:checked').length
+			//console.log('nbChecked', nbChecked)
+			const enabled = (nbChecked != 0)
+			pager.setButtonEnabled({move: enabled, delete: enabled, reload: true, newMail: true})
+
+
+		}
 
 		async function load(idx) {
 			console.log('load', idx)
@@ -108,14 +118,14 @@ $$.control.registerControl('mailboxPage', {
 					nbMsg,
 					messages
 				})
-				pager.setButtonEnabled(true)
+				updateButtonState()
 
 			}
 			else {
 				ctrl.enableNode('messages', false)
 				ctrl.model.messages = ctrl.model.messages.concat(messages)
 				ctrl.setData({ loading: false })
-				pager.setButtonEnabled(true)
+				updateButtonState()
 				console.log('nbLoadedMessages', ctrl.model.messages.length)
 				return messages
 			}
@@ -142,10 +152,6 @@ $$.control.registerControl('mailboxPage', {
 			console.log('nbMsg', nbMsg, 'length', messages.length)
 			if (nbMsg == 0) {
 				ctrl.setData({check: false})
-			}
-			if (messages.length < 20 && nbMsg > messages.length) {
-				ctrl.enableNode('messages', true)
-				load(messages.length + 1)
 			}
 
 		}

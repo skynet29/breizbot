@@ -1,11 +1,10 @@
 const Alexa = require('ask-sdk-core')
-const ssml = require('../../../../back/alexa/ssml.js')
 
 //const PROMPT = `Que puis je faire pour vous aujourd'hui ?`
 
 module.exports = function (ctx) {
 
-    const { skillInterface } = ctx
+    const { skillInterface, ssml } = ctx
 
     skillInterface.addPause('500ms')
     skillInterface.addHelpMessage(`Vous pouvez dire aussi`)
@@ -45,10 +44,11 @@ module.exports = function (ctx) {
                 else {
                     speech += `Vous avez ${unreadMessages} messages non lus sur votre compte ${accountName}`
                 }
+                speech += ssml.pause('500ms')
             }
 
             return responseBuilder
-                .speak(speech)
+                .speak(ssml.toSpeak(speech))
                 .withShouldEndSession(true)
                 .getResponse()
 

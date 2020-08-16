@@ -22,7 +22,7 @@ module.exports = {
 		//console.log(`[DB] getContacts`, userName)
 		return db
 			.find({ userName }, { projection: { userName: 0 } })
-			.sort({ contactName: 1 }).toArray()
+			.sort({ name: 1 }).toArray()
 	},
 
 	removeContact: async function (contactId) {

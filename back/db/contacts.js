@@ -11,18 +11,11 @@ events.on('userDeleted', async (userName) => {
 
 module.exports = {
 
-	addContact: async function (userName, contactName, contactEmail) {
-		console.log(`[DB] addContact`, userName, contactName, contactEmail)
-		const info = await db.findOne({ userName, contactEmail })
-		if (info != null) {
-			throw ('Contact already exists')
-		}
+	addContact: async function (userName, info) {
+		console.log(`[DB] addContact`, userName, info)
+		info.userName = userName
 
-		return db.insertOne({
-			userName,
-			contactName,
-			contactEmail
-		})
+		return db.insertOne(info)
 	},
 
 	getContacts: function (userName) {
@@ -35,6 +28,12 @@ module.exports = {
 	removeContact: async function (contactId) {
 		console.log(`[DB] removeContact`, contactId)
 		await db.deleteOne(buildDbId(contactId))
+	},
+
+	updateContactInfo: async function (contactId, info) {
+		console.log(`[DB] updateContactInfo`, contactId, info)
+		const ret = await db.updateOne(buildDbId(contactId), {$set: info})
+		console.log('ret', ret)
 	}
 
 

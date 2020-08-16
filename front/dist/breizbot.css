@@ -35,6 +35,19 @@
   flex-wrap: wrap;
   align-content: start; }
 
+.breizbot-addContactPage {
+  padding: 10px;
+  display: flex;
+  justify-content: center; }
+  .breizbot-addContactPage label {
+    display: inline-block;
+    min-width: 120px; }
+  .breizbot-addContactPage .brainjs-inputgroup {
+    margin-bottom: 15px; }
+    .breizbot-addContactPage .brainjs-inputgroup input {
+      padding: 5px;
+      min-width: 300px; }
+
 .breizbot-contacts {
   overflow: hidden; }
   .breizbot-contacts .scrollPanel {

@@ -152,15 +152,20 @@ $$.control.registerControl('messagePage', {
 
 				},
 				onAddContact: function (ev) {
-					//console.log('onAddContact')
+					console.log('onAddContact')
 					ev.preventDefault()
 					const { item } = ctrl.model
 					const idx = $(this).closest('li').index()
 					let from = (idx < 0) ? item.from : item.to[idx]
-					pager.pushPage('addContactPage', {
+					console.log('from', from)
+					pager.pushPage('breizbot.addContactPage', {
 						title: 'Add Contact',
 						props: {
-							from
+							info: from
+						},
+						onReturn: function(info) {
+							//console.log('onReturn', info)
+							this.addContact(info.data)
 						}
 					})
 				}

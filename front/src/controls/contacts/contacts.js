@@ -23,13 +23,16 @@ $$.control.registerControl('breizbot.contacts', {
 				},
 				show2: function() {
 					return this.contacts.length == 0
+				},
+				getFullName: function(scope) {
+					return `${scope.$i.name} ${scope.$i.surname || ''}`
 				}
 			},
 			events: {
 				onItemClick: function() {
 					const idx =  $(this).index()
 					const data = ctrl.model.contacts[idx]
-					console.log('onItemClick', data)
+					//console.log('onItemClick', data)
 					if (showSelection) {
 						//$(this).siblings('.w3-blue').removeClass('w3-blue')
 						$(this).toggleClass('w3-blue')						
@@ -54,6 +57,7 @@ $$.control.registerControl('breizbot.contacts', {
 			console.log('contacts', contacts)
 			ctrl.setData({contacts})
 		}
+
 
 		load()
 

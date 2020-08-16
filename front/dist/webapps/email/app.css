@@ -58,18 +58,6 @@
       padding: 5px;
       max-width: 180px; }
 
-.addContactPage {
-  margin: 10px;
-  display: flex;
-  justify-content: center; }
-  .addContactPage label {
-    display: inline-block;
-    min-width: 120px; }
-  .addContactPage .brainjs-inputgroup {
-    margin-bottom: 5px; }
-    .addContactPage .brainjs-inputgroup input {
-      padding: 5px; }
-
 .boxesPage {
   padding: 10px;
   display: flex;

@@ -74,11 +74,11 @@ $$.control.registerControl('breizbot.pager', {
 			curInfo.ctrl.safeEmpty().remove()
 			if (isBack) {
 				if (typeof curInfo.onBack == 'function') {
-					curInfo.onBack()
+					curInfo.onBack.call(iface)
 				}
 			}
 			else if (typeof curInfo.onReturn == 'function') {
-				curInfo.onReturn(data)
+				curInfo.onReturn.call(iface, data)
 			}
 
 			curInfo = stack.pop()

@@ -1,0 +1,21 @@
+.breizbot-addContactPage {
+	padding: 10px;
+
+		display: flex;
+		justify-content: center;
+	
+
+	label {
+		display: inline-block;
+		min-width: 120px;
+	}
+
+	.brainjs-inputgroup {
+		margin-bottom: 15px;
+
+		input {
+			padding: 5px;
+			min-width: 300px;
+		}
+	}	
+}

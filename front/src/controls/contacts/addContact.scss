@@ -10,12 +10,30 @@
 		min-width: 120px;
 	}
 
-	.brainjs-inputgroup {
-		margin-bottom: 15px;
 
-		input {
-			padding: 5px;
-			min-width: 300px;
+	form {
+		.birthNotif {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			margin-bottom: 15px;
 		}
-	}	
+	
+		.gender {
+			display: flex;
+			.brainjs-inputgroup {
+				margin-bottom: 5px;
+			}
+		}
+
+		> .brainjs-inputgroup {
+			margin-bottom: 15px;
+	
+			input {
+				padding: 5px;
+				min-width: 300px;
+			}
+		}	
+	
+	}
 }

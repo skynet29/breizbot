@@ -1,5 +1,19 @@
 <form bn-event="submit: onSubmit" bn-form="info">
 
+	<div class="gender">
+		<label>Gender:</label>
+		<div bn-control="brainjs.radiogroup" name="gender">
+			<div bn-control="brainjs.inputgroup">
+				<input type="radio" value="male">
+				<label>Male</label>
+			</div>
+			<div bn-control="brainjs.inputgroup">
+				<input type="radio" value="female">
+				<label>Female</label>
+			</div>
+		</div>
+	</div>
+
 	<div bn-control="brainjs.inputgroup">
 		<label>Name:</label><br>
 		<input type="text" name="name" required="">	
@@ -13,6 +27,12 @@
 			name="birthday"
 			>
 	</div>
+
+	<div class="birthNotif">
+		<label>Activate birthday Notification</label>
+		<div bn-control="brainjs.flipswitch" name="birthdayNotif"></div>
+	</div>
+
 
 	<div bn-control="brainjs.inputgroup">
 		<label>Email:</label><br>

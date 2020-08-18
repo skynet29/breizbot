@@ -27,7 +27,7 @@ $$.control.registerControl('rootPage', {
 						title: 'Edit Contact',
 						props: {info},
 						onReturn: async function(info) {
-							//console.log('onReturn', info)
+							console.log('onReturn', info)
 							await this.updateContactInfo(info.id, info.data)
 							ctrl.scope.contacts.update()
 						}

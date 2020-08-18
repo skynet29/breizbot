@@ -42,9 +42,18 @@
   .breizbot-addContactPage label {
     display: inline-block;
     min-width: 120px; }
-  .breizbot-addContactPage .brainjs-inputgroup {
+  .breizbot-addContactPage form .birthNotif {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 15px; }
-    .breizbot-addContactPage .brainjs-inputgroup input {
+  .breizbot-addContactPage form .gender {
+    display: flex; }
+    .breizbot-addContactPage form .gender .brainjs-inputgroup {
+      margin-bottom: 5px; }
+  .breizbot-addContactPage form > .brainjs-inputgroup {
+    margin-bottom: 15px; }
+    .breizbot-addContactPage form > .brainjs-inputgroup input {
       padding: 5px;
       min-width: 300px; }
 

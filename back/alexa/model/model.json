@@ -92,6 +92,13 @@
                         "est ce que j'ai des amis connectés",
                         "quels sont mes amis connectés"
                     ]
+                },
+                {
+                    "name": "ActivateBirthdayNotifIntent",
+                    "slots": [],
+                    "samples": [
+                        "active la notfication d'anniversaires"
+                    ]
                 }
             ],
             "types": []

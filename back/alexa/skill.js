@@ -4,6 +4,8 @@ const dbUsers = require('../db/users.js')
 const dbSongs = require('../db/songs.js')
 const dbFriends = require('../db/friends.js')
 const wss = require('../lib/wss')
+const birthday = require('./birthday.js')
+const reminder = require('./reminder.js')
 
 
 const { getPersistenceAdapter } = require('./persistence.js')
@@ -364,7 +366,9 @@ const ErrorHandler = {
     handle(handlerInput, error) {
         console.log(`Error handled: ${error.message}`)
         const { responseBuilder } = handlerInput
-        let message = 'Désolé, il y a un bug dans la machine'
+
+        let message = 'Désolé, il y a eu un problème'
+
         if (error.message == USER_NOT_REGISTERD) {
             message = 'Utilisateur non identifié'
         }
@@ -441,7 +445,7 @@ const NoHandler = {
 }
 
 const ConnectedFriendsRequestHandler = {
-    async canHandle(handlerInput) {
+    canHandle(handlerInput) {
         const request = handlerInput.requestEnvelope.request
 
         return request.type === 'IntentRequest' && request.intent.name === 'ConnectedFriendsIntent'
@@ -475,7 +479,70 @@ const ConnectedFriendsRequestHandler = {
     }
 }
 
+const ActivateBirthdayNotifHandler = {
+    canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request
 
+        return request.type === 'IntentRequest' && request.intent.name === 'ActivateBirthdayNotifIntent'
+
+    },
+    async handle(handlerInput) {
+        const { responseBuilder, attributesManager, requestEnvelope, serviceClientFactory } = handlerInput
+
+        const consentToken = requestEnvelope.context.System.user.permissions
+            && requestEnvelope.context.System.user.permissions.consentToken
+
+        if (!consentToken) {
+            return responseBuilder
+                .speak(`Pour activer la notification d'anniversaires, rendez vous dans l'application Alexa pour autoriser les Rappels`)
+                .withAskForPermissionsConsentCard(['alexa::alerts:reminders:skill:readwrite'])
+                .getResponse()
+        }
+
+        const { userName } = attributesManager.getSessionAttributes()
+
+        const nextBirthdayContact = await birthday.getNextBirthdayContact(userName)
+        console.log('nextBirthdayContact', nextBirthdayContact)
+        if (nextBirthdayContact == null) {
+            let speech = ssml.sentence(`Vous n'avez pas de notification d'anniversaire d'activer pour vos contacts`)
+            speech += ssml.sentence(`Rendez vous sur votre application contacts de ${NETOS}`)
+            return responseBuilder
+                .speak(ssml.toSpeak(speech))
+                .withShouldEndSession(true)
+                .getResponse()
+
+        }
+
+        const birthdayDate = new Date(nextBirthdayContact.birthday)
+
+        const { scheduledTime, remindDate } = birthday.getScheduledInfo(birthdayDate)
+        console.log('scheduledTime', scheduledTime)
+        console.log('remindDate', remindDate)
+
+        const reminderManagementServiceClient = serviceClientFactory.getReminderManagementServiceClient()
+
+        const text = `Aujourd'hui c'est l'anniversaire de ${nextBirthdayContact.name}`
+
+        const reminderPlayload = reminder.getPayload(scheduledTime, text)
+
+
+        let speech = `Un rappel a été programmé pour le ${ssml.sayAs('date', remindDate)}`
+        try {
+            const ret = await reminderManagementServiceClient.createReminder(reminderPlayload)
+            console.log('ret', ret)
+        }
+        catch (e) {
+            console.error(e)
+            speech = `Quelque chose n'a pas marché`
+        }
+
+        return responseBuilder
+            .speak(ssml.toSpeak(speech))
+            .withShouldEndSession(true)
+            .getResponse()
+
+    }
+}
 
 const RequestInterceptor = {
     async process(handlerInput) {
@@ -541,12 +608,15 @@ skillBuilder
         NoHandler,
         SessionEndedRequestHandler,
         ConnectedFriendsRequestHandler,
+        ActivateBirthdayNotifHandler,
         ExitHandler
     )
     .addRequestInterceptors(RequestInterceptor)
     .addResponseInterceptors(SavePersistentAttributesResponseInterceptor)
     .addErrorHandlers(ErrorHandler)
     .withPersistenceAdapter(getPersistenceAdapter())
+    .withApiClient(new Alexa.DefaultApiClient())
+
 
 
 function addHelpMessage(text) {

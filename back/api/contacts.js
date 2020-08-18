@@ -16,7 +16,7 @@ router.post('/addContact', async function (req, res) {
 })
 
 router.get('/getContacts', async function (req, res) {
-	console.log('getContacts', req.session.user)
+	//console.log('getContacts', req.session.user)
 
 	const userName = req.session.user
 
@@ -44,7 +44,7 @@ router.delete('/removeContact/:id', async function (req, res) {
 })
 
 router.post('/updateContactInfo/:id', async function (req, res) {
-	console.log('updateContactInfo', req.params, req.body)
+	//console.log('updateContactInfo', req.params, req.body)
 	const { id } = req.params
 
 	try {

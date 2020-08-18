@@ -33,7 +33,7 @@ module.exports = {
 	updateContactInfo: async function (contactId, info) {
 		console.log(`[DB] updateContactInfo`, contactId, info)
 		const ret = await db.updateOne(buildDbId(contactId), {$set: info})
-		console.log('ret', ret)
+		//console.log('ret', ret)
 	}
 
 

@@ -500,6 +500,7 @@ const ActivateBirthdayNotifHandler = {
         }
 
         const { userName } = attributesManager.getSessionAttributes()
+        console.log('userName', userName)
 
         const nextBirthdayContact = await birthday.getNextBirthdayContact(userName)
         console.log('nextBirthdayContact', nextBirthdayContact)

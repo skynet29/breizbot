@@ -99,6 +99,13 @@
                     "samples": [
                         "active la notfication d'anniversaires"
                     ]
+                },
+                {
+                    "name": "DesactivateBirthdayNotifIntent",
+                    "slots": [],
+                    "samples": [
+                        "annule la notfication d'anniversaire"
+                    ]
                 }
             ],
             "types": []

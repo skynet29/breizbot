@@ -516,13 +516,29 @@ const ActivateBirthdayNotifHandler = {
 
         const birthdayDate = new Date(nextBirthdayContact.birthday)
 
-        const { scheduledTime, remindDate } = birthday.getScheduledInfo(birthdayDate)
+        const { scheduledTime, remindDate, age } = birthday.getScheduledInfo(birthdayDate)
         console.log('scheduledTime', scheduledTime)
         console.log('remindDate', remindDate)
 
         const reminderManagementServiceClient = serviceClientFactory.getReminderManagementServiceClient()
 
-        const text = `Aujourd'hui c'est l'anniversaire de ${nextBirthdayContact.name}`
+        const persistentAttributes = await attributesManager.getPersistentAttributes()
+        console.log('persistentAttributes', persistentAttributes)
+        const { reminderId } = persistentAttributes
+        console.log('reminderId', reminderId)
+
+        const reminderList = await reminderManagementServiceClient.getReminders()
+        console.log('reminderList', reminderList)
+
+        if (reminderId && reminderList.totalCount != 0) {
+            await reminderManagementServiceClient.deleteReminder(reminderId)
+            delete persistentAttributes.reminderId
+        }
+
+    
+
+        const text = `Aujourd'hui c'est l'anniversaire de ${nextBirthdayContact.name}.
+            ${nextBirthdayContact.gender == 'female' ? 'elle' : 'il'} aura ${age} ans`
 
         const reminderPlayload = reminder.getPayload(scheduledTime, text)
 
@@ -531,6 +547,7 @@ const ActivateBirthdayNotifHandler = {
         try {
             const ret = await reminderManagementServiceClient.createReminder(reminderPlayload)
             console.log('ret', ret)
+            persistentAttributes.reminderId = ret.alertToken
         }
         catch (e) {
             console.error(e)
@@ -539,6 +556,52 @@ const ActivateBirthdayNotifHandler = {
 
         return responseBuilder
             .speak(ssml.toSpeak(speech))
+            .withShouldEndSession(true)
+            .getResponse()
+
+    }
+}
+
+const DesactivateBirthdayNotifHandler = {
+    canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request
+
+        return request.type === 'IntentRequest' && request.intent.name === 'DesactivateBirthdayNotifIntent'
+
+    },
+    async handle(handlerInput) {
+        const { responseBuilder, attributesManager, requestEnvelope, serviceClientFactory } = handlerInput
+
+        const consentToken = requestEnvelope.context.System.user.permissions
+            && requestEnvelope.context.System.user.permissions.consentToken
+
+        if (!consentToken) {
+            return responseBuilder
+                .speak(`Pour désactiver la notification d'anniversaires, rendez vous dans l'application Alexa pour autoriser les Rappels`)
+                .withAskForPermissionsConsentCard(['alexa::alerts:reminders:skill:readwrite'])
+                .getResponse()
+        }
+
+        const reminderManagementServiceClient = serviceClientFactory.getReminderManagementServiceClient()
+
+        const persistentAttributes = attributesManager.getPersistentAttributes()
+        const { reminderId } = persistentAttributes
+        console.log('reminderId', reminderId)
+
+        const reminderList = await reminderManagementServiceClient.getReminders()
+        console.log('reminderList', reminderList)
+
+        if (reminderId && reminderList.totalCount != 0) {
+            delete persistentAttributes[reminderId]
+        }
+
+        for await (alert of reminderList.alerts) {
+            await reminderManagementServiceClient.deleteReminder(alert.alertToken)
+        }
+
+
+        return responseBuilder
+            .speak(`La notification d'anniversaire a été désactivé`)
             .withShouldEndSession(true)
             .getResponse()
 
@@ -610,6 +673,7 @@ skillBuilder
         SessionEndedRequestHandler,
         ConnectedFriendsRequestHandler,
         ActivateBirthdayNotifHandler,
+        DesactivateBirthdayNotifHandler,
         ExitHandler
     )
     .addRequestInterceptors(RequestInterceptor)
@@ -629,12 +693,18 @@ function addPause(duration) {
 }
 
 function addCommand(commandText, explainText) {
-    helpMessage += ssml.sentence(ssml.whispered(commandText) + explainText)
+    helpMessage += ssml.sentence(ssml.voice('Lea', commandText) + explainText)
 }
 
 function help() {
-    addHelpMessage(`Je vais vous expliquer certaines choses que vous pouvez faire
-         et garder à l’esprit, vous pouvez demander de l’aide à tout moment.`)
+    addHelpMessage(`Voici une liste des choses que vous pouvez demander.`)
+    addPause('500ms')
+    addCommand(`Est ce que j'ai des amis connectés ?`, `pour savoir si vous avez des amis conectés à ${NETOS}`)
+
+    addPause('500ms')
+    addHelpMessage(`Vous pouvez aussi dire`)
+    addCommand(`Active ou annule la notification d'anniversaire ?`, `pour programmer ou annuler un rappel d'anniversaire d'une personne présentes dans vos contacts`)
+
     addPause('500ms')
 
     addHelpMessage(`Vous pouvez dire par exemple:`)
@@ -645,12 +715,9 @@ function help() {
     addPause('500ms')
     addCommand(`Alexa suivant`, `pour écouter le titre suivant`)
     addCommand(`Alexa précedant`, `pour écouter le titre précédant`)
-    addCommand(`Alexa pause ou Alexa stop`, `pour metrre en pause`)
+    addCommand(`Alexa pause ou Alexa stop`, `pour mettre en pause`)
     addCommand(`Alexa reprendre`, `pour reprendre la lecture là où elle s'est arrêtés`)
 
-    addPause('500ms')
-    addHelpMessage(`Vous pouvez aussi dire`)
-    addCommand(`Est ce que j'ai des amis connectés ?`, `pour savoir si vous avez des amis conectés à ${NETOS}`)
 
 }
 

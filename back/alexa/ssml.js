@@ -5,8 +5,14 @@ module.exports = {
     pause: function(duration) {
         return `<break time="${duration}" />`
     },
+    lang: function(lang, text) {
+        return `<lang xml:lang="${lang}">${text}</lang>`
+    },
     say: function(voice, lang, text) {
-        return `<voice name="${voice}"><lang xml:lang="${lang}">${text}</lang></voice>`
+        return this.voice(voice, this.lang(lang, text))
+    },
+    voice: function(voice, text) {
+        return `<voice name="${voice}">${text}</voice>`
     },
     english: function(text) {
         return this.say('Joanna', 'en-US', text)

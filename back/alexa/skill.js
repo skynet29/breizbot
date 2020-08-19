@@ -500,7 +500,7 @@ const ActivateBirthdayNotifHandler = {
         }
 
         const { userName } = attributesManager.getSessionAttributes()
-        console.log('userName', userName)
+        //console.log('userName', userName)
 
         const nextBirthdayContact = await birthday.getNextBirthdayContact(userName)
         console.log('nextBirthdayContact', nextBirthdayContact)
@@ -517,13 +517,13 @@ const ActivateBirthdayNotifHandler = {
         const birthdayDate = new Date(nextBirthdayContact.birthday)
 
         const { scheduledTime, remindDate, age } = birthday.getScheduledInfo(birthdayDate)
-        console.log('scheduledTime', scheduledTime)
-        console.log('remindDate', remindDate)
+        //console.log('scheduledTime', scheduledTime)
+        //console.log('remindDate', remindDate)
 
         const reminderManagementServiceClient = serviceClientFactory.getReminderManagementServiceClient()
 
         const persistentAttributes = await attributesManager.getPersistentAttributes()
-        console.log('persistentAttributes', persistentAttributes)
+        //console.log('persistentAttributes', persistentAttributes)
         const { reminderId } = persistentAttributes
         console.log('reminderId', reminderId)
 
@@ -546,7 +546,7 @@ const ActivateBirthdayNotifHandler = {
         let speech = `Un rappel a été programmé pour le ${ssml.sayAs('date', remindDate)}`
         try {
             const ret = await reminderManagementServiceClient.createReminder(reminderPlayload)
-            console.log('ret', ret)
+            //console.log('ret', ret)
             persistentAttributes.reminderId = ret.alertToken
         }
         catch (e) {
@@ -591,7 +591,7 @@ const DesactivateBirthdayNotifHandler = {
         const reminderList = await reminderManagementServiceClient.getReminders()
         console.log('reminderList', reminderList)
 
-        if (reminderId && reminderList.totalCount != 0) {
+        if (reminderId) {
             delete persistentAttributes[reminderId]
         }
 

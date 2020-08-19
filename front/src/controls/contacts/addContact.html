@@ -1,59 +1,76 @@
 <form bn-event="submit: onSubmit" bn-form="info">
 
-	<div class="gender">
-		<label>Gender:</label>
-		<div bn-control="brainjs.radiogroup" name="gender">
-			<div bn-control="brainjs.inputgroup">
-				<input type="radio" value="male">
-				<label>Male</label>
+	<div bn-control="brainjs.accordion" data-height-style="fill">
+
+
+		<div title="Name">
+			<div class="gender">
+				<label>Gender:</label>
+				<div bn-control="brainjs.radiogroup" name="gender">
+					<div bn-control="brainjs.inputgroup">
+						<input type="radio" value="male">
+						<label>Male</label>
+					</div>
+					<div bn-control="brainjs.inputgroup">
+						<input type="radio" value="female">
+						<label>Female</label>
+					</div>
+				</div>
 			</div>
+	
 			<div bn-control="brainjs.inputgroup">
-				<input type="radio" value="female">
-				<label>Female</label>
+				<label>Name:</label><br>
+				<input type="text" name="name" required="">
 			</div>
+	
+			<div bn-control="brainjs.inputgroup">
+				<label>Birthday</label><br>
+				<input type="text" bn-control="brainjs.datepicker" data-change-year="true" data-year-range="-100:+0"
+					name="birthday">
+			</div>
+	
+			<div class="birthNotif">
+				<label>Activate birthday Notification</label>
+				<div bn-control="brainjs.flipswitch" name="birthdayNotif"></div>
+			</div>
+	
 		</div>
+
+		<div title="Email & Phone">
+			<div bn-control="brainjs.inputgroup">
+				<label>Email:</label><br>
+				<input type="email" name="email">
+			</div>
+			<div bn-control="brainjs.inputgroup">
+				<label>Phone:</label><br>
+				<input type="tel" name="phone">
+			</div>
+			<div bn-control="brainjs.inputgroup">
+				<label>Mobile Phone:</label><br>
+				<input type="tel" name="mobilePhone">
+			</div>
+	
+		</div>
+
+		<div title="Address">
+			<div bn-control="brainjs.inputgroup">
+				<label>Address:</label><br>
+				<input type="text" name="address">
+			</div>
+	
+			<div bn-control="brainjs.inputgroup">
+				<label>Postal Code:</label><br>
+				<input type="number" name="postalCode" maxlength="5" bn-event="blur: onPostalCodeLostFocus">
+			</div>
+	
+			<div>
+				<label>City</label>
+				<div bn-control="brainjs.combobox" bn-data="{items: cities}" name="city" bn-val="city"></div>
+			</div>
+	
+		</div>
+
 	</div>
-
-	<div bn-control="brainjs.inputgroup">
-		<label>Name:</label><br>
-		<input type="text" name="name" required="">	
-	</div>
-
-	<div bn-control="brainjs.inputgroup">
-		<label>Birthday</label><br>
-		<input type="text" bn-control="brainjs.datepicker" 
-			data-change-year="true"
-			data-year-range="-100:+0"
-			name="birthday"
-			>
-	</div>
-
-	<div class="birthNotif">
-		<label>Activate birthday Notification</label>
-		<div bn-control="brainjs.flipswitch" name="birthdayNotif"></div>
-	</div>
-
-
-	<div bn-control="brainjs.inputgroup">
-		<label>Email:</label><br>
-		<input type="email" name="email" required="">	
-	</div>	
-
-	<div bn-control="brainjs.inputgroup">
-		<label>Address:</label><br>
-		<input type="text" name="address" >	
-	</div>	
-
-	<div bn-control="brainjs.inputgroup">
-		<label>Postal Code:</label><br>
-		<input type="number" name="postalCode" maxlength="5" bn-event="blur: onPostalCodeLostFocus">	
-	</div>	
-
-	<div>
-		<label>City</label>
-		<div bn-control="brainjs.combobox" bn-data="{items: cities}" name="city" bn-val="city"></div>
-	</div>
-
 
 	<input type="submit" bn-bind="submit" hidden="">
 </form>

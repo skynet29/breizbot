@@ -1,8 +1,8 @@
 .breizbot-addContactPage {
 	padding: 10px;
 
-		display: flex;
-		justify-content: center;
+	display: flex;
+	justify-content: center;
 	
 
 	label {
@@ -12,6 +12,8 @@
 
 
 	form {
+		height: 90%;
+
 		.birthNotif {
 			display: flex;
 			align-items: center;
@@ -26,7 +28,7 @@
 			}
 		}
 
-		> .brainjs-inputgroup {
+		.ui-accordion-content > .brainjs-inputgroup {
 			margin-bottom: 15px;
 	
 			input {

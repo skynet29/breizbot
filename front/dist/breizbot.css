@@ -42,20 +42,22 @@
   .breizbot-addContactPage label {
     display: inline-block;
     min-width: 120px; }
-  .breizbot-addContactPage form .birthNotif {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 15px; }
-  .breizbot-addContactPage form .gender {
-    display: flex; }
-    .breizbot-addContactPage form .gender .brainjs-inputgroup {
-      margin-bottom: 5px; }
-  .breizbot-addContactPage form > .brainjs-inputgroup {
-    margin-bottom: 15px; }
-    .breizbot-addContactPage form > .brainjs-inputgroup input {
-      padding: 5px;
-      min-width: 300px; }
+  .breizbot-addContactPage form {
+    height: 90%; }
+    .breizbot-addContactPage form .birthNotif {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px; }
+    .breizbot-addContactPage form .gender {
+      display: flex; }
+      .breizbot-addContactPage form .gender .brainjs-inputgroup {
+        margin-bottom: 5px; }
+    .breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup {
+      margin-bottom: 15px; }
+      .breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup input {
+        padding: 5px;
+        min-width: 300px; }
 
 .breizbot-contacts {
   overflow: hidden; }

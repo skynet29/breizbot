@@ -96,7 +96,9 @@ $$.control.registerControl('breizbot.home', {
 						openApp('store')
 					}
 					if (data.cmd == 'settings') {
-						openApp('settings')
+						const settings = await users.getUserSettings()
+						console.log('setting', settings)
+						openApp('settings', settings)
 					}
 
 				},
@@ -209,10 +211,10 @@ $$.control.registerControl('breizbot.home', {
 			}
 			const { isConnected, userName } = msg.data
 			if (isConnected) {
-				$.notify(`'${userName}' is connected`,'success')
+				$.notify(`'${userName}' is connected`, 'success')
 			}
 			else {
-				$.notify(`'${userName}' is disconnected`,'error')
+				$.notify(`'${userName}' is disconnected`, 'error')
 
 			}
 		})

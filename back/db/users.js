@@ -31,6 +31,21 @@ module.exports = {
 		return db.findOne({ username })
 	},
 
+	getUserSettings: async function (username) {
+
+		//console.log('getUserInfo', username)
+		const info = await db.findOne({ username }, {projection: {settings: 1, _id: 0}})
+		return info.settings || {}
+	},
+
+	setUserSettings: async function (username, settings) {
+
+		//console.log('getUserInfo', username)
+		const update = { '$set': { settings } }
+
+		await db.updateOne({ username }, update)
+	},
+
 	getUserInfoById: function (id) {
 		return db.findOne(buildDbId(id), { projection: { username: 1, _id: 0 } })
 	},

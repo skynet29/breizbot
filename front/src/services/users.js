@@ -39,12 +39,14 @@ $$.service.registerService('breizbot.users', {
 				return http.post(`/changePwd`, { newPwd })
 			},
 
+			getUserSettings: function () {
+				return http.post(`/getUserSettings`)
+			},
 
-
-			sendPosition: function (coords) {
-				//console.log('sendFriendPosition', coords)
-				return http.post('/position', coords)
+			setUserSettings: function (settings) {
+				return http.post(`/setUserSettings`, settings)
 			}
+
 		}
 	},
 	$iface: `
@@ -55,5 +57,7 @@ $$.service.registerService('breizbot.users', {
 		get(user):Promise;
 		activateApp(appName, activated):Promise;
 		changePwd(newPwd):Promise;
+		getUserSettings():Promise
+		setUserSettings(settings):Promise
 	`
 });

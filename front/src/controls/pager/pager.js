@@ -105,7 +105,7 @@ $$.control.registerControl('breizbot.pager', {
 
 			let { title, props, onReturn, onBack, events } = options
 
-			const control = content.addControl(ctrlName, $.extend({ $pager: this }, props), events)
+			const control = content.addControl(ctrlName, props, events)
 
 			let buttons = {}
 

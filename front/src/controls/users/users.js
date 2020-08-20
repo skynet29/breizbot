@@ -1,15 +1,10 @@
 $$.control.registerControl('breizbot.users', {
-	deps: ['breizbot.users', 'breizbot.notifs'],
+
+	deps: ['breizbot.users', 'breizbot.notifs', 'breizbot.pager'],
 
 	template: { gulp_inject: './users.html' },
 
-	props: {
-		$pager: null
-	},
-
-	init: function (elt, users, notifsSrv) {
-
-		const { $pager } = this.props
+	init: function (elt, users, notifsSrv, pager) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -32,7 +27,7 @@ $$.control.registerControl('breizbot.users', {
 			},
 			events: {
 				onAddUser: function (ev) {
-					$pager.pushPage('breizbot.addUser', {
+					pager.pushPage('breizbot.addUser', {
 						title: 'Add User',
 						onReturn: async function (data) {
 							//console.log('onReturn', data)

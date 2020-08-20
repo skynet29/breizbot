@@ -8,5 +8,18 @@
 
     section {
         margin-bottom: 20px;
+
+        form {
+            .brainjs-inputgroup {
+                margin-bottom: 10px;
+            }
+            input {
+                padding: 5px;
+            }
+            label {
+                margin-right: 10px;
+            }
+    
+        }
     }
 }

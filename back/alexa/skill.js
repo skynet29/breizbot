@@ -514,10 +514,12 @@ const ActivateBirthdayNotifHandler = {
 
         }
 
+        const { birthdayScheduleTime } = await dbUsers.getUserSettings(userName)
+
         const birthdayDate = new Date(nextBirthdayContact.birthday)
 
-        const { scheduledTime, remindDate, age } = birthday.getScheduledInfo(birthdayDate)
-        //console.log('scheduledTime', scheduledTime)
+        const { scheduledTime, remindDate, age } = birthday.getScheduledInfo(birthdayDate, birthdayScheduleTime)
+        console.log('scheduledTime', scheduledTime)
         //console.log('remindDate', remindDate)
 
         const reminderManagementServiceClient = serviceClientFactory.getReminderManagementServiceClient()
@@ -535,7 +537,7 @@ const ActivateBirthdayNotifHandler = {
             delete persistentAttributes.reminderId
         }
 
-    
+
 
         const text = `Aujourd'hui c'est l'anniversaire de ${nextBirthdayContact.name}.
             ${nextBirthdayContact.gender == 'female' ? 'elle' : 'il'} aura ${age} ans`

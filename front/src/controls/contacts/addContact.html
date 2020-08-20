@@ -25,7 +25,11 @@
 	
 			<div bn-control="brainjs.inputgroup">
 				<label>Birthday</label><br>
-				<input type="text" bn-control="brainjs.datepicker" data-change-year="true" data-year-range="-100:+0"
+				<input type="text" bn-control="brainjs.datepicker" 
+					bn-data="{
+						changeYear: true,
+						yearRange: '-100:+0'
+					}"
 					name="birthday">
 			</div>
 	
@@ -43,11 +47,11 @@
 			</div>
 			<div bn-control="brainjs.inputgroup">
 				<label>Home Phone:</label><br>
-				<input type="tel" name="phone">
+				<input name="phone" bn-control="brainjs.inputphone">
 			</div>
 			<div bn-control="brainjs.inputgroup">
 				<label>Cell Phone:</label><br>
-				<input type="tel" name="mobilePhone">
+				<input name="mobilePhone" bn-control="brainjs.inputphone">
 			</div>
 	
 		</div>

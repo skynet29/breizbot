@@ -2,14 +2,22 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.users', 'breizbot.songs'],
+	deps: ['breizbot.users', 'breizbot.songs', 'breizbot.params'],
 
-	init: function (elt, users, songs) {
+	props: {
+		birthdayScheduleTime: '1000'
+	},
+
+	init: function (elt, users, songs, params) {
+
+		const settings = $.extend(this.props, params)
+		//console.log('settings', settings)
 
 		const waitDlg = $$.ui.waitDialog('Generating...')
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				settings
 			},
 			events: {
 				onChangePwd: async function () {
@@ -29,6 +37,12 @@ $$.control.registerControl('rootPage', {
 					waitDlg.show()
 					await songs.generateDb()
 					waitDlg.hide()
+				},
+				onApply: async function(ev) {
+					ev.preventDefault()
+					const data = $(this).getFormData()
+					console.log('data', data)
+					await users.setUserSettings(data)
 				}
 			}
 		})

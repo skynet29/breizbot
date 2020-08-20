@@ -5,3 +5,9 @@
     margin-bottom: 20px; }
   .rootPage section {
     margin-bottom: 20px; }
+    .rootPage section form .brainjs-inputgroup {
+      margin-bottom: 10px; }
+    .rootPage section form input {
+      padding: 5px; }
+    .rootPage section form label {
+      margin-right: 10px; }

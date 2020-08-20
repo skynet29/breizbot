@@ -39,7 +39,7 @@ async function getNextBirthdayContact(userName) {
     return contacts[index]
 }
 
-function getScheduledInfo(birthdayDate) {
+function getScheduledInfo(birthdayDate, remindTime) {
     const now = new Date()
     let year = now.getFullYear()
     let age = year - birthdayDate.getFullYear()
@@ -52,7 +52,10 @@ function getScheduledInfo(birthdayDate) {
     const month = fixe(birthdayDate.getMonth() + 1)
     const day = fixe(birthdayDate.getDate())
 
-    const scheduledTime = `${year}-${month}-${day}T10:00:00.000`
+    remindTime = remindTime.substr(0,2) + ':' + remindTime.substr(2,2)
+
+
+    const scheduledTime = `${year}-${month}-${day}T${remindTime}:00.000`
     const remindDate = `????` + month + day
 
     return {

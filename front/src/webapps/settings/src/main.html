@@ -12,4 +12,17 @@
             <button class="w3-button w3-blue" bn-event="click: onGenerateMusicDb">Generate Database</button>
         </div>    
     </section>
+
+    <section>
+        <h2>Alexa Birthday Reminder</h2>
+        <form bn-event="submit: onApply" bn-form="settings">
+            <div bn-control="brainjs.inputgroup">
+                <label>Schedule Time</label>
+                <input name="birthdayScheduleTime" bn-control="brainjs.inputtime" 
+                    bn-data="{timePattern: ['h', 'm']}">
+            </div>
+            <button class="w3-button w3-blue" type="submit">Apply</button>
+        </form>    
+    </section>
+
 </div>

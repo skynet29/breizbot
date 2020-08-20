@@ -2,14 +2,11 @@ $$.control.registerControl('breizbot.addUser', {
 
 	template: {gulp_inject: './addUser.html'},
 
-	props: {
-		$pager: null
-	},
+	deps: ['breizbot.pager'],
 
 
-	init: function(elt) {
+	init: function(elt, pager) {
 
-		const {$pager} = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -17,7 +14,7 @@ $$.control.registerControl('breizbot.addUser', {
 			events: {
 				onSubmit: function(ev) {
 					ev.preventDefault()
-					$pager.popPage($(this).getFormData())
+					pager.popPage($(this).getFormData())
 				}
 			}
 		})

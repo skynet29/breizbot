@@ -4,58 +4,63 @@ $$.control.registerControl('breizbot.contacts', {
 
 	props: {
 		showSelection: false,
-		showDeleteButton: false
-	},	
+		contextMenu: {}
+	},
 
-	template: {gulp_inject: './contacts.html'},
+	template: { gulp_inject: './contacts.html' },
 
-	init: function(elt, contactsSrv) {
+	init: function (elt, contactsSrv) {
 
-		const {showSelection, showDeleteButton} = this.props
+		const { showSelection, contextMenu } = this.props
+		//console.log('props', this.props)
 
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				contacts: [],
-				showDeleteButton,
-				show1: function() {
+				showSelection,
+				contextMenu,
+				show1: function () {
 					return this.contacts.length > 0
 				},
-				show2: function() {
+				show2: function () {
 					return this.contacts.length == 0
 				},
-				getFullName: function(scope) {
-					return `${scope.$i.name} ${scope.$i.surname || ''}`
+				getCellPhone: function(scope) {
+					return 'tel:' + scope.$i.mobilePhone
+				},
+				getHomePhone: function(scope) {
+					return 'tel:' + scope.$i.phone
 				}
 			},
 			events: {
-				onItemClick: function() {
-					const idx =  $(this).index()
-					const data = ctrl.model.contacts[idx]
+				onItemContextMenu: function (ev, data) {
+					//console.log('onItemContextMenu', data)
+					const { cmd } = data
+					const idx = $(this).index()
+					const info = ctrl.model.contacts[idx]
 					//console.log('onItemClick', data)
 					if (showSelection) {
 						//$(this).siblings('.w3-blue').removeClass('w3-blue')
-						$(this).toggleClass('w3-blue')						
+						$(this).toggleClass('w3-blue')
 					}
-					elt.trigger('contactclick', data)					
+					elt.trigger('contactcontextmenu', { cmd, info })
 				},
-
-				onDeleteItem: async function(ev) {
-					ev.stopPropagation()
-					const idx =  $(this).closest('li').index()
-					const data = ctrl.model.contacts[idx]
-					console.log('onDeleteItem', data)
-					await contactsSrv.removeContact(data._id)
-					load()
-
+				onItemClick: function () {
+					//console.log('onItemClick', data)
+					if (showSelection) {
+						//$(this).siblings('.w3-blue').removeClass('w3-blue')
+						$(this).toggleClass('w3-blue')
+					}
 				}
+
 			}
-		})	
+		})
 
 		async function load() {
 			const contacts = await contactsSrv.getContacts()
-			console.log('contacts', contacts)
-			ctrl.setData({contacts})
+			//console.log('contacts', contacts)
+			ctrl.setData({ contacts })
 		}
 
 
@@ -63,10 +68,15 @@ $$.control.registerControl('breizbot.contacts', {
 
 		this.update = load
 
-		this.getSelection = function() {
+		this.removeContact = async function(id) {
+			await contactsSrv.removeContact(id)
+			await load()
+		}
+
+		this.getSelection = function () {
 			const ret = []
-			elt.find('li.w3-blue').each(function() {
-				const idx =  $(this).index()
+			elt.find('li.w3-blue').each(function () {
+				const idx = $(this).index()
 				ret.push(ctrl.model.contacts[idx])
 			})
 			console.log('ret', ret)

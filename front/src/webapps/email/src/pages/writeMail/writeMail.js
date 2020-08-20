@@ -84,7 +84,7 @@ $$.control.registerControl('writeMailPage', {
 							}
 						},
 						onReturn: function (friends) {
-							const contacts = friends.map((a) => a.contactEmail)
+							const contacts = friends.map((a) => a.email)
 							console.log('contacts', contacts)
 							const to = ctrl.scope.to.val()
 							console.log('to', to)

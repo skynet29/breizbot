@@ -19,7 +19,7 @@ $$.service.registerService('breizbot.cities', {
 				const url = 'https://apicarto.ign.fr/api/codes-postaux/communes/' + postalCode
 				try {
 					const info = await httpSrv.get(url)
-					console.log('info', info)
+					//console.log('info', info)
 					return info.map((i) => i.libelleAcheminement)	
 				}
 				catch(e) {

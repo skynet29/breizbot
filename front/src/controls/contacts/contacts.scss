@@ -4,6 +4,16 @@
 
     .scrollPanel {
         height: 100%;
-        overflow-y: auto;    
+        overflow-y: auto;   
+
+        i {
+            min-width: 30px;
+            text-align: center;
+        }
+        
+        input {
+            border: none;
+            outline: none;
+        }
     }
 }

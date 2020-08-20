@@ -8,7 +8,10 @@
 </div>
 
 <div bn-control="breizbot.contacts" 
-	data-show-delete-button="true" 
 	bn-iface="contacts"
-	bn-event="contactclick: onContactClicked"
+	bn-event="contactcontextmenu: onContactContextMenu"
+	bn-data="{contextMenu: {
+		delete: {name: 'Delete', icon: 'fas fa-trash'},
+		edit: {name: 'Edit', icon: 'fas fa-edit'}
+	}}"
 ></div>	

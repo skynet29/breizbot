@@ -1,7 +1,7 @@
 <p bn-show="show2">You have no contacts</p>
 <div class="scrollPanel">
 	<ul class="w3-ul w3-border w3-white" 
-		bn-event="contextmenuchange.w3-bar: onItemContextMenu, click.w3-bar: onItemClick"
+		bn-event="contextmenuchange.w3-bar: onItemContextMenu, click.w3-bar: onItemClick, click.input: onInputClick"
 		bn-each="contacts"
 		bn-show="show1"
 		>
@@ -15,11 +15,11 @@
 				</div>
 				<div bn-show="$scope.$i.mobilePhone">
 					<a bn-attr="{href : getCellPhone}"><i class="fa fa-mobile-alt w3-text-blue"></i></a>
-					<input bn-control="brainjs.inputphone" bn-val="$scope.$i.mobilePhone" readonly>	
+					<input class="input" bn-control="brainjs.inputphone" bn-val="$scope.$i.mobilePhone" readonly>	
 				</div>
 				<div bn-show="$scope.$i.phone">
 					<a bn-attr="{href : getHomePhone}"><i class="fa fa-home w3-text-blue"></i></a>
-					<input bn-control="brainjs.inputphone" bn-val="$scope.$i.phone" readonly>	
+					<input class="input" bn-control="brainjs.inputphone" bn-val="$scope.$i.phone" readonly>	
 				</div>
 			</div>
 		</li>

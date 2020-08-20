@@ -34,6 +34,10 @@ $$.control.registerControl('breizbot.contacts', {
 				}
 			},
 			events: {
+				onInputClick: function() {
+					//console.log('onInputClick')
+					$(this).closest('div').find('a').get(0).click()
+				},
 				onItemContextMenu: function (ev, data) {
 					//console.log('onItemContextMenu', data)
 					const { cmd } = data

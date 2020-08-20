@@ -69,7 +69,8 @@
       text-align: center; }
     .breizbot-contacts .scrollPanel input {
       border: none;
-      outline: none; }
+      outline: none;
+      cursor: pointer; }
 
 .breizbot-htmleditor {
   display: flex;

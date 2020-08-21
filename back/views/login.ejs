@@ -1,131 +1,69 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 	<title>Login</title>
 	<meta name="viewport" content="width=device-width, user-scalable=no">
 	<link rel="stylesheet" type="text/css" href="/brainjs/css/brainjs.css">
+	<link rel="stylesheet" type="text/css" href="/assets/login.css">
 </head>
-<body class="w3-light-blue">
 
-<style type="text/css">
+<body class="w3-pale-blue">
 
-* {
-	box-sizing: border-box;
-}
+	<div class="brand w3-indigo">
+		<h1><span class="w3-text-white">Net</span><span class="w3-text-red">OS</span></h1>
+		<h2>The web operating system</h2>
+	</div>
 
-html, body {
-	height: 100%;
-	margin: 0;
-}
-
-body {
-	display: flex;
-	justify-content: center;
-	align-items: center;	
-}
-
-.group {
-	display: flex;
-	margin-bottom: 10px;
-	justify-content: space-around;
-}
-
-.main {
-	padding: 20px;
-	//border-radius: 10px;	
-	z-index: 1000;
-}
-
-i {
+	<div class="main">
+		<div class="device">
+			<strong>Multi Device</strong>
+			<div class="icons">
+				<i class="fas fa-desktop fa-4x w3-text-blue-grey"></i>
+				<i class="fas fa-tablet-alt fa-3x w3-text-blue-grey"></i>
+				<i class="fas fa-mobile-alt fa-2x w3-text-blue-grey"></i>	
+			</div>
+		</div>
+		<div class="alexaContainer">
+			<a class="alexa" href="https://www.amazon.fr/skynet29-NetOS/dp/B08FVT7F8J" target="_blank">
+				<img src="assets/173px-Amazon_Alexa_blue_logo.svg.png" height="40">
+				<strong>Works with<br> Alexa</strong>
+			</a>	
+		</div>
 	
-	padding: 5px;
-	//color: white;
-}
+	</div>
 
-form {
-	display: flex;
-	flex-direction: column;
-	justify-content: space-around;
-}
 
-input {
-	padding: 5px;
-	//border: none;
-}
+	<div class="footer w3-indigo">
+		<h2>Copyright &copy; 2019-2020 <a href="mailto:admin@netos.ovh">Marc DELOMEZ</a></h2>
+	</div>
 
-.message {
-	color: red;
-	margin-top: 10px; 
-}
+	<div class="login">
+		<div class="w3-light-grey w3-card-4">
+			<form method="post">
+				<div class="group">
+					<i class="fa fa-user fa-2x w3-text-indigo"></i>
+					<input type="text" name="user" placeholder="Username" required autofocus>
+				</div>
 
-.brand {
-	position: fixed;
-	left: 0;
-	top: 0;
-	width: 100%;
-	padding: 10px;
+				<div class="group">
+					<i class="fa fa-lock fa-2x w3-text-indigo"></i>
+					<input type="password" name="pwd" placeholder="Password" required>
+				</div>
 
-}
+				<input type="text" hidden name="state" value="<%= state %>">
+				<input type="text" hidden name="redirect_uri" value="<%= redirect_uri %>">
 
-.brand h1 {
-	margin: 0px;
-	font-size: 2em;
-	font-weight: bold;
-	text-shadow:2px 2px 0 #444;	
-}
+				<button type="submit" class="w3-btn w3-indigo"><strong>Connect</strong></button>
+				<span class="message"><%= message %></span>
+			</form>
 
-.brand h2 {
-	margin: 0px;
-	font-size: 1em;
-	font-weight: bold;
-}
-
-.footer {
-	position: fixed;
-	left: 0;
-	bottom: 0;
-	width: 100%;
-	padding: 5px;
-}
-
-.footer h2 {
-	margin: 0px;
-	font-size: 0.8em;
-	font-weight: bold;
-}
-
-</style>
-<div class="brand w3-indigo">
-<h1><span class="w3-text-white">Net</span><span class="w3-text-red">OS</span></h1>
-<h2>The web operating system</h2>
-
-<div class="footer w3-indigo">
-	<h2>Copyright &copy; 2019-2020 <a href="mailto:marc.delomez@gmail.com">Marc DELOMEZ</a></h2>
-</div>
-	
-</div>	
-
-<div class="w3-light-grey w3-card-4 main">
-	<form  method="post">
-		<div class="group">
-			<i class="fa fa-user fa-2x w3-text-indigo"></i>
-			<input type="text" name="user" placeholder="Username" required autofocus>				
 		</div>
 
-		<div class="group">
-			<i class="fa fa-lock fa-2x w3-text-indigo"></i>
-			<input type="password" name="pwd" placeholder="Password" required>	
-		</div>
+	</div>
 
-		<input type="text" hidden name="state" value="<%= state %>">
-		<input type="text" hidden name="redirect_uri" value="<%= redirect_uri %>">
-	
-		<button type="submit" class="w3-btn w3-indigo"><strong>Connect</strong></button>
-		<span class="message"><%= message %></span>
-	</form>
-
-</div>
 
 
 </body>
+
 </html>

@@ -55,7 +55,7 @@ exports.default = all
 exports.watch = gulp.series(all, function() {
 	gulp.watch(['./src/controls/**/*.js', './src/controls/**/*.html', './src/services/**/*.js'], breizbotJs)
 	gulp.watch(['./src/controls/**/*.scss'], breizbotCss)
-	gulp.watch(['./assets/*'], assets)
+	gulp.watch(['./src/assets/*'], assets)
 	gulp.watch(['./doc/*.html', './doc/*.js'], doc)
 	
 

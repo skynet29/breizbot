@@ -533,7 +533,12 @@ const ActivateBirthdayNotifHandler = {
         console.log('reminderList', reminderList)
 
         if (reminderId && reminderList.totalCount != 0) {
-            await reminderManagementServiceClient.deleteReminder(reminderId)
+            try {
+                await reminderManagementServiceClient.deleteReminder(reminderId)
+            }
+            catch(e) {
+                console.log('failed to delete reminder')
+            }
             delete persistentAttributes.reminderId
         }
 
@@ -598,7 +603,9 @@ const DesactivateBirthdayNotifHandler = {
         }
 
         for await (alert of reminderList.alerts) {
-            await reminderManagementServiceClient.deleteReminder(alert.alertToken)
+            if (alert.status != 'COMPLETED') {
+                await reminderManagementServiceClient.deleteReminder(alert.alertToken)
+            }
         }
 
 

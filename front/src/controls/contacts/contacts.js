@@ -33,7 +33,6 @@ $$.control.registerControl('breizbot.contacts', {
 					return 'tel:' + scope.$i.phone
 				},
 				getAddress: function(scope) {
-					console.log(scope.$i)
 					const {address, city, postalCode} = scope.$i
 					return `${address || ''} ${postalCode || ''} ${city || ''}`
 				}

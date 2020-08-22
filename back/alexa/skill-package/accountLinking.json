@@ -1,0 +1,10 @@
+{
+    "accountLinkingResponse": {
+      "authorizationUrl": "https://www.netos.ovh/alexa/login",
+      "clientId": "amzn1.application-oa2-client.7b7722f7e9a14eebb757ad630b9ea63e",
+      "domains": [],
+      "skipOnEnablement": true,
+      "type": "IMPLICIT"
+    }
+  }
+  

@@ -1,0 +1,115 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "net o. s.",
+      "intents": [
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "PlayIntent",
+          "slots": [
+            {
+              "name": "artist",
+              "type": "AMAZON.MusicGroup"
+            },
+            {
+              "name": "song",
+              "type": "AMAZON.MusicRecording"
+            }
+          ],
+          "samples": [
+            "joue les titres par {artist}",
+            "joue le titre {song} par {artist}",
+            "joue le titre {song}",
+            "joue le titre {song} de {artist}"
+          ]
+        },
+        {
+          "name": "AMAZON.NavigateHomeIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.PauseIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.ResumeIntent",
+          "samples": []
+        },
+        {
+          "name": "PlayPlaylistIntent",
+          "slots": [
+            {
+              "name": "playlist",
+              "type": "AMAZON.SearchQuery"
+            }
+          ],
+          "samples": [
+            "lance la playliste {playlist}",
+            "lance ma playliste {playlist}",
+            "lance ma playlist {playlist}",
+            "lance la playlist {playlist}"
+          ]
+        },
+        {
+          "name": "AMAZON.YesIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.NoIntent",
+          "samples": []
+        },
+        {
+          "name": "GetPlaylistIntent",
+          "slots": [],
+          "samples": [
+            "quelles sont mes playlists",
+            "donne moi la liste de mes playlists"
+          ]
+        },
+        {
+          "name": "MessageIntent",
+          "slots": [],
+          "samples": [
+            "y a t\u0027il de nouveux messages",
+            "est ce que j\u0027ai de nouveaux messages"
+          ]
+        },
+        {
+          "name": "ConnectedFriendsIntent",
+          "slots": [],
+          "samples": [
+            "est ce que j\u0027ai des amis connectés",
+            "quels sont mes amis connectés"
+          ]
+        },
+        {
+          "name": "ActivateBirthdayNotifIntent",
+          "slots": [],
+          "samples": [
+            "active la notfication d\u0027anniversaires"
+          ]
+        },
+        {
+          "name": "DesactivateBirthdayNotifIntent",
+          "slots": [],
+          "samples": [
+            "annule la notfication d\u0027anniversaire"
+          ]
+        }
+      ],
+      "types": []
+    }
+  },
+  "version": "14"
+}

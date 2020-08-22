@@ -1,0 +1,67 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "fr-FR": {
+          "summary": "interface vocal pour  NetOS  le web operating system",
+          "examplePhrases": [
+            "Alexa, lance NetOS",
+            "joue les titres par Depeche Mode",
+            "lance ma playliste Acropole"
+          ],
+          "keywords": [],
+          "name": "NetOS",
+          "description": "Pour le moment, permet:\nde jouer les musiques stockées sur votre compte NetOS, \nde jouer les playlists que vous avez créer avec l\u0027application Music de NetOS,\nde demander si vous avez des amis connectés\nde demander la liste de vos playlistes\nde demander si vous avez des emails non lu sur vos compte email déclaré dans l\u0027application email de NetOS",
+          "smallIconUri": "file://assets/images/fr-FR_smallIconUri.png",
+          "largeIconUri": "file://assets/images/fr-FR_largeIconUri.png"
+        }
+      },
+      "automaticDistribution": {
+        "sourceLocaleForLanguages": [
+          {
+            "sourceLocale": "fr-FR",
+            "language": "fr"
+          }
+        ],
+        "isActive": true
+      },
+      "isAvailableWorldwide": false,
+      "testingInstructions": "You must own a NetOS account (www.netos.ovh)\ni created a NetOS account. Here are your identifier:\nuser: guest.alexa\npwd: welcome\nI created also a playlist named Coldplay so you can say: lance ma playliste Coldplay\nYou can also try to say: joue les titres par Madonna\nor: Alexa demande à NetOS si j\u0027ai des amis connecté\nor: Alexa demande à NetOS si j\u0027ai de nouveaux messages\nor: Alexa demande à NetOS la liste de mes playlistes",
+      "category": "STREAMING_SERVICE",
+      "distributionCountries": [
+        "FR"
+      ]
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "sslCertificateType": "Trusted",
+          "uri": "https://www.netos.ovh/alexa"
+        },
+        "interfaces": [
+          {
+            "type": "AUDIO_PLAYER"
+          }
+        ]
+      }
+    },
+    "manifestVersion": "1.0",
+    "permissions": [
+      {
+        "name": "alexa::alerts:reminders:skill:readwrite"
+      }
+    ],
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "locales": {
+        "fr-FR": {
+          "privacyPolicyUrl": "https://www.netos.ovh/alexa/privacy"
+        }
+      },
+      "containsAds": false,
+      "isExportCompliant": true,
+      "isChildDirected": false,
+      "usesPersonalInfo": false
+    }
+  }
+}

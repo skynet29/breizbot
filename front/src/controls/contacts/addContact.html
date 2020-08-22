@@ -3,7 +3,7 @@
 	<div bn-control="brainjs.accordion" data-height-style="fill">
 
 
-		<div title="Name">
+		<div title="Name & Email">
 			<div class="gender">
 				<label>Gender:</label>
 				<div bn-control="brainjs.radiogroup" name="gender">
@@ -24,6 +24,14 @@
 			</div>
 	
 			<div bn-control="brainjs.inputgroup">
+				<label>Email:</label><br>
+				<input type="email" name="email">
+			</div>
+	
+		</div>
+
+		<div title="Birthday">
+			<div bn-control="brainjs.inputgroup">
 				<label>Birthday</label><br>
 				<input type="text" bn-control="brainjs.datepicker" 
 					bn-data="{
@@ -37,14 +45,10 @@
 				<label>Activate birthday Notification</label>
 				<div bn-control="brainjs.flipswitch" name="birthdayNotif"></div>
 			</div>
-	
+
 		</div>
 
-		<div title="Email & Phone">
-			<div bn-control="brainjs.inputgroup">
-				<label>Email:</label><br>
-				<input type="email" name="email">
-			</div>
+		<div title="Phones">
 			<div bn-control="brainjs.inputgroup">
 				<label>Home Phone:</label><br>
 				<input name="phone" bn-control="brainjs.inputphone">
@@ -68,7 +72,7 @@
 			</div>
 	
 			<div>
-				<label>City</label>
+				<label>City:</label>
 				<div bn-control="brainjs.combobox" bn-data="{items: cities}" name="city" bn-val="city"></div>
 			</div>
 	

@@ -388,15 +388,6 @@ function isUserConnected(userName) {
 }
 
 
-async function sendPositionToAuthFriend(userName, coords) {
-	const data = { userName, coords }
-	const friends = await dbFriends.getPositionAuthFriends(userName)
-	//console.log('friendsAuth', userName, friends)
-	friends.forEach((friend) => {
-		sendTopic(friend, 'breizbot.friendPosition', data)
-	})
-}
-
 async function sendToFriends(userName, topic, data) {
 	const friends = await dbFriends.getFriends(userName)
 	friends.forEach((friend) => {
@@ -435,6 +426,5 @@ module.exports = {
 	sendTopic,
 	sendToFriends,
 	getClients,
-	callService,
-	sendPositionToAuthFriend
+	callService
 }

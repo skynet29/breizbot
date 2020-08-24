@@ -1,14 +1,20 @@
 const router = require('express').Router()
 const wss = require('../lib/wss')
+const dbFriends = require('../db/friends.js')
 
 router.post('/position', async function (req, res) {
 	const userName = req.session.user
-	const data = req.body
+	const coords = req.body
 
 	//console.log('position', userName, data)
 
 	try {
-		await wss.sendPositionToAuthFriend(userName, data)
+		const data = { userName, coords }
+		const friends = await dbFriends.getPositionAuthFriends(userName)
+		//console.log('friendsAuth', userName, friends)
+		friends.forEach((friend) => {
+			wss.sendTopic(friend, 'breizbot.friendPosition', data)
+		})
 		res.sendStatus(200)
 	}
 	catch (e) {

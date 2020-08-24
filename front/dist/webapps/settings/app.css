@@ -11,3 +11,8 @@
       padding: 5px; }
     .rootPage section form label {
       margin-right: 10px; }
+    .rootPage section form .images {
+      display: flex;
+      align-items: center; }
+    .rootPage section form .submit {
+      margin-top: 10px; }

@@ -14,14 +14,19 @@
     </section>
 
     <section>
-        <h2>Alexa Birthday Reminder</h2>
         <form bn-event="submit: onApply" bn-form="settings">
+            <h2>Alexa Birthday Reminder</h2>
             <div bn-control="brainjs.inputgroup">
                 <label>Schedule Time</label>
                 <input name="birthdayScheduleTime" bn-control="brainjs.inputtime" 
                     bn-data="{timePattern: ['h', 'm']}">
             </div>
-            <button class="w3-button w3-blue" type="submit">Apply</button>
+            <h2>Images</h2>
+            <div class="images">
+                <label>Automatically resize image</label>
+                <div bn-control="brainjs.flipswitch" name="autoImageResizing"></div>                   
+            </div>
+            <button class="w3-button w3-blue submit" type="submit">Apply</button>
         </form>    
     </section>
 

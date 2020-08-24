@@ -88,8 +88,11 @@ router.post('/getUserSettings', async function (req, res) {
 
 router.post('/setUserSettings', async function (req, res) {
 
+	console.log('setUserSettings', req.body)
+
 	try {
 		await dbUsers.setUserSettings(req.session.user, req.body)
+		req.session.userInfo.settings = req.body
 
 		res.sendStatus(200)
 	}

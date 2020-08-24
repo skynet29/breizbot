@@ -69,7 +69,7 @@ router.post('/list', async function (req, res) {
 				if (info.folder) {
 					const filter = (ext.length == 1) ? ext[0] : `{${ext.join(',')}}`
 					const filterPath = path.join(rootPath, info.name, '**/*.' + filter)
-					const entries = await fg(filterPath)	
+					const entries = await fg(filterPath)
 					return entries.length > 0
 				}
 				return regex.test(info.name)
@@ -148,15 +148,23 @@ router.post('/save', function (req, res) {
 
 
 router.get('/load', async function (req, res) {
-	//console.log('load req', req.query)
+	//console.log('load req', req.query, req.session.userInfo)
 	const { fileName, friendUser } = req.query
-	const user = req.session.user
+	const { user, userInfo } = req.session
 	try {
 		const filePath = await util.getFilePathChecked(user, fileName, friendUser)
+		const { autoImageResizing } = userInfo.settings
 
-		res.sendFile(filePath)	
+		if (autoImageResizing === true) {
+			//console.log('resize image')
+			genThumbnail(filePath, res, '90%')
+		}
+		else {
+			res.sendFile(filePath)
+		}
+
 	}
-	catch(e) {
+	catch (e) {
 		res.status(400).send(e)
 	}
 })
@@ -169,11 +177,11 @@ router.get('/loadThumbnail', async function (req, res) {
 	try {
 		const filePath = await util.getFilePathChecked(user, fileName, friendUser)
 
-		genThumbnail(filePath, res, size)	
+		genThumbnail(filePath, res, size)
 	}
-	catch(e) {
+	catch (e) {
 		res.status(400).send(e)
-	}	
+	}
 })
 
 module.exports = router

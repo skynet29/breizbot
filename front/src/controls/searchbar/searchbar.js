@@ -1,35 +1,37 @@
 $$.control.registerControl('breizbot.searchbar', {
 
-    template: {gulp_inject: './searchbar.html'},
+    template: { gulp_inject: './searchbar.html' },
 
     props: {
-        placeholder: ''
+        placeholder: '',
+        minlength: 0
     },
 
-    init: function(elt) {
+    init: function (elt) {
 
-        const {placeholder} = this.props
+        const { placeholder, minlength } = this.props
 
         const ctrl = $$.viewController(elt, {
             data: {
-                placeholder
+                placeholder,
+                minlength
             },
             events: {
-                onSearch: async function(ev) {					
-					ev.preventDefault()
-                    const {value} = $(this).getFormData()
-                    elt.trigger('searchbarsubmit', {value})
+                onSearch: async function (ev) {
+                    ev.preventDefault()
+                    const { value } = $(this).getFormData()
+                    elt.trigger('searchbarsubmit', { value })
                 }
 
             }
         })
 
-        this.setValue = function(value) {
-            ctrl.scope.form.setFormData({value})
+        this.setValue = function (value) {
+            ctrl.scope.form.setFormData({ value })
         }
     },
     $iface: `
         setValue(value: string)
     `,
     $events: 'searchbarsubmit'
-});11
+}); 11

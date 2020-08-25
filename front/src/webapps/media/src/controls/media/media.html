@@ -1,16 +1,16 @@
 <div class="contentPanel">
 
-	<div class="toolbar" bn-show="drives.length > 0">
+	<div class="toolbar" bn-show="hasDrive">
 
-		<select 
+		<div 
 			bn-control="brainjs.combobox"
 			bn-data="{items: drives}"
 
-		></select>
+		></div>
 		
 	</div>
 
-	<div bn-show="drives.length == 0 && errorMsg == ''">
+	<div bn-show="!hasDrive">
 		No devices connected to your Homebox !
 	</div>
 
@@ -18,7 +18,7 @@
 		<span bn-text="errorMsg" class="w3-text-red"></span>
 	</div>
 
-	<div class="pathPanel" bn-show="drives.length > 0">
+	<div class="pathPanel" bn-show=hasDrive">
 		Path:&nbsp;<span bn-text="rootDir"></span>
 	</div>
 
@@ -30,20 +30,20 @@
 			bn-bind="files" 
 			bn-event="click.folder: onFolderClick, click.file: onFileClick">
 			
-			<div class="thumbnail w3-btn" bn-data="{info: f}">	
-					<div bn-if="f.folder" class="folder">
+			<div class="thumbnail w3-btn">	
+					<div bn-if="$scope.f.folder" class="folder">
 						<div>
 							<i class="fa fa-4x fa-folder-open w3-text-blue-grey"></i>
 						</div>
 						
-						<span bn-text="f.name"></span>
+						<span bn-text="$scope.f.name"></span>
 					</div>
-					<div bn-if="!f.folder" bn-attr="{title: f.name + '\n' + getSize(f.size)}" class="file">
+					<div bn-if="!$scope.f.folder" bn-attr="{title: getTitle}" class="file">
 						<div>
-							<i bn-attr="{class: `fa fa-4x w3-text-blue-grey ${getIconClass(f.name)}`}"></i>
+							<i bn-attr="{class: getClass}"></i>
 						</div>
 						
-						<span bn-text="f.name.slice(0, 20)"></span>
+						<span bn-text="getShortName"></span>
 					</div>			
 				
 			</div>

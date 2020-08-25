@@ -1,7 +1,10 @@
 <div bn-control="breizbot.searchbar" 
 	bn-bind="searchbar"
 	bn-event="searchbarsubmit: onSearch"
-	data-placeholder="Search username"></div>
+	bn-data="{
+		placeholder: 'Search username',
+		minlength: 3
+	}"></div>
 
 <div class="scrollPanel">
 	<p bn-show="show1">No results</p>

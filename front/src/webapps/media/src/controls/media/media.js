@@ -16,6 +16,9 @@ $$.control.registerControl('app.media', {
 				drives: [],
 				errorMsg: '',
 				currentDrive: '',
+				hasDrive: function() {
+					return this.drives.length > 0
+				},
 				getSize: function(size) {
 					let unit = 'Ko'
 					size /= 1024
@@ -24,6 +27,17 @@ $$.control.registerControl('app.media', {
 						size /= 1024
 					}
 					return 'Size : ' + Math.floor(size) + ' ' + unit
+				},
+				getClass: function(scope) {
+					const {name} = scope.f
+					return `fa fa-4x w3-text-blue-grey ${this.getIconClass(name)}`
+				},
+				getTitle: function(scope) {
+					const {name, size} = scope.f
+					return name + '\n' + this.getSize(size)
+				},
+				getShortName: function(scope) {
+					return scope.f.name.slice(0, 20)
 				},
 
 				getIconClass: function(name) {
@@ -44,8 +58,10 @@ $$.control.registerControl('app.media', {
 			},
 			events: {
 				onFileClick: function(ev) {
-					const info = $(this).closest('.thumbnail').data('info')
-					//console.log('onFileClick', info)
+					const idx = $(this).closest('.thumbnail').index()
+					console.log('idx', idx)
+					const info = ctrl.model.files[idx]
+					console.log('onFileClick', info)
 					const data = {
 						driveName: ctrl.model.currentDrive,
 						fileName: info.name,
@@ -57,7 +73,10 @@ $$.control.registerControl('app.media', {
 				},
 
 				onFolderClick: function(ev) {
-					const info = $(this).closest('.thumbnail').data('info')
+					const idx = $(this).closest('.thumbnail').index()
+					console.log('idx', idx)
+					const info = ctrl.model.files[idx]
+					console.log('onFolderClick', info)
 
 					const dirName = info.name
 					//console.log('onFolderClick', dirName)
@@ -78,6 +97,7 @@ $$.control.registerControl('app.media', {
 
 		function loadDrives() {
 			srvMedia.drive().then(function(drives) {
+				console.log('drives', drives)
 				if (drives.length == 0) {
 					return
 				}

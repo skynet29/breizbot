@@ -154,8 +154,9 @@ router.get('/load', async function (req, res) {
 	try {
 		const filePath = await util.getFilePathChecked(user, fileName, friendUser)
 		const { autoImageResizing } = userInfo.settings
+		console.log('autoImageResizing', autoImageResizing)
 
-		if (autoImageResizing === true) {
+		if (util.isImage(filePath) && autoImageResizing === true) {
 			//console.log('resize image')
 			genThumbnail(filePath, res, '90%')
 		}

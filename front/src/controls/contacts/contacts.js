@@ -65,12 +65,8 @@ $$.control.registerControl('breizbot.contacts', {
 					//console.log('onItemContextMenu', data)
 					const { cmd } = data
 					const idx = $(this).index()
-					const info = ctrl.model.contacts[idx]
-					//console.log('onItemClick', data)
-					if (showSelection) {
-						//$(this).siblings('.w3-blue').removeClass('w3-blue')
-						$(this).toggleClass('w3-blue')
-					}
+					const info = ctrl.model.getContacts()[idx]
+					//console.log('onItemClick', info)
 					elt.trigger('contactcontextmenu', { cmd, info })
 				},
 				onItemClick: function () {
@@ -104,14 +100,17 @@ $$.control.registerControl('breizbot.contacts', {
 			const ret = []
 			elt.find('li.w3-blue').each(function () {
 				const idx = $(this).index()
-				ret.push(ctrl.model.contacts[idx])
+				ret.push(ctrl.model.getContacts()[idx])
 			})
 			console.log('ret', ret)
 			return ret
 		}
 
 	},
-	$iface: `getSelection(): [ContactInfo]`,
+	$iface: `
+		getSelection(): [ContactInfo]
+		removeContact(id)
+	`,
 	$events: 'contactclick'
 });
 

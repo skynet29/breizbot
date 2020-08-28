@@ -53,7 +53,7 @@ $$.control.registerControl('breizbot.contacts', {
 			},
 			events: {
 				onSearch: function(ev, data) {
-					console.log('onSearch', data)
+					//console.log('onSearch', data)
 					ctrl.setData({filter: data.value})
 
 				},

@@ -4,17 +4,19 @@ $$.control.registerControl('breizbot.searchbar', {
 
     props: {
         placeholder: '',
-        minlength: 0
+        minlength: 0,
+        required: true
     },
 
     init: function (elt) {
 
-        const { placeholder, minlength } = this.props
+        const { placeholder, minlength, required } = this.props
 
         const ctrl = $$.viewController(elt, {
             data: {
                 placeholder,
-                minlength
+                minlength,
+                required
             },
             events: {
                 onSearch: async function (ev) {

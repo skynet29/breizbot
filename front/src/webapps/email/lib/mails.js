@@ -135,9 +135,9 @@ function getAttachments(parts) {
       return
     }
 
-    if (id != null && type == 'image') {
-      return
-    }
+    // if (id != null && type == 'image') {
+    //   return
+    // }
 
 
     let name = disposition.params && disposition.params.filename

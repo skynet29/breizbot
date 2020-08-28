@@ -13,7 +13,7 @@ $$.control.registerControl('breizbot.contacts', {
 	init: function (elt, contactsSrv) {
 
 		const { showSelection, contextMenu, hasSearchbar } = this.props
-		console.log('props', this.props)
+		//console.log('props', this.props)
 
 
 		const ctrl = $$.viewController(elt, {

@@ -1,9 +1,15 @@
 .breizbot-contacts {
 
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    .breizbot-searchbar {
+        margin: 10px;
+    }
 
     .scrollPanel {
-        height: 100%;
+        flex: 1;
         overflow-y: auto;   
 
         i {

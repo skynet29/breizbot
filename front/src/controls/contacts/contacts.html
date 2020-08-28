@@ -1,8 +1,12 @@
+<div bn-control="breizbot.searchbar" 
+	bn-event="searchbarsubmit: onSearch" 
+	bn-show="hasSearchbar"
+	></div>
 <p bn-show="show2">You have no contacts</p>
 <div class="scrollPanel">
 	<ul class="w3-ul w3-border w3-white" 
 		bn-event="contextmenuchange.w3-bar: onItemContextMenu, click.w3-bar: onItemClick, click.input: onInputClick"
-		bn-each="contacts"
+		bn-each="getContacts"
 		bn-show="show1"
 		>
 		<li class="w3-bar" bn-control="brainjs.contextmenu" bn-data="{items: contextMenu}">

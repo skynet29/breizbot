@@ -60,9 +60,13 @@
         min-width: 300px; }
 
 .breizbot-contacts {
-  overflow: hidden; }
+  overflow: hidden;
+  display: flex;
+  flex-direction: column; }
+  .breizbot-contacts .breizbot-searchbar {
+    margin: 10px; }
   .breizbot-contacts .scrollPanel {
-    height: 100%;
+    flex: 1;
     overflow-y: auto; }
     .breizbot-contacts .scrollPanel i {
       min-width: 30px;

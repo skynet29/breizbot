@@ -4,6 +4,7 @@ $$.control.registerControl('breizbot.contacts', {
 
 	props: {
 		showSelection: false,
+		hasSearchbar: false,
 		contextMenu: {}
 	},
 
@@ -11,15 +12,28 @@ $$.control.registerControl('breizbot.contacts', {
 
 	init: function (elt, contactsSrv) {
 
-		const { showSelection, contextMenu } = this.props
-		//console.log('props', this.props)
+		const { showSelection, contextMenu, hasSearchbar } = this.props
+		console.log('props', this.props)
 
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				contacts: [],
 				showSelection,
+				hasSearchbar,
+				filter: '',
 				contextMenu,
+				getContacts: function() {
+					if (this.filter != '') {
+						//console.log('OK', this.filter)
+						const regex = new RegExp(`\w*${this.filter}\w*`, 'i')
+						return this.contacts.filter((c) => regex.test(c.name))
+					}
+					if (this.showSelection) {
+						return this.contacts.filter((c) => c.email && c.email != '')
+					}
+					return this.contacts
+				},
 				show1: function () {
 					return this.contacts.length > 0
 				},
@@ -38,6 +52,11 @@ $$.control.registerControl('breizbot.contacts', {
 				}
 			},
 			events: {
+				onSearch: function(ev, data) {
+					console.log('onSearch', data)
+					ctrl.setData({filter: data.value})
+
+				},
 				onInputClick: function() {
 					//console.log('onInputClick')
 					$(this).closest('div').find('a').get(0).click()

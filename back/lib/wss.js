@@ -253,5 +253,6 @@ module.exports = {
 	sendToClient,
 	sendNotifToUser,
 	sendToFriends,
-	getClients
+	getClients,
+	homebox
 }

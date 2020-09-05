@@ -13,7 +13,7 @@ router.post('/position', async function (req, res) {
 		const friends = await dbFriends.getPositionAuthFriends(userName)
 		//console.log('friendsAuth', userName, friends)
 		friends.forEach((friend) => {
-			wss.sendTopic(friend, 'breizbot.friendPosition', data)
+			wss.sendNotifToUser(friend, 'breizbot.friendPosition', data)
 		})
 		res.sendStatus(200)
 	}

@@ -14,7 +14,7 @@ router.post('/sendToUser', function(req, res) {
 	}
 	data.from = from
 
-	if (wss.sendToUser(to, {
+	if (wss.sendMsgToUser(to, {
 		type: 'notif',
 		srcId,
 		topic: 'breizbot.rtc.' + type,

@@ -50,11 +50,12 @@ $$.control.registerControl('rootPage', {
 
 
 		broker.register('homebox.launcher.status', (msg) => {
-			//console.log('homebox.launcher.status', msg)
+			//console.log('homebox.launcher.status', msg.data)
 			dispTable(msg.data)
 		})
 
 		broker.register('breizbot.homebox.status', (msg) => {
+			//console.log('breizbot.homebox.status', msg.data)
 			ctrl.setData({homeboxConnected: msg.data.connected})
 		})
 	}

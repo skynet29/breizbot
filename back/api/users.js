@@ -1,5 +1,6 @@
 const router = require('express').Router()
 const dbUsers = require('../db/users.js')
+const config = require('../lib/config.js')
 
 router.get('/', async function (req, res) {
 	const { match } = req.query
@@ -16,9 +17,14 @@ router.get('/', async function (req, res) {
 
 router.post('/', async function (req, res) {
 	try {
-		await dbUsers.createUser(req.body)
-		console.log('created')
-		res.sendStatus(200)
+		if (req.session.user != config.ADMIN_USER) {
+			res.sendStatus(401)
+		}
+		else {
+			await dbUsers.createUser(req.body)
+			console.log('created')
+			res.sendStatus(200)
+		}
 	}
 	catch (e) {
 		res.sendStatus(400)
@@ -45,8 +51,13 @@ router.delete('/:userName', async function (req, res) {
 	var userName = req.params.userName
 
 	try {
-		await dbUsers.deleteUser(userName)
-		res.sendStatus(200)
+		if (req.session.user != config.ADMIN_USER) {
+			res.sendStatus(401)
+		}
+		else {
+			await dbUsers.deleteUser(userName)
+			res.sendStatus(200)
+		}
 	}
 	catch (e) {
 		res.sendStatus(400)

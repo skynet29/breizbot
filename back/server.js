@@ -8,6 +8,7 @@ const helmet = require('helmet')
 const http = require('http')
 const { ExpressAdapter } = require('ask-sdk-express-adapter')
 const path = require('path')
+const websocket = require('./lib/websocket.js')
 
 
 require('colors')
@@ -31,7 +32,9 @@ function dbReady() {
 
 	console.log('dbReady')
 
-	const wss = require('./lib/wss')
+	const wss = require('./lib/wss.js')
+
+
 	const util = require('./lib/util')
 	const events = require('./lib/events')
 	
@@ -181,6 +184,7 @@ function dbReady() {
 	app.use('/lib', express.static(path.join(__dirname, '../front/externals')))
 	app.use(express.static(path.join(__dirname, '../front/dist')))
 
+
 	if (config.USESSL) {
 		const Greenlock = require('greenlock');
 		const redir = require('redirect-https')();
@@ -202,12 +206,12 @@ function dbReady() {
 
 		const server = https.createServer(greenlock.tlsOptions, app).listen(config.httpsPort)
 
-		wss.init(server, store)
+		websocket.init(server, store)
 	}
 	else {
 		const server = http.createServer(app).listen(config.httpPort)
 
-		wss.init(server, store)
+		websocket.init(server, store)
 	}
 
 }

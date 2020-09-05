@@ -11,7 +11,7 @@ router.post('/sendNotif', async function (req, res) {
 	try {
 		await dbNotifs.addNotif(to, from, notif)
 		const notifCount = await dbNotifs.getNotifCount(to)
-		wss.sendTopic(to, 'breizbot.notifCount', notifCount)
+		wss.sendNotifToUser(to, 'breizbot.notifCount', notifCount)
 		res.sendStatus(200)
 	}
 	catch (e) {
@@ -29,7 +29,7 @@ router.delete('/removeNotif/:id', async function (req, res) {
 	try {
 		await dbNotifs.removeNotif(id)
 		const notifCount = await dbNotifs.getNotifCount(to)
-		wss.sendTopic(to, 'breizbot.notifCount', notifCount)
+		wss.sendNotifToUser(to, 'breizbot.notifCount', notifCount)
 		res.sendStatus(200)
 	}
 	catch (e) {

@@ -14,7 +14,7 @@ $$.control.registerControl('app.media', {
 				rootDir: '/',
 				files: [],
 				drives: [],
-				errorMsg: 'Media service is not running',
+				errorMsg: 'Homebox is not connected',
 				currentDrive: '',
 				showNoDevicesConnected: function () {
 					return this.errorMsg == '' && !this.hasDrive()

@@ -12,6 +12,11 @@ const homebox = require('./homebox.js')
 homebox.events.on('clientConnected', (userName) => {
 	sendNotifToUser(userName, 'breizbot.homebox.status', { connected: true })
 
+	getHmiClients(userName).forEach((client) => {
+		const topics = Object.keys(client.registeredTopics)
+		homebox.registerHomeboxTopics(userName, topics)
+	})
+
 })
 
 homebox.events.on('clientDisconnected', (userName) => {
@@ -141,7 +146,7 @@ function addHmiClient(client, userName) {
 		const msg = JSON.parse(text)
 		const { type, topic } = msg
 		if (type == 'register') {
-			//console.log('register', topic)
+			console.log('register', userName, topic)
 			client.registeredTopics[topic] = 1
 
 			forwardHistory(userName, topic, client)

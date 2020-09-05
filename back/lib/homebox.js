@@ -133,11 +133,6 @@ function addHomeboxClient(client, userName) {
 		console.log('connection error')
 	})
 
-	// getHmiClients(userName).forEach((client) => {
-	// 	const topics = Object.keys(client.registeredTopics)
-	// 	registerHomeboxTopics(client, topics)
-	// })
-
 }
 
 function callService(userName, srvName, data) {

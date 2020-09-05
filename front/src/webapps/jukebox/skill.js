@@ -53,7 +53,7 @@ module.exports = function (ctx) {
             responseBuilder.speak(`c'est parti`).withShouldEndSession(true)
 
 
-            return skillInterface.playSong(handlerInput, songs[0], { action })
+            return skillInterface.audioPlayer.playSong(handlerInput, songs[0], { action })
 
         }
     }

@@ -146,7 +146,7 @@ function addHmiClient(client, userName) {
 		const msg = JSON.parse(text)
 		const { type, topic } = msg
 		if (type == 'register') {
-			console.log('register', userName, topic)
+			//console.log('register', userName, topic)
 			client.registeredTopics[topic] = 1
 
 			forwardHistory(userName, topic, client)

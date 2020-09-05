@@ -1,177 +1,15 @@
 const Alexa = require('ask-sdk-core')
 
-const dbUsers = require('../db/users.js')
-const dbSongs = require('../db/songs.js')
-const dbFriends = require('../db/friends.js')
-const wss = require('../lib/wss')
-const birthday = require('./birthday.js')
-const reminder = require('./reminder.js')
-
+const { NETOS, SKILL_NOT_LINKED, USER_NOT_REGISTERED } = require('./constants')
+const audioPlayer = require('./audioPlayer.js')
 
 const { getPersistenceAdapter } = require('./persistence.js')
-const { domain } = require('../lib/config.js')
-
-const USER_NOT_REGISTERD = 'User not registered'
-const SKILL_NOT_LINKED = 'Skill not linked'
 
 const ssml = require('./ssml.js')
 
-const NETOS = 'Net' + ssml.sayAs('characters', 'OS')
 
 let helpMessage = ''
 
-
-function getIndex(songs, token) {
-    return songs.findIndex((item) => {
-        return (item._id == token)
-    })
-}
-
-
-const PlayRequestHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-            Alexa.getIntentName(handlerInput.requestEnvelope) === 'PlayIntent'
-    },
-    async handle(handlerInput) {
-        const { requestEnvelope, attributesManager, responseBuilder } = handlerInput
-        const { userName } = attributesManager.getSessionAttributes()
-        //console.log('userName', userName)
-
-        const title = Alexa.getSlotValue(requestEnvelope, 'song')
-        const artist = Alexa.getSlotValue(requestEnvelope, 'artist')
-
-        console.log('title', title)
-        console.log('artist', artist)
-        if (title == undefined && artist == undefined) {
-            return responseBuilder
-                .speak(`Désolé, je n'ai pas compris`)
-                .withShouldEndSession(true)
-                .getResponse()
-        }
-
-        let songs = []
-        if (title != undefined) {
-            let song = null
-            const titleName = ssml.english(title)
-            if (artist == undefined) {
-                song = await dbSongs.getMusicByTitle(userName, title)
-                if (song == null) {
-                    return responseBuilder
-                        .withShouldEndSession(true)
-                        .speak(`Désolé, je n'ai pas trouvé le titre ${titleName}`)
-                        .getResponse()
-
-                }
-                const artistName = ssml.english(song.artist)
-                responseBuilder.speak(`${titleName} par ${artistName} ${ssml.pause('100ms')} C'est parti`)
-            }
-            else {
-                const artistName = ssml.english(artist)
-                song = await dbSongs.getMusicByTitleAndArtist(userName, title, artist)
-                if (song == null) {
-                    return responseBuilder
-                        .withShouldEndSession(true)
-                        .speak(`Désolé, je n'ai pas trouvé le titre ${titleName} par ${artistName}`)
-                        .getResponse()
-
-                }
-
-                responseBuilder.speak(`C'est parti`)
-
-
-            }
-            songs = [song]
-        }
-        else {
-            songs = await dbSongs.getMusicByArtist(userName, artist)
-            if (songs.length == 0) {
-                return responseBuilder
-                    .speak(`Désolé, je n'ai pas trouvé de titre par ${artist}`)
-                    .withShouldEndSession(true)
-                    .getResponse()
-
-            }
-        }
-
-        songs.forEach((item) => {
-            item._id = item._id.toString()
-        })
-
-        attributesManager.setPersistentAttributes({ songs, action: 'music' })
-
-        if (title == undefined) {
-            responseBuilder.speak(`J'ai trouvé ${songs.length} titres par ${artist}`)
-        }
-
-        responseBuilder.withShouldEndSession(true)
-
-        return playSong(handlerInput, songs[0])
-    }
-}
-
-const NextPlaybackHandler = {
-    canHandle(handlerInput) {
-        const { request } = handlerInput.requestEnvelope
-
-        return (request.type === 'PlaybackController.NextCommandIssued' ||
-            (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NextIntent'))
-    },
-    async handle(handlerInput) {
-        const attributes = await handlerInput.attributesManager.getPersistentAttributes()
-
-        return playNext(handlerInput, attributes)
-    }
-}
-
-const PreviousPlaybackHandler = {
-    canHandle(handlerInput) {
-        const { request } = handlerInput.requestEnvelope
-
-        return (request.type === 'PlaybackController.PreviousCommandIssued' ||
-            (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.PreviousIntent'))
-    },
-    async handle(handlerInput) {
-        const attributes = await handlerInput.attributesManager.getPersistentAttributes()
-
-        return playPrevious(handlerInput, attributes)
-    }
-}
-
-
-const ResumePlaybackHandler = {
-    canHandle(handlerInput) {
-        const { request } = handlerInput.requestEnvelope
-
-        return (request.type === 'PlaybackController.PlayCommandIssued' ||
-            (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.ResumeIntent'))
-    },
-    async handle(handlerInput) {
-        const { songs, token, offsetInMilliseconds, action } = await handlerInput.attributesManager.getPersistentAttributes()
-        const index = getIndex(songs, token)
-        const song = songs[index]
-
-        return playSong(handlerInput, song, { offsetInMilliseconds, action })
-    }
-}
-
-
-const PausePlaybackHandler = {
-    async canHandle(handlerInput) {
-        const { request } = handlerInput.requestEnvelope
-
-        const { inPlayback } = await handlerInput.attributesManager.getPersistentAttributes()
-
-        return inPlayback &&
-            request.type === 'IntentRequest' &&
-            (request.intent.name === 'AMAZON.StopIntent' ||
-                request.intent.name === 'AMAZON.CancelIntent' ||
-                request.intent.name === 'AMAZON.PauseIntent')
-    },
-    handle(handlerInput) {
-        return stopPlayback(handlerInput)
-    },
-}
 
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
@@ -182,15 +20,16 @@ const LaunchRequestHandler = {
 
         const attributes = await attributesManager.getPersistentAttributes()
         //console.log('attributes', attributes)
-        const { inPlayback, isFirstVisit, token, songs } = attributes
+        const { isFirstVisit } = attributes
 
         let reprompt = `Que puis je faire pour vous aujourd'hui ?`
 
         let speech = ''
 
-        if (inPlayback === true && token != undefined) {
-            const index = getIndex(songs, token)
-            const { title, artist } = songs[index]
+        const currentSong = audioPlayer.getCurrentSong(attributes)
+
+        if (currentSong != null) {
+            const { title, artist } = currentSong
 
             speech += ssml.pause('100ms')
             speech += `Vous étiez en train d'écouter ${ssml.english(title)} par ${artist}`
@@ -230,121 +69,42 @@ const LaunchRequestHandler = {
     }
 }
 
-function playSong(handlerInput, song, options) {
-    options = options || {}
-    const offsetInMilliseconds = options.offsetInMilliseconds || 0
-    const prevToken = options.prevToken || null
-    const action = options.action || 'music'
+const YesHandler = {
+    async canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request
 
-    const { responseBuilder, requestEnvelope } = handlerInput
-    const { artist, title, _id } = song
-    console.log('playSong', artist, title, options)
-    const newToken = _id
-    const url = `https://${domain}/alexa/${action}/${newToken}`
-    //console.log('url', url)
-    const playBehavior = (prevToken == null) ? 'REPLACE_ALL' : 'ENQUEUE'
-    const type = Alexa.getRequestType(requestEnvelope)
-
-    if (prevToken == null && !type.startsWith('PlaybackController.')) {
-        responseBuilder.withSimpleCard(artist, title)
-    }
-
-    return responseBuilder
-        .addAudioPlayerPlayDirective(playBehavior, url, newToken, offsetInMilliseconds, prevToken)
-        .getResponse()
-
-}
-
-function playPrevious(handlerInput, attributes) {
-    const { responseBuilder } = handlerInput
-
-    const { token, songs, action } = attributes
-
-    const index = getIndex(songs, token)
-    console.log('index', index)
-
-    if (index > 0) {
-        return playSong(handlerInput, songs[index - 1], { action })
-    }
-
-    return responseBuilder
-        .addAudioPlayerStopDirective()
-        .speak('Vous avez atteint le début de la liste')
-        .getResponse()
-
-}
-
-function playNext(handlerInput, attributes, enQueue = false) {
-    console.log('playNext', enQueue)
-
-    const { responseBuilder } = handlerInput
-
-    const { token, songs, action } = attributes
-
-    const index = getIndex(songs, token)
-    console.log('index', index)
-
-    if (index < songs.length - 1) {
-        return playSong(handlerInput, songs[index + 1], { prevToken: (enQueue) ? token : null, action })
-    }
-
-    attributes.isLast = true
-
-    if (!enQueue) {
-        responseBuilder.addAudioPlayerStopDirective()
-        responseBuilder.speak('Vous avez atteint la fin de la liste')
-    }
-
-    return responseBuilder.getResponse()
-
-}
-
-function stopPlayback(handlerInput) {
-    return handlerInput.responseBuilder
-        .addAudioPlayerStopDirective()
-        .getResponse()
-
-}
-
-const AudioPlayerEventHandler = {
-    canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope).startsWith('AudioPlayer.')
+        return request.type === 'IntentRequest' && request.intent.name === 'AMAZON.YesIntent'
     },
     async handle(handlerInput) {
-        const { requestEnvelope, attributesManager, responseBuilder } = handlerInput
+        const attributes = await handlerInput.attributesManager.getPersistentAttributes()
+        const { offsetInMilliseconds, action } = attributes
+        const song = audioPlayer.getCurrentSong(attributes)
+        handlerInput.responseBuilder.speak(`C'est parti`).withShouldEndSession(true)
 
-        const audioPlayerEventName = Alexa.getRequestType(requestEnvelope).split('.')[1]
-        //console.log('audioPlayerEventName', audioPlayerEventName)
-        const attributes = await attributesManager.getPersistentAttributes()
-
-        const { token, offsetInMilliseconds } = requestEnvelope.request
-        // console.log('token', token)
-        //console.log('offsetInMilliseconds', offsetInMilliseconds)
-
-        switch (audioPlayerEventName) {
-            case 'PlaybackStarted':
-                attributes.token = token
-                attributes.inPlayback = true
-                attributes.isLast = false
-                break
-            case 'PlaybackFinished':
-                attributes.inPlayback = false
-                break
-            case 'PlaybackStopped':
-                attributes.offsetInMilliseconds = offsetInMilliseconds
-                break
-            case 'PlaybackNearlyFinished':
-                return await playNext(handlerInput, attributes, true)
-
-            case 'PlaybackFailed':
-                break
-            default:
-                throw new Error('Should never reach here!')
-        }
-
-        return responseBuilder.getResponse()
+        return audioPlayer.playSong(handlerInput, song, { offsetInMilliseconds, action })
     }
 }
+
+const NoHandler = {
+    async canHandle(handlerInput) {
+        const request = handlerInput.requestEnvelope.request
+
+        return request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NoIntent'
+    },
+    async handle(handlerInput) {
+        const { responseBuilder, attributesManager } = handlerInput
+        const attributes = await attributesManager.getPersistentAttributes()
+        attributes.inPlayback = false
+        let message = ssml.sentence(`D'accord`)
+        message += `Que puis je faire pour vous aujourd'hui ?`
+        return responseBuilder
+            .speak(ssml.toSpeak(message))
+            .reprompt(`Que puis je faire pour vous aujourd'hui ?`)
+            .getResponse()
+    }
+}
+
+
 
 const SessionEndedRequestHandler = {
     canHandle(handlerInput) {
@@ -369,7 +129,7 @@ const ErrorHandler = {
 
         let message = 'Désolé, il y a eu un problème'
 
-        if (error.message == USER_NOT_REGISTERD) {
+        if (error.message == USER_NOT_REGISTERED) {
             message = 'Utilisateur non identifié'
         }
 
@@ -408,249 +168,6 @@ const ExitHandler = {
     },
 }
 
-const YesHandler = {
-    async canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request
-
-        return request.type === 'IntentRequest' && request.intent.name === 'AMAZON.YesIntent'
-    },
-    async handle(handlerInput) {
-        const attributes = await handlerInput.attributesManager.getPersistentAttributes()
-        const { token, songs, offsetInMilliseconds, action } = attributes
-        const index = getIndex(songs, token)
-
-        handlerInput.responseBuilder.speak(`C'est parti`).withShouldEndSession(true)
-
-        return playSong(handlerInput, songs[index], { offsetInMilliseconds, action })
-    }
-}
-
-const NoHandler = {
-    async canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request
-
-        return request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NoIntent'
-    },
-    async handle(handlerInput) {
-        const { responseBuilder, attributesManager } = handlerInput
-        const attributes = await attributesManager.getPersistentAttributes()
-        attributes.inPlayback = false
-        let message = ssml.sentence(`D'accord`)
-        message += `Que puis je faire pour vous aujourd'hui ?`
-        return responseBuilder
-            .speak(ssml.toSpeak(message))
-            .reprompt(`Que puis je faire pour vous aujourd'hui ?`)
-            .getResponse()
-    }
-}
-
-const ConnectedFriendsRequestHandler = {
-    canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request
-
-        return request.type === 'IntentRequest' && request.intent.name === 'ConnectedFriendsIntent'
-    },
-    async handle(handlerInput) {
-        const { responseBuilder, attributesManager } = handlerInput
-
-        const { userName } = attributesManager.getSessionAttributes()
-
-        const friends = await dbFriends.getFriends(userName)
-        const connectedFriends = friends
-            .filter((f) => wss.isUserConnected(f))
-
-        let speech = ''
-        if (connectedFriends.length == 0) {
-            speech = `Vous n'avez pas d'amis connectés`
-        }
-        else {
-            speech = `Vous avez ${connectedFriends.length} amis connectés`
-            connectedFriends.forEach((name) => {
-                speech += ssml.pause('500ms')
-                speech += name
-            })
-        }
-
-
-        return responseBuilder
-            .speak(ssml.toSpeak(speech))
-            .withShouldEndSession(true)
-            .getResponse()
-    }
-}
-
-const ActivateBirthdayNotifHandler = {
-    canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request
-
-        return request.type === 'IntentRequest' && request.intent.name === 'ActivateBirthdayNotifIntent'
-
-    },
-    async handle(handlerInput) {
-        const { responseBuilder, attributesManager, requestEnvelope, serviceClientFactory } = handlerInput
-
-        const consentToken = requestEnvelope.context.System.user.permissions
-            && requestEnvelope.context.System.user.permissions.consentToken
-
-        if (!consentToken) {
-            return responseBuilder
-                .speak(`Pour activer la notification d'anniversaires, rendez vous dans l'application Alexa pour autoriser les Rappels`)
-                .withAskForPermissionsConsentCard(['alexa::alerts:reminders:skill:readwrite'])
-                .getResponse()
-        }
-
-        const { userName } = attributesManager.getSessionAttributes()
-        //console.log('userName', userName)
-
-        const nextBirthdayContact = await birthday.getNextBirthdayContact(userName)
-        console.log('nextBirthdayContact', nextBirthdayContact)
-        if (nextBirthdayContact == null) {
-            let speech = ssml.sentence(`Vous n'avez pas de notification d'anniversaire d'activer pour vos contacts`)
-            speech += ssml.sentence(`Rendez vous sur votre application contacts de ${NETOS}`)
-            return responseBuilder
-                .speak(ssml.toSpeak(speech))
-                .withShouldEndSession(true)
-                .getResponse()
-
-        }
-
-        const { birthdayScheduleTime } = await dbUsers.getUserSettings(userName)
-
-        const birthdayDate = new Date(nextBirthdayContact.birthday)
-
-        const { scheduledTime, remindDate, age } = birthday.getScheduledInfo(birthdayDate, birthdayScheduleTime)
-        console.log('scheduledTime', scheduledTime)
-        //console.log('remindDate', remindDate)
-
-        const reminderManagementServiceClient = serviceClientFactory.getReminderManagementServiceClient()
-
-        const persistentAttributes = await attributesManager.getPersistentAttributes()
-        //console.log('persistentAttributes', persistentAttributes)
-        const { reminderId } = persistentAttributes
-        console.log('reminderId', reminderId)
-
-        const reminderList = await reminderManagementServiceClient.getReminders()
-        console.log('reminderList', reminderList)
-
-        if (reminderId && reminderList.totalCount != 0) {
-            try {
-                await reminderManagementServiceClient.deleteReminder(reminderId)
-            }
-            catch(e) {
-                console.log('failed to delete reminder')
-            }
-            delete persistentAttributes.reminderId
-        }
-
-
-
-        const text = `Aujourd'hui c'est l'anniversaire de ${nextBirthdayContact.name}.
-            ${nextBirthdayContact.gender == 'female' ? 'elle' : 'il'} aura ${age} ans`
-
-        const reminderPlayload = reminder.getPayload(scheduledTime, text)
-
-
-        let speech = `Un rappel a été programmé pour le ${ssml.sayAs('date', remindDate)}`
-        try {
-            const ret = await reminderManagementServiceClient.createReminder(reminderPlayload)
-            //console.log('ret', ret)
-            persistentAttributes.reminderId = ret.alertToken
-        }
-        catch (e) {
-            console.error(e)
-            speech = `Quelque chose n'a pas marché`
-        }
-
-        return responseBuilder
-            .speak(ssml.toSpeak(speech))
-            .withShouldEndSession(true)
-            .getResponse()
-
-    }
-}
-
-const DesactivateBirthdayNotifHandler = {
-    canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request
-
-        return request.type === 'IntentRequest' && request.intent.name === 'DesactivateBirthdayNotifIntent'
-
-    },
-    async handle(handlerInput) {
-        const { responseBuilder, attributesManager, requestEnvelope, serviceClientFactory } = handlerInput
-
-        const consentToken = requestEnvelope.context.System.user.permissions
-            && requestEnvelope.context.System.user.permissions.consentToken
-
-        if (!consentToken) {
-            return responseBuilder
-                .speak(`Pour désactiver la notification d'anniversaires, rendez vous dans l'application Alexa pour autoriser les Rappels`)
-                .withAskForPermissionsConsentCard(['alexa::alerts:reminders:skill:readwrite'])
-                .getResponse()
-        }
-
-        const reminderManagementServiceClient = serviceClientFactory.getReminderManagementServiceClient()
-
-        const persistentAttributes = attributesManager.getPersistentAttributes()
-        const { reminderId } = persistentAttributes
-        console.log('reminderId', reminderId)
-
-        const reminderList = await reminderManagementServiceClient.getReminders()
-        console.log('reminderList', reminderList)
-
-        if (reminderId) {
-            delete persistentAttributes[reminderId]
-        }
-
-        for await (alert of reminderList.alerts) {
-            if (alert.status != 'COMPLETED') {
-                await reminderManagementServiceClient.deleteReminder(alert.alertToken)
-            }
-        }
-
-
-        return responseBuilder
-            .speak(`La notification d'anniversaire a été désactivé`)
-            .withShouldEndSession(true)
-            .getResponse()
-
-    }
-}
-
-const RequestInterceptor = {
-    async process(handlerInput) {
-        const { requestEnvelope, attributesManager } = handlerInput
-        //console.log('requestEnvelope', requestEnvelope)
-        const type = Alexa.getRequestType(requestEnvelope)
-        console.log('type', type)
-        if (type === 'IntentRequest') {
-            console.log('name', Alexa.getIntentName(requestEnvelope))
-        }
-        if (requestEnvelope.session && requestEnvelope.session.new === true) {
-            const { accessToken } = requestEnvelope.session.user
-            if (accessToken == undefined) {
-                throw new Error(SKILL_NOT_LINKED)
-            }
-            //console.log('accessToken', accessToken)
-
-            const userInfo = await dbUsers.getUserInfoById(accessToken)
-            //console.log('userInfo', userInfo)
-            if (userInfo == null) {
-                throw new Error(USER_NOT_REGISTERD)
-            }
-            attributesManager.setSessionAttributes({ userName: userInfo.username })
-
-        }
-    }
-}
-
-const SavePersistentAttributesResponseInterceptor = {
-    async process(handlerInput) {
-        //console.log('SAVE ATTRIBUTES')
-        await handlerInput.attributesManager.savePersistentAttributes()
-    }
-}
-
 
 const HelpHandler = {
     canHandle(handlerInput) {
@@ -671,22 +188,16 @@ const skillBuilder = Alexa.SkillBuilders.custom()
 skillBuilder
     .addRequestHandlers(
         LaunchRequestHandler,
-        AudioPlayerEventHandler,
-        PlayRequestHandler,
-        NextPlaybackHandler,
-        PreviousPlaybackHandler,
-        PausePlaybackHandler,
-        ResumePlaybackHandler,
         YesHandler,
         NoHandler,
         SessionEndedRequestHandler,
-        ConnectedFriendsRequestHandler,
-        ActivateBirthdayNotifHandler,
-        DesactivateBirthdayNotifHandler,
         ExitHandler
     )
-    .addRequestInterceptors(RequestInterceptor)
-    .addResponseInterceptors(SavePersistentAttributesResponseInterceptor)
+    .addRequestHandlers(...require('./handlers/audioPlayer'))
+    .addRequestHandlers(...require('./handlers/birthday'))
+    .addRequestHandlers(...require('./handlers/connectedFriends'))
+    .addRequestInterceptors(...require('./interceptors/request.js'))
+    .addResponseInterceptors(...require('./interceptors/response.js'))
     .addErrorHandlers(ErrorHandler)
     .withPersistenceAdapter(getPersistenceAdapter())
     .withApiClient(new Alexa.DefaultApiClient())
@@ -734,7 +245,7 @@ help()
 
 module.exports = {
     skillBuilder,
-    playSong,
+    audioPlayer,
     addHelpMessage,
     addPause,
     addCommand,

@@ -12,33 +12,21 @@ $$.control.registerControl('$control.details', {
 		console.log('info', info)
 
 
-		let hasMethods = false
-		let hasEvents = false
+		const methods =  info.iface || []
 
-		let methods =  []
-		if (typeof info.options.$iface == 'string') {
-			methods = info.options.$iface.split(';')
-			hasMethods = true
-		}
+		const events =  info.events || []
 
-		let events =  []
-		if (typeof info.options.$events == 'string') {
-			events = info.options.$events.split(';')
-			hasEvents = true
-		}
-
-		const props = info.options.props || {}
+		const props = info.props || {}
 		
 		const hasProperties = Object.keys(props).length != 0
-		console.log('hasMethods', hasMethods, methods)
-		console.log('hasEvents', hasEvents, events)
 
 		const ctrl = $$.viewController(elt, {
 			
 			data: {
 				deps: info.deps,
-				hasEvents,
-				hasMethods,
+				hasDeps: info.deps.length > 0,
+				hasEvents: events.length > 0,
+				hasMethods: methods.length > 0,
 				hasProperties,
 				name: this.props.name,
 				methods,

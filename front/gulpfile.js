@@ -39,7 +39,8 @@ const docJs = task('doc.js',
 const docHtml = task('doc.html',
 	[
 		'./doc/index.html',
-	]
+	],
+	{concat: 'doc.html'}
 )
 
 

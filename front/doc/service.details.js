@@ -12,20 +12,14 @@ $$.control.registerControl('$service.details', {
 		console.log('info', info)
 
 
-		let hasMethods = false
 
-		let methods =  []
-		if (typeof info.options.$iface == 'string') {
-			methods = info.options.$iface.split(';')
-			hasMethods = true
-		}
-
+		let methods =  info.iface || []
 
 		const ctrl = $$.viewController(elt, {
 			
 			data: {
 				deps: info.deps,				
-				hasMethods,
+				hasMethods: methods.length > 0,
 				name: this.props.name,
 				methods,
 			}

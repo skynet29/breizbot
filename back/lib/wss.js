@@ -235,7 +235,7 @@ function sendToClient(destId, msg) {
 		return client.clientId == destId
 	})
 	if (dest != undefined) {
-		sendMsg(dest, msg)
+		websocket.sendMsg(dest, msg)
 		return true
 	}
 	console.log('client not found !')

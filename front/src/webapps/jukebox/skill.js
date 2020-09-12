@@ -48,10 +48,9 @@ module.exports = function (ctx) {
 
             const action = 'playlist'
 
-            attributesManager.setPersistentAttributes({ songs, action })
+            await skillInterface.audioPlayer.initAttributes(handlerInput, songs, action)
 
             responseBuilder.speak(`c'est parti`).withShouldEndSession(true)
-
 
             return skillInterface.audioPlayer.playSong(handlerInput, songs[0], { action })
 
@@ -65,7 +64,7 @@ module.exports = function (ctx) {
                 Alexa.getIntentName(handlerInput.requestEnvelope) === 'GetPlaylistIntent'
         },
         async handle(handlerInput) {
-            const { requestEnvelope, attributesManager, responseBuilder } = handlerInput
+            const { attributesManager, responseBuilder } = handlerInput
             const { userName } = attributesManager.getSessionAttributes()
             //console.log('userName', userName)
 

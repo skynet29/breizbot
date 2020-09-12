@@ -8,6 +8,7 @@ function getIndex(songs, token) {
     })
 }
 
+
 function getCurrentSong(attributes) {
     const { inPlayback, token, songs } = attributes
 
@@ -52,8 +53,18 @@ function playPrevious(handlerInput, attributes) {
     const index = getIndex(songs, token)
     console.log('index', index)
 
+    if (shuffleIndexes) {
+        index = shuffleIndexes.indexOf(index)
+        console.log('index', index)
+        
+    }
+
     if (index > 0) {
-        return playSong(handlerInput, songs[index - 1], { action })
+        let prevIndex = index - 1
+        if (shuffleIndexes) {
+            prevIndex = shuffleIndexes[prevIndex]
+        }
+        return playSong(handlerInput, songs[prevIndex], { action })
     }
 
     return responseBuilder
@@ -68,13 +79,24 @@ function playNext(handlerInput, attributes, enQueue = false) {
 
     const { responseBuilder } = handlerInput
 
-    const { token, songs, action } = attributes
+    const { token, songs, action, shuffleIndexes } = attributes
 
-    const index = getIndex(songs, token)
+    let index = getIndex(songs, token)
     console.log('index', index)
 
+
+    if (shuffleIndexes) {
+        index = shuffleIndexes.indexOf(index)       
+        console.log('index', index)
+ 
+    }
+
     if (index < songs.length - 1) {
-        return playSong(handlerInput, songs[index + 1], { prevToken: (enQueue) ? token : null, action })
+        let nextIndex = index + 1
+        if (shuffleIndexes) {
+            nextIndex = shuffleIndexes[nextIndex]
+        }
+        return playSong(handlerInput, songs[nextIndex], { prevToken: (enQueue) ? token : null, action })
     }
 
     attributes.isLast = true
@@ -95,6 +117,12 @@ function stopPlayback(handlerInput) {
 
 }
 
+async function initAttributes(handlerInput, songs, action, shuffleIndexes) {
+    const attributes = await handlerInput.attributesManager.getPersistentAttributes()
+    attributes.songs = songs
+    attributes.action = action
+    attributes.shuffleIndexes = shuffleIndexes
+}
 
 
 module.exports = {
@@ -102,5 +130,6 @@ module.exports = {
     playNext,
     playPrevious,
     playSong,
-    getCurrentSong
+    getCurrentSong,
+    initAttributes
 }

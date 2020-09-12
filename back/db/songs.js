@@ -43,6 +43,10 @@ module.exports = {
         await db.insertMany(entries)
     },
 
+    getAllSongs(owner) {
+        return db.find({ owner }).toArray()
+    },
+
 	getMusicByArtist(owner, artist) {
 		return db.find({ owner, artist: { $regex: artist, $options: 'i' } }).toArray()
 	},

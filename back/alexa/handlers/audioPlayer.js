@@ -3,6 +3,7 @@ const Alexa = require('ask-sdk-core')
 const dbSongs = require('../../db/songs.js')
 const audioPlayer = require('../audioPlayer.js')
 const ssml = require('../ssml.js')
+const util = require('../util.js')
 
 
 const PlayRequestHandler = {
@@ -75,7 +76,7 @@ const PlayRequestHandler = {
             item._id = item._id.toString()
         })
 
-        attributesManager.setPersistentAttributes({ songs, action: 'music' })
+        await audioPlayer.initAttributes(handlerInput, songs, 'music')
 
         if (title == undefined) {
             responseBuilder.speak(`J'ai trouvé ${songs.length} titres par ${artist}`)
@@ -86,6 +87,37 @@ const PlayRequestHandler = {
         return audioPlayer.playSong(handlerInput, songs[0])
     }
 }
+
+const PlayShuffleMusicHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
+            Alexa.getIntentName(handlerInput.requestEnvelope) === 'PlayShuffleMusicIntent'
+    },
+    async handle(handlerInput) {
+        const { attributesManager, responseBuilder } = handlerInput
+        const { userName } = attributesManager.getSessionAttributes()
+        //console.log('userName', userName)
+
+
+        let songs = await dbSongs.getAllSongs(userName)
+
+        songs.forEach((item) => {
+            item._id = item._id.toString()
+        })
+
+        const shuffleIndexes = util.knuthShuffle(songs.length)
+
+        await audioPlayer.initAttributes(handlerInput, songs, 'music', shuffleIndexes)
+
+        responseBuilder.speak(`Lecture aléatoire. C'est parti`)
+        responseBuilder.withShouldEndSession(true)
+
+        const index = shuffleIndexes[0]
+
+        return audioPlayer.playSong(handlerInput, songs[index])
+    }
+}
+
 
 const NextPlaybackHandler = {
     canHandle(handlerInput) {
@@ -162,7 +194,7 @@ const AudioPlayerEventHandler = {
         const attributes = await attributesManager.getPersistentAttributes()
 
         const { token, offsetInMilliseconds } = requestEnvelope.request
-        // console.log('token', token)
+        //console.log('token', token)
         //console.log('offsetInMilliseconds', offsetInMilliseconds)
 
         switch (audioPlayerEventName) {
@@ -196,5 +228,6 @@ module.exports = [
     PlayRequestHandler,
     PreviousPlaybackHandler,
     ResumePlaybackHandler,
-    AudioPlayerEventHandler
+    AudioPlayerEventHandler,
+    PlayShuffleMusicHandler
 ]

@@ -106,7 +106,15 @@
                     "samples": [
                         "annule la notfication d'anniversaire"
                     ]
+                },
+                {
+                    "name": "PlayShuffleMusicIntent",
+                    "slots": [],
+                    "samples": [
+                        "joue de la musique"
+                    ]
                 }
+
             ],
             "types": []
         }

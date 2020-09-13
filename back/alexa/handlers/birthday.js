@@ -1,6 +1,7 @@
 const birthday = require('../birthday.js')
 const reminder = require('../reminder.js')
 const ssml = require('../ssml.js')
+const { NETOS } = require('../constants.js')
 
 const dbUsers = require('../../db/users.js')
 
@@ -62,7 +63,7 @@ const ActivateBirthdayNotifHandler = {
             try {
                 await reminderManagementServiceClient.deleteReminder(reminderId)
             }
-            catch(e) {
+            catch (e) {
                 console.log('failed to delete reminder')
             }
             delete persistentAttributes.reminderId

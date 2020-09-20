@@ -176,22 +176,33 @@ $$.control.registerControl('breizbot.htmleditor', {
 				return
 			}
 
-			const fontNode = $(selObj.anchorNode).closest('font')
+			const fontSizeNode = $(selObj.anchorNode).closest('font[size]')
 			//console.log('fontNode', fontNode)
-			if (fontNode.length == 1) {
-				const fontSize = fontNode.attr('size') || defaultFontSize
-				const fontName = fontNode.attr('face') || defaultFontName
-				const color = fontNode.attr('color') || defaultColor
+			if (fontSizeNode.length == 1) {
+				const fontSize = fontSizeNode.attr('size') || defaultFontSize
+				const fontName = fontSizeNode.attr('face') || defaultFontName
 				//console.log('fontSize', fontSize, 'fontName', fontName, 'color', color)
-				ctrl.setData({ fontSize, fontName, color })
+				ctrl.setData({ fontSize, fontName })
 			}
 			else {
 				ctrl.setData({
 					fontSize: defaultFontSize,
 					fontName: defaultFontName,
+				})
+			}
+			const fontColorNode = $(selObj.anchorNode).closest('font[color]')
+			//console.log('fontNode', fontNode)
+			if (fontColorNode.length == 1) {
+				const color = fontColorNode.attr('color') || defaultColor
+				//console.log('fontSize', fontSize, 'fontName', fontName, 'color', color)
+				ctrl.setData({ color })
+			}
+			else {
+				ctrl.setData({
 					color: defaultColor
 				})
 			}
+
 		})
 
 		function isEditable(node) {

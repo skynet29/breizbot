@@ -165,6 +165,8 @@ $$.control.registerControl('breizbot.htmleditor', {
 
 		})
 
+		elt.find('button.w3-button').attr('type', 'button')
+
 		$(document).on('selectionchange', () => {
 			//console.log('selectionchange')
 			const selObj = window.getSelection()

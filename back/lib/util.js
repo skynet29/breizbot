@@ -1,3 +1,5 @@
+//@ts-check
+
 const simpleThumbnail = require('simple-thumbnail')
 const { promisify } = require('util')
 const imageSize = promisify(require('image-size'))
@@ -74,7 +76,7 @@ function getExif(fileName) {
 			})
 		}
 		catch (e) {
-			reject(error.message)
+			reject(e.message)
 		}
 	})
 }

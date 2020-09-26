@@ -1,3 +1,5 @@
+//@ts-check
+
 const config = require('./lib/config')
 console.log('config', config)
 
@@ -117,7 +119,7 @@ function dbReady() {
 	// forbid acces to REST API when no user connected
 	app.all('/api/*', function (req, res, next) {
 		if (!req.session.connected) {
-			res.sendStatus('401')
+			res.sendStatus(401)
 		}
 		else {
 			const referer = req.headers.referer
@@ -134,7 +136,7 @@ function dbReady() {
 	app.all('/api/app/:appName/*', function (req, res, next) {
 
 		if (req.params.appName != req.appName) {
-			res.sendStatus('401')
+			res.sendStatus(401)
 		}
 		else {
 			next()

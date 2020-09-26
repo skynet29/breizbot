@@ -1,3 +1,5 @@
+//@ts-check
+
 const router = require('express').Router()
 const wss = require('../lib/wss')
 const dbFriends = require('../db/friends.js')

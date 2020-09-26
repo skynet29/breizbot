@@ -1,3 +1,5 @@
+//@ts-check
+
 const dbContacts = require('../db/contacts.js')
 
 function fixe(n) {

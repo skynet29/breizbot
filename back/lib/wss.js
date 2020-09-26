@@ -1,3 +1,5 @@
+//@ts-check
+
 const wildcard = require('wildcard')
 const cookie = require('cookie')
 const uniqid = require('uniqid')

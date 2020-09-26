@@ -1,3 +1,6 @@
+
+//@ts-check
+
 const Alexa = require('ask-sdk-core')
 
 const { domain } = require('../lib/config.js')
@@ -48,9 +51,9 @@ function playSong(handlerInput, song, options) {
 function playPrevious(handlerInput, attributes) {
     const { responseBuilder } = handlerInput
 
-    const { token, songs, action } = attributes
+    const { token, songs, action, shuffleIndexes } = attributes
 
-    const index = getIndex(songs, token)
+    let index = getIndex(songs, token)
     console.log('index', index)
 
     if (shuffleIndexes) {

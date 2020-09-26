@@ -1,3 +1,5 @@
+//@ts-check
+
 const { collection, buildDbId } = require('../lib/dbUtil.js')
 
 const db = collection('music-songs')

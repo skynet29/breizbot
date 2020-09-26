@@ -1,3 +1,6 @@
+//@ts-check
+
+
 const birthday = require('../birthday.js')
 const reminder = require('../reminder.js')
 const ssml = require('../ssml.js')
@@ -129,7 +132,7 @@ const DesactivateBirthdayNotifHandler = {
             delete persistentAttributes[reminderId]
         }
 
-        for await (alert of reminderList.alerts) {
+        for await (const alert of reminderList.alerts) {
             if (alert.status != 'COMPLETED') {
                 await reminderManagementServiceClient.deleteReminder(alert.alertToken)
             }

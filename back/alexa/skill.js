@@ -1,3 +1,5 @@
+//@ts-check
+
 const Alexa = require('ask-sdk-core')
 
 const { NETOS, SKILL_NOT_LINKED, USER_NOT_REGISTERED } = require('./constants')

@@ -1,3 +1,5 @@
+//@ts-check
+
 const WebSocket = require('ws')
 const url = require('url')
 

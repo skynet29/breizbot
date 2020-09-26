@@ -1,3 +1,5 @@
+//@ts-check
+
 const path = require('path')
 const fs = require('fs-extra')
 const fg = require('fast-glob')

@@ -1,3 +1,5 @@
+//@ts-check
+
 const bcrypt = require('bcrypt')
 
 const events = require('../lib/events')

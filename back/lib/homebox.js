@@ -1,3 +1,5 @@
+//@ts-check
+
 const auth = require('basic-auth')
 const bcrypt = require('bcrypt')
 const EventEmitter = require('events')

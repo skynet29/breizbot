@@ -1,3 +1,5 @@
+//@ts-check
+
 module.exports = {
     sayAs: function(interpret, word) {
         return `<say-as interpret-as="${interpret}">${word}</say-as>`

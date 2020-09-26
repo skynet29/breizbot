@@ -1,3 +1,5 @@
+//@ts-check
+
 function knuthShuffle(length) {
     //console.log('knuthShuffle', length)
     let arr = []

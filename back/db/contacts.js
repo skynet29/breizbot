@@ -1,3 +1,4 @@
+//@ts-check
 
 const { collection, buildDbId } = require('../lib/dbUtil.js')
 
@@ -6,7 +7,7 @@ const db = collection('contacts')
 const events = require('../lib/events')
 
 events.on('userDeleted', async (userName) => {
-    await db.deleteMany({ userName: username })
+    await db.deleteMany({ userName })
 })
 
 module.exports = {

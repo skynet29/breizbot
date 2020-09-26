@@ -1,3 +1,5 @@
+//@ts-check
+
 const ssml = require('./ssml.js')
 
 const NETOS = 'Net' + ssml.sayAs('characters', 'OS')

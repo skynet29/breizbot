@@ -1,3 +1,5 @@
+//@ts-check
+
 const { DynamoDbPersistenceAdapter } = require('ask-sdk-dynamodb-persistence-adapter')
 const AWS = require('aws-sdk')
 const Alexa = require('ask-sdk-core')

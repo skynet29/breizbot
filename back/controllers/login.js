@@ -1,3 +1,5 @@
+//@ts-check
+
 require('colors')
 
 const config = require('../lib/config')

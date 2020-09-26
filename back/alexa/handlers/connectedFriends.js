@@ -1,3 +1,5 @@
+//@ts-check
+
 const dbFriends = require('../../db/friends.js')
 
 const wss = require('../../lib/wss.js')

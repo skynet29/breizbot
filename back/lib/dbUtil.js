@@ -1,3 +1,5 @@
+//@ts-check
+
 const { MongoClient, ObjectID } = require('mongodb')
 
 const config = require('./config')

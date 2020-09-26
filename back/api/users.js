@@ -1,3 +1,5 @@
+//@ts-check
+
 const router = require('express').Router()
 const dbUsers = require('../db/users.js')
 const config = require('../lib/config.js')

@@ -1,3 +1,5 @@
+//@ts-check
+
 const router = require('express').Router()
 
 const dbSongs = require('../db/songs.js')

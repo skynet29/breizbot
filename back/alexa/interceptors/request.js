@@ -1,3 +1,5 @@
+//@ts-check
+
 const Alexa = require('ask-sdk-core')
 
 const dbUsers = require('../../db/users.js')

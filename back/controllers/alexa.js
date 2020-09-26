@@ -1,3 +1,5 @@
+//@ts-check
+
 const dbSongs = require('../db/songs.js')
 const util = require('../lib/util.js')
 

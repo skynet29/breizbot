@@ -1,3 +1,5 @@
+//@ts-check
+
 const router = require('express').Router()
 const { getAppsInfo } = require('../lib/apps')
 

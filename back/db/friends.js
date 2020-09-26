@@ -1,3 +1,4 @@
+//@ts-check
 
 const { collection } = require('../lib/dbUtil.js')
 
@@ -6,7 +7,7 @@ const db = collection('friends')
 const events = require('../lib/events')
 
 events.on('userDeleted', async (userName) => {
-    await db.deleteMany({ $or: [{ username }, { friend: username }] })
+    await db.deleteMany({ $or: [{ username: userName }, { friend: userName }] })
 })
 
 module.exports = {

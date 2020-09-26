@@ -1,3 +1,5 @@
+//@ts-check
+
 module.exports = function(libName, scripts, styles) {
 	if (libName.includes('map')) {
 		scripts.push('/brainjs/brainjs-map.js')

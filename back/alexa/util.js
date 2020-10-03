@@ -18,6 +18,38 @@ function knuthShuffle(length) {
     return arr;
 }
 
+/**
+ * @param {string} intentName
+ */
+function isIntentRequest(handlerInput, intentName) {
+    const { request } = handlerInput.requestEnvelope
+    return (request.type === 'IntentRequest' && request.intent.name === intentName)
+}
+
+/**
+ * @param {string} cmdName
+ */
+function isPlaybackControllerCmd(handlerInput, cmdName) {
+    const { request } = handlerInput.requestEnvelope
+    return (request.type === `PlaybackController.${cmdName}`)
+}
+
+function isAudioPlayerEvent(handlerInput) {
+    const { request } = handlerInput.requestEnvelope
+
+    return request.type.startsWith('AudioPlayer.')
+}
+
+function getAudioPlayerEventName(handlerInput) {
+    const { request } = handlerInput.requestEnvelope
+
+    return request.type.split('.')[1]
+}
+
 module.exports = {
-    knuthShuffle
+    knuthShuffle,
+    isIntentRequest,
+    isPlaybackControllerCmd,
+    isAudioPlayerEvent,
+    getAudioPlayerEventName
 }

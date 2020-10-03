@@ -4,12 +4,11 @@ const dbFriends = require('../../db/friends.js')
 
 const wss = require('../../lib/wss.js')
 const ssml = require('../ssml.js')
+const util = require('../util.js')
 
 const ConnectedFriendsRequestHandler = {
     canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request
-
-        return request.type === 'IntentRequest' && request.intent.name === 'ConnectedFriendsIntent'
+        return util.isIntentRequest(handlerInput, 'ConnectedFriendsIntent')
     },
     async handle(handlerInput) {
         const { responseBuilder, attributesManager } = handlerInput

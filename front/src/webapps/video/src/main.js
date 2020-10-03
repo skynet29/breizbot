@@ -89,7 +89,7 @@ $$.control.registerControl('rootPage', {
 				localVideo.srcObject = stream
 				localStream = stream
 
-				if (rtc.isCallee) {
+				if (rtc.isCallee()) {
 					rtc.accept()
 					createPeerConnection()	
 					pc.addStream(localStream)				

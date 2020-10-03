@@ -5,16 +5,14 @@ const birthday = require('../birthday.js')
 const reminder = require('../reminder.js')
 const ssml = require('../ssml.js')
 const { NETOS } = require('../constants.js')
+const util = require('../util.js')
 
 const dbUsers = require('../../db/users.js')
 
 
 const ActivateBirthdayNotifHandler = {
     canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request
-
-        return request.type === 'IntentRequest' && request.intent.name === 'ActivateBirthdayNotifIntent'
-
+        return util.isIntentRequest(handlerInput, 'ActivateBirthdayNotifIntent')
     },
     async handle(handlerInput) {
         const { responseBuilder, attributesManager, requestEnvelope, serviceClientFactory } = handlerInput
@@ -101,10 +99,7 @@ const ActivateBirthdayNotifHandler = {
 
 const DesactivateBirthdayNotifHandler = {
     canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request
-
-        return request.type === 'IntentRequest' && request.intent.name === 'DesactivateBirthdayNotifIntent'
-
+        return util.isIntentRequest(handlerInput, 'DesactivateBirthdayNotifIntent')
     },
     async handle(handlerInput) {
         const { responseBuilder, attributesManager, requestEnvelope, serviceClientFactory } = handlerInput

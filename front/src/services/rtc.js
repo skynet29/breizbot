@@ -1,28 +1,32 @@
-(function(){
 
-class RTC extends EventEmitter2 {
-	constructor(broker, http, params) {
+$$.service.registerService('breizbot.rtc', {
 
-		super()
+	deps: ['brainjs.http', 'breizbot.broker', 'breizbot.params'],
 
-		this.broker = broker
-		this.http = http
+	init: function (config, http, broker, params) {
 
-		this.srdId = undefined
-		this.destId = undefined
-		this.distant = ''
-		this.status = 'ready'
-		this.isCallee = false
+		const events = new EventEmitter2()
+
+		const private = {
+			srcId: null,
+			destId: null,
+			distant: '',
+			status: 'ready',
+			isCallee: false
+		}
+
+
 		if (params.caller != undefined) {
-			this.status = 'connected'
-			this.distant = params.caller
-			this.destId = params.clientId
-			this.isCallee = true
+			private.status = 'connected'
+			private.distant = params.caller
+			private.destId = params.clientId
+			private.isCallee = true
 		}
 
 		broker.on('ready', (msg) => {
-			this.srcId = msg.clientId
-			this.emit('ready')
+			private.srcId = msg.clientId
+			//console.log('srcId', msg.clientId)
+			events.emit('ready')
 		})
 
 		broker.onTopic('breizbot.rtc.accept', (msg) => {
@@ -30,149 +34,159 @@ class RTC extends EventEmitter2 {
 				return
 			}
 			console.log('msg', msg)
-			this.cancel(false)
-			this.destId = msg.srcId
-			this.status = 'connected'
-			this.emitStatus()	
-			this.emit('accept')	
-		})		
+			cancel(false)
+			private.destId = msg.srcId
+			private.status = 'connected'
+			emitStatus()
+			events.emit('accept')
+		})
 
 		broker.onTopic('breizbot.rtc.deny', (msg) => {
 			if (msg.hist === true) {
 				return
 			}
 			console.log('msg', msg)
-			this.status = 'refused'
-			this.cancel(false)
-			this.emitStatus()
-			this.emit('deny')	
+			private.status = 'refused'
+			cancel(false)
+			emitStatus()
+			events.emit('deny')
 
-		})		
+		})
 
 		broker.onTopic('breizbot.rtc.bye', (msg) => {
 			if (msg.hist === true) {
 				return
 			}
 			console.log('msg', msg)
-			this.status = 'disconnected'
-			this.emitStatus()
-			this.emit('bye')
+			private.status = 'disconnected'
+			emitStatus()
+			events.emit('bye')
 
-		})				
-	}
-
-	getRemoteClientId() {
-		return this.destId
-	}
-
-	processCall() {
-		console.log('[RTC] processCall')
-		this.broker.register('breizbot.rtc.call', (msg) => {
-			if (msg.hist === true) {
-				return
-			}
-			console.log('msg', msg)
-			this.destId = msg.srcId
-			this.emit('call', msg.data)
 		})
 
-		this.broker.register('breizbot.rtc.cancel', (msg) => {
-			if (msg.hist === true) {
-				return
+
+		function getRemoteClientId() {
+			return private.destId
+		}
+
+		function processCall() {
+			console.log('[RTC] processCall')
+			broker.register('breizbot.rtc.call', (msg) => {
+				if (msg.hist === true) {
+					return
+				}
+				console.log('msg', msg)
+				private.destId = msg.srcId
+				events.emit('call', msg.data)
+			})
+
+			broker.register('breizbot.rtc.cancel', (msg) => {
+				if (msg.hist === true) {
+					return
+				}
+				console.log('msg', msg)
+				events.emit('cancel')
+			})
+		}
+
+		function onData(name, callback) {
+			broker.onTopic('breizbot.rtc.' + name, (msg) => {
+				if (msg.hist === true) {
+					return
+				}
+				callback(msg.data, msg.time)
+			})
+		}
+
+		function emitStatus() {
+			events.emit('status', { status: private.status, distant: private.distant })
+		}
+
+		function call(to, appName, iconCls) {
+			private.distant = to
+			private.status = 'calling'
+			emitStatus()
+			return http.post(`/api/rtc/sendToUser`, {
+				to,
+				srcId: private.srcId,
+				type: 'call',
+				data: { appName, iconCls }
+			})
+		}
+
+		function cancel(updateStatus = true) {
+			console.log('[RTC] cancel', updateStatus)
+			if (updateStatus) {
+				private.status = 'canceled'
+				emitStatus()
 			}
-			console.log('msg', msg)
-			this.emit('cancel')
-		})		
-	}
+			return http.post(`/api/rtc/sendToUser`, { to: private.distant, srcId: private.srcId, type: 'cancel' })
+		}
 
-	onData(name, callback) {
-		this.broker.onTopic('breizbot.rtc.' + name, (msg) => {
-			if (msg.hist === true) {
-				return
+		function accept() {
+			console.log('[RTC] accept')
+
+			emitStatus()
+			return sendData('accept')
+		}
+
+		function deny() {
+			console.log('[RTC] deny')
+
+			return sendData('deny')
+		}
+
+		function bye() {
+			console.log('[RTC] bye')
+
+			if (private.status == 'connected') {
+				private.status = 'ready'
+				private.distant = ''
+				emitStatus()
+				return sendData('bye')
 			}
-			callback(msg.data, msg.time)
-		})			
-	}
 
-	emitStatus() {
-		this.emit('status', {status: this.status, distant: this.distant})
-	}
-
-	call(to, appName, iconCls) {
-		this.distant = to
-		this.status = 'calling'
-		this.emitStatus()
-		return this.http.post(`/api/rtc/sendToUser`, {
-			to,
-			srcId: this.srcId,
-			type: 'call',
-			data: {appName, iconCls}
-		})
-	}	
-
-	cancel(updateStatus = true) {
-		console.log('[RTC] cancel', updateStatus)
-		if (updateStatus) {
-			this.status = 'canceled'
-			this.emitStatus()			
-		}
-		return this.http.post(`/api/rtc/sendToUser`, {to: this.distant, srcId: this.srcId, type: 'cancel'})
-	}	
-
-	accept() {
-		console.log('[RTC] accept')
-
-		this.emitStatus()
-		return this.sendData('accept')
-	}
-
-	deny() {
-		console.log('[RTC] deny')
-
-		return this.sendData('deny')
-	}
-
-	bye() {
-		console.log('[RTC] bye')
-
-		if (this.status == 'connected') {
-			this.status = 'ready'
-			this.distant = ''
-			this.emitStatus()
-			return this.sendData('bye')			
+			return Promise.resolve()
 		}
 
-		return Promise.resolve()
-	}
-
-	exit() {
-		if (this.status == 'calling') {
-			return this.cancel()
+		function exit() {
+			if (private.status == 'calling') {
+				return cancel()
+			}
+			if (private.status == 'connected') {
+				return bye()
+			}
+			return Promise.resolve()
 		}
-		if (this.status == 'connected') {
-			return this.bye()
+
+		function sendData(type, data) {
+			return http.post(`/api/rtc/sendToClient`, {
+				destId: private.destId,
+				srcId: private.srcId,
+				type,
+				data
+			})
 		}
-		return Promise.resolve()
-	}
 
-	sendData(type, data) {
-		return this.http.post(`/api/rtc/sendToClient`, {
-			destId: this.destId, 
-			srcId: this.srcId,
-			type,
-			data
-		})
-	}	
+		function isCallee() {
+			return private.isCallee
+		}
 
-}
+		return {
+			call,
+			cancel,
+			deny,
+			bye,
+			sendData,
+			onData,
+			on: events.on.bind(events),
+			processCall,
+			getRemoteClientId,
+			exit,
+			accept,
+			isCallee
 
-$$.service.registerService('breizbot.rtc', {
-
-	deps: ['brainjs.http', 'breizbot.broker', 'breizbot.params'],
-
-	init: function(config, http, broker, params) {
-
-		return new RTC(broker, http, params)
+		}
 	},
 	$iface: `
 		call(to):Promise;
@@ -180,9 +194,10 @@ $$.service.registerService('breizbot.rtc', {
 		deny():Promise;
 		bye():Promise;
 		sendData(type, data):Promise;
-		onData(callback(data, time))
+		onData(callback(data, time)),
+		processCall(),
+		on(event, callback),
+		getRemoteClientId():Number
 	`
 });
 
-
-})();

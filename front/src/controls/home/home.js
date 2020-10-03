@@ -4,10 +4,12 @@ $$.control.registerControl('breizbot.home', {
 		'breizbot.broker',
 		'breizbot.users',
 		'breizbot.notifs',
-		'breizbot.position',
+		'breizbot.geoloc',
 		'breizbot.rtc',
 		'breizbot.apps',
-		'breizbot.scheduler'
+		'breizbot.scheduler',
+		'breizbot.wakelock',
+		'breizbot.fullscreen'
 	],
 
 	props: {
@@ -16,7 +18,7 @@ $$.control.registerControl('breizbot.home', {
 
 	template: { gulp_inject: './home.html' },
 
-	init: function (elt, broker, users, notifsSrv, positionSrv, rtc, srvApps, scheduler) {
+	init: function (elt, broker, users, notifsSrv, geoloc, rtc, srvApps, scheduler, wakelock, fullscreen) {
 
 		function createAudio() {
 			let audio = null
@@ -90,7 +92,7 @@ $$.control.registerControl('breizbot.home', {
 				onContextMenu: async function (ev, data) {
 					//console.log('onContextMenu', data)
 					if (data.cmd == 'logout') {
-						logout()
+						scheduler.logout()
 					}
 					if (data.cmd == 'apps') {
 						openApp('store')
@@ -130,18 +132,12 @@ $$.control.registerControl('breizbot.home', {
 
 				onExitFullScreen: function () {
 					//console.log('onExitFullScreen')
-					document.exitFullscreen()
+					fullscreen.exit()
 				},
 
 				onFullScreen: function (ev) {
 					//console.log('onFullScreen')
-					const elem = document.documentElement
-					const requestFullscreen = elem.requestFullscreen ||
-						elem.webkitRequestFullscreen
-
-					if (requestFullscreen) {
-						requestFullscreen.call(elem)
-					}
+					fullscreen.enter()
 				},
 				onTabRemove: function (ev, idx) {
 					//console.log('onTabRemove', idx)
@@ -172,14 +168,8 @@ $$.control.registerControl('breizbot.home', {
 			}
 		})
 
-		document.addEventListener("webkitfullscreenchange", function (ev) {
-			console.log('fullscreenchange', ev)
-			ctrl.setData({ fullScreen: !ctrl.model.fullScreen })
-		})
-
-		document.addEventListener("fullscreenchange", function (ev) {
-			console.log('fullscreenchange', ev)
-			ctrl.setData({ fullScreen: !ctrl.model.fullScreen })
+		fullscreen.init((fullScreen) => {
+			ctrl.setData({ fullScreen })
 		})
 
 		function updateNotifs(nbNotif) {
@@ -232,7 +222,7 @@ $$.control.registerControl('breizbot.home', {
 		function openApp(appName, params) {
 			const appInfo = ctrl.model.apps.find((a) => a.appName == appName)
 			const title = appInfo.props.title
-			//console.log('openApp', appName, params)
+			console.log('openApp', appName, params)
 			let idx = ctrl.scope.tabs.getTabIndexFromTitle(title)
 			const appUrl = $$.util.getUrlParams(`/apps/${appName}`, params)
 			if (idx < 0) { // apps not already run
@@ -267,71 +257,11 @@ $$.control.registerControl('breizbot.home', {
 		}
 
 
-		function logout() {
-			scheduler.logout()
-		}
-
 		loadApp()
 
-		setInterval(sendPosition, 30 * 1000) // every 30 sec
+		geoloc.startWatch()
 
-		let coords = null
-
-		function geoError(e) {
-			console.log('geoloc error:', e)
-		}
-
-		function updateLocation(position) {
-			//console.log('updateLocation', position)
-			coords = position.coords
-		}
-
-		navigator.geolocation.getCurrentPosition(updateLocation)
-
-		navigator.geolocation.watchPosition(updateLocation, geoError,
-			{
-				enableHighAccuracy: true
-			}
-		)
-
-
-		function sendPosition() {
-			//console.log('sendPosition', coords)
-			if (coords != null) {
-				positionSrv.sendPosition({
-					lat: coords.latitude,
-					lng: coords.longitude
-				})
-
-			}
-		}
-
-		function requestWakeLock() {
-			if (navigator.wakeLock && navigator.wakeLock.request) {
-				navigator.wakeLock.request('screen').then((lock) => {
-					console.log('take wakeLock')
-					lock.addEventListener('release', () => {
-						console.log('Wake Lock was released')
-					})
-				})
-					.catch((e) => {
-						console.error('WakeLock', e)
-					})
-
-			}
-
-		}
-
-		function onVisibilityChange() {
-			console.log('visibilitychange', document.visibilityState)
-			if (document.visibilityState === 'visible') {
-				requestWakeLock()
-			}
-		}
-
-		document.addEventListener('visibilitychange', onVisibilityChange)
-
-		requestWakeLock()
+		wakelock.requestWakeLock()
 
 	}
 });

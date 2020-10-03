@@ -10,8 +10,7 @@ const util = require('../util.js')
 
 const PlayRequestHandler = {
     canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-            Alexa.getIntentName(handlerInput.requestEnvelope) === 'PlayIntent'
+        return util.isIntentRequest(handlerInput, 'PlayIntent')
     },
     async handle(handlerInput) {
         const { requestEnvelope, attributesManager, responseBuilder } = handlerInput
@@ -92,8 +91,7 @@ const PlayRequestHandler = {
 
 const PlayShuffleMusicHandler = {
     canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-            Alexa.getIntentName(handlerInput.requestEnvelope) === 'PlayShuffleMusicIntent'
+        return util.isIntentRequest(handlerInput, 'PlayShuffleMusicIntent')
     },
     async handle(handlerInput) {
         const { attributesManager, responseBuilder } = handlerInput
@@ -123,10 +121,8 @@ const PlayShuffleMusicHandler = {
 
 const NextPlaybackHandler = {
     canHandle(handlerInput) {
-        const { request } = handlerInput.requestEnvelope
-
-        return (request.type === 'PlaybackController.NextCommandIssued' ||
-            (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NextIntent'))
+        return util.isPlaybackControllerCmd(handlerInput, 'NextCommandIssued') ||
+            util.isIntentRequest(handlerInput, 'AMAZON.NextIntent')
     },
     async handle(handlerInput) {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes()
@@ -137,10 +133,8 @@ const NextPlaybackHandler = {
 
 const PreviousPlaybackHandler = {
     canHandle(handlerInput) {
-        const { request } = handlerInput.requestEnvelope
-
-        return (request.type === 'PlaybackController.PreviousCommandIssued' ||
-            (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.PreviousIntent'))
+        return util.isPlaybackControllerCmd(handlerInput, 'PreviousCommandIssued') ||
+            util.isIntentRequest(handlerInput, 'AMAZON.PreviousIntent')
     },
     async handle(handlerInput) {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes()
@@ -152,10 +146,8 @@ const PreviousPlaybackHandler = {
 
 const ResumePlaybackHandler = {
     canHandle(handlerInput) {
-        const { request } = handlerInput.requestEnvelope
-
-        return (request.type === 'PlaybackController.PlayCommandIssued' ||
-            (request.type === 'IntentRequest' && request.intent.name === 'AMAZON.ResumeIntent'))
+        return util.isPlaybackControllerCmd(handlerInput, 'PlayCommandIssued') ||
+            util.isIntentRequest(handlerInput, 'AMAZON.ResumeIntent')
     },
     async handle(handlerInput) {
         const attributes = await handlerInput.attributesManager.getPersistentAttributes()
@@ -169,15 +161,13 @@ const ResumePlaybackHandler = {
 
 const PausePlaybackHandler = {
     async canHandle(handlerInput) {
-        const { request } = handlerInput.requestEnvelope
-
         const { inPlayback } = await handlerInput.attributesManager.getPersistentAttributes()
 
-        return inPlayback &&
-            request.type === 'IntentRequest' &&
-            (request.intent.name === 'AMAZON.StopIntent' ||
-                request.intent.name === 'AMAZON.CancelIntent' ||
-                request.intent.name === 'AMAZON.PauseIntent')
+        return inPlayback && ( 
+            util.isIntentRequest(handlerInput, 'AMAZON.StopIntent') ||
+            util.isIntentRequest(handlerInput, 'AMAZON.CancelIntent') ||
+            util.isIntentRequest(handlerInput, 'AMAZON.PauseIntent')
+            )
     },
     handle(handlerInput) {
         return audioPlayer.stopPlayback(handlerInput)
@@ -186,12 +176,12 @@ const PausePlaybackHandler = {
 
 const AudioPlayerEventHandler = {
     canHandle(handlerInput) {
-        return Alexa.getRequestType(handlerInput.requestEnvelope).startsWith('AudioPlayer.')
+        return util.isAudioPlayerEvent(handlerInput)
     },
     async handle(handlerInput) {
         const { requestEnvelope, attributesManager, responseBuilder } = handlerInput
 
-        const audioPlayerEventName = Alexa.getRequestType(requestEnvelope).split('.')[1]
+        const audioPlayerEventName = util.getAudioPlayerEventName(handlerInput)
         //console.log('audioPlayerEventName', audioPlayerEventName)
         const attributes = await attributesManager.getPersistentAttributes()
 

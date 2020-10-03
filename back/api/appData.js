@@ -6,6 +6,7 @@ const dbAppData = require('../db/appData.js')
 
 router.get('/', async function (req, res) {
 	const userName = req.session.user
+	// @ts-ignore
 	const appName = req.appName
 
 	try {
@@ -24,6 +25,7 @@ router.get('/', async function (req, res) {
 
 router.post('/', async function (req, res) {
 	const userName = req.session.user
+	// @ts-ignore
 	const appName = req.appName
 	const data = req.body
 	try {

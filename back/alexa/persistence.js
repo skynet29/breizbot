@@ -8,6 +8,7 @@ const Alexa = require('ask-sdk-core')
 function getLocalDynamoDBClient() {
     AWS.config.update({
         region: 'local',
+        // @ts-ignore
         endpoint: 'http://localhost:8000',
         accessKeyId: 'fake',
         secretAccessKey: 'fake',

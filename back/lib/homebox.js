@@ -4,6 +4,7 @@ const auth = require('basic-auth')
 const bcrypt = require('bcrypt')
 const EventEmitter = require('events')
 
+// @ts-ignore
 const events = new EventEmitter()
 
 const websocket = require('./websocket.js')
@@ -54,6 +55,7 @@ function getClients() {
 }
 
 function getHomeboxClient(userName) {
+	// @ts-ignore
 	return getClients().find((c) => c.userName == userName)
 }
 
@@ -65,11 +67,14 @@ function registerHomeboxTopics(userName, topics) {
 
 	topics.forEach((topic) => {
 		if (topic.startsWith('homebox.')) {
+			// @ts-ignore
 			if (client.registeredTopics[topic] == undefined) {
+				// @ts-ignore
 				client.registeredTopics[topic] = 1
 				websocket.registerTopic(client, topic)
 			}
 			else {
+				// @ts-ignore
 				client.registeredTopics[topic]++
 			}
 		}
@@ -85,8 +90,11 @@ function unregisterHomeboxTopics(userName, topics) {
 
 	topics.forEach((topic) => {
 		if (topic.startsWith('homebox.')) {
+			// @ts-ignore
 			if (client.registeredTopics[topic] != undefined) {
+				// @ts-ignore
 				if (--client.registeredTopics[topic] == 0) {
+					// @ts-ignore
 					delete client.registeredTopics[topic]
 					websocket.unregisterTopic(client, topic)
 
@@ -99,6 +107,7 @@ function unregisterHomeboxTopics(userName, topics) {
 function addHomeboxClient(client, userName) {
 	client.registeredTopics = {}
 	client.userName = userName
+	// @ts-ignore
 	client.services = new EventEmitter()
 	client.lastPingDate = Date.now()
 
@@ -108,7 +117,7 @@ function addHomeboxClient(client, userName) {
 	client.on('message', (text) => {
 
 		const msg = JSON.parse(text)
-		const { type, topic } = msg
+		const { type } = msg
 
 		if (type == 'ping') {
 			websocket.sendPong(client)
@@ -146,6 +155,7 @@ function callService(userName, srvName, data) {
 			return
 		}
 
+		// @ts-ignore
 		client.services.once(srvName, (msg) => {
 			if (msg.err != undefined) {
 				reject(msg.err)

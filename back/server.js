@@ -125,6 +125,7 @@ function dbReady() {
 			const referer = req.headers.referer
 			if (referer != undefined) {
 				const url = parseUrl(referer)
+				// @ts-ignore
 				req.appName = url.pathname.split('/').pop()
 			}
 
@@ -135,6 +136,7 @@ function dbReady() {
 	// forbid acces to webapp private REST API 
 	app.all('/api/app/:appName/*', function (req, res, next) {
 
+		// @ts-ignore
 		if (req.params.appName != req.appName) {
 			res.sendStatus(401)
 		}

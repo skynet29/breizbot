@@ -47,7 +47,7 @@ $$.control.registerControl('rootPage', {
 
 	
 		rtc.on('ready', () => { 
-			if (rtc.isCallee) {
+			if (rtc.isCallee()) {
 				rtc.accept()				
 			}			
 		})

@@ -184,7 +184,7 @@ $$.control.registerControl('rootPage', {
 		})			
 
 		rtc.on('ready', () => { 
-			if (rtc.isCallee) {
+			if (rtc.isCallee()) {
 				board.orientation('black')
 				board.start()
 				rtc.accept()				

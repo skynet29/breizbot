@@ -159,11 +159,7 @@ $$.service.registerService('breizbot.broker', {
 		function unregister(topic, callback) {
 
 			topics.off(topic, callback)
-			// const nbListeners = topics.listeners(topic).length
-
-			// if (nbListeners == 0) { // no more listeners for this topic
-			// 	sendMsg({type: 'unregister', topic})
-			// }	
+			
 			if (--registeredTopics[topic] == 0) {
 				delete registeredTopics[topic]
 				sendMsg({ type: 'unregister', topic })

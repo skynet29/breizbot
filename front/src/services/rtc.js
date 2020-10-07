@@ -189,7 +189,7 @@ $$.service.registerService('breizbot.rtc', {
 		}
 	},
 	$iface: `
-		call(to):Promise;
+		call(to, appName, iconCls):Promise;
 		cancel(to):Promise;
 		deny():Promise;
 		bye():Promise;

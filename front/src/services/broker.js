@@ -1,206 +1,198 @@
-(function() {
 
 
-	class BrokerClient extends EventEmitter2 {
+$$.service.registerService('breizbot.broker', {
 
-		constructor() {
-			super()
+	init: function (config) {
 
-			this.sock = null
-			this.isConnected = false
-			this.tryReconnect = true
-			this.isPingOk = true
-			this.topics = new EventEmitter2({wildcard: true})
-			this.pingInterval = 10*1000
-			this.timeoutId = undefined
+		const events = new EventEmitter2()
 
-			this.registeredTopics = {}
+		let sock = null
+		let isConnected = false
+		let tryReconnect = true
+		let isPingOk = true
+		const topics = new EventEmitter2({ wildcard: true })
+		const pingInterval = 10 * 1000
+		let timeoutId = null
+		const registeredTopics = {}
 
-			let {host, pathname, protocol} = location
-			protocol= (protocol == 'http:') ? 'ws:' : 'wss:'
+		let { host, pathname, protocol } = location
+		protocol = (protocol == 'http:') ? 'ws:' : 'wss:'
 
 
-			this.url = `${protocol}//${host}/hmi${pathname}`
+		const url = `${protocol}//${host}/hmi${pathname}`
+
+		function onClose() {
+			//console.log('onClose')
+			if (isConnected) {
+				console.log('[Broker] Disconnected !')
+				events.emit('connected', false)
+			}
+			isConnected = false
+			if (tryReconnect) {
+				setTimeout(() => { connect() }, 5000)
+			}
 		}
 
-		checkPing() {
-			this.timeoutId = setTimeout(() => {
-				
-				if (!this.isPingOk) {
+		function checkPing() {
+			timeoutId = setTimeout(() => {
+
+				if (!isPingOk) {
 					console.log('timeout ping')
-					this.sock.onmessage = null
-					this.sock.onclose = null
-					this.sock.close()
-					this.onClose()
+					sock.onmessage = null
+					sock.onclose = null
+					sock.close()
+					onClose()
 				}
 				else {
-					this.isPingOk = false
-					this.sendMsg({type: 'ping'})
-					this.checkPing()
+					isPingOk = false
+					sendMsg({ type: 'ping' })
+					checkPing()
 				}
-			}, this.pingInterval)			
+			}, pingInterval)
 		}
 
-		onClose() {
-			//console.log('onClose')
-			if (this.isConnected) {
-				console.log('[Broker] Disconnected !')
-				this.emit('connected', false)
-			}
-			this.isConnected = false
-			if (this.tryReconnect) {
-				setTimeout(() => {this.connect()}, 5000)
-			}			
-		}
-
-		connect() {
+		function connect() {
 
 			console.log('try to connect...')
 
-			this.sock = new WebSocket(this.url)
-	
-			this.sock.onopen = () => {
+			sock = new WebSocket(url)
+
+			sock.onopen = () => {
 				console.log("Connected to broker")
-				this.isConnected = true
-				this.isPingOk = true
-				this.emit('connected', true)
-				this.checkPing()
+				isConnected = true
+				isPingOk = true
+				events.emit('connected', true)
+				checkPing()
 
 			}
 
 
-			this.sock.onmessage =  (ev) => {
+			sock.onmessage = (ev) => {
 				const msg = JSON.parse(ev.data)
 
-				if (ev.currentTarget != this.sock) {
+				if (ev.currentTarget != sock) {
 					console.log('[broker] message bad target', msg.type)
 					ev.currentTarget.close()
 					return
 				}
 				//console.log('[Broker] message', msg)
-				
-				if (msg.type == 'ready') {
-					// this.topics.eventNames().forEach((topic) => {
-					// 	this.sendMsg({type: 'register', topic})	
-					// })		
-					Object.keys(this.registeredTopics).forEach((topic) => {
-						this.sendMsg({type: 'register', topic})	
-					})	
 
-					this.emit('ready', {clientId: msg.clientId})							
+				if (msg.type == 'ready') {
+					Object.keys(registeredTopics).forEach((topic) => {
+						sendMsg({ type: 'register', topic })
+					})
+
+					events.emit('ready', { clientId: msg.clientId })
 				}
 
 				if (msg.type == 'pong') {
-					this.isPingOk = true
+					isPingOk = true
 				}
 
 				if (msg.type == 'notif') {
-					this.topics.emit(msg.topic, msg)
+					topics.emit(msg.topic, msg)
 				}
+
 				if (msg.type == 'error') {
 					console.log('[Broker] log', msg.text)
-					this.tryReconnect = false
-					this.sock.close()
+					tryReconnect = false
+					sock.close()
 				}
-											
+
 			}
 
-			this.sock.onclose = (ev) => {
-				if (ev.currentTarget != this.sock) {
+			sock.onclose = (ev) => {
+				if (ev.currentTarget != sock) {
 					console.log('[broker] close bad target')
 					return
-				}				
-				console.log('[broker] close')
-				if (this.timeoutId != undefined) {
-					clearTimeout(this.timeoutId)
-					this.timeoutId = undefined					
 				}
-				this.onClose()
+				console.log('[broker] close')
+				if (timeoutId != null) {
+					clearTimeout(timeoutId)
+					timeoutId = null
+				}
+				onClose()
 			}
 
 		}
 
-
-		sendMsg(msg) {
+		function sendMsg(msg) {
 			msg.time = Date.now()
-			var text = JSON.stringify(msg)
-			if (this.isConnected) {
+			const text = JSON.stringify(msg)
+			if (isConnected) {
 				//console.log('[Broker] sendMsg', msg)
-				this.sock.send(text)
+				sock.send(text)
 			}
 		}
 
-		emitTopic(topic, data) {
+		function emitTopic(topic, data) {
 			//console.log('[Broker] emitTopic', topic, data)
-			var msg = {
+			const msg = {
 				type: 'notif',
 				topic,
 				data
 			}
 
-			this.sendMsg(msg)
+			sendMsg(msg)
 		}
 
-		onTopic(topic, callback) {
-			this.topics.on(topic, callback)
+		function onTopic(topic, callback) {
+			topics.on(topic, callback)
 		}
 
-		offTopic(topic, callback) {
-			this.topics.off(topic, callback)
+		function offTopic(topic, callback) {
+			topics.off(topic, callback)
 		}
 
-		register(topic, callback) {
+		function register(topic, callback) {
 			//console.log('[Broker] register', topic)
-			if (this.registeredTopics[topic] == undefined) {
-				this.registeredTopics[topic] = 1
+			if (registeredTopics[topic] == undefined) {
+				registeredTopics[topic] = 1
 			}
 			else {
-				this.registeredTopics[topic]++;
+				registeredTopics[topic]++;
 			}
-			this.topics.on(topic, callback)
-			this.sendMsg({type: 'register', topic})			
+			topics.on(topic, callback)
+			sendMsg({ type: 'register', topic })
 		}
 
-		unregister(topic, callback) {
+		function unregister(topic, callback) {
 
-			this.topics.off(topic, callback)
-			// const nbListeners = this.topics.listeners(topic).length
+			topics.off(topic, callback)
+			// const nbListeners = topics.listeners(topic).length
 
 			// if (nbListeners == 0) { // no more listeners for this topic
-			// 	this.sendMsg({type: 'unregister', topic})
+			// 	sendMsg({type: 'unregister', topic})
 			// }	
-			if (--this.registeredTopics[topic] == 0) {
-				delete this.registeredTopics[topic]
-				this.sendMsg({type: 'unregister', topic})
+			if (--registeredTopics[topic] == 0) {
+				delete registeredTopics[topic]
+				sendMsg({ type: 'unregister', topic })
 			}
-		}		
+		}
 
+		connect()
 
-		
-	}
+		return {
+			emitTopic,
+			onTopic,
+			offTopic,
+			register,
+			unregister,
+			on: events.on.bind(events)
 
+		}
+	},
 
-
-
-	$$.service.registerService('breizbot.broker', {
-
-		init: function(config) {
-
-			const client = new BrokerClient()
-			client.connect()
-
-			return client
-		},
-
-		$iface: `
+	$iface: `
 			emitTopic(topicName, data);
 			register(topicName, callback);
 			unregister(topicName, callback);
 			onTopic(topicName, callback)
+			on(event, callback)
 
 		`
-	})
+});
 
 
-})();
+
 

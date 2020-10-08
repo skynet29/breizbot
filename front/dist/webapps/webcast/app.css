@@ -1,0 +1,33 @@
+.addWebcast {
+  padding: 10px;
+  display: flex;
+  flex-direction: column; }
+  .addWebcast .users {
+    margin-top: 10px;
+    flex: 1;
+    overflow-y: auto; }
+
+.rootPage {
+  display: flex;
+  flex-direction: column; }
+  .rootPage .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #128C7E;
+    color: white; }
+  .rootPage .content {
+    flex: 1; }
+    .rootPage .content .tree {
+      height: 100%; }
+      .rootPage .content .tree ul {
+        height: 100%;
+        border: none; }
+      .rootPage .content .tree ul:focus {
+        outline: none; }
+      .rootPage .content .tree .fancytree-node {
+        display: flex;
+        align-items: center;
+        font-size: 1.3em; }
+      .rootPage .content .tree span.fa {
+        color: #607d8b; }

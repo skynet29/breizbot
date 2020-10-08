@@ -2,17 +2,54 @@
 
 const WebSocket = require('ws')
 const url = require('url')
+const cookie = require('cookie')
 
 const servers = []
 const pingInterval = 30 * 1000 // 30 sec
 
 
-function addServer(startPath, onConnect) {
+function addServer(startPath, findUserFromSid, onConnect) {
     console.log('add ws server', startPath)
     const wss = new WebSocket.Server({ noServer: true })
-    servers.push({ wss, startPath, onConnect })
+    servers.push({ wss, startPath, onConnect, findUserFromSid })
     return wss
 
+}
+
+function findUser(client, store) {
+    //console.log('findUserFromSid')
+
+    return new Promise((resolve, reject) => {
+        const { headers } = client
+        //console.log('onConnect', path)
+
+        if (headers.cookie == undefined) {
+            reject('Missing cookie')
+        }
+
+        const cookies = cookie.parse(headers.cookie)
+        //console.log('cookies', cookies)
+
+        let sid = cookies['connect.sid']
+        if (sid == undefined) {
+            reject('Missing sid')
+        }
+
+        sid = sid.split(/[:.]+/)[1]
+        //console.log('sid', sid)
+
+        store.get(sid, function (err, session) {
+            //console.log('err', err)
+            //console.log('session', session)
+            if (err != null || session == null) {
+                reject('Unknown session')
+            }
+            client.sessionId = sid
+            resolve(session.user)
+
+        })
+    })    
+        
 }
 
 function init(httpServer, store) {
@@ -24,12 +61,21 @@ function init(httpServer, store) {
         const foundServer = servers.find((server) => pathname.startsWith(server.startPath))
 
         if (foundServer) {
-            const { wss, onConnect } = foundServer
-            wss.handleUpgrade(request, socket, head, function (ws) {
+            const { wss, onConnect, findUserFromSid } = foundServer
+            wss.handleUpgrade(request, socket, head, async function (ws) {
                 ws.headers = request.headers
                 ws.path = pathname
 
-                onConnect(ws, store)
+                if (findUserFromSid) {
+                    try {
+                        const userName = await findUser(ws, store)
+                        onConnect(ws, userName)
+                    }
+                    catch(e) {
+                        console.error(e)
+                    }
+                }
+    
             })
 
         } else {

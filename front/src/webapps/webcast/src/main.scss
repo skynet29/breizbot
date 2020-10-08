@@ -1,0 +1,40 @@
+.rootPage {
+    display: flex;
+    flex-direction: column;
+
+	.toolbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		//margin-top: 5px;
+		background-color: #128C7E;
+		color: white;
+
+	}    
+
+    .content {
+		flex: 1;
+		
+		.tree {
+			height: 100%;
+			ul {
+				height: 100%;
+				border: none;
+			}
+
+			ul:focus {
+				outline: none;
+			}
+
+			.fancytree-node {
+				display: flex;
+				align-items: center;
+				font-size: 1.3em;
+			}
+
+			span.fa {
+				color: #607d8b;
+			}
+		}			
+    }
+}

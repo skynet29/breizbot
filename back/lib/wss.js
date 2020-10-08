@@ -1,7 +1,6 @@
 //@ts-check
 
 const wildcard = require('wildcard')
-const cookie = require('cookie')
 const uniqid = require('uniqid')
 const websocket = require('./websocket.js')
 
@@ -33,7 +32,7 @@ homebox.events.on('notif', (userName, msg) => {
 
 const history = {}
 
-const wss = websocket.addServer('/hmi/', onHmiConnect)
+const wss = websocket.addServer('/hmi/', true, addHmiClient)
 
 
 function addToHistory(userName, msg) {
@@ -54,43 +53,6 @@ function forwardHistory(userName, topic, client) {
 
 }
 
-
-async function onHmiConnect(client, store) {
-
-	console.log('onHmiConnect')
-
-	const { headers } = client
-	//console.log('onConnect', path)
-
-	if (headers.cookie == undefined) {
-		websocket.sendError(client, 'Missing cookie')
-		return
-	}
-
-	const cookies = cookie.parse(headers.cookie)
-	//console.log('cookies', cookies)
-
-	let sid = cookies['connect.sid']
-	if (sid == undefined) {
-		websocket.sendError(client, 'Missing sid')
-	}
-
-	sid = sid.split(/[:.]+/)[1]
-	//console.log('sid', sid)
-
-	store.get(sid, function (err, session) {
-		//console.log('err', err)
-		//console.log('session', session)
-		if (err != null || session == null) {
-			websocket.sendError(client, 'Unknown session')
-			return
-		}
-		const userName = session.user
-		client.sessionId = sid
-
-		addHmiClient(client, userName)
-	})
-}
 
 function getHmiClients(userName) {
 	return getClients().filter((c) => c.userName == userName)

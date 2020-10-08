@@ -1,0 +1,27 @@
+<div class="toolbar">
+    <button class="w3-button" bn-icon="fa fa-plus" bn-event="click: onAddWebcast"></button>
+</div>
+<!-- <div>
+    <div bn-control="brainjs.radiogroup" bn-val="type" bn-update="change">
+        <input type="radio" value="server">Server
+        <input type="radio" value="client">Client
+    </div>
+    <div>
+        <button bn-event="click: onConnect" class="w3-btn w3-blue" bn-show="!isConnected">Connect</button>
+        <button bn-event="click: onStart" class="w3-btn w3-blue" bn-show="showStart">Start</button>
+        <button bn-event="click: onStop" class="w3-btn w3-blue" bn-show="showStop">Stop</button>
+    </div>
+</div>
+
+<div class="content">
+    <video bn-bind="video" autoplay bn-prop="{muted: isMuted}"></video>
+</div> -->
+
+<div class="content">
+    <div 
+    bn-control="brainjs.tree" 
+    bn-data="{source: webcasts, contextMenu: getContextMenu}" 
+    bn-iface="tree"
+    class="tree" 
+    bn-event="treeclick: onTreeActivate, treecontextmenu: onTreeContextMenu"></div>
+</div>

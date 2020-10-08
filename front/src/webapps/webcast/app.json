@@ -1,0 +1,7 @@
+{	
+	"iconCls": "fab fa-chromecast fa-2x",
+	"colorCls": "w3-green",
+	"title": "Webcast",
+	"styles": ["app.css"],
+	"brainjs": ["tree"]
+}

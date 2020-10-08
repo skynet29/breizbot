@@ -1,0 +1,27 @@
+<div>
+    <form bn-event="submit: onSubmit" bn-form="data">
+
+        <div bn-control="brainjs.inputgroup">
+            <label>Name</label>
+            <input type="text" required name="name">
+        </div>
+
+        <input type="submit" hidden bn-bind="submit">
+    </form>
+</div>
+
+<div class="users">
+    <ul class="w3-ul w3-border w3-white" bn-each="users" 
+	bn-event="click.delete: onRemoveUser">
+    
+    <li class="w3-bar">
+		
+		<span class="w3-button w3-right delete w3-blue" title="Delete" bn-icon="fa fa-trash"></span>
+
+		<div class="w3-bar-item">
+			<i class="fa fa-user"></i>
+			<span bn-text="$scope.$i"></span>
+		</div>
+	</li>
+</ul>
+</div>

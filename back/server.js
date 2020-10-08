@@ -173,7 +173,8 @@ function dbReady() {
 				db: dbUtil.collection('app.' + appName),
 				util,
 				buildDbId: dbUtil.buildDbId,
-				events
+				events,
+				websocket
 			}
 			console.log(`add API router for app ${appName}`.blue)
 

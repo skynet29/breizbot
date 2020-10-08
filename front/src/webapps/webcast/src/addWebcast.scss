@@ -1,0 +1,12 @@
+.addWebcast {
+    padding: 10px;
+
+    display: flex;
+    flex-direction: column;
+
+    .users {
+        margin-top: 10px;
+        flex: 1;
+        overflow-y: auto;
+    }
+}

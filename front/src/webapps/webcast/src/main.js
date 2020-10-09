@@ -33,7 +33,7 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onTreeContextMenu: async function(ev, data) {
-					console.log('onTreeContextMenu', data)
+					//console.log('onTreeContextMenu', data)
 					const {action, node} = data
 					const {id} = node.data
 					console.log('id', id)
@@ -79,7 +79,7 @@ $$.control.registerControl('rootPage', {
 					}
 				},
 				onAddWebcast: function () {
-					console.log('onAddWebcast')
+					//console.log('onAddWebcast')
 					pager.pushPage('addWebcast', {
 						title: 'Add Webcast',
 						onReturn: async function (data) {

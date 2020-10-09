@@ -3,15 +3,13 @@ $$.control.registerControl('client', {
     template: { gulp_inject: './client.html' },
 
     props: {
-        id: null
+        id: null,
+        mimeType: ''
     },
 
     init: function (elt) {
 
-        const { id } = this.props
-
-        const constraints = { video: true, audio: true }
-        const mimeType = 'video/webm; codecs=opus, vp8'
+        const { id, mimeType } = this.props
 
         let sock = null
         let mediaSource = null
@@ -27,7 +25,7 @@ $$.control.registerControl('client', {
 
 
             const url = `${protocol}//${host}/stream/client/${id}`
-            console.log('url', url)
+            //console.log('url', url)
 
             sock = new WebSocket(url)
             sock.binaryType = 'arraybuffer'

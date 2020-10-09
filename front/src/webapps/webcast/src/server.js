@@ -5,15 +5,15 @@ $$.control.registerControl('server', {
     deps: ['breizbot.pager'],
 
     props: {
-        id: null
+        id: null,
+        mimeType: ''
     },
 
     init: function (elt, pager) {
 
-        const { id } = this.props
+        const { id, mimeType } = this.props
 
 		const constraints = { video: true, audio: true }
-        const mimeType = 'video/webm; codecs=opus, vp8'
         let sock = null
         let mediaRecorder = null   
         let stream = null     
@@ -28,7 +28,7 @@ $$.control.registerControl('server', {
 
 
 			const url = `${protocol}//${host}/stream/server/${id}`
-			console.log('url', url)
+			//console.log('url', url)
 
 			sock = new WebSocket(url)
 			sock.binaryType = 'arraybuffer'

@@ -6,6 +6,8 @@ $$.control.registerControl('rootPage', {
 
 	init: function (elt, pager, http) {
 
+		const mimeType = 'video/webm; codecs=opus, vp8'		
+
 		async function load() {
 			const webcasts = await http.get('/')
 			//console.log('webcasts', webcasts)
@@ -64,7 +66,8 @@ $$.control.registerControl('rootPage', {
 						pager.pushPage(type, {
 							title: `${type} ${node.title}`,
 							props: {
-								id
+								id,
+								mimeType
 							},
 							onBack: function () {
 								const activeNode = tree.getActiveNode()

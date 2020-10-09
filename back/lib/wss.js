@@ -32,7 +32,7 @@ homebox.events.on('notif', (userName, msg) => {
 
 const history = {}
 
-const wss = websocket.addServer('/hmi/', true, addHmiClient)
+const wss = websocket.addServer('/hmi/', true, true, addHmiClient)
 
 
 function addToHistory(userName, msg) {

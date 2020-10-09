@@ -10,7 +10,7 @@ const events = new EventEmitter()
 const websocket = require('./websocket.js')
 const dbUsers = require('../db/users.js')
 
-const wss = websocket.addServer('/homebox/', false, onHomeboxConnect)
+const wss = websocket.addServer('/homebox/', false, true, onHomeboxConnect)
 
 
 async function onHomeboxConnect(client) {

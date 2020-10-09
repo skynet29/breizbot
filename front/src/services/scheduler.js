@@ -6,7 +6,7 @@ $$.service.registerService('breizbot.scheduler', {
 
 		return {
 			openApp: function(appName, appParams) {
-				console.log('[scheduler] openApp', appName, appParams)
+				//console.log('[scheduler] openApp', appName, appParams)
 				window.parent.postMessage({
 					type: 'openApp',
 					 data: {appName, appParams}

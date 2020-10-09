@@ -28,7 +28,7 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onAppClick: function(ev, data) {
-					console.log('onAppClick', data)
+					//console.log('onAppClick', data)
 					scheduler.openApp(data.appName)
 				},
 				onTileContextMenu: async function(ev, data) {
@@ -54,7 +54,7 @@ $$.control.registerControl('rootPage', {
 
 		async function listAll() {
 			const apps = await srvApps.listAll()
-			console.log('apps', apps)
+			//console.log('apps', apps)
 			ctrl.setData({apps})
 		}
 

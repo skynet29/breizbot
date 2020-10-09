@@ -8,10 +8,10 @@ const servers = []
 const pingInterval = 30 * 1000 // 30 sec
 
 
-function addServer(startPath, findUserFromSid, onConnect) {
+function addServer(startPath, findUserFromSid, checkPing, onConnect) {
     console.log('add ws server', startPath)
     const wss = new WebSocket.Server({ noServer: true })
-    servers.push({ wss, startPath, onConnect, findUserFromSid })
+    servers.push({ wss, startPath, onConnect, findUserFromSid, checkPing })
     return wss
 
 }
@@ -75,6 +75,9 @@ function init(httpServer, store) {
                         console.error(e)
                     }
                 }
+                else {
+                    onConnect(ws)
+                }
     
             })
 
@@ -93,11 +96,13 @@ function checkBrokenConnections() {
         //console.log('checkBrokenConnections')
         const now = Date.now()
         servers.forEach((server) => {
-            server.wss.clients.forEach((client) => {
-                if ((now - client.lastPingDate) > pingInterval) {
-                    client.close()
-                }
-            })
+            if (server.checkPing) {
+                server.wss.clients.forEach((client) => {
+                    if ((now - client.lastPingDate) > pingInterval) {
+                        client.close()
+                    }
+                })    
+            }
         })
     }, pingInterval)
 }

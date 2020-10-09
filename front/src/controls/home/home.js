@@ -182,7 +182,7 @@ $$.control.registerControl('breizbot.home', {
 		})
 
 		window.addEventListener('message', (ev) => {
-			console.log('[home] message', ev.data)
+			//console.log('[home] message', ev.data)
 			const { type, data } = ev.data
 			if (type == 'openApp') {
 				const { appName, appParams } = data
@@ -222,7 +222,7 @@ $$.control.registerControl('breizbot.home', {
 		function openApp(appName, params) {
 			const appInfo = ctrl.model.apps.find((a) => a.appName == appName)
 			const title = appInfo.props.title
-			console.log('openApp', appName, params)
+			//console.log('openApp', appName, params)
 			let idx = ctrl.scope.tabs.getTabIndexFromTitle(title)
 			const appUrl = $$.util.getUrlParams(`/apps/${appName}`, params)
 			if (idx < 0) { // apps not already run

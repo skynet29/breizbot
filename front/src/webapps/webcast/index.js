@@ -3,7 +3,7 @@ module.exports = function (ctx, router) {
 
     const { websocket, db, buildDbId } = ctx
 
-    const wssServer = websocket.addServer('/stream/server/', true, (sock, userName) => {
+    const wssServer = websocket.addServer('/stream/server/', true, false, (sock, userName) => {
 
 
         console.log('wssServer connection', userName)
@@ -28,7 +28,7 @@ module.exports = function (ctx, router) {
         })
     })
 
-    const wssClient = websocket.addServer('/stream/client/', true, (sock, userName) => {
+    const wssClient = websocket.addServer('/stream/client/', true, false, (sock, userName) => {
         console.log('wssClient connection', userName)
         sock.webcastId = sock.path.split('/')[3]
 

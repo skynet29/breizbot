@@ -1,0 +1,12 @@
+.server {
+    display: flex;
+    flex-direction: row;
+
+    .users {
+        width: 200px;
+
+        .w3-bar {
+            padding: 4px 2px;
+        }
+    }
+}

@@ -1,3 +1,17 @@
+<div class="users">
+    <ul class="w3-ul w3-border w3-white" bn-each="users">
+        <li class="w3-bar">
+            <div class="w3-bar-item">
+                <i class="fa fa-user" bn-class="{
+                    w3-text-green: $scope.$i.connected,
+                    w3-text-red: !scope.$i.connected
+                }"></i>
+                <span bn-text="$scope.$i.userName"></span>
+            </div>
+        </li>
+    </ul>
+</div>
+
 <div class="content">
     <video bn-bind="video" autoplay muted></video>
 </div>

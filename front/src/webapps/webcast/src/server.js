@@ -1,15 +1,16 @@
+
 $$.control.registerControl('server', {
 
     template: { gulp_inject: './server.html' },
 
-    deps: ['breizbot.pager'],
+    deps: ['breizbot.pager', 'breizbot.http', 'breizbot.broker'],
 
     props: {
         id: null,
         mimeType: ''
     },
 
-    init: function (elt, pager) {
+    init: function (elt, pager, http, broker) {
 
         const { id, mimeType } = this.props
 
@@ -76,8 +77,38 @@ $$.control.registerControl('server', {
 
 
         const ctrl = $$.viewController(elt, {
+            data: {
+                users: [],
+				class1: function(scope) {
+
+				}                
+            }
 
         })
+
+        async function getUserStatus() {
+            //console.log('getUserStatus')
+            const users = await http.get(`/${id}/users`)
+            //console.log('users', users)
+            ctrl.setData({users})
+        }
+
+        getUserStatus()
+
+        function updateUserStatus(msg) {
+            if (msg.hist) {
+                return
+            }
+            //console.log('updateUserStatus', msg)
+            const {userName, connected} = msg.data
+            const userInfo = ctrl.model.users.find((i) => i.userName == userName)
+            if (userInfo) {
+                userInfo.connected = connected
+                ctrl.update()    
+            }
+        }
+
+        broker.register('webcast.userstatus', updateUserStatus)
 
         this.getButtons = function() {
             return {
@@ -105,6 +136,8 @@ $$.control.registerControl('server', {
         this.dispose = function() {
             console.log('server dispose')
             stop()
+            broker.unregister('webcast.userstatus', updateUserStatus)
+
         }
 
     }

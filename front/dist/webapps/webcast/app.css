@@ -31,3 +31,11 @@
         font-size: 1.3em; }
       .rootPage .content .tree span.fa {
         color: #607d8b; }
+
+.server {
+  display: flex;
+  flex-direction: row; }
+  .server .users {
+    width: 200px; }
+    .server .users .w3-bar {
+      padding: 4px 2px; }

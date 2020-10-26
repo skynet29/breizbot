@@ -1,0 +1,21 @@
+<div>
+    <form bn-event="submit: onSubmit" bn-form="formData">
+        <label>Account Name</label>
+        <input type="text" name="name" required>
+    
+        <label>Currency</label>
+        <div bn-control="brainjs.combobox" bn-data="{
+            items: ['euro', 'dollar']
+        }" name="currency"></div>
+    
+        <label>Initial Balance</label>
+        <input type="number" required name="initialBalance">
+
+        <label>Held at</label>
+        <input type="text" name="heldAt">
+        
+    
+    
+        <input type="submit" bn-bind="submit" hidden>
+    </form>
+</div>

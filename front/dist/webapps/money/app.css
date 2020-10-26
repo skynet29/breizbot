@@ -1,0 +1,53 @@
+.rootPage {
+  display: flex;
+  flex-direction: column; }
+  .rootPage .toolbar {
+    background-color: #128C7E;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 10px; }
+  .rootPage .scrollPanel {
+    flex: 1;
+    overflow-y: auto; }
+    .rootPage .scrollPanel .w3-bar {
+      cursor: pointer; }
+      .rootPage .scrollPanel .w3-bar .w3-bar-item {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%; }
+
+.addAccount {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: row; }
+  .addAccount form {
+    max-width: 400px;
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 10px; }
+    .addAccount form label {
+      grid-column: 1/2; }
+    .addAccount form input {
+      grid-column: 2/3; }
+
+.transactions {
+  display: flex;
+  flex-direction: column; }
+  .transactions .scrollPanelTable {
+    flex: 1;
+    overflow-y: auto; }
+    .transactions .scrollPanelTable table {
+      border: none; }
+      .transactions .scrollPanelTable table th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background-color: #666;
+        color: white; }
+      .transactions .scrollPanelTable table td.amount {
+        text-align: right;
+        padding-right: 10px; }

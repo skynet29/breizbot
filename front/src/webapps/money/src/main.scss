@@ -1,0 +1,31 @@
+.rootPage {
+	display: flex;
+	flex-direction: column;
+	
+	.toolbar {
+		background-color: #128C7E;
+		color: white;
+		display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 10px;
+
+    }
+    
+    .scrollPanel {
+        flex: 1;
+        overflow-y: auto;
+
+        .w3-bar {
+            cursor: pointer;
+            
+            .w3-bar-item {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                width: 100%;
+            }
+        }
+    }
+
+}

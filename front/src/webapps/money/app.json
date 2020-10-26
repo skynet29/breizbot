@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fa fa-euro-sign fa-2x",
+	"colorCls": "w3-green",
+	"title": "Money",
+	"styles": ["app.css"]
+}

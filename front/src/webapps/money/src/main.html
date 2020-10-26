@@ -1,0 +1,29 @@
+<div class="toolbar">
+    <div>Accounts</div>
+	<button 
+		class="w3-button" 
+		title="Add Account"
+        bn-event="click: onAddAccount"
+        bn-icon="fa fa-plus"
+
+	></button>	
+</div>
+
+<p bn-show="!hasAccounts">You have no account</p>
+<div class="scrollPanel">
+	<ul class="w3-ul w3-border w3-white" 
+        bn-each="accounts"
+        bn-event="contextmenuchange.w3-bar: onContextMenu, click.w3-bar: onItemClick"
+		bn-show="hasAccounts"
+		>
+		<li class="w3-bar" bn-control="brainjs.contextmenu" bn-data="{items: contextMenu}">
+
+
+			<div class="w3-bar-item" >
+				<strong bn-text="$scope.$i.name"></strong><br>
+                <span class="w3-right" bn-text="formatAmount"></span>
+			</div>
+		</li>
+	</ul>		
+
+</div>

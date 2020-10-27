@@ -1,4 +1,23 @@
+//@ts-check
+
 const qif2json = require('qif2json')
+
+const stdCategories = {
+    'Factures': ['Electicité', 'Gaz', 'Internet', 'Téléphone', 'Eau'],
+    'Alimentation': ['Restaurant', 'Courses'],
+    'Santé': ['Médecin', 'Pharmacie', 'Dentiste'],
+    'Revenu': [],
+    'Assurance': ['Maison', 'Automobile'],
+    'Impôts': ['Revenu', 'Foncier', 'Habitation', 'Ordures ménagères'],
+    'Loisirs': ['Magazines', 'Cinemas', 'Livres', 'Musées'],
+    'Automobile': ['Carburant', 'Péage', 'Parking', 'Révision', 'Réparation'],
+    'Maison': ['Habillement', 'Equipement'],
+    'Vacances': ['Location'],
+    'Dépôt': [],
+    'Retrait': [],
+    'Remboursement': ['CPAM', 'Mutuelle', 'Impôts', 'Autres'],
+    'Frais bancaires': []
+}
 
 module.exports = function (ctx, router) {
 
@@ -58,7 +77,7 @@ module.exports = function (ctx, router) {
         const offset = parseInt(req.query.offset)
 
         try {
-            const data = await db.find({ type: 'transaction', accountId }).sort({date: -1}).skip(offset).limit(20).toArray()
+            const data = await db.find({ type: 'transaction', accountId }).sort({ date: -1 }).skip(offset).limit(20).toArray()
             res.json(data)
         }
         catch (e) {
@@ -72,7 +91,10 @@ module.exports = function (ctx, router) {
         const accountId = req.params.id
 
         try {
-            const data = await db.distinct('category', { type: 'transaction', accountId })
+            let data = await db.distinct('category', { type: 'transaction', accountId })
+            data = Object.keys(stdCategories).concat(data)
+            data = [...new Set(data)] // vier les doublons
+
             res.json(data)
         }
         catch (e) {
@@ -80,6 +102,25 @@ module.exports = function (ctx, router) {
         }
 
     })
+
+    router.get('/account/:id/subcategories', async function (req, res) {
+
+        const accountId = req.params.id
+        const { category } = req.query
+
+        try {
+            let data = await db.distinct('subcategory', { type: 'transaction', accountId, category })
+            data = stdCategories[category].concat(data)
+            data = [...new Set(data)] // vier les doublons
+
+            res.json(data)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
 
     router.get('/account/:id/payees', async function (req, res) {
 
@@ -105,25 +146,25 @@ module.exports = function (ctx, router) {
 
         try {
             await db.insertOne(data)
-            await db.updateOne(buildDbId(accountId), {$inc: {finalBalance: data.amount}})
+            await db.updateOne(buildDbId(accountId), { $inc: { finalBalance: data.amount } })
             res.sendStatus(200)
         }
-        catch(e) {
+        catch (e) {
             res.status(404).send(e.message)
         }
     })
 
-    router.delete('/transaction/', async function(req, res) {
+    router.delete('/transaction/', async function (req, res) {
 
         const data = req.body
-        const {accountId, _id, amount} = data
+        const { accountId, _id, amount } = data
 
         try {
             const ret = await db.deleteOne(buildDbId(_id))
-            await db.updateOne(buildDbId(accountId), {$inc: {finalBalance: -amount}})
+            await db.updateOne(buildDbId(accountId), { $inc: { finalBalance: -amount } })
             res.sendStatus(200)
         }
-        catch(e) {
+        catch (e) {
             res.status(404).send(e.message)
         }
 
@@ -158,8 +199,8 @@ module.exports = function (ctx, router) {
                         finalBalance += item.amount
                     })
                     console.log('finalBalance', finalBalance)
-                    await db.updateOne(buildDbId(accountId), {$set: {initialBalance, finalBalance}})
-                    
+                    await db.updateOne(buildDbId(accountId), { $set: { initialBalance, finalBalance } })
+
                 }
                 try {
                     await db.deleteMany({ type: 'transaction', accountId })

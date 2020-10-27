@@ -19,7 +19,8 @@ $$.control.registerControl('addTransaction', {
                     type: 'debit'
                 },
                 categories: [],
-                payees: []
+                payees: [],
+                subcategories: []
             },
 
             events: {
@@ -27,6 +28,12 @@ $$.control.registerControl('addTransaction', {
                     ev.preventDefault()
                     const data = $(this).getFormData()
                     pager.popPage(data)
+                },
+
+                onCategoryChange: async function (ev, ui) {
+                    //console.log('onCategoryChange', ui)
+                    const subcategories = await http.get(`/account/${accountId}/subcategories`, { category: ui.item.value })
+                    ctrl.setData({ subcategories })
                 }
             }
 
@@ -38,7 +45,7 @@ $$.control.registerControl('addTransaction', {
             const payees = await http.get(`/account/${accountId}/payees`)
             //console.log('payees', payees)
 
-            ctrl.setData({payees, categories})
+            ctrl.setData({ payees, categories })
         }
 
         loadInfo()

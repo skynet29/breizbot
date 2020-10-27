@@ -74,8 +74,7 @@ $$.control.registerControl('transactions', {
                         pager.pushPage('breizbot.files', {
                             title: 'Import QIF file',
                             props: {
-                                filterExtension: 'qif',
-                                selectionEnabled: true,
+                                filterExtension: 'qif'
                             },
                             events: {
                                 fileclick: function (ev, data) {

@@ -154,6 +154,7 @@ module.exports = function (ctx, router) {
                     transactions.forEach((item) => {
                         item.accountId = accountId
                         item.type = 'transaction'
+                        item.date = new Date(item.date)
                         finalBalance += item.amount
                     })
                     console.log('finalBalance', finalBalance)

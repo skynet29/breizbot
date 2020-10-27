@@ -16,18 +16,33 @@ $$.control.registerControl('transactions', {
         const ctrl = $$.viewController(elt, {
             data: {
                 transactions: [],
-                formatAmount: function(scope) {
+                formatAmount: function (scope) {
                     return scope.$i.amount.toFixed(2)
                 },
-                formatDate: function(scope) {
+                formatDate: function (scope) {
                     return new Date(scope.$i.date).toLocaleDateString()
                 },
-                getItems: async function(idx) {
+                getItems: async function (idx) {
                     //console.log('getItems', idx)
                     return loadTransactions(idx)
                 },
-                getAmountColor: function(scope) {
+                getAmountColor: function (scope) {
                     return (scope.$i.amount < 0) ? 'red' : 'black'
+                }
+            },
+            events: {
+                onItemContextMenu: function(ev, data) {
+                    const idx = $(this).index()
+                    //console.log('onItemContextMenu', idx, data)
+                    const {cmd} = data
+                    const info = ctrl.model.transactions[idx]
+                    //console.log('info', info)
+                    if (cmd == 'del') {
+                        $$.ui.showConfirm({title: 'Delete Transaction', content: 'Are you sure ?'}, async () => {
+                            await http.delete('/transaction/', info)
+                            ctrl.removeArrayItem('transactions', idx, 'transactions')        
+                        })
+                    }
                 }
             }
 
@@ -42,6 +57,7 @@ $$.control.registerControl('transactions', {
                 ctrl.setData({ transactions })
             }
             else {
+                ctrl.model.transactions = ctrl.model.transactions.concat(transactions)
                 return transactions
             }
         }
@@ -71,6 +87,34 @@ $$.control.registerControl('transactions', {
                                 const fileName = data.rootDir + data.fileName
                                 await http.post(`/account/${accountId}/importTransactions`, { fileName })
                                 loadTransactions()
+                            }
+                        })
+                    }
+                },
+                add: {
+                    title: 'Add Transaction',
+                    icon: 'fa fa-plus',
+                    onClick: function () {
+                        pager.pushPage('addTransaction', {
+                            title: 'Add Transaction',
+                            props: {
+                                accountId
+                            },
+                            onReturn: async function (data) {
+                                let { date } = data
+
+                                date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}T00:00:00`
+
+                                data.date = date
+
+                                if (data.type == 'debit') {
+                                    data.amount *= -1
+                                    delete data.type
+                                }
+                                console.log('onReturn', data)
+                                await http.post(`/account/${accountId}/addTransaction`, data)
+                                ctrl.insertArrayItemAfter('transactions', 0, data, 'transactions')
+
                             }
                         })
                     }

@@ -1,0 +1,45 @@
+.addTransaction {
+    display: flex;
+    justify-content: center;
+
+    form {
+        padding-top: 10px;
+        max-width: 500px;
+        display: flex;
+        flex-direction: column;
+
+        i {
+            color: #6c757d;
+        }
+
+        .group {
+            margin-bottom: 10px;
+
+            > label {
+                display: inline-block;
+                margin-bottom: 5px;;
+            }
+
+            .brainjs-radiogroup {
+                display: flex;
+                justify-content: space-between;
+                flex-direction: row;
+                padding-left: 10px;
+                padding-right: 10px;
+
+                .brainjs-inputgroup {
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+
+                    input[type=radio] {
+                        margin-right: 5px;
+                    }
+    
+                }
+
+
+            }
+        }
+    }
+}

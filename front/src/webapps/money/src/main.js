@@ -65,6 +65,9 @@ $$.control.registerControl('rootPage', {
 						title: `${accountInfo.name} Transactions`,
 						props: {
 							accountId: accountInfo._id.toString()
+						},
+						onBack: function() {
+							loadAccounts()
 						}
 					})
 				}

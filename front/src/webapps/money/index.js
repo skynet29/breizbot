@@ -67,6 +67,70 @@ module.exports = function (ctx, router) {
 
     })
 
+    router.get('/account/:id/categories', async function (req, res) {
+
+        const accountId = req.params.id
+
+        try {
+            const data = await db.distinct('category', { type: 'transaction', accountId })
+            res.json(data)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
+    router.get('/account/:id/payees', async function (req, res) {
+
+        const accountId = req.params.id
+
+        try {
+            const data = await db.distinct('payee', { type: 'transaction', accountId })
+            res.json(data)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
+    router.post('/account/:id/addTransaction', async function (req, res) {
+
+        const accountId = req.params.id
+
+        const data = req.body
+        data.type = 'transaction'
+        data.accountId = accountId
+
+        try {
+            await db.insertOne(data)
+            await db.updateOne(buildDbId(accountId), {$inc: {finalBalance: data.amount}})
+            res.sendStatus(200)
+        }
+        catch(e) {
+            res.status(404).send(e.message)
+        }
+    })
+
+    router.delete('/transaction/', async function(req, res) {
+
+        const data = req.body
+        const {accountId, _id, amount} = data
+
+        try {
+            const ret = await db.deleteOne(buildDbId(_id))
+            await db.updateOne(buildDbId(accountId), {$inc: {finalBalance: -amount}})
+            res.sendStatus(200)
+        }
+        catch(e) {
+            res.status(404).send(e.message)
+        }
+
+
+    })
+
+
     router.post('/account/:id/importTransactions', async function (req, res) {
 
         const userName = req.session.user

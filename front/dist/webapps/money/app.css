@@ -34,6 +34,34 @@
     .addAccount form input {
       grid-column: 2/3; }
 
+.addTransaction {
+  display: flex;
+  justify-content: center; }
+  .addTransaction form {
+    padding-top: 10px;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column; }
+    .addTransaction form i {
+      color: #6c757d; }
+    .addTransaction form .group {
+      margin-bottom: 10px; }
+      .addTransaction form .group > label {
+        display: inline-block;
+        margin-bottom: 5px; }
+      .addTransaction form .group .brainjs-radiogroup {
+        display: flex;
+        justify-content: space-between;
+        flex-direction: row;
+        padding-left: 10px;
+        padding-right: 10px; }
+        .addTransaction form .group .brainjs-radiogroup .brainjs-inputgroup {
+          display: flex;
+          flex-direction: row;
+          align-items: center; }
+          .addTransaction form .group .brainjs-radiogroup .brainjs-inputgroup input[type=radio] {
+            margin-right: 5px; }
+
 .transactions {
   display: flex;
   flex-direction: column; }

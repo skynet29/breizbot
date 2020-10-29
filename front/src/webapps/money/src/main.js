@@ -77,6 +77,7 @@ $$.control.registerControl('rootPage', {
 								//console.log('onReturn', data)
 								const newData =  $.extend(accountInfo, data)
 								delete newData._id
+								delete newData.synthesis
 								await http.put(`/account/${accountId}`, newData)
 								loadAccounts()
 							}

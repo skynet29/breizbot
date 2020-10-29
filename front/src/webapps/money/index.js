@@ -41,14 +41,49 @@ module.exports = function (ctx, router) {
         }
     })
 
+    async function computeMonthSynthesis(account) {
+        const now = new Date()
+        const daysOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+
+        const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+        const endDate = new Date(now.getFullYear(), now.getMonth(), daysOfMonth)
+
+        let income = 0
+        let expenses = 0
+        const transations = await db.find(
+            {
+                accountId: account._id.toString(),
+                type: 'transaction',
+                date: {
+                    $gte: startDate,
+                    $lte: endDate
+                }
+            }).toArray()
+
+        transations.forEach((tr) => {
+            if (tr.amount > 0) {
+                income += tr.amount
+            }
+            else {
+                expenses += -tr.amount
+            }
+        })
+
+        return { income, expenses }
+
+    }
 
     router.get('/account', async function (req, res) {
 
         const userName = req.session.user
 
+
         try {
-            const data = await db.find({ userName, type: 'account' }, { projection: { name: 1, finalBalance: 1 } }).toArray()
-            res.json(data)
+            const accounts = await db.find({ userName, type: 'account' }, { projection: { name: 1, finalBalance: 1 } }).toArray()
+            for await (const account of accounts) {
+                account.synthesis = await computeMonthSynthesis(account)
+            }
+            res.json(accounts)
         }
         catch (e) {
             res.status(404).send(e.message)

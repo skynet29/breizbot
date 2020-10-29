@@ -14,10 +14,17 @@
     .rootPage .scrollPanel .w3-bar {
       cursor: pointer; }
       .rootPage .scrollPanel .w3-bar .w3-bar-item {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
         width: 100%; }
+        .rootPage .scrollPanel .w3-bar .w3-bar-item .info {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between; }
+        .rootPage .scrollPanel .w3-bar .w3-bar-item .synthesis {
+          margin-top: 10px; }
+          .rootPage .scrollPanel .w3-bar .w3-bar-item .synthesis > div {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between; }
 
 .addAccount {
   padding: 10px;

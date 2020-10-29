@@ -19,9 +19,26 @@
 		<li class="w3-bar" bn-control="brainjs.contextmenu" bn-data="{items: contextMenu}">
 
 
-			<div class="w3-bar-item" >
-				<strong bn-text="$scope.$i.name"></strong><br>
-                <span class="w3-right" bn-text="formatAmount"></span>
+			<div class="w3-bar-item">
+				<div class="info">
+					<strong bn-text="$scope.$i.name"></strong><br>
+					<span class="w3-right" bn-text="formatAmount"></span>	
+				</div>
+				<div class="synthesis">
+					<div class="w3-text-grey">Current Month Synthesis</div>
+					<div class="w3-text-green">
+						<label>Income</label>
+						<span bn-text="formatIncome"></span>
+					</div>
+					<div class="w3-text-red">
+						<label>Expenses</label>
+						<span bn-text="formatExpenses"></span>
+					</div>
+					<div>
+						<label>Difference</label>
+						<span bn-text="getDifference"></span>
+					</div>
+				</div>
 			</div>
 		</li>
 	</ul>		

@@ -18,13 +18,29 @@
 
         .w3-bar {
             cursor: pointer;
-            
+
             .w3-bar-item {
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
                 width: 100%;
+
+                .info {
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    
+                }
+
+                .synthesis {
+                    margin-top: 10px;
+                    > div {
+                        display: flex;
+                        flex-direction: row;
+                        justify-content: space-between;
+
+                    }
+                }
+    
             }
+            
         }
     }
 

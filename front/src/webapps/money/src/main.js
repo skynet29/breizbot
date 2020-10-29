@@ -1,22 +1,22 @@
 $$.control.registerControl('rootPage', {
 
-	template: {gulp_inject: './main.html'},
+	template: { gulp_inject: './main.html' },
 
 	deps: ['breizbot.pager', 'breizbot.http'],
 
-	init: function(elt, pager, http) {
+	init: function (elt, pager, http) {
 
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				accounts: [],
-				formatAmount: function(scope) {
+				formatAmount: function (scope) {
 					return scope.$i.finalBalance.toFixed(2)
 				},
-				hasAccounts:  function() {
+				hasAccounts: function () {
 					return this.accounts.length > 0
 				},
-				contextMenu: function() {
+				contextMenu: function () {
 					return {
 						edit: {
 							name: 'Edit',
@@ -27,21 +27,31 @@ $$.control.registerControl('rootPage', {
 							icon: 'fas fa-trash-alt'
 						}
 					}
+				},
+				getDifference: function (scope) {
+					const { income, expenses } = scope.$i.synthesis
+					return (income - expenses).toFixed(2)
+				},
+				formatIncome: function(scope) {
+					return scope.$i.synthesis.income.toFixed(2)
+				},
+				formatExpenses: function(scope) {
+					return scope.$i.synthesis.expenses.toFixed(2)
 				}
 			},
 			events: {
-				onAddAccount: function() {
+				onAddAccount: function () {
 					console.log('onAddAccount')
 					pager.pushPage('addAccount', {
 						title: 'Add Account',
-						onReturn:  async function(data) {
+						onReturn: async function (data) {
 							//console.log('onReturn', data)
 							await http.post('/account', data)
 							loadAccounts()
 						}
 					})
 				},
-				onContextMenu: function(ev, data) {
+				onContextMenu: function (ev, data) {
 					const idx = $(this).index()
 
 					//console.log('onContextMenu', data, idx)
@@ -49,15 +59,15 @@ $$.control.registerControl('rootPage', {
 					const accountInfo = ctrl.model.accounts[idx]
 					const accountId = accountInfo._id.toString()
 
-					const {cmd} = data
+					const { cmd } = data
 					if (cmd == 'delete') {
-						$$.ui.showConfirm({title: 'Delete Account', content: 'Are you sure ?'}, async () => {
+						$$.ui.showConfirm({ title: 'Delete Account', content: 'Are you sure ?' }, async () => {
 							await http.delete(`/account/${accountId}`)
 							loadAccounts()
 						})
 					}
 				},
-				onItemClick: function(ev) {
+				onItemClick: function (ev) {
 					const idx = $(this).index()
 					//console.log('onItemClick', idx)
 					const accountInfo = ctrl.model.accounts[idx]
@@ -66,19 +76,19 @@ $$.control.registerControl('rootPage', {
 						props: {
 							accountId: accountInfo._id.toString()
 						},
-						onBack: function() {
+						onBack: function () {
 							loadAccounts()
 						}
 					})
 				}
 			}
-			
+
 		})
 
 		async function loadAccounts() {
 			const accounts = await http.get('/account')
 			//console.log('accounts', accounts)
-			ctrl.setData({accounts})
+			ctrl.setData({ accounts })
 		}
 
 		loadAccounts()

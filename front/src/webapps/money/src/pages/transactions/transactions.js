@@ -117,30 +117,36 @@ $$.control.registerControl('transactions', {
 
         loadTransactions()
 
+        function importTransactions() {
+            pager.pushPage('breizbot.files', {
+                title: 'Import transactions from QIF file',
+                props: {
+                    filterExtension: 'qif'
+                },
+                events: {
+                    fileclick: function (ev, data) {
+                        pager.popPage(data)
+                    }
+                },
+                onReturn: async function (data) {
+                    //console.log('onReturn', data)
+                    const fileName = data.rootDir + data.fileName
+                    await http.post(`/account/${accountId}/importTransactions`, { fileName })
+                    loadTransactions()
+                }
+            })
+        }
+
         this.getButtons = function () {
             return {
                 import: {
                     title: 'import from QIF file',
                     icon: 'fa fa-download',
                     onClick: function () {
-                        console.log('Import')
-                        pager.pushPage('breizbot.files', {
-                            title: 'Import QIF file',
-                            props: {
-                                filterExtension: 'qif'
-                            },
-                            events: {
-                                fileclick: function (ev, data) {
-                                    pager.popPage(data)
-                                }
-                            },
-                            onReturn: async function (data) {
-                                console.log('onReturn', data)
-                                const fileName = data.rootDir + data.fileName
-                                await http.post(`/account/${accountId}/importTransactions`, { fileName })
-                                loadTransactions()
-                            }
-                        })
+                        $$.ui.showConfirm({
+                            title: 'Import Transactions', 
+                            content: 'This operation will remove all your current transactions<br><br>Are you sure ?'
+                        }, importTransactions)
                     }
                 },
                 add: {

@@ -171,7 +171,7 @@ module.exports = function (ctx, router) {
 
     })
 
-    router.post('/account/:id/addTransaction', async function (req, res) {
+    router.post('/account/:id/transaction', async function (req, res) {
 
         const accountId = req.params.id
 
@@ -188,6 +188,32 @@ module.exports = function (ctx, router) {
             res.status(404).send(e.message)
         }
     })
+
+    router.put('/account/:accountId/transaction/:transactionId', async function (req, res) {
+
+        const { accountId, transactionId } = req.params
+
+        const data = req.body
+        data.type = 'transaction'
+        data.accountId = accountId
+        data.date = new Date(data.date)
+
+        try {
+            const { value } = await db.findOneAndUpdate(buildDbId(transactionId), { $set: data })
+
+            const diffAmount = data.amount - value.amount
+
+            if (diffAmount != 0) {
+                await db.updateOne(buildDbId(accountId), { $inc: { finalBalance: diffAmount } })
+            }
+            
+            res.sendStatus(200)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+    })
+
 
     router.delete('/transaction/', async function (req, res) {
 

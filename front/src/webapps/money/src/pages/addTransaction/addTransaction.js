@@ -5,19 +5,20 @@ $$.control.registerControl('addTransaction', {
     deps: ['breizbot.pager', 'breizbot.http'],
 
     props: {
-        accountId: null
+        accountId: null,
+        formData : {
+            type: 'debit'
+        }
     },
 
     init: function (elt, pager, http) {
 
-        const { accountId } = this.props
+        const { accountId, formData } = this.props
 
         const ctrl = $$.viewController(elt, {
 
             data: {
-                formData: {
-                    type: 'debit'
-                },
+                formData,
                 categories: [],
                 payees: [],
                 subcategories: []

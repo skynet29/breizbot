@@ -31,22 +31,61 @@ $$.control.registerControl('transactions', {
                 }
             },
             events: {
-                onItemContextMenu: function(ev, data) {
+                onItemContextMenu: function (ev, data) {
                     const idx = $(this).index()
                     //console.log('onItemContextMenu', idx, data)
-                    const {cmd} = data
+                    const { cmd } = data
                     const info = ctrl.model.transactions[idx]
                     //console.log('info', info)
                     if (cmd == 'del') {
-                        $$.ui.showConfirm({title: 'Delete Transaction', content: 'Are you sure ?'}, async () => {
+                        $$.ui.showConfirm({ title: 'Delete Transaction', content: 'Are you sure ?' }, async () => {
                             await http.delete('/transaction/', info)
-                            ctrl.removeArrayItem('transactions', idx, 'transactions')        
+                            ctrl.removeArrayItem('transactions', idx, 'transactions')
+                        })
+                    }
+                    else if (cmd == 'edit') {
+                        if (info.amount < 0) {
+                            info.type = "debit"
+                            info.amount *= -1
+                        }
+                        else {
+                            info.type = 'credit'
+                        }
+
+                        const transactionId = info._id.toString()
+
+                        pager.pushPage('addTransaction', {
+                            title: 'Edit Transaction',
+                            props: {
+                                formData: info
+                            },
+                            onReturn: async function(data) {
+                                updateData(data)
+                                console.log('onReturn', data)
+                                await http.put(`/account/${accountId}/transaction/${transactionId}`, data)
+
+                                ctrl.updateArrayItem('transactions', idx, data, 'transactions')
+                            }
                         })
                     }
                 }
             }
 
         })
+
+        function updateData(data) {
+            let { date } = data
+
+            date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}T00:00:00`
+
+            data.date = date
+
+            if (data.type == 'debit') {
+                data.amount *= -1
+            }
+            delete data.type
+
+        }
 
         async function loadTransactions(offset) {
             offset = offset || 0
@@ -100,16 +139,8 @@ $$.control.registerControl('transactions', {
                                 accountId
                             },
                             onReturn: async function (data) {
-                                let { date } = data
 
-                                date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}T00:00:00`
-
-                                data.date = date
-
-                                if (data.type == 'debit') {
-                                    data.amount *= -1
-                                    delete data.type
-                                }
+                                updateData(data)
                                 console.log('onReturn', data)
                                 await http.post(`/account/${accountId}/addTransaction`, data)
                                 ctrl.insertArrayItemAfter('transactions', 0, data, 'transactions')

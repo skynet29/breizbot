@@ -57,13 +57,29 @@ $$.control.registerControl('rootPage', {
 					//console.log('onContextMenu', data, idx)
 
 					const accountInfo = ctrl.model.accounts[idx]
+					//console.log('accountInfo', accountInfo)
 					const accountId = accountInfo._id.toString()
-
+					
 					const { cmd } = data
 					if (cmd == 'delete') {
 						$$.ui.showConfirm({ title: 'Delete Account', content: 'Are you sure ?' }, async () => {
 							await http.delete(`/account/${accountId}`)
 							loadAccounts()
+						})
+					}
+					else if (cmd == 'edit') {
+						pager.pushPage('addAccount', {
+							title: 'Edit Account',
+							props: {
+								formData: accountInfo
+							},
+							onReturn: async function (data) {
+								//console.log('onReturn', data)
+								const newData =  $.extend(accountInfo, data)
+								delete newData._id
+								await http.put(`/account/${accountId}`, newData)
+								loadAccounts()
+							}
 						})
 					}
 				},

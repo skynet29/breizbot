@@ -79,7 +79,7 @@ module.exports = function (ctx, router) {
 
 
         try {
-            const accounts = await db.find({ userName, type: 'account' }, { projection: { name: 1, finalBalance: 1 } }).toArray()
+            const accounts = await db.find({ userName, type: 'account' }).toArray()
             for await (const account of accounts) {
                 account.synthesis = await computeMonthSynthesis(account)
             }
@@ -91,9 +91,24 @@ module.exports = function (ctx, router) {
 
     })
 
-    router.delete('/account/:id', async function (req, res) {
+    router.put('/account/:accountId', async function (req, res) {
 
-        const accountId = req.params.id
+        const { accountId } = req.params
+        const data = req.body
+
+        try {
+            await db.updateOne(buildDbId(accountId), { $set: data })
+            res.sendStatus(200)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
+    router.delete('/account/:accountId', async function (req, res) {
+
+        const { accountId } = req.params
 
         try {
             await db.deleteMany({ type: 'transaction', accountId })
@@ -206,7 +221,7 @@ module.exports = function (ctx, router) {
             if (diffAmount != 0) {
                 await db.updateOne(buildDbId(accountId), { $inc: { finalBalance: diffAmount } })
             }
-            
+
             res.sendStatus(200)
         }
         catch (e) {

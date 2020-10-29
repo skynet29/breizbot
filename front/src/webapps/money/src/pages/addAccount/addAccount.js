@@ -1,22 +1,27 @@
 $$.control.registerControl('addAccount', {
 
-    template: {gulp_inject: './addAccount.html'},
+    template: { gulp_inject: './addAccount.html' },
 
     deps: ['breizbot.pager'],
 
-    init: function(elt, pager) {
+    props: {
+        formData: {
+            currency: 'euro'
+        }
+    },
 
+    init: function (elt, pager) {
+
+        const { formData } = this.props
 
         const ctrl = $$.viewController(elt, {
 
             data: {
-                formData: {
-                    currency: 'euro'
-                }
+                formData
             },
 
-            events:  {
-                onSubmit: function(ev) {
+            events: {
+                onSubmit: function (ev) {
                     ev.preventDefault()
                     const data = $(this).getFormData()
                     //console.log('onSubmit', data)
@@ -27,12 +32,12 @@ $$.control.registerControl('addAccount', {
 
         })
 
-        this.getButtons = function() {
+        this.getButtons = function () {
             return {
                 apply: {
                     icon: 'fa fa-check',
                     title: 'Apply',
-                    onClick: function() {
+                    onClick: function () {
                         ctrl.scope.submit.click()
                     }
                 }

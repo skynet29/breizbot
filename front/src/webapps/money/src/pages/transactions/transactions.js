@@ -28,6 +28,20 @@ $$.control.registerControl('transactions', {
                 },
                 getAmountColor: function (scope) {
                     return (scope.$i.amount < 0) ? 'red' : 'black'
+                },
+                formatPayee: function (scope) {
+                    const { category, payee } = scope.$i
+                    if (category.startsWith('[')) {
+                        return category.substring(1, category.length - 1)
+                    }
+                    return payee
+                },
+                formatCategory: function(scope) {
+                    const { category } = scope.$i
+                    if (category.startsWith('[')) {
+                        return 'virement'
+                    }
+                    return category                    
                 }
             },
             events: {
@@ -59,9 +73,9 @@ $$.control.registerControl('transactions', {
                             props: {
                                 formData: info
                             },
-                            onReturn: async function(data) {
+                            onReturn: async function (data) {
                                 updateData(data)
-                                console.log('onReturn', data)
+                                //console.log('onReturn', data)
                                 await http.put(`/account/${accountId}/transaction/${transactionId}`, data)
 
                                 ctrl.updateArrayItem('transactions', idx, data, 'transactions')

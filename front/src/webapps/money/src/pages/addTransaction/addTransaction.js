@@ -13,10 +13,9 @@ $$.control.registerControl('addTransaction', {
     },
 
     init: function (elt, pager, http) {
-
         const { accountId, formData, isAdd } = this.props
+       
         const { type } = formData
-        delete formData.type
 
         const ctrl = $$.viewController(elt, {
 

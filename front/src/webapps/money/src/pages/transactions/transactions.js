@@ -95,13 +95,13 @@ $$.control.registerControl('transactions', {
                 data.category = 'virement'         
                 data.amount *= -1
                 data.payee = toAccount.label
-                delete data.toAccount
             }
             else if (data.type == 'debit') {
                 data.amount *= -1
             }
 
             delete data.type
+            delete data.toAccount
 
             if (isNaN(data.number)) {
                 delete data.number
@@ -168,9 +168,9 @@ $$.control.registerControl('transactions', {
                                 isAdd: true
                             },
                             onReturn: async function (data) {
-
-                                await updateData(data)
                                 //console.log('onReturn', data)
+                                await updateData(data)
+                               
                                 const { insertedId } = await http.post(`/account/${accountId}/transaction`, data)
                                 //console.log('insertedId', insertedId)
                                 data._id = insertedId

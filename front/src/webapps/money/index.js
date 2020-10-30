@@ -76,12 +76,15 @@ module.exports = function (ctx, router) {
     router.get('/account', async function (req, res) {
 
         const userName = req.session.user
+        const { synthesis } = req.query
 
 
         try {
             const accounts = await db.find({ userName, type: 'account' }).toArray()
-            for await (const account of accounts) {
-                account.synthesis = await computeMonthSynthesis(account)
+            if (synthesis === '1') {
+                for await (const account of accounts) {
+                    account.synthesis = await computeMonthSynthesis(account)
+                }    
             }
             res.json(accounts)
         }
@@ -160,7 +163,7 @@ module.exports = function (ctx, router) {
 
         try {
             let data = await db.distinct('subcategory', { type: 'transaction', accountId, category })
-            data = stdCategories[category].concat(data)
+            data = (stdCategories[category] || []).concat(data)
             data = [...new Set(data)] // vier les doublons
 
             res.json(data)
@@ -186,18 +189,37 @@ module.exports = function (ctx, router) {
 
     })
 
-    router.post('/account/:id/transaction', async function (req, res) {
 
-        const accountId = req.params.id
+    router.get('/account/:accountId/lastNumber', async function (req, res) {
+
+        const { accountId } = req.params
+
+        try {
+            const ret = await db.findOne({ type: 'transaction', accountId, number: { $exists: true } }, { sort: { date: -1 } })
+
+            const ret2 = await db.find({ type: 'transaction', accountId, number: { $exists: true }, date: ret.date }).toArray()
+
+            const number = Math.max(...ret2.map((i) => i.number))
+            res.json({ number })
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+    })
+
+    router.post('/account/:accountId/transaction', async function (req, res) {
+
+        const { accountId } = req.params
 
         const data = req.body
         data.type = 'transaction'
         data.accountId = accountId
+        data.date = new Date(data.date)
 
         try {
-            await db.insertOne(data)
+            const { insertedId } = await db.insertOne(data)
             await db.updateOne(buildDbId(accountId), { $inc: { finalBalance: data.amount } })
-            res.sendStatus(200)
+            res.json({ insertedId })
         }
         catch (e) {
             res.status(404).send(e.message)
@@ -269,10 +291,19 @@ module.exports = function (ctx, router) {
                     let finalBalance = initialBalance
 
                     transactions.forEach((item) => {
+                        const { date, amount, number, category } = item
                         item.accountId = accountId
                         item.type = 'transaction'
-                        item.date = new Date(item.date)
-                        finalBalance += item.amount
+                        item.date = new Date(date)
+                        finalBalance += amount
+                        if (typeof number == 'string') {
+                            item.number = parseInt(number)
+                        }
+                        if (category.startsWith('[')) {
+                            item.payee = category.substring(1, category.length - 1)
+                            item.category = 'virement'
+                        }
+
                     })
                     console.log('finalBalance', finalBalance)
                     await db.updateOne(buildDbId(accountId), { $set: { initialBalance, finalBalance } })

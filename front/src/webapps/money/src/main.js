@@ -91,7 +91,7 @@ $$.control.registerControl('rootPage', {
 					pager.pushPage('transactions', {
 						title: `${accountInfo.name} Transactions`,
 						props: {
-							accountId: accountInfo._id.toString()
+							accountInfo
 						},
 						onBack: function () {
 							loadAccounts()
@@ -103,7 +103,7 @@ $$.control.registerControl('rootPage', {
 		})
 
 		async function loadAccounts() {
-			const accounts = await http.get('/account')
+			const accounts = await http.get('/account', {synthesis: 1})
 			//console.log('accounts', accounts)
 			ctrl.setData({ accounts })
 		}

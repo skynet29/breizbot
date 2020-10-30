@@ -1,10 +1,20 @@
 .addTransaction {
-    display: flex;
-    justify-content: center;
+
+    height: 100%;
+    overflow: hidden;
+
+    .scrollPanel {
+        height: 100%;
+        overflow-y: auto;
+        display: flex;
+        justify-content: center;
+    }
 
     form {
+
         padding-top: 10px;
-        max-width: 500px;
+        max-width: 300px;
+        min-width: 300px;
         display: flex;
         flex-direction: column;
 
@@ -22,7 +32,7 @@
 
             .brainjs-radiogroup {
                 display: flex;
-                justify-content: space-between;
+                //justify-content: space-between;
                 flex-direction: row;
                 padding-left: 10px;
                 padding-right: 10px;
@@ -34,6 +44,10 @@
 
                     input[type=radio] {
                         margin-right: 5px;
+                    }
+
+                    label {
+                        margin-right: 20px;
                     }
     
                 }

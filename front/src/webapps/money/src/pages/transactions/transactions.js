@@ -5,13 +5,14 @@ $$.control.registerControl('transactions', {
     deps: ['breizbot.pager', 'breizbot.http'],
 
     props: {
-        accountId: null
+        accountInfo: null
     },
 
     init: function (elt, pager, http) {
 
 
-        const { accountId } = this.props
+        const { accountInfo } = this.props
+        const accountId = accountInfo._id.toString()
 
         const ctrl = $$.viewController(elt, {
             data: {
@@ -28,20 +29,6 @@ $$.control.registerControl('transactions', {
                 },
                 getAmountColor: function (scope) {
                     return (scope.$i.amount < 0) ? 'red' : 'black'
-                },
-                formatPayee: function (scope) {
-                    const { category, payee } = scope.$i
-                    if (category.startsWith('[')) {
-                        return category.substring(1, category.length - 1)
-                    }
-                    return payee
-                },
-                formatCategory: function(scope) {
-                    const { category } = scope.$i
-                    if (category.startsWith('[')) {
-                        return 'virement'
-                    }
-                    return category                    
                 }
             },
             events: {
@@ -74,7 +61,7 @@ $$.control.registerControl('transactions', {
                                 formData: info
                             },
                             onReturn: async function (data) {
-                                updateData(data)
+                                await updateData(data)
                                 //console.log('onReturn', data)
                                 await http.put(`/account/${accountId}/transaction/${transactionId}`, data)
 
@@ -87,17 +74,38 @@ $$.control.registerControl('transactions', {
 
         })
 
-        function updateData(data) {
-            let { date } = data
+        async function updateData(data) {
+
+            //console.log('updateData', data)
+            let { date, toAccount } = data
 
             date = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}T00:00:00`
 
             data.date = date
 
-            if (data.type == 'debit') {
+            if (data.type == 'transfer') {
+                const toAccountData = {
+                    date,
+                    category: 'virement',
+                    payee: accountInfo.name,
+                    amount: data.amount
+                }
+                const ret = await http.post(`/account/${toAccount.value}/transaction`, toAccountData)    
+                //console.log('ret', ret)   
+                data.category = 'virement'         
+                data.amount *= -1
+                data.payee = toAccount.label
+                delete data.toAccount
+            }
+            else if (data.type == 'debit') {
                 data.amount *= -1
             }
+
             delete data.type
+
+            if (isNaN(data.number)) {
+                delete data.number
+            }
 
         }
 
@@ -144,7 +152,7 @@ $$.control.registerControl('transactions', {
                     icon: 'fa fa-download',
                     onClick: function () {
                         $$.ui.showConfirm({
-                            title: 'Import Transactions', 
+                            title: 'Import Transactions',
                             content: 'This operation will remove all your current transactions<br><br>Are you sure ?'
                         }, importTransactions)
                     }
@@ -156,13 +164,16 @@ $$.control.registerControl('transactions', {
                         pager.pushPage('addTransaction', {
                             title: 'Add Transaction',
                             props: {
-                                accountId
+                                accountId,
+                                isAdd: true
                             },
                             onReturn: async function (data) {
 
-                                updateData(data)
-                                console.log('onReturn', data)
-                                await http.post(`/account/${accountId}/addTransaction`, data)
+                                await updateData(data)
+                                //console.log('onReturn', data)
+                                const { insertedId } = await http.post(`/account/${accountId}/transaction`, data)
+                                //console.log('insertedId', insertedId)
+                                data._id = insertedId
                                 ctrl.insertArrayItemAfter('transactions', 0, data, 'transactions')
 
                             }

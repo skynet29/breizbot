@@ -42,11 +42,17 @@
       grid-column: 2/3; }
 
 .addTransaction {
-  display: flex;
-  justify-content: center; }
+  height: 100%;
+  overflow: hidden; }
+  .addTransaction .scrollPanel {
+    height: 100%;
+    overflow-y: auto;
+    display: flex;
+    justify-content: center; }
   .addTransaction form {
     padding-top: 10px;
-    max-width: 500px;
+    max-width: 300px;
+    min-width: 300px;
     display: flex;
     flex-direction: column; }
     .addTransaction form i {
@@ -58,7 +64,6 @@
         margin-bottom: 5px; }
       .addTransaction form .group .brainjs-radiogroup {
         display: flex;
-        justify-content: space-between;
         flex-direction: row;
         padding-left: 10px;
         padding-right: 10px; }
@@ -68,6 +73,8 @@
           align-items: center; }
           .addTransaction form .group .brainjs-radiogroup .brainjs-inputgroup input[type=radio] {
             margin-right: 5px; }
+          .addTransaction form .group .brainjs-radiogroup .brainjs-inputgroup label {
+            margin-right: 20px; }
 
 .transactions {
   display: flex;

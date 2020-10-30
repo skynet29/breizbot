@@ -1,10 +1,9 @@
-<div>
+<div class="scrollPanel">
     <form bn-form="formData" bn-event="submit: onSubmit">
 
         <div class="group">
             <label>Date</label>
             <div>
-                <!-- <i class="fa fa-calendar-alt"></i>             -->
                 <input bn-control="brainjs.datepicker" name="date">    
             </div>
     
@@ -12,12 +11,15 @@
 
         <div class="group">
             <label>Transaction Type</label>
-            <div bn-control="brainjs.radiogroup" name="type">
+            <div bn-control="brainjs.radiogroup" bn-update="radiogroupchange" bn-val="type">
                 <div bn-control="brainjs.inputgroup">
                     <input type="radio" value="debit"><label>Debit</label>
                 </div>
                 <div bn-control="brainjs.inputgroup">
                     <input type="radio" value="credit"><label>Credit</label>
+                </div>
+                <div bn-control="brainjs.inputgroup" bn-show="isAdd">
+                    <input type="radio" value="transfer"><label>Transfer</label>
                 </div>
             </div>    
         </div>
@@ -25,27 +27,40 @@
         <div class="group">
             <label>Amount</label>
             <div>
-                <!-- <i class="fa fa-calculator"></i> -->
                 <input type="number" required name="amount" step=0.01>
             </div>
         </div>
 
-        <div class="group">
+        <div class="group" bn-show="isTransfer">
+            <label>To Account</label>
+            <div>
+                <div bn-control="brainjs.combobox" bn-data="{items: accounts}" bn-iface="toAccount"></div>
+            </div>
+        </div>      
+
+        <div class="group" bn-show="!isTransfer">
             <label>Payee</label>
             <div>
-                <!-- <i class="fa fa-user-friends"></i> -->
-                <input type="text" required name="payee" bn-control="brainjs.autocomplete" bn-data="{source: payees}">
+                <input type="text" bn-prop="{required: !isTransfer}" name="payee" bn-control="brainjs.autocomplete" bn-data="{source: payees}">
             </div>
         </div>
 
-        <div class="group">
+        <div class="group" bn-show="!isTransfer">
+            <label>Number</label>
+            <div>
+                <input type="number" name="number" step="1" bn-bind="number">
+                <button type="button" class="w3-btn w3-blue" bn-event="click: onFindNextNumber">Next</button>
+            </div>
+        </div>
+
+        <div class="group" bn-show="!isTransfer">
             <label>Category</label>
             <div>
-                <input type="text" required name="category" bn-control="brainjs.autocomplete" bn-data="{source: categories}" bn-event="autocompleteselect: onCategoryChange">
+                <input type="text" bn-prop="{required: !isTransfer}" name="category" bn-control="brainjs.autocomplete" bn-data="{source: categories}" bn-event="autocompleteselect: onCategoryChange">
             </div>
         </div>
 
-        <div class="group">
+        <div class="group" bn-show="!isTransfer">
             <label>Subcategory</label>
             <div>
                 <input type="text" name="subcategory" bn-control="brainjs.autocomplete" bn-data="{source: subcategories}">

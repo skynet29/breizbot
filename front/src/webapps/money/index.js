@@ -226,6 +226,7 @@ module.exports = function (ctx, router) {
     router.post('/account/:accountId/transaction', async function (req, res) {
 
         const { accountId } = req.params
+        const userName = req.session.user
 
         const data = req.body
         data.type = 'transaction'
@@ -238,7 +239,7 @@ module.exports = function (ctx, router) {
             await db.updateOne(buildDbId(accountId), { $inc: { finalBalance: data.amount } })
 
             if (data.category == 'virement') {
-                const toAccount = await db.findOne({type: 'account', name: data.payee})
+                const toAccount = await db.findOne({type: 'account', name: data.payee, userName})
                 const fromAccount = await db.findOne(buildDbId(accountId))
                 data.amount *= -1
                 data.payee = fromAccount.name

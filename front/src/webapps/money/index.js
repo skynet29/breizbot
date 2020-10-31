@@ -393,7 +393,7 @@ module.exports = function (ctx, router) {
                 await enterRecurringTransaction(accountId, data._id.toString(), data)
             }
 
-            res.sendStatus(200)
+            res.json({inserted: recurringTransactions.length})
         }
         catch (e) {
             res.status(404).send(e.message)

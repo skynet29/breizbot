@@ -12,7 +12,7 @@ $$.control.registerControl('recurringTransactions', {
 
 
         const { accountId } = this.props
-       
+
         const ctrl = $$.viewController(elt, {
             data: {
                 transactions: [],
@@ -38,7 +38,7 @@ $$.control.registerControl('recurringTransactions', {
                     if (cmd == 'del') {
                         $$.ui.showConfirm({ title: 'Delete Transaction', content: 'Are you sure ?' }, async () => {
                             await http.delete('/transaction/', info)
-                           loadTransactions()
+                            loadTransactions()
                         })
                     }
                     else if (cmd == 'edit') {
@@ -106,9 +106,12 @@ $$.control.registerControl('recurringTransactions', {
                 enterAll: {
                     title: 'Enter all transactions of current month',
                     icon: 'fa fa-external-link-alt',
-                    onClick: async function() {
-                        await http.post(`/account/${accountId}/recurringTransactions/enterAllOccurenceOfCurrentMonth`)
-                        loadTransactions()
+                    onClick: async function () {
+                        const { inserted } = await http.post(`/account/${accountId}/recurringTransactions/enterAllOccurenceOfCurrentMonth`)
+                        const message = (inserted > 0) ? `${inserted} transactions inserted` : 'no transaction to insert'
+                        await loadTransactions()
+                        $$.ui.showAlert({ title: 'Current month transactions', content: message })
+
                     }
                 }
             }

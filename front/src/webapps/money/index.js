@@ -41,12 +41,17 @@ module.exports = function (ctx, router) {
         }
     })
 
-    async function computeMonthSynthesis(account) {
+    function getCurrentMonthDateFilter() {
         const now = new Date()
         const daysOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
 
         const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
         const endDate = new Date(now.getFullYear(), now.getMonth(), daysOfMonth)
+
+        return { $gte: startDate, $lte: endDate }
+    }
+
+    async function computeMonthSynthesis(account) {
 
         let income = 0
         let expenses = 0
@@ -54,10 +59,7 @@ module.exports = function (ctx, router) {
             {
                 accountId: account._id.toString(),
                 type: 'transaction',
-                date: {
-                    $gte: startDate,
-                    $lte: endDate
-                }
+                date: getCurrentMonthDateFilter()
             }).toArray()
 
         transations.forEach((tr) => {
@@ -84,7 +86,7 @@ module.exports = function (ctx, router) {
             if (synthesis === '1') {
                 for await (const account of accounts) {
                     account.synthesis = await computeMonthSynthesis(account)
-                }    
+                }
             }
             res.json(accounts)
         }
@@ -144,7 +146,7 @@ module.exports = function (ctx, router) {
         const accountId = req.params.id
 
         try {
-            const data = await db.find({ type: 'recurringTransactions', accountId }).toArray()
+            const data = await db.find({ type: 'recurringTransaction', accountId }).sort({ date: 1 }).toArray()
             res.json(data)
         }
         catch (e) {
@@ -245,7 +247,7 @@ module.exports = function (ctx, router) {
         const { accountId } = req.params
 
         const data = req.body
-        data.type = 'recurringTransactions'
+        data.type = 'recurringTransaction'
         data.accountId = accountId
         data.date = new Date(data.date)
 
@@ -256,7 +258,7 @@ module.exports = function (ctx, router) {
         catch (e) {
             res.status(404).send(e.message)
         }
-    })    
+    })
 
     router.put('/account/:accountId/transaction/:transactionId', async function (req, res) {
 
@@ -288,7 +290,7 @@ module.exports = function (ctx, router) {
         const { accountId, transactionId } = req.params
 
         const data = req.body
-        data.type = 'recurringTransactions'
+        data.type = 'recurringTransaction'
         data.accountId = accountId
         data.date = new Date(data.date)
 
@@ -301,6 +303,90 @@ module.exports = function (ctx, router) {
             res.status(404).send(e.message)
         }
     })
+
+    function getNextOccurenceDate(date, periodicity) {
+        if (periodicity == 'Monthly') {
+            if (date.getMonth() == 11) {// décembre
+                return new Date(date.getFullYear() + 1, 0, date.getDate())
+            }
+            return new Date(date.getFullYear(), date.getMonth() + 1, date.getDate())
+        }
+        else if (periodicity == 'Yearly') {
+            return new Date(date.getFullYear() + 1, date.getMonth(), date.getDate())
+        }
+    }
+
+    async function enterRecurringTransaction(accountId, transactionId, data) {
+        data.date = new Date(data.date)
+
+        const nextDate = getNextOccurenceDate(data.date, data.period)
+        await db.updateOne(buildDbId(transactionId), { $set: { date: nextDate } })
+
+        data.type = 'transaction'
+        delete data.period
+        delete data._id
+
+        await db.insertOne(data)
+        await db.updateOne(buildDbId(accountId), { $inc: { finalBalance: data.amount } })
+
+    }
+
+    router.post('/account/:accountId/recurringTransactions/:transactionId/ignoreNextOccurence', async function (req, res) {
+
+        const { accountId, transactionId } = req.params
+
+        try {
+            const data = await db.findOne(buildDbId(transactionId))
+
+            data.date = new Date(data.date)
+
+            const nextDate = getNextOccurenceDate(data.date, data.period)
+            await db.updateOne(buildDbId(transactionId), { $set: { date: nextDate } })
+
+            res.sendStatus(200)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+    })    
+
+    router.post('/account/:accountId/recurringTransactions/:transactionId/enterNextOccurence', async function (req, res) {
+
+        const { accountId, transactionId } = req.params
+
+        try {
+            const data = await db.findOne(buildDbId(transactionId))
+
+            await enterRecurringTransaction(accountId, transactionId, data)
+            res.sendStatus(200)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+    })
+
+    router.post('/account/:accountId/recurringTransactions/enterAllOccurenceOfCurrentMonth', async function (req, res) {
+
+        const { accountId } = req.params
+
+        try {
+            const recurringTransactions = await db.find({
+                accountId,
+                type: 'recurringTransactions',
+                date: getCurrentMonthDateFilter()
+            }).toArray()
+
+            for await (const data of recurringTransactions) {
+                await enterRecurringTransaction(accountId, data._id.toString(), data)
+            }
+
+            res.sendStatus(200)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+    })
+
 
     router.delete('/recurringTransactions/', async function (req, res) {
 

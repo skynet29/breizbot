@@ -28,11 +28,13 @@ $$.control.registerControl('recurringTransactions', {
                 }
             },
             events: {
-                onItemContextMenu: function (ev, data) {
+                onItemContextMenu: async function (ev, data) {
                     const idx = $(this).index()
                     //console.log('onItemContextMenu', idx, data)
                     const { cmd } = data
                     const info = ctrl.model.transactions[idx]
+                    const transactionId = info._id.toString()
+
                     //console.log('info', info)
                     if (cmd == 'del') {
                         $$.ui.showConfirm({ title: 'Delete Transaction', content: 'Are you sure ?' }, async () => {
@@ -49,7 +51,6 @@ $$.control.registerControl('recurringTransactions', {
                             info.type = 'credit'
                         }
 
-                        const transactionId = info._id.toString()
 
                         pager.pushPage('addTransaction', {
                             title: 'Edit Recurring Transaction',
@@ -66,6 +67,14 @@ $$.control.registerControl('recurringTransactions', {
 
                             }
                         })
+                    }
+                    else if (cmd == 'enterNextOccur') {
+                        await http.post(`/account/${accountId}/recurringTransactions/${transactionId}/enterNextOccurence`)
+                        loadTransactions()
+                    }
+                    else if (cmd == 'ignoreNextOccur') {
+                        await http.post(`/account/${accountId}/recurringTransactions/${transactionId}/ignoreNextOccurence`)
+                        loadTransactions()
                     }
                 }
             }
@@ -151,6 +160,14 @@ $$.control.registerControl('recurringTransactions', {
                                 loadTransactions()
                             }
                         })
+                    }
+                },
+                enterAll: {
+                    title: 'Enter all transactions of current month',
+                    icon: 'fa fa-external-link-alt',
+                    onClick: async function() {
+                        await http.post(`/account/${accountId}/recurringTransactions/enterAllOccurenceOfCurrentMonth`)
+                        loadTransactions()
                     }
                 }
             }

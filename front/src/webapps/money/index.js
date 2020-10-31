@@ -10,12 +10,12 @@ const stdCategories = {
     'Assurance': ['Maison', 'Automobile'],
     'Impôts': ['Revenu', 'Foncier', 'Habitation', 'Ordures ménagères'],
     'Loisirs': ['Magazines', 'Cinemas', 'Livres', 'Musées'],
-    'Automobile': ['Carburant', 'Péage', 'Parking', 'Révision', 'Réparation'],
+    'Automobile': ['Carburant', 'Péage', 'Parking', 'Entretien', 'Réparation'],
     'Maison': ['Habillement', 'Equipement'],
     'Vacances': ['Location'],
     'Dépôt': [],
     'Retrait': [],
-    'Remboursement': ['CPAM', 'Mutuelle', 'Impôts', 'Autres'],
+    'Remboursement': ['Santé', 'Impôts', 'Autres'],
     'Frais bancaires': []
 }
 
@@ -139,6 +139,20 @@ module.exports = function (ctx, router) {
 
     })
 
+    router.get('/account/:id/recurringTransactions', async function (req, res) {
+
+        const accountId = req.params.id
+
+        try {
+            const data = await db.find({ type: 'recurringTransactions', accountId }).toArray()
+            res.json(data)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
     router.get('/account/:id/categories', async function (req, res) {
 
         const accountId = req.params.id
@@ -226,6 +240,24 @@ module.exports = function (ctx, router) {
         }
     })
 
+    router.post('/account/:accountId/recurringTransactions', async function (req, res) {
+
+        const { accountId } = req.params
+
+        const data = req.body
+        data.type = 'recurringTransactions'
+        data.accountId = accountId
+        data.date = new Date(data.date)
+
+        try {
+            const { insertedId } = await db.insertOne(data)
+            res.json({ insertedId })
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+    })    
+
     router.put('/account/:accountId/transaction/:transactionId', async function (req, res) {
 
         const { accountId, transactionId } = req.params
@@ -251,6 +283,40 @@ module.exports = function (ctx, router) {
         }
     })
 
+    router.put('/account/:accountId/recurringTransactions/:transactionId', async function (req, res) {
+
+        const { accountId, transactionId } = req.params
+
+        const data = req.body
+        data.type = 'recurringTransactions'
+        data.accountId = accountId
+        data.date = new Date(data.date)
+
+        try {
+            await db.updateOne(buildDbId(transactionId), { $set: data })
+
+            res.sendStatus(200)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+    })
+
+    router.delete('/recurringTransactions/', async function (req, res) {
+
+        const data = req.body
+        const { _id } = data
+
+        try {
+            await db.deleteOne(buildDbId(_id))
+            res.sendStatus(200)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+
+    })
 
     router.delete('/transaction/', async function (req, res) {
 

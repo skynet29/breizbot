@@ -1,4 +1,4 @@
-$$.control.registerControl('transactions', {
+$$.control.registerControl('recurringTransactions', {
 
     template: { gulp_inject: './transactions.html' },
 
@@ -23,10 +23,6 @@ $$.control.registerControl('transactions', {
                 formatDate: function (scope) {
                     return new Date(scope.$i.date).toLocaleDateString()
                 },
-                getItems: async function (idx) {
-                    //console.log('getItems', idx)
-                    return loadTransactions(idx)
-                },
                 getAmountColor: function (scope) {
                     return (scope.$i.amount < 0) ? 'red' : 'black'
                 }
@@ -41,7 +37,7 @@ $$.control.registerControl('transactions', {
                     if (cmd == 'del') {
                         $$.ui.showConfirm({ title: 'Delete Transaction', content: 'Are you sure ?' }, async () => {
                             await http.delete('/transaction/', info)
-                            ctrl.removeArrayItem('transactions', idx, 'transactions')
+                           loadTransactions()
                         })
                     }
                     else if (cmd == 'edit') {
@@ -56,17 +52,18 @@ $$.control.registerControl('transactions', {
                         const transactionId = info._id.toString()
 
                         pager.pushPage('addTransaction', {
-                            title: 'Edit Transaction',
+                            title: 'Edit Recurring Transaction',
                             props: {
                                 formData: info,
-                                accountId
+                                accountId,
+                                isRecurring: true
                             },
                             onReturn: async function (data) {
-                                await updateData(data)
+                                updateData(data)
                                 //console.log('onReturn', data)
-                                await http.put(`/account/${accountId}/transaction/${transactionId}`, data)
+                                await http.put(`/account/${accountId}/recurringTransactions/${transactionId}`, data)
+                                loadTransactions()
 
-                                ctrl.updateArrayItem('transactions', idx, data, 'transactions')
                             }
                         })
                     }
@@ -75,10 +72,10 @@ $$.control.registerControl('transactions', {
 
         })
 
-        async function updateData(data) {
+        function updateData(data) {
 
             //console.log('updateData', data)
-            let { date, toAccount } = data
+            let { date, toAccount, memo, number, subcategory } = data
 
             let month = date.getMonth() + 1
             if (month < 10) {
@@ -91,99 +88,67 @@ $$.control.registerControl('transactions', {
 
             date = `${date.getFullYear()}-${month}-${day}T00:00:00`
 
+            data.date = date
+
             if (data.type == 'transfer') {
-                const toAccountData = {
-                    date,
-                    category: 'virement',
-                    payee: accountInfo.name,
-                    amount: data.amount
-                }
-                const ret = await http.post(`/account/${toAccount.value}/transaction`, toAccountData)    
-                //console.log('ret', ret)   
-                data.category = 'virement'         
+                data.category = 'virement'
                 data.amount *= -1
                 data.payee = toAccount.label
+                data.toAccount = toAccount.value
             }
-            else if (data.type == 'debit') {
+            else {
+                delete data.toAccount
+            }
+
+            if (data.type == 'debit') {
                 data.amount *= -1
             }
 
             delete data.type
-            delete data.toAccount
 
-            if (isNaN(data.number)) {
+            if (isNaN(number)) {
                 delete data.number
+            }
+
+            if (memo == '') {
+                delete data.memo
+            }
+
+            if (subcategory == '') {
+                delete data.subcategory
             }
 
         }
 
-        async function loadTransactions(offset) {
-            offset = offset || 0
+        async function loadTransactions() {
 
-            const transactions = await http.get(`/account/${accountId}/transactions?offset=${offset}`)
+            const transactions = await http.get(`/account/${accountId}/recurringTransactions`)
             //console.log('transactions', transactions)
-            if (offset == 0) {
-                ctrl.setData({ transactions })
-            }
-            else {
-                ctrl.model.transactions = ctrl.model.transactions.concat(transactions)
-                return transactions
-            }
+            ctrl.setData({ transactions })
         }
 
         loadTransactions()
 
-        function importTransactions() {
-            pager.pushPage('breizbot.files', {
-                title: 'Import transactions from QIF file',
-                props: {
-                    filterExtension: 'qif'
-                },
-                events: {
-                    fileclick: function (ev, data) {
-                        pager.popPage(data)
-                    }
-                },
-                onReturn: async function (data) {
-                    //console.log('onReturn', data)
-                    const fileName = data.rootDir + data.fileName
-                    await http.post(`/account/${accountId}/importTransactions`, { fileName })
-                    loadTransactions()
-                }
-            })
-        }
 
         this.getButtons = function () {
             return {
-                import: {
-                    title: 'import from QIF file',
-                    icon: 'fa fa-download',
-                    onClick: function () {
-                        $$.ui.showConfirm({
-                            title: 'Import Transactions',
-                            content: 'This operation will remove all your current transactions<br><br>Are you sure ?'
-                        }, importTransactions)
-                    }
-                },
                 add: {
-                    title: 'Add Transaction',
+                    title: 'Add Recurring Transaction',
                     icon: 'fa fa-plus',
                     onClick: function () {
                         pager.pushPage('addTransaction', {
-                            title: 'Add Transaction',
+                            title: 'Add Recurring Transaction',
                             props: {
                                 accountId,
-                                isAdd: true
+                                isAdd: true,
+                                isRecurring: true
                             },
                             onReturn: async function (data) {
+                                updateData(data)
                                 //console.log('onReturn', data)
-                                await updateData(data)
-                               
-                                const { insertedId } = await http.post(`/account/${accountId}/transaction`, data)
-                                //console.log('insertedId', insertedId)
-                                data._id = insertedId
-                                ctrl.insertArrayItemAfter('transactions', 0, data, 'transactions')
 
+                                await http.post(`/account/${accountId}/recurringTransactions`, data)
+                                loadTransactions()
                             }
                         })
                     }

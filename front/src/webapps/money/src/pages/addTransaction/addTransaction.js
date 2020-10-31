@@ -7,13 +7,15 @@ $$.control.registerControl('addTransaction', {
     props: {
         accountId: null,
         isAdd: false,
+        isRecurring: false,
         formData: {
-            type: 'debit'
+            type: 'debit',
+            period: 'Monthly'
         }
     },
 
     init: function (elt, pager, http) {
-        const { accountId, formData, isAdd } = this.props
+        const { accountId, formData, isAdd, isRecurring } = this.props
        
         const { type } = formData
 
@@ -26,8 +28,15 @@ $$.control.registerControl('addTransaction', {
                 subcategories: [],
                 type,
                 isAdd,
+                isRecurring,
                 isTransfer: function () {
                     return this.type === 'transfer'
+                },
+                getDateLabel: function() {
+                    return (this.isRecurring) ? 'Next Occurence' : 'Date'
+                },
+                hasNumber: function() {
+                    return !this.isRecurring && !this.isTransfer
                 }
             },
 
@@ -37,6 +46,9 @@ $$.control.registerControl('addTransaction', {
                     const data = $(this).getFormData()
                     data.type = ctrl.model.type
                     data.toAccount = ctrl.scope.toAccount.getSelItem()
+                    if (!isRecurring) {
+                        delete data.period
+                    }
                     pager.popPage(data)
                 },
 

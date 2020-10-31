@@ -1,0 +1,34 @@
+<div class="scrollPanelTable">
+	<table class="w3-table-all w3-hoverable w3-small">
+		<thead>
+			<tr>
+                <th>Payee</th>
+                <th>Category</th>
+				<th>Next Occurence</th>
+				<th>Periodicity</th>
+                <th>Amount</th>
+			</tr>
+		</thead>
+		<tbody bn-each="transactions" bn-event="contextmenuchange.item: onItemContextMenu">
+			<tr class="item" bn-control="brainjs.contextmenu" bn-data="{items: {
+				del: {
+					name: 'Delete',
+					icon: 'fas fa-trash-alt'
+				},
+				edit: {
+					name: 'Edit',
+					icon: 'fas fa-edit'
+				}
+			}}">
+                <td bn-text="$scope.$i.payee"></td>
+                <td>
+					<span bn-text="$scope.$i.category"></span><br>
+					<span bn-text="$scope.$i.subcategory"></span>
+				</td>
+				<td bn-text="formatDate" class="date"></td>
+				<td bn-text="$scope.$i.period"></td>
+				<td bn-text="formatAmount" class="amount" bn-style="{color: getAmountColor}"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

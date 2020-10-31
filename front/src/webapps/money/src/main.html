@@ -16,7 +16,20 @@
         bn-event="contextmenuchange.w3-bar: onContextMenu, click.w3-bar: onItemClick"
 		bn-show="hasAccounts"
 		>
-		<li class="w3-bar" bn-control="brainjs.contextmenu" bn-data="{items: contextMenu}">
+		<li class="w3-bar" bn-control="brainjs.contextmenu" bn-data="{items: {
+				edit: {
+					name: 'Edit',
+					icon: 'fas fa-edit'
+				},
+				delete: {
+					name: 'Delete',
+					icon: 'fas fa-trash-alt'
+				},
+				recurringTrans: {
+					name: 'Recurring Transactions',
+					icon: 'fas fa-history'
+				}
+		}}">
 
 
 			<div class="w3-bar-item">

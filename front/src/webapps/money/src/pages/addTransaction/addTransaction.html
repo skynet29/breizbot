@@ -2,9 +2,18 @@
     <form bn-form="formData" bn-event="submit: onSubmit">
 
         <div class="group">
-            <label>Date</label>
+            <label bn-text="getDateLabel"></label>
             <div>
                 <input bn-control="brainjs.datepicker" name="date">    
+            </div>
+    
+        </div>
+
+        <div class="group" bn-show="isRecurring">
+            <label>Periodicity</label>
+            <div>
+                <div bn-control="brainjs.combobox" name="period" bn-prop="{required: isReccuring}" bn-data="{items: [
+                'Monthly', 'Weekly']}"> </div>   
             </div>
     
         </div>
@@ -45,7 +54,7 @@
             </div>
         </div>
 
-        <div class="group" bn-show="!isTransfer">
+        <div class="group" bn-show="hasNumber">
             <label>Number</label>
             <div>
                 <input type="number" name="number" step="1" bn-bind="number">

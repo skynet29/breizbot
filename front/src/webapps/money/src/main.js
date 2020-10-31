@@ -16,18 +16,6 @@ $$.control.registerControl('rootPage', {
 				hasAccounts: function () {
 					return this.accounts.length > 0
 				},
-				contextMenu: function () {
-					return {
-						edit: {
-							name: 'Edit',
-							icon: 'fas fa-edit'
-						},
-						delete: {
-							name: 'Delete',
-							icon: 'fas fa-trash-alt'
-						}
-					}
-				},
 				getDifference: function (scope) {
 					const { income, expenses } = scope.$i.synthesis
 					return (income - expenses).toFixed(2)
@@ -83,13 +71,21 @@ $$.control.registerControl('rootPage', {
 							}
 						})
 					}
+					else if (cmd == 'recurringTrans') {
+						pager.pushPage('recurringTransactions', {
+							title: `Recurring Transactions: ${accountInfo.name}`,
+							props: {
+								accountInfo
+							}
+						})
+					}
 				},
 				onItemClick: function (ev) {
 					const idx = $(this).index()
 					//console.log('onItemClick', idx)
 					const accountInfo = ctrl.model.accounts[idx]
 					pager.pushPage('transactions', {
-						title: `${accountInfo.name} Transactions`,
+						title: `Transactions: ${accountInfo.name}`,
 						props: {
 							accountInfo
 						},

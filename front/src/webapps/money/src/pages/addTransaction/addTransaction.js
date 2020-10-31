@@ -8,35 +8,46 @@ $$.control.registerControl('addTransaction', {
         accountId: null,
         isAdd: false,
         isRecurring: false,
-        formData: {
-            type: 'debit',
-            period: 'Monthly'
-        }
+        formData: null
     },
 
     init: function (elt, pager, http) {
         const { accountId, formData, isAdd, isRecurring } = this.props
-       
-        const { type } = formData
+
+        let type = 'credit'
+        let toAccount = ''
+        let data = $.extend({}, formData)
+
+        if (formData != null) {
+            if (data.amount < 0) {
+                data.amount *= -1
+                type = 'debit'
+            }
+        }
+        else {
+            type = 'debit',
+            data.period = 'Monthly'
+        }
 
         const ctrl = $$.viewController(elt, {
 
             data: {
-                formData,
+                formData: data,
                 categories: [],
                 payees: [],
                 subcategories: [],
                 type,
                 isAdd,
                 isRecurring,
+                toAccount,
                 isTransfer: function () {
                     return this.type === 'transfer'
                 },
-                getDateLabel: function() {
+                getDateLabel: function () {
                     return (this.isRecurring) ? 'Next Occurence' : 'Date'
                 },
-                hasNumber: function() {
-                    return !this.isRecurring && !this.isTransfer
+                hasNumber: function () {
+                    return !this.isRecurring && !this.isTransfer()
                 }
             },
 
@@ -44,11 +55,38 @@ $$.control.registerControl('addTransaction', {
                 onSubmit: function (ev) {
                     ev.preventDefault()
                     const data = $(this).getFormData()
-                    data.type = ctrl.model.type
-                    data.toAccount = ctrl.scope.toAccount.getSelItem()
+                    const {date} = data
+                    const { type, toAccount } = ctrl.model
+                    if (type == 'transfer') {
+                        data.payee = toAccount
+                        data.category = 'virement'
+                        data.amount*= -1
+                    }
+
+                    if (type == 'debit') {
+                        data.amount*= -1
+                    }
+
                     if (!isRecurring) {
                         delete data.period
                     }
+
+                    let month = date.getMonth() + 1
+                    if (month < 10) {
+                        month = '0' + month
+                    }
+                    let day = date.getDate()
+                    if (day < 10) {
+                        day = '0' + day
+                    }
+        
+                    data.date = `${date.getFullYear()}-${month}-${day}T00:00:00`
+
+                    if (isNaN(data.number)) {
+                        delete data.number
+                    }
+        
+        
                     pager.popPage(data)
                 },
 
@@ -74,8 +112,9 @@ $$.control.registerControl('addTransaction', {
             const payees = await http.get(`/account/${accountId}/payees`)
 
             let accounts = await http.get(`/account`)
-            accounts = accounts.filter((acc) => acc._id.toString() != accountId).map((acc) => { return { label: acc.name, value: acc._id.toString() } })
-            //console.log('accounts', accounts)
+            accounts = accounts.filter((acc) => acc._id.toString() != accountId).map((acc) => acc.name)
+            ctrl.setData({toAccount: accounts[0]})
+            console.log('accounts', accounts)
 
             ctrl.setData({ payees, categories, accounts })
         }

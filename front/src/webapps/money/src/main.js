@@ -75,7 +75,7 @@ $$.control.registerControl('rootPage', {
 						pager.pushPage('recurringTransactions', {
 							title: `Recurring Transactions: ${accountInfo.name}`,
 							props: {
-								accountInfo
+								accountId
 							}
 						})
 					}
@@ -87,7 +87,7 @@ $$.control.registerControl('rootPage', {
 					pager.pushPage('transactions', {
 						title: `Transactions: ${accountInfo.name}`,
 						props: {
-							accountInfo
+							accountId: accountInfo._id.toString()
 						},
 						onBack: function () {
 							loadAccounts()

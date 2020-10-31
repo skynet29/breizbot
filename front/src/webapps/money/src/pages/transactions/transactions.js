@@ -5,14 +5,13 @@ $$.control.registerControl('transactions', {
     deps: ['breizbot.pager', 'breizbot.http'],
 
     props: {
-        accountInfo: null
+        accountId: null
     },
 
     init: function (elt, pager, http) {
 
 
-        const { accountInfo } = this.props
-        const accountId = accountInfo._id.toString()
+        const { accountId } = this.props
 
         const ctrl = $$.viewController(elt, {
             data: {
@@ -45,13 +44,6 @@ $$.control.registerControl('transactions', {
                         })
                     }
                     else if (cmd == 'edit') {
-                        if (info.amount < 0) {
-                            info.type = "debit"
-                            info.amount *= -1
-                        }
-                        else {
-                            info.type = 'credit'
-                        }
 
                         const transactionId = info._id.toString()
 
@@ -62,9 +54,9 @@ $$.control.registerControl('transactions', {
                                 accountId
                             },
                             onReturn: async function (data) {
-                                await updateData(data)
-                                //console.log('onReturn', data)
+                                //console.log('onReturn', data)                                
                                 await http.put(`/account/${accountId}/transaction/${transactionId}`, data)
+                                data = $.extend(info, data)
 
                                 ctrl.updateArrayItem('transactions', idx, data, 'transactions')
                             }
@@ -75,53 +67,12 @@ $$.control.registerControl('transactions', {
 
         })
 
-        async function updateData(data) {
-
-            //console.log('updateData', data)
-            let { date, toAccount } = data
-
-            let month = date.getMonth() + 1
-            if (month < 10) {
-                month = '0' + month
-            }
-            let day = date.getDate()
-            if (day < 10) {
-                day = '0' + day
-            }
-
-            date = `${date.getFullYear()}-${month}-${day}T00:00:00`
-
-            if (data.type == 'transfer') {
-                const toAccountData = {
-                    date,
-                    category: 'virement',
-                    payee: accountInfo.name,
-                    amount: data.amount
-                }
-                const ret = await http.post(`/account/${toAccount.value}/transaction`, toAccountData)    
-                //console.log('ret', ret)   
-                data.category = 'virement'         
-                data.amount *= -1
-                data.payee = toAccount.label
-            }
-            else if (data.type == 'debit') {
-                data.amount *= -1
-            }
-
-            delete data.type
-            delete data.toAccount
-
-            if (isNaN(data.number)) {
-                delete data.number
-            }
-
-        }
 
         async function loadTransactions(offset) {
             offset = offset || 0
 
             const transactions = await http.get(`/account/${accountId}/transactions?offset=${offset}`)
-            //console.log('transactions', transactions)
+            //console.log('transactions', offset, transactions)
             if (offset == 0) {
                 ctrl.setData({ transactions })
             }
@@ -176,9 +127,7 @@ $$.control.registerControl('transactions', {
                                 isAdd: true
                             },
                             onReturn: async function (data) {
-                                //console.log('onReturn', data)
-                                await updateData(data)
-                               
+                                //console.log('onReturn', data)                               
                                 const { insertedId } = await http.post(`/account/${accountId}/transaction`, data)
                                 //console.log('insertedId', insertedId)
                                 data._id = insertedId

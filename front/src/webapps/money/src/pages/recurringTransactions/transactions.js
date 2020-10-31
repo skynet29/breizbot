@@ -5,15 +5,14 @@ $$.control.registerControl('recurringTransactions', {
     deps: ['breizbot.pager', 'breizbot.http'],
 
     props: {
-        accountInfo: null
+        accountId: null
     },
 
     init: function (elt, pager, http) {
 
 
-        const { accountInfo } = this.props
-        const accountId = accountInfo._id.toString()
-
+        const { accountId } = this.props
+       
         const ctrl = $$.viewController(elt, {
             data: {
                 transactions: [],
@@ -43,15 +42,6 @@ $$.control.registerControl('recurringTransactions', {
                         })
                     }
                     else if (cmd == 'edit') {
-                        if (info.amount < 0) {
-                            info.type = "debit"
-                            info.amount *= -1
-                        }
-                        else {
-                            info.type = 'credit'
-                        }
-
-
                         pager.pushPage('addTransaction', {
                             title: 'Edit Recurring Transaction',
                             props: {
@@ -60,8 +50,7 @@ $$.control.registerControl('recurringTransactions', {
                                 isRecurring: true
                             },
                             onReturn: async function (data) {
-                                updateData(data)
-                                //console.log('onReturn', data)
+                                console.log('onReturn', data)
                                 await http.put(`/account/${accountId}/recurringTransactions/${transactionId}`, data)
                                 loadTransactions()
 
@@ -81,53 +70,6 @@ $$.control.registerControl('recurringTransactions', {
 
         })
 
-        function updateData(data) {
-
-            //console.log('updateData', data)
-            let { date, toAccount, memo, number, subcategory } = data
-
-            let month = date.getMonth() + 1
-            if (month < 10) {
-                month = '0' + month
-            }
-            let day = date.getDate()
-            if (day < 10) {
-                day = '0' + day
-            }
-
-            date = `${date.getFullYear()}-${month}-${day}T00:00:00`
-
-            data.date = date
-
-            if (data.type == 'transfer') {
-                data.category = 'virement'
-                data.amount *= -1
-                data.payee = toAccount.label
-                data.toAccount = toAccount.value
-            }
-            else {
-                delete data.toAccount
-            }
-
-            if (data.type == 'debit') {
-                data.amount *= -1
-            }
-
-            delete data.type
-
-            if (isNaN(number)) {
-                delete data.number
-            }
-
-            if (memo == '') {
-                delete data.memo
-            }
-
-            if (subcategory == '') {
-                delete data.subcategory
-            }
-
-        }
 
         async function loadTransactions() {
 
@@ -153,8 +95,7 @@ $$.control.registerControl('recurringTransactions', {
                                 isRecurring: true
                             },
                             onReturn: async function (data) {
-                                updateData(data)
-                                //console.log('onReturn', data)
+                                console.log('onReturn', data)
 
                                 await http.post(`/account/${accountId}/recurringTransactions`, data)
                                 loadTransactions()

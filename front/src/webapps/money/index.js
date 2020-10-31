@@ -234,7 +234,20 @@ module.exports = function (ctx, router) {
 
         try {
             const { insertedId } = await db.insertOne(data)
+            delete data._id
             await db.updateOne(buildDbId(accountId), { $inc: { finalBalance: data.amount } })
+
+            if (data.category == 'virement') {
+                const toAccount = await db.findOne({type: 'account', name: data.payee})
+                const fromAccount = await db.findOne(buildDbId(accountId))
+                data.amount *= -1
+                data.payee = fromAccount.name
+                data.accountId = toAccount._id.toString()
+                await db.insertOne(data)
+                await db.updateOne(buildDbId(data.accountId), { $inc: { finalBalance: data.amount } })
+
+
+            }
             res.json({ insertedId })
         }
         catch (e) {

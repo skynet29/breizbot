@@ -76,6 +76,9 @@ $$.control.registerControl('rootPage', {
 							title: `Recurring Transactions: ${accountInfo.name}`,
 							props: {
 								accountId
+							},
+							onBack: function() {
+								loadAccounts()
 							}
 						})
 					}

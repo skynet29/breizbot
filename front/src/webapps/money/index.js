@@ -386,7 +386,7 @@ module.exports = function (ctx, router) {
         try {
             const recurringTransactions = await db.find({
                 accountId,
-                type: 'recurringTransactions',
+                type: 'recurringTransaction',
                 date: getCurrentMonthDateFilter()
             }).toArray()
 

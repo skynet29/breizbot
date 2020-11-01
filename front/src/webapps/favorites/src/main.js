@@ -7,33 +7,14 @@ $$.control.registerControl('rootPage', {
 
 	init: function (elt, pager, http) {
 
+		let keyPwd = null
+
 		async function getFavorites() {
 			const results = await http.post('/getFavorites')
-			console.log('results', results)
+			//console.log('results', results)
 			ctrl.setData({ source: [results], selNode: null })
 			ctrl.scope.tree.getRootNode().getFirstChild().setExpanded(true)
 		}
-
-		function addFavorite(parentId, info) {
-			return http.post('/addFavorite', { parentId, info })
-		}
-
-		function removeFavorite(id) {
-			return http.delete('/removeFavorite/' + id)
-		}
-
-		function changeParent(id, newParentId) {
-			return http.post('/changeParent', { id, newParentId })
-		}
-
-		function insertBefore(id, newParentId, beforeIdx) {
-			return http.post('/insertBefore', { id, newParentId, beforeIdx })
-		}
-
-		function updateLink(id, name, link) {
-			return http.post('/updateLink', { id, name, link })
-		}
-
 
 		const options = {
 			renderNode: function (evt, data) {
@@ -59,28 +40,26 @@ $$.control.registerControl('rootPage', {
 			options.dnd = {
 				autoExpandMS: 400,
 				dragStart: function () {
-					//console.log('dragStart', ctrl.model.isEdited)
-					return ctrl.model.isEdited
+					return true
 				},
 				dragEnter: function (node, data) {
-					console.log('dragEnter')
 					//console.log('dragEnter', node.isFolder())
 					if (!node.isFolder() && !data.otherNode.isFolder()) {
 						return ['before']
 					}
 					return ['before', 'over']
 				},
-				dragDrop: function (node, data) {
+				dragDrop: async function (node, data) {
 					//console.log('dragDrop', data.hitMode)
 					const id = data.otherNode.key
 					if (data.hitMode == 'before') {
 						const beforeIdx = node.getIndex()
 						console.log('beforeIdx', beforeIdx)
 						const newParentId = node.parent.key
-						insertBefore(id, newParentId, beforeIdx)
+						await http.post('/insertBefore', { id, newParentId, beforeIdx })
 					}
 					else {
-						changeParent(id, node.key)
+						await http.post('/changeParent', { id, newParentId: node.key })
 					}
 					data.otherNode.moveTo(node, data.hitMode)
 					node.setExpanded(true)
@@ -93,108 +72,141 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				isEdited: false,
-				selNode: null,
-				isVisible: function () {
-					return this.isEdited ? 'visible' : 'hidden'
-				},
-				canRemove: function () {
-					return this.selNode != null && this.selNode.key != "0"
-				},
-				isFolder: function () {
-					return this.selNode != null && this.selNode.isFolder()
-				},
-				isLink: function () {
-					return this.selNode != null && !this.selNode.isFolder()
-				},
 				source: [],
-				options
+				options,
+				getContextMenu: function () {
+					return function (node) {
+						node = ctrl.scope.tree.getActiveNode()
+						//console.log('getContextMenu', node)
+						const ret = {}
+						if (node != ctrl.scope.tree.getRootNode().getFirstChild()) {
+							ret.del = {
+								name: 'Delete',
+								icon: 'fas fa-trash-alt'
+							}
+						}
+						if (node.isFolder()) {
+							ret.addFolder = {
+								name: 'Add Folder',
+								icon: 'fas fa-folder-plus'
+							}
+							ret.addLink = {
+								name: 'Add Link',
+								icon: 'fas fa-link'
+							}
+
+						}
+						else {
+							ret.edit = {
+								name: 'Edit',
+								icon: 'fas fa-edit'
+							}
+							ret.setPwd = {
+								name: 'Set Password',
+								icon: 'fas fa-lock'
+							}
+							ret.getPwd = {
+								name: 'View Password',
+								icon: 'fas fa-eye'
+							}
+						}
+						return ret
+					}
+				}
+
 
 			},
 			events: {
-				onUpdateLink: function () {
-					const { selNode } = ctrl.model
-					pager.pushPage('addLink', {
-						title: 'Edit Link',
-						props: {
-							data: {
-								name: selNode.title,
-								link: selNode.data.link
-							}
-						},
-						onReturn: async function (data) {
-							//console.log('onReturn', data)
-							const { name, link } = data
-							const info = await updateLink(selNode.key, name, link)
-							//console.log('info', info)
-							selNode.setTitle(name)
-							selNode.data.link = link
-							selNode.data.icon = info.icon
-							selNode.render()
+				onTreeContextMenu: async function (ev, data) {
+					//console.log('onTreeContextMenu', data)
+					const { action, node } = data
+					if (action == 'addFolder') {
+						const title = await $$.ui.showPrompt({ title: 'Add Folder', label: 'Name:' })
+						if (title != null) {
+							const parentId = node.key
+							const ret = await http.post('/addFavorite', { parentId, info: { type: 'folder', name: title } })
+							node.addNode({ title, folder: true, key: ret.id })
+							node.setExpanded(true)
 						}
-					})
-				},
-				onUpdate: function () {
-					getFavorites()
+
+					}
+					else if (action == 'addLink') {
+						pager.pushPage('addLink', {
+							title: 'Add Link',
+							onReturn: async function (data) {
+								//console.log('onReturn', data)
+								const { name, link } = data
+
+								const parentId = node.key
+								const ret = await http.post('/addFavorite', { parentId, info: { type: 'link', name, link } })
+
+								node.addNode({ title: name, key: ret.id, data: { link, icon: ret.info.icon } })
+								node.setExpanded(true)
+							}
+						})
+
+					}
+					else if (action == 'edit') {
+						pager.pushPage('addLink', {
+							title: 'Edit Link',
+							props: {
+								data: {
+									name: node.title,
+									link: node.data.link
+								}
+							},
+							onReturn: async function (data) {
+								//console.log('onReturn', data)
+								const { name, link } = data
+								const info = await http.post('/updateLink', { id: node.key, name, link })
+								//console.log('info', info)
+								node.setTitle(name)
+								node.data.link = link
+								node.data.icon = info.icon
+								node.render()
+							}
+						})
+					}
+					else if (action == 'del') {
+						await http.delete(`/removeFavorite/${node.key}`)
+						node.remove()
+
+					}
+					else if (action == 'setPwd') {
+						if (keyPwd == null) {
+							keyPwd = await $$.ui.showPrompt({ title: 'Key Password', label: 'password' })
+							//console.log('keyPwd', keyPwd)
+						}
+						if (keyPwd != null) {
+							const sitePwd = await $$.ui.showPrompt({ title: 'Site Password', bale: 'password' })
+							//console.log('sitePwd', sitePwd)
+							const encryptedPwd = await $$.crypto.encrypt(keyPwd, sitePwd)
+							//console.log('encryptedPwd', encryptedPwd)
+							await http.post('/setPwd', { id: node.key, pwd: encryptedPwd })
+						}
+
+					}
+					else if (action == 'getPwd') {
+						if (keyPwd == null) {
+							keyPwd = await $$.ui.showPrompt({ title: 'Key Password', label: 'password' })
+							//console.log('keyPwd', keyPwd)
+						}
+						if (keyPwd != null) {
+							const { pwd } = await http.post('/getPwd', { id: node.key })
+							//console.log('pwd', pwd)
+							const decryptedPwd = await $$.crypto.decrypt(keyPwd, pwd)
+							//console.log('decryptedPwd', decryptedPwd)
+							$$.ui.showAlert({ title: 'Site Password', content: decryptedPwd })
+						}
+
+					}
 				},
 				onItemSelected: function (ev, selNode) {
-					//console.log('onItemSelected', selNode.title)
-					// if (selNode.isFolder()) {
-					// 	selNode.setExpanded(!selNode.isExpanded())
-					// }
-					ctrl.setData({ selNode })
-					if (!ctrl.model.isEdited) {
-						const { link } = selNode.data
-						if (link != undefined) {
-							window.open(link)
-						}
-						selNode.setActive(false)
+					console.log('onItemSelected', selNode.title)
+					const { link } = selNode.data
+					if (link != undefined) {
+						window.open(link)
 					}
-				},
-				onEdit: function () {
-					ctrl.setData({ isEdited: true, selNode: null })
-				},
-				onBack: function () {
-					const { selNode } = ctrl.model
-					if (selNode != null) {
-						selNode.setActive(false)
-					}
-					ctrl.setData({ isEdited: false, selNode: null })
-				},
-				onAddFolder: async function () {
-					const title = await $$.ui.showPrompt({ title: 'Add Folder', label: 'Name:' })
-					if (title != null) {
-						const { selNode } = ctrl.model
-						const parentId = selNode.key
-						const ret = await addFavorite(parentId, { type: 'folder', name: title })
-						selNode.addNode({ title, folder: true, key: ret.id })
-						selNode.setExpanded(true)
-					}
-				},
-				onAddLink: function () {
-					pager.pushPage('addLink', {
-						title: 'Add Link',
-						onReturn: async function (data) {
-							//console.log('onReturn', data)
-							const { name, link } = data
-							const { selNode } = ctrl.model
-
-							const parentId = selNode.key
-							const ret = await addFavorite(parentId, { type: 'link', name, link })
-
-							selNode.addNode({ title: name, key: ret.id, data: { link, icon: ret.info.icon } })
-							selNode.setExpanded(true)
-						}
-					})
-
-				},
-
-				onRemove: async function () {
-					const { selNode } = ctrl.model
-					await removeFavorite(selNode.key)
-					selNode.remove()
-					ctrl.setData({ selNode: null })
-
 				}
 
 			}

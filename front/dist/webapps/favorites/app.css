@@ -1,6 +1,11 @@
 .addLink {
-  padding: 10px; }
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center; }
   .addLink form {
+    max-width: 400px;
+    width: 400px;
     display: grid;
     grid-template-columns: 70px 1fr;
     gap: 10px; }

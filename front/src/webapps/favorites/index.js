@@ -171,6 +171,37 @@ module.exports = function (ctx, router) {
         }
     })
 
+    router.post('/setPwd', async function (req, res) {
+        const userName = req.session.user
+        const { id, pwd } = req.body
+
+        //console.log('addFavorite', userName, parentId, info)
+
+        try {
+            await db.updateOne(buildDbId(id), { $set: { pwd } })
+            res.sendStatus(200)
+        }
+        catch (e) {
+            res.status(400).send(e.message)
+        }
+    })
+
+    router.post('/getPwd', async function (req, res) {
+        const userName = req.session.user
+        const { id } = req.body
+
+        //console.log('addFavorite', userName, parentId, info)
+
+        try {
+            const { pwd } = await db.findOne(buildDbId(id), { projection: { _id: 0, pwd: 1 } })
+            res.json({ pwd })
+        }
+        catch (e) {
+            res.status(400).send(e.message)
+        }
+    })
+
+
     router.post('/insertBefore', async function (req, res) {
         const userName = req.session.user
         const { id, newParentId, beforeIdx } = req.body

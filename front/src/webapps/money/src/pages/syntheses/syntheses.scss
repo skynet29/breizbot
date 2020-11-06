@@ -7,4 +7,9 @@
     th {
         text-align: center;
     }
+
+    td:nth-child(1) {
+        text-align: left;
+        font-weight: bold;
+    }
 }

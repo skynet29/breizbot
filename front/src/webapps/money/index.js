@@ -41,25 +41,31 @@ module.exports = function (ctx, router) {
         }
     })
 
-    function getCurrentMonthDateFilter() {
-        const now = new Date()
-        const daysOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate()
+    function getMonthDateFilter(year, month) {
+        const daysOfMonth = new Date(year, month + 1, 0).getDate()
 
-        const startDate = new Date(now.getFullYear(), now.getMonth(), 1)
-        const endDate = new Date(now.getFullYear(), now.getMonth(), daysOfMonth)
+        const startDate = new Date(year, month, 1)
+        const endDate = new Date(year, month, daysOfMonth)
 
         return { $gte: startDate, $lte: endDate }
+
     }
 
-    async function computeMonthSynthesis(account) {
+    function getCurrentMonthDateFilter() {
+        const now = new Date()
+
+        return getMonthDateFilter(now.getFullYear(), now.getMonth())
+    }
+
+    async function computeMonthSynthesis(accountId, year, month) {
 
         let income = 0
         let expenses = 0
         const transations = await db.find(
             {
-                accountId: account._id.toString(),
+                accountId,
                 type: 'transaction',
-                date: getCurrentMonthDateFilter()
+                date: getMonthDateFilter(year, month)
             }).toArray()
 
         transations.forEach((tr) => {
@@ -84,11 +90,36 @@ module.exports = function (ctx, router) {
         try {
             const accounts = await db.find({ userName, type: 'account' }).toArray()
             if (synthesis === '1') {
+                const now = new Date()
+
                 for await (const account of accounts) {
-                    account.synthesis = await computeMonthSynthesis(account)
+                    const accountId = account._id.toString()
+                    account.synthesis = await computeMonthSynthesis(accountId, now.getFullYear(), now.getMonth())
                 }
             }
             res.json(accounts)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
+    router.get('/account/:accountId/syntheses', async function (req, res) {
+
+        const { accountId } = req.params
+        const { year } = req.query
+
+        const months = Array.from(Array(12).keys())
+        const syntheses = []
+
+        try {
+            for await (const month of months) {
+                const synthesis = await computeMonthSynthesis(accountId, year, month)
+                syntheses.push(synthesis)
+            }
+
+            res.json(syntheses)
         }
         catch (e) {
             res.status(404).send(e.message)
@@ -239,7 +270,7 @@ module.exports = function (ctx, router) {
             await db.updateOne(buildDbId(accountId), { $inc: { finalBalance: data.amount } })
 
             if (data.category == 'virement') {
-                const toAccount = await db.findOne({type: 'account', name: data.payee, userName})
+                const toAccount = await db.findOne({ type: 'account', name: data.payee, userName })
                 const fromAccount = await db.findOne(buildDbId(accountId))
                 data.amount *= -1
                 data.payee = fromAccount.name
@@ -362,7 +393,7 @@ module.exports = function (ctx, router) {
         catch (e) {
             res.status(404).send(e.message)
         }
-    })    
+    })
 
     router.post('/account/:accountId/recurringTransactions/:transactionId/enterNextOccurence', async function (req, res) {
 
@@ -394,7 +425,7 @@ module.exports = function (ctx, router) {
                 await enterRecurringTransaction(accountId, data._id.toString(), data)
             }
 
-            res.json({inserted: recurringTransactions.length})
+            res.json({ inserted: recurringTransactions.length })
         }
         catch (e) {
             res.status(404).send(e.message)

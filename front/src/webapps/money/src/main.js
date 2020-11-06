@@ -39,7 +39,7 @@ $$.control.registerControl('rootPage', {
 						}
 					})
 				},
-				onContextMenu: function (ev, data) {
+				onContextMenu: async function (ev, data) {
 					const idx = $(this).index()
 
 					//console.log('onContextMenu', data, idx)
@@ -79,6 +79,14 @@ $$.control.registerControl('rootPage', {
 							},
 							onBack: function() {
 								loadAccounts()
+							}
+						})
+					}
+					else if (cmd == 'syntheses') {
+						pager.pushPage('syntheses', {
+							title: 'Syntheses',
+							props: {
+								accountId
 							}
 						})
 					}

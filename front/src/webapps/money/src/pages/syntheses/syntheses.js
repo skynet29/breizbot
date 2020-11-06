@@ -12,7 +12,7 @@ $$.control.registerControl('syntheses', {
 
         const { accountId } = this.props
 
-        const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+        const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total']
 
         const ctrl = $$.viewController(elt, {
             data: {
@@ -42,8 +42,11 @@ $$.control.registerControl('syntheses', {
 
         async function load() {
             const syntheses = await http.get(`/account/${accountId}/syntheses`, { year: new Date().getFullYear() })
-            //console.log('syntheses', syntheses)
+            console.log('syntheses', syntheses)
+            const income = syntheses.reduce((acc, item) => {return acc + item.income}, 0)
+            const expenses = syntheses.reduce((acc, item) => {return acc + item.expenses}, 0)
             syntheses.unshift({})
+            syntheses.push({income, expenses})
             ctrl.setData({ syntheses })
 
         }

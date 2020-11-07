@@ -98,7 +98,9 @@
   text-align: right; }
 
 .syntheses th {
-  text-align: center; }
+  text-align: center;
+  background-color: #666;
+  color: white; }
 
 .syntheses td:nth-child(1) {
   text-align: left;
@@ -119,5 +121,56 @@
         background-color: #666;
         color: white; }
       .transactions .scrollPanelTable table td.amount {
+        text-align: right;
+        padding-right: 10px; }
+
+.unclearedTransactions {
+  display: flex;
+  flex-direction: column; }
+  .unclearedTransactions .inputForm {
+    display: flex;
+    flex-direction: row;
+    margin: 10px 10px;
+    justify-content: space-between;
+    align-items: center;
+    /* Chrome, Safari, Edge, Opera */
+    /* Firefox */ }
+    .unclearedTransactions .inputForm .left {
+      display: flex;
+      flex-direction: row; }
+    .unclearedTransactions .inputForm .difference {
+      display: flex;
+      flex-direction: row;
+      align-items: center; }
+      .unclearedTransactions .inputForm .difference > div {
+        min-width: 80px;
+        margin-left: 10px;
+        text-align: right; }
+    .unclearedTransactions .inputForm input[type=number] {
+      text-align: right;
+      padding: 5px;
+      margin-right: 10px; }
+    .unclearedTransactions .inputForm input::-webkit-outer-spin-button,
+    .unclearedTransactions .inputForm input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0; }
+    .unclearedTransactions .inputForm input[type=number] {
+      -moz-appearance: textfield; }
+  .unclearedTransactions .scrollPanelTable {
+    flex: 1;
+    overflow-y: auto; }
+    .unclearedTransactions .scrollPanelTable .w3-check {
+      top: 0px; }
+    .unclearedTransactions .scrollPanelTable table {
+      border: none; }
+      .unclearedTransactions .scrollPanelTable table th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background-color: #666;
+        color: white; }
+      .unclearedTransactions .scrollPanelTable table td {
+        vertical-align: middle; }
+      .unclearedTransactions .scrollPanelTable table td.amount {
         text-align: right;
         padding-right: 10px; }

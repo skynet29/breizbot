@@ -1,0 +1,46 @@
+<div class="inputForm">
+	<div class="left">
+		<div bn-control="brainjs.inputgroup">
+			<label>Initial Balance</label>
+			<input type="number" step="0.01" bn-val="initialBalance" bn-update="change" class="w3-border w3-round">
+		</div>
+		<div bn-control="brainjs.inputgroup">
+			<label>Final Balance</label>
+			<input type="number" step="0.01" bn-val="finalBalance" bn-update="change" class="w3-border w3-round">
+		</div>	
+	</div>
+	<div class="difference" bn-bind="difference">
+		<label>Difference</label>
+		<div bn-text="getDifference"></div>
+	</div>
+
+</div>
+<div class="scrollPanelTable">
+	<table class="w3-table-all w3-hoverable w3-small">
+		<thead>
+			<tr>
+                <th>Payee</th>
+                <th>Category</th>
+				<th>Date</th>
+				<th>S</th>
+				<th>Number</th>
+                <th>Amount</th>
+			</tr>
+		</thead>
+		<tbody bn-each="transactions" bn-lazzy="20" bn-bind="transactions" bn-event="contextmenuchange.item: onItemContextMenu, click.w3-check: onCheckClick">
+			<tr class="item">
+                <td bn-text="$scope.$i.payee"></td>
+                <td>
+					<span bn-text="$scope.$i.category"></span><br>
+					<span bn-text="$scope.$i.subcategory"></span>
+				</td>
+				<td bn-text="formatDate" class="date"></td>
+				<td>
+					<input type="checkbox" class="w3-check" bn-val="isChecked">
+				</td>
+				<td bn-text="$scope.$i.number"></td>
+				<td bn-text="formatAmount" class="amount" bn-style="{color: getAmountColor}"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>

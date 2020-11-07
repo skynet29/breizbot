@@ -6,6 +6,14 @@ $$.control.registerControl('rootPage', {
 
 	init: function (elt, pager, http) {
 
+		const cmdMap = {
+			delete: deleteCmd,
+			edit: editCmd,
+			recurringTrans: recurringTransCmd,
+			syntheses: synthesesCmd,
+			balance: balanceCmd
+		}
+
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -45,51 +53,12 @@ $$.control.registerControl('rootPage', {
 					//console.log('onContextMenu', data, idx)
 
 					const accountInfo = ctrl.model.accounts[idx]
-					//console.log('accountInfo', accountInfo)
-					const accountId = accountInfo._id.toString()
-					
-					const { cmd } = data
-					if (cmd == 'delete') {
-						$$.ui.showConfirm({ title: 'Delete Account', content: 'Are you sure ?' }, async () => {
-							await http.delete(`/account/${accountId}`)
-							loadAccounts()
-						})
+					//console.log('accountInfo', accountInfo)					
+					const fn = cmdMap[data.cmd]
+					if (typeof fn == 'function') {
+						fn(accountInfo)
 					}
-					else if (cmd == 'edit') {
-						pager.pushPage('addAccount', {
-							title: 'Edit Account',
-							props: {
-								formData: accountInfo
-							},
-							onReturn: async function (data) {
-								//console.log('onReturn', data)
-								const newData =  $.extend(accountInfo, data)
-								delete newData._id
-								delete newData.synthesis
-								await http.put(`/account/${accountId}`, newData)
-								loadAccounts()
-							}
-						})
-					}
-					else if (cmd == 'recurringTrans') {
-						pager.pushPage('recurringTransactions', {
-							title: `Recurring Transactions: ${accountInfo.name}`,
-							props: {
-								accountId
-							},
-							onBack: function() {
-								loadAccounts()
-							}
-						})
-					}
-					else if (cmd == 'syntheses') {
-						pager.pushPage('syntheses', {
-							title: 'Syntheses',
-							props: {
-								accountId
-							}
-						})
-					}
+
 				},
 				onItemClick: function (ev) {
 					const idx = $(this).index()
@@ -108,6 +77,78 @@ $$.control.registerControl('rootPage', {
 			}
 
 		})
+
+		async function balanceCmd(accountInfo) {
+			const accountId = accountInfo._id.toString()
+
+			const transactions = await http.get(`/account/${accountId}/unclearedTransactions`)
+			//console.log('unclearedTransactions', transactions)
+			pager.pushPage('unclearedTransactions', {
+				title: 'Last Statement Balance Transactions',
+				props: {
+					transactions,
+					accountId
+				}
+			})
+
+		}
+
+		async function synthesesCmd(accountInfo) {
+			const accountId = accountInfo._id.toString()
+
+			const syntheses = await http.get(`/account/${accountId}/syntheses`, { year: new Date().getFullYear() })
+			pager.pushPage('syntheses', {
+				title: 'Syntheses',
+				props: {
+					syntheses
+				}
+			})
+
+		}
+
+		function recurringTransCmd(accountInfo) {
+			const accountId = accountInfo._id.toString()
+
+			pager.pushPage('recurringTransactions', {
+				title: `Recurring Transactions: ${accountInfo.name}`,
+				props: {
+					accountId
+				},
+				onBack: function() {
+					loadAccounts()
+				}
+			})
+
+		}
+
+		function editCmd(accountInfo) {
+			const accountId = accountInfo._id.toString()
+
+			pager.pushPage('addAccount', {
+				title: 'Edit Account',
+				props: {
+					formData: accountInfo
+				},
+				onReturn: async function (data) {
+					//console.log('onReturn', data)
+					const newData =  $.extend(accountInfo, data)
+					delete newData._id
+					delete newData.synthesis
+					await http.put(`/account/${accountId}`, newData)
+					loadAccounts()
+				}
+			})
+		}
+
+		function deleteCmd(accountInfo) {
+			const accountId = accountInfo._id.toString()
+
+			$$.ui.showConfirm({ title: 'Delete Account', content: 'Are you sure ?' }, async () => {
+				await http.delete(`/account/${accountId}`)
+				loadAccounts()
+			})
+
+		}
 
 		async function loadAccounts() {
 			const accounts = await http.get('/account', {synthesis: 1})

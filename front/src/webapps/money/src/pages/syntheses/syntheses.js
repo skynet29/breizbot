@@ -5,20 +5,28 @@ $$.control.registerControl('syntheses', {
     deps: ['breizbot.http'],
 
     props: {
-        accountId: null
+        syntheses: []
     },
 
     init: function (elt, http) {
 
-        const { accountId } = this.props
+        const { syntheses } = this.props
+
+        //console.log('syntheses', syntheses)
+
+        const income = syntheses.reduce((acc, item) => { return acc + item.income }, 0)
+        const expenses = syntheses.reduce((acc, item) => { return acc + item.expenses }, 0)
+        syntheses.unshift({})
+        syntheses.push({ income, expenses })
+
 
         const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total']
 
         const ctrl = $$.viewController(elt, {
             data: {
-                syntheses: [],
+                syntheses,
                 months,
-                formatIncome: function (scope) {                    
+                formatIncome: function (scope) {
                     //const synthesis = this.syntheses[scope.idx]
                     return (scope.idx == 0) ? 'Income' : this.syntheses[scope.idx].income.toFixed(2)
                 },
@@ -27,31 +35,18 @@ $$.control.registerControl('syntheses', {
                 },
                 formatDifference: function (scope) {
                     const { income, expenses } = this.syntheses[scope.idx]
-                    return (scope.idx == 0) ? 'Difference' : (income - expenses).toFixed(2)    
+                    return (scope.idx == 0) ? 'Difference' : (income - expenses).toFixed(2)
                 },
-                getDiffColor: function(scope) {
+                getDiffColor: function (scope) {
                     if (scope.idx == 0) {
                         return 'black'
                     }
-                    return (parseInt(this.formatDifference(scope)) < 0) ?  'red' : 'green'
+                    return (parseInt(this.formatDifference(scope)) < 0) ? 'red' : 'green'
                 }
             }
 
         })
 
-
-        async function load() {
-            const syntheses = await http.get(`/account/${accountId}/syntheses`, { year: new Date().getFullYear() })
-            console.log('syntheses', syntheses)
-            const income = syntheses.reduce((acc, item) => {return acc + item.income}, 0)
-            const expenses = syntheses.reduce((acc, item) => {return acc + item.expenses}, 0)
-            syntheses.unshift({})
-            syntheses.push({income, expenses})
-            ctrl.setData({ syntheses })
-
-        }
-
-        load()
     }
 
 });

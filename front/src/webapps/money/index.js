@@ -105,6 +105,50 @@ module.exports = function (ctx, router) {
 
     })
 
+
+    router.get('/account/:accountId/unclearedTransactions', async function (req, res) {
+
+        const { accountId } = req.params
+
+
+        try {
+            const transations = await db.find(
+                {
+                    accountId,
+                    type: 'transaction',
+                    clearedStatus: { $ne: 'X' }
+                }).sort({ date: 1 }).toArray()
+
+            res.json(transations)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
+    router.put('/account/:accountId/unclearedTransactions', async function (req, res) {
+
+        const { accountId } = req.params
+        const { ids, clearedStatus } = req.body
+
+
+        try {
+            await db.updateMany({ type: 'transaction', accountId, clearedStatus: 'P' }, {
+                $unset: { clearedStatus: 1 }
+            })
+            if (ids.length > 0) {
+                await db.updateMany(buildDbId(ids), { $set: { clearedStatus } })
+            }
+
+            res.sendStatus(200)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
     router.get('/account/:accountId/syntheses', async function (req, res) {
 
         const { accountId } = req.params

@@ -1,3 +1,16 @@
+<div class="toolbar">
+    <div>Accounts</div>
+	<button 
+		class="w3-button" 
+		title="Add Account"
+        bn-event="click: onAddAccount"
+        bn-icon="fa fa-plus"
+
+	></button>	
+</div>
+
+<p bn-show="!hasAccounts">You have no account</p>
+
 <div class="scrollPanel">
 	<ul class="w3-ul w3-border w3-white" 
         bn-each="accounts"

@@ -1,0 +1,41 @@
+.synthCategories {
+
+    display: flex;
+    flex-direction: column;
+
+    .year {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 10px;
+
+        label {
+            margin-right: 10px;
+        }
+    }
+
+    .scrollPanel {
+        flex: 1;
+        overflow-y: auto;
+
+        td {
+            text-align: right;
+        }
+    
+        th {
+            text-align: center;
+            background-color: #666;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 2;    
+        }
+    
+        td:nth-child(1) {
+            text-align: left;
+            font-weight: bold;
+        }
+    
+    }
+
+}

@@ -1,0 +1,19 @@
+<div class="year">
+    <label>Year</label>
+    <div bn-control="brainjs.combobox" bn-data="{items: years}" bn-event="comboboxchange: onYearChange"></div>
+</div>
+
+<div class="scrollPanel">
+    <table class="w3-table-all w3-small">
+        <thead>
+            <tr bn-each="months">
+                <th bn-text="$scope.$i"></th>
+            </tr>
+        </thead>
+        <tbody bn-each="categories" bn-index="catIdx">
+            <tr bn-each="$scope.$i.value" bn-index="monthIdx" bn-iter="month" bn-style="getStyle">
+                <td bn-text="formatAmount"></td>
+            </tr>
+        </tbody>
+    </table>   
+</div>

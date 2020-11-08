@@ -68,7 +68,21 @@ module.exports = function (ctx, router) {
                 date: getMonthDateFilter(year, month)
             }).toArray()
 
+        const categories = {}
+
         transations.forEach((tr) => {
+            let { category, subcategory } = tr
+            if (subcategory && subcategory != '') {
+                category += ':' + subcategory
+            }
+
+            if (categories[category] != undefined) {
+                categories[category] += tr.amount
+            }
+            else {
+                categories[category] = tr.amount
+            }
+
             if (tr.amount > 0) {
                 income += tr.amount
             }
@@ -77,7 +91,7 @@ module.exports = function (ctx, router) {
             }
         })
 
-        return { income, expenses }
+        return { income, expenses, categories }
 
     }
 
@@ -154,10 +168,10 @@ module.exports = function (ctx, router) {
         const { accountId } = req.params
 
         try {
-            const oldestTransaction = await db.find({accountId, type: 'transaction'}).sort({date: 1}).limit(1).toArray()
+            const oldestTransaction = await db.find({ accountId, type: 'transaction' }).sort({ date: 1 }).limit(1).toArray()
             const oldestYear = new Date(oldestTransaction[0].date).getFullYear()
 
-            res.json({oldestYear})
+            res.json({ oldestYear })
         }
         catch (e) {
             res.status(404).send(e.message)

@@ -10,7 +10,8 @@ $$.control.registerControl('rootPage', {
 			delete: deleteCmd,
 			edit: editCmd,
 			recurringTrans: recurringTransCmd,
-			syntheses: synthesesCmd,
+			synthBalance: synthBalanceCmd,
+			synthCategories: synthCategoriesCmd,
 			balance: balanceCmd
 		}
 
@@ -93,7 +94,7 @@ $$.control.registerControl('rootPage', {
 
 		}
 
-		async function synthesesCmd(accountInfo) {
+		async function synthBalanceCmd(accountInfo) {
 			const accountId = accountInfo._id.toString()
 
 			pager.pushPage('syntheses', {
@@ -104,6 +105,19 @@ $$.control.registerControl('rootPage', {
 			})
 
 		}
+
+		async function synthCategoriesCmd(accountInfo) {
+			const accountId = accountInfo._id.toString()
+
+			pager.pushPage('synthCategories', {
+				title: 'Syntheses by categories',
+				props: {
+					accountId
+				}
+			})
+
+		}
+
 
 		function recurringTransCmd(accountInfo) {
 			const accountId = accountInfo._id.toString()

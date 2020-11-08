@@ -94,6 +94,32 @@
         text-align: right;
         padding-right: 10px; }
 
+.synthCategories {
+  display: flex;
+  flex-direction: column; }
+  .synthCategories .year {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px; }
+    .synthCategories .year label {
+      margin-right: 10px; }
+  .synthCategories .scrollPanel {
+    flex: 1;
+    overflow-y: auto; }
+    .synthCategories .scrollPanel td {
+      text-align: right; }
+    .synthCategories .scrollPanel th {
+      text-align: center;
+      background-color: #666;
+      color: white;
+      position: sticky;
+      top: 0;
+      z-index: 2; }
+    .synthCategories .scrollPanel td:nth-child(1) {
+      text-align: left;
+      font-weight: bold; }
+
 .syntheses .year {
   display: flex;
   flex-direction: row;

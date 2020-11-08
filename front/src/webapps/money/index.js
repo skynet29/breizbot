@@ -149,6 +149,23 @@ module.exports = function (ctx, router) {
 
     })
 
+    router.get('/account/:accountId/oldestYearTransaction', async function (req, res) {
+
+        const { accountId } = req.params
+
+        try {
+            const oldestTransaction = await db.find({accountId, type: 'transaction'}).sort({date: 1}).limit(1).toArray()
+            const oldestYear = new Date(oldestTransaction[0].date).getFullYear()
+
+            res.json({oldestYear})
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
+
     router.get('/account/:accountId/syntheses', async function (req, res) {
 
         const { accountId } = req.params

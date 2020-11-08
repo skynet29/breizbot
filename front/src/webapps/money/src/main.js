@@ -96,11 +96,10 @@ $$.control.registerControl('rootPage', {
 		async function synthesesCmd(accountInfo) {
 			const accountId = accountInfo._id.toString()
 
-			const syntheses = await http.get(`/account/${accountId}/syntheses`, { year: new Date().getFullYear() })
 			pager.pushPage('syntheses', {
 				title: 'Syntheses',
 				props: {
-					syntheses
+					accountId
 				}
 			})
 

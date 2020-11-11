@@ -143,18 +143,18 @@
 .transactions {
   display: flex;
   flex-direction: column; }
-  .transactions .scrollPanelTable {
+  .transactions .scrollPanel {
     flex: 1;
     overflow-y: auto; }
-    .transactions .scrollPanelTable table {
+    .transactions .scrollPanel table {
       border: none; }
-      .transactions .scrollPanelTable table th {
+      .transactions .scrollPanel table th {
         position: sticky;
         top: 0;
         z-index: 2;
         background-color: #666;
         color: white; }
-      .transactions .scrollPanelTable table td.amount {
+      .transactions .scrollPanel table td.amount {
         text-align: right;
         padding-right: 10px; }
 

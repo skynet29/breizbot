@@ -3,7 +3,7 @@
     <div bn-control="brainjs.combobox" bn-data="{items: years}" bn-event="comboboxchange: onYearChange"></div>
 </div>
 
-<div class="scrollPanel">
+<div class="scrollPanel" bn-bind="scrollPanel">
     <table class="w3-table-all w3-small">
         <thead>
             <tr bn-each="months">
@@ -12,7 +12,7 @@
         </thead>
         <tbody bn-each="categories" bn-index="catIdx">
             <tr bn-each="$scope.$i.value" bn-index="monthIdx" bn-iter="month" bn-style="getStyle">
-                <td bn-text="formatAmount"></td>
+                <td bn-text="formatAmount" bn-style="getCellStyle"></td>
             </tr>
         </tbody>
     </table>   

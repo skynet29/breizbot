@@ -13,6 +13,8 @@ $$.control.registerControl('transactions', {
 
         const { accountId } = this.props
 
+        let notPassedNumber = 0
+
         const ctrl = $$.viewController(elt, {
             data: {
                 transactions: [],
@@ -28,7 +30,11 @@ $$.control.registerControl('transactions', {
                 },
                 getAmountColor: function (scope) {
                     return (scope.$i.amount < 0) ? 'red' : 'black'
+                },
+                getStyle: function (scope) {
+                    return { 'border-bottom': (scope.trIndex == notPassedNumber - 1) ? '2px solid black' : '1px solid #ddd' }
                 }
+
             },
             events: {
                 onItemContextMenu: function (ev, data) {
@@ -82,6 +88,16 @@ $$.control.registerControl('transactions', {
             }
         }
 
+        async function getTransactionNotPassedNumber() {
+            const data  = await http.get(`/account/${accountId}/transactions/notPassedNumber`)
+            //console.log('getTransactionNotPassedNumber', data)
+            notPassedNumber = data.notPassedNumber
+        }
+
+
+    
+
+        getTransactionNotPassedNumber()
         loadTransactions()
 
         function importTransactions() {
@@ -114,6 +130,14 @@ $$.control.registerControl('transactions', {
                             title: 'Import Transactions',
                             content: 'This operation will remove all your current transactions<br><br>Are you sure ?'
                         }, importTransactions)
+                    }
+                },
+                reload: {
+                    title: 'Update',
+                    icon: 'fa fa-redo-alt',
+                    onClick: async function() {
+                        await loadTransactions()
+                        ctrl.scope.scrollPanelTable.scrollTop(0)
                     }
                 },
                 add: {

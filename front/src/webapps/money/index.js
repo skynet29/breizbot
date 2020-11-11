@@ -73,7 +73,15 @@ module.exports = function (ctx, router) {
         transations.forEach((tr) => {
             let { category, subcategory } = tr
             if (subcategory && subcategory != '') {
-                category += ':' + subcategory
+                subcategory = category + ':' + subcategory
+
+                if (categories[subcategory] != undefined) {
+                    categories[subcategory] += tr.amount
+                }
+                else {
+                    categories[subcategory] = tr.amount
+                }
+    
             }
 
             if (categories[category] != undefined) {
@@ -244,7 +252,20 @@ module.exports = function (ctx, router) {
         catch (e) {
             res.status(404).send(e.message)
         }
+    })
 
+    router.get('/account/:id/transactions/notPassedNumber', async function (req, res) {
+
+        const accountId = req.params.id
+        const now = new Date()
+
+        try {
+            const notPassedNumber = await db.countDocuments({ type: 'transaction', accountId, date: { $gte: now } })
+            res.json({ notPassedNumber })
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
     })
 
     router.get('/account/:id/recurringTransactions', async function (req, res) {

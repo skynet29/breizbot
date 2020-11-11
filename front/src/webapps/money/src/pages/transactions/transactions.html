@@ -1,4 +1,4 @@
-<div class="scrollPanelTable">
+<div class="scrollPanel" bn-bind="scrollPanelTable">
 	<table class="w3-table-all w3-hoverable w3-small">
 		<thead>
 			<tr>
@@ -10,7 +10,7 @@
                 <th>Amount</th>
 			</tr>
 		</thead>
-		<tbody bn-each="transactions" bn-lazzy="getItems" bn-bind="transactions" bn-event="contextmenuchange.item: onItemContextMenu">
+		<tbody bn-each="transactions" bn-lazzy="getItems" bn-bind="transactions" bn-event="contextmenuchange.item: onItemContextMenu" bn-index="trIndex">
 			<tr class="item" bn-control="brainjs.contextmenu" bn-data="{items: {
 				del: {
 					name: 'Delete',
@@ -20,7 +20,7 @@
 					name: 'Edit',
 					icon: 'fas fa-edit'
 				}
-			}}">
+			}}"  bn-style="getStyle">
                 <td bn-text="$scope.$i.payee"></td>
                 <td>
 					<span bn-text="$scope.$i.category"></span><br>

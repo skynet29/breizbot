@@ -25,21 +25,42 @@ $$.control.registerControl('synthCategories', {
                 formatAmount: function (scope) {
                     //console.log('formatAmount', scope)
                     if (scope.monthIdx == 0) {
-                        return scope.$i.name
+                        //console.log('name', scope.$i.name)
+                        const t = scope.$i.name.split(':')
+                        return (t.length == 2) ? t[1] : t[0]
                     }
 
                     const value = scope.$i.value[scope.monthIdx]
                     return (value == 0) ? '    ' : value.toFixed(2)
                 },
                 getStyle: function (scope) {
-                    return { 'border-bottom': (scope.catIdx == nbIncomeCat - 1) ? '2px solid black' : '1px solid #ddd' }
+                    let borderBottom = '1px solid #ddd'
+                    if (scope.catIdx == nbIncomeCat - 1) {
+                        borderBottom = '2px solid black'
+                    }
+                    let color = 'black'
+                    if (scope.$i.name.split(':').length == 1) {
+                        color = 'blue'
+                    }
+                    return { 'border-bottom': borderBottom, color }
+                },
+                getCellStyle: function(scope) {
+                    let paddingLeft = 8
+                    if (scope.monthIdx == 0) {
+                        if (scope.$i.name.split(':').length == 2) {
+                            paddingLeft += 15
+                        }
+                    }
+                    return {'padding-left': `${paddingLeft}px`}
+
                 }
             },
             events: {
                 onYearChange: async function (ev, data) {
                     //console.log('onYearChange', data)
                     ctrl.setData({ syntheses: [] })
-                    loadSyntheses(parseInt(data.item.value))
+                    await loadSyntheses(parseInt(data.item.value))
+                    ctrl.scope.scrollPanel.scrollTop(0)
                 }
             }
 

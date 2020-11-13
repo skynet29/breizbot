@@ -10,9 +10,9 @@
                 <th bn-text="$scope.$i"></th>
             </tr>
         </thead>
-        <tbody bn-each="categories" bn-index="catIdx">
+        <tbody bn-each="categories" bn-index="catIdx" bn-event="click.cell: onCellClick">
             <tr bn-each="$scope.$i.value" bn-index="monthIdx" bn-iter="month" bn-style="getStyle">
-                <td bn-text="formatAmount" bn-style="getCellStyle"></td>
+                <td bn-text="formatAmount" bn-style="getCellStyle" class="cell"></td>
             </tr>
         </tbody>
     </table>   

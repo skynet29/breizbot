@@ -2,9 +2,9 @@
 	<table class="w3-table-all w3-hoverable w3-small">
 		<thead>
 			<tr>
+				<th>Date</th>
                 <th>Payee</th>
                 <th>Category</th>
-				<th>Date</th>
 				<th>S</th>
 				<th>Number</th>
                 <th>Amount</th>
@@ -21,12 +21,12 @@
 					icon: 'fas fa-edit'
 				}
 			}}"  bn-style="getStyle">
-                <td bn-text="$scope.$i.payee"></td>
+			<td bn-text="formatDate" class="date"></td>
+			<td bn-text="$scope.$i.payee"></td>
                 <td>
 					<span bn-text="$scope.$i.category"></span><br>
 					<span bn-text="$scope.$i.subcategory"></span>
 				</td>
-				<td bn-text="formatDate" class="date"></td>
 				<td bn-text="$scope.$i.clearedStatus"></td>
 				<td bn-text="$scope.$i.number"></td>
 				<td bn-text="formatAmount" class="amount" bn-style="{color: getAmountColor}"></td>

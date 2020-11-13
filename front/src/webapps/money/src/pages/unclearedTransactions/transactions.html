@@ -19,9 +19,9 @@
 	<table class="w3-table-all w3-hoverable w3-small">
 		<thead>
 			<tr>
+				<th>Date</th>
                 <th>Payee</th>
                 <th>Category</th>
-				<th>Date</th>
 				<th>S</th>
 				<th>Number</th>
                 <th>Amount</th>
@@ -29,12 +29,12 @@
 		</thead>
 		<tbody bn-each="transactions" bn-lazzy="20" bn-bind="transactions" bn-event="contextmenuchange.item: onItemContextMenu, click.w3-check: onCheckClick">
 			<tr class="item">
+				<td bn-text="formatDate" class="date"></td>
                 <td bn-text="$scope.$i.payee"></td>
                 <td>
 					<span bn-text="$scope.$i.category"></span><br>
 					<span bn-text="$scope.$i.subcategory"></span>
 				</td>
-				<td bn-text="formatDate" class="date"></td>
 				<td>
 					<input type="checkbox" class="w3-check" bn-val="isChecked">
 				</td>

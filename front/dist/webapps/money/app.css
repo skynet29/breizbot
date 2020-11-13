@@ -76,6 +76,24 @@
           .addTransaction form .group .brainjs-radiogroup .brainjs-inputgroup label {
             margin-right: 20px; }
 
+.filteredTransactions {
+  display: flex;
+  flex-direction: column; }
+  .filteredTransactions .scrollPanel {
+    flex: 1;
+    overflow-y: auto; }
+    .filteredTransactions .scrollPanel table {
+      border: none; }
+      .filteredTransactions .scrollPanel table th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background-color: #666;
+        color: white; }
+      .filteredTransactions .scrollPanel table td.amount {
+        text-align: right;
+        padding-right: 10px; }
+
 .recurringTransactions {
   display: flex;
   flex-direction: column; }

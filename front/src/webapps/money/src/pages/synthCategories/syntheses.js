@@ -2,13 +2,13 @@ $$.control.registerControl('synthCategories', {
 
     template: { gulp_inject: './syntheses.html' },
 
-    deps: ['breizbot.http'],
+    deps: ['breizbot.http', 'breizbot.pager'],
 
     props: {
         accountId: null
     },
 
-    init: function (elt, http) {
+    init: function (elt, http, pager) {
 
         const { accountId } = this.props
 
@@ -16,6 +16,7 @@ $$.control.registerControl('synthCategories', {
         const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total']
 
         let nbIncomeCat = 0
+        let selectedYear = null
 
         const ctrl = $$.viewController(elt, {
             data: {
@@ -44,14 +45,20 @@ $$.control.registerControl('synthCategories', {
                     }
                     return { 'border-bottom': borderBottom, color }
                 },
-                getCellStyle: function(scope) {
+                getCellStyle: function (scope) {
                     let paddingLeft = 8
                     if (scope.monthIdx == 0) {
                         if (scope.$i.name.split(':').length == 2) {
                             paddingLeft += 15
                         }
                     }
-                    return {'padding-left': `${paddingLeft}px`}
+                    const ret = { 'padding-left': `${paddingLeft}px` }
+                    const value = scope.$i.value[scope.monthIdx]
+                    if (value != 0 && scope.monthIdx < 13) {
+                        ret.cursor = 'pointer'
+                    }
+
+                    return ret
 
                 }
             },
@@ -61,6 +68,34 @@ $$.control.registerControl('synthCategories', {
                     ctrl.setData({ syntheses: [] })
                     await loadSyntheses(parseInt(data.item.value))
                     ctrl.scope.scrollPanel.scrollTop(0)
+                },
+                onCellClick: async function () {
+                    let month = $(this).index()
+                    if (month > 0 && month < 13) {
+                        const idx = $(this).closest('tr').index()
+                        const { name, value } = ctrl.model.categories[idx]
+                        if (value[month] !== 0) {
+                            const t = name.split(':')
+                            const category = t[0]
+                            const subcategory = t[1]
+                            month--
+    
+                            const options = { year: selectedYear, month, category, subcategory }
+    
+        
+                            //console.log('onCellClick', options)
+                            const transactions = await http.get(`/account/${accountId}/filteredTransactions`, options)
+                            //console.log('transactions', transactions)
+                            pager.pushPage('filteredTransactions', {
+                                title: 'Selected Transactions',
+                                props: {
+                                    transactions
+                                }
+                            })
+    
+                        }
+    
+                    }
                 }
             }
 
@@ -71,6 +106,7 @@ $$.control.registerControl('synthCategories', {
         }
 
         async function loadSyntheses(year) {
+            selectedYear = year
             const syntheses = await http.get(`/account/${accountId}/syntheses`, { year })
 
             //console.log('syntheses', syntheses)

@@ -81,7 +81,7 @@ module.exports = function (ctx, router) {
                 else {
                     categories[subcategory] = tr.amount
                 }
-    
+
             }
 
             if (categories[category] != undefined) {
@@ -252,6 +252,31 @@ module.exports = function (ctx, router) {
         catch (e) {
             res.status(404).send(e.message)
         }
+    })
+
+    router.get('/account/:accountId/filteredTransactions', async function (req, res) {
+
+        const { accountId } = req.params
+        const { year, month, category, subcategory } = req.query
+
+        const filter = {
+            type: 'transaction',
+            accountId,
+            date: getMonthDateFilter(parseInt(year), parseInt(month)),
+            category
+        }
+        if (subcategory != undefined) {
+            filter.subcategory = subcategory
+        }
+
+        try {
+            const data = await db.find(filter).sort({ date: -1 }).toArray()
+            res.json(data)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
     })
 
     router.get('/account/:id/transactions/notPassedNumber', async function (req, res) {

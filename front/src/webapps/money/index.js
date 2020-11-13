@@ -270,7 +270,7 @@ module.exports = function (ctx, router) {
         }
 
         try {
-            const data = await db.find(filter).sort({ date: -1 }).toArray()
+            const data = await db.find(filter).sort({ date: 1 }).toArray()
             res.json(data)
         }
         catch (e) {

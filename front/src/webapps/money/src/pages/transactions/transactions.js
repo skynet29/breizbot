@@ -60,7 +60,7 @@ $$.control.registerControl('transactions', {
                                 accountId
                             },
                             onReturn: async function (data) {
-                                //console.log('onReturn', data)                                
+                                console.log('onReturn', data)                                
                                 await http.put(`/account/${accountId}/transaction/${transactionId}`, data)
                                 data = $.extend(info, data)
 
@@ -96,9 +96,13 @@ $$.control.registerControl('transactions', {
 
 
     
+        async function load() {
+            await getTransactionNotPassedNumber()
+            await loadTransactions()
+        }
 
-        getTransactionNotPassedNumber()
-        loadTransactions()
+        
+        load()
 
         function importTransactions() {
             pager.pushPage('breizbot.files', {
@@ -136,7 +140,7 @@ $$.control.registerControl('transactions', {
                     title: 'Update',
                     icon: 'fa fa-redo-alt',
                     onClick: async function() {
-                        await loadTransactions()
+                        await load()
                         ctrl.scope.scrollPanelTable.scrollTop(0)
                     }
                 },
@@ -155,7 +159,14 @@ $$.control.registerControl('transactions', {
                                 const { insertedId } = await http.post(`/account/${accountId}/transaction`, data)
                                 //console.log('insertedId', insertedId)
                                 data._id = insertedId
-                                ctrl.insertArrayItemAfter('transactions', 0, data, 'transactions')
+                                const date = new Date(data.date)
+                                if (date.getTime() < Date.now()) {
+                                    ctrl.insertArrayItemBefore('transactions', notPassedNumber, data, 'transactions')
+                                }
+                                else {
+                                    notPassedNumber++
+                                    ctrl.insertArrayItemBefore('transactions', 0, data, 'transactions')
+                                }
 
                             }
                         })

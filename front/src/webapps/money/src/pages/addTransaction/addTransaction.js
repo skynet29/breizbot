@@ -114,7 +114,7 @@ $$.control.registerControl('addTransaction', {
             let accounts = await http.get(`/account`)
             accounts = accounts.filter((acc) => acc._id.toString() != accountId).map((acc) => acc.name)
             ctrl.setData({toAccount: accounts[0]})
-            console.log('accounts', accounts)
+            //console.log('accounts', accounts)
 
             ctrl.setData({ payees, categories, accounts })
         }

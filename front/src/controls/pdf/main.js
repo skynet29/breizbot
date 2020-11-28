@@ -23,6 +23,21 @@ $$.control.registerControl('breizbot.pdf', {
 				}
 			},
 			events: {
+				onGotoPage: async function() {
+					const pageNo = await $$.ui.showPrompt({
+						title: 'Go to Page',
+						label: 'Page Number',
+						attrs: {
+							type: 'number',
+							min: 1,
+							max: ctrl.model.numPages,
+							step: 1
+						}
+					})
+					ctrl.setData({ wait: true })
+					const currentPage =  await ctrl.scope.pdf.setPage(pageNo)
+					ctrl.setData({ currentPage, wait: false })
+				},
 				onPrint: function() {
 					ctrl.scope.pdf.print()
 				},

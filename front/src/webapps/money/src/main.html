@@ -1,12 +1,20 @@
 <div class="toolbar">
-    <div>Accounts</div>
+	<div>Accounts</div>
+	<div>
+		<button 
+		class="w3-button" 
+		title="Global synthesis"
+        bn-event="click: onGlobalSynthesis"
+        bn-icon="fas fa-balance-scale-right"
+	></button>	
 	<button 
 		class="w3-button" 
 		title="Add Account"
         bn-event="click: onAddAccount"
         bn-icon="fa fa-plus"
-
 	></button>	
+
+	</div>
 </div>
 
 <p bn-show="!hasAccounts">You have no account</p>

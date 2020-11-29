@@ -37,8 +37,15 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				onGlobalSynthesis: async function() {
+					//console.log('onGlobalSynthesis')
+					pager.pushPage('globalSynthesis', {
+						title: 'Global Synthesis'
+					})
+
+				},
 				onAddAccount: function () {
-					console.log('onAddAccount')
+					//console.log('onAddAccount')
 					pager.pushPage('addAccount', {
 						title: 'Add Account',
 						onReturn: async function (data) {

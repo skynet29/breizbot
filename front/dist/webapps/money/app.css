@@ -94,6 +94,26 @@
         text-align: right;
         padding-right: 10px; }
 
+.globalSynthesis .year {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px; }
+  .globalSynthesis .year label {
+    margin-right: 10px; }
+
+.globalSynthesis td {
+  text-align: right; }
+
+.globalSynthesis th {
+  text-align: center;
+  background-color: #666;
+  color: white; }
+
+.globalSynthesis td:nth-child(1) {
+  text-align: left;
+  font-weight: bold; }
+
 .recurringTransactions {
   display: flex;
   flex-direction: column; }

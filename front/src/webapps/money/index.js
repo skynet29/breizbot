@@ -187,6 +187,41 @@ module.exports = function (ctx, router) {
 
     })
 
+    async function getAccountIds(userName) {
+        const accounts = await db.find({ userName, type: 'account' }).toArray()
+
+        const accountIds = []
+
+        for await (const account of accounts) {
+            const accountId = account._id.toString()
+            accountIds.push(accountId)
+        }
+        return accountIds
+
+    }
+
+    router.get('/account/oldestYearTransaction', async function (req, res) {
+
+        const userName = req.session.user
+
+        try {
+
+            const accountIds = await getAccountIds(userName)
+
+            const oldestTransaction = await db.find({
+                accountId: { $in: accountIds },
+                type: 'transaction'
+            }).sort({ date: 1 }).limit(1).toArray()
+            const oldestYear = new Date(oldestTransaction[0].date).getFullYear()
+
+            res.json({ oldestYear })
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
 
     router.get('/account/:accountId/syntheses', async function (req, res) {
 
@@ -209,6 +244,50 @@ module.exports = function (ctx, router) {
         }
 
     })
+
+    router.get('/account/synthesis', async function (req, res) {
+
+        const { year } = req.query
+
+        const userName = req.session.user
+
+        const months = Array.from(Array(12).keys())
+        const syntheses = []
+
+        try {
+            const accountIds = await getAccountIds(userName)
+
+            for await (const month of months) {
+                let income = 0
+                let expenses = 0
+                const transations = await db.find(
+                    {
+                        accountId: { $in: accountIds },
+                        type: 'transaction',
+                        date: getMonthDateFilter(year, month)
+                    }).toArray()
+
+                transations.forEach((tr) => {
+
+                    if (tr.amount > 0) {
+                        income += tr.amount
+                    }
+                    else {
+                        expenses += -tr.amount
+                    }
+                })
+
+                syntheses.push({ income, expenses })
+            }
+
+            res.json(syntheses)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
 
     router.put('/account/:accountId', async function (req, res) {
 

@@ -1,0 +1,29 @@
+.globalSynthesis {
+
+    .year {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 10px;
+
+        label {
+            margin-right: 10px;
+        }
+    }
+
+    td {
+        text-align: right;
+    }
+
+    th {
+        text-align: center;
+        background-color: #666;
+        color: white;
+
+    }
+
+    td:nth-child(1) {
+        text-align: left;
+        font-weight: bold;
+    }
+}

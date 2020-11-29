@@ -1,0 +1,25 @@
+<div class="year">
+    <label>Year</label>
+    <div bn-control="brainjs.combobox" bn-data="{items: years}" bn-event="comboboxchange: onYearChange"></div>
+</div>
+
+<table class="w3-table-all w3-small">
+    <thead>
+        <tr bn-each="months">
+            <th bn-text="$scope.$i"></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr bn-each="syntheses" bn-index="idx">
+            <td bn-text="formatIncome"></td>
+        </tr>
+
+        <tr bn-each="syntheses" bn-index="idx">
+            <td bn-text="formatExpenses"></td>
+        </tr>
+
+        <tr bn-each="syntheses" bn-index="idx">
+            <td bn-text="formatDifference" bn-style="{color: getDiffColor}"></td>
+        </tr>
+    </tbody>
+</table>

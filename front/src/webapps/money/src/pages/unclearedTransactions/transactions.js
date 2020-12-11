@@ -6,23 +6,29 @@ $$.control.registerControl('unclearedTransactions', {
 
     props: {
         transactions: [],
-        accountId: null
+        accountId: null,
+        lastStatementInfo: null
     },
 
     init: function (elt, pager, http) {
 
 
-        const { transactions, accountId } = this.props
+        const { transactions, accountId, lastStatementInfo } = this.props
+        const { initialBalance, finalBalance } = lastStatementInfo
 
         const checkedAmount = transactions.reduce((acc, item) => {
             return (item.clearedStatus === 'P') ? acc + item.amount : acc
         }, 0)
 
+        const income = transactions.filter((item) => item.amount > 0)
+        const expenses = transactions.filter((item) => item.amount < 0 && item.number == undefined)
+        const checks = transactions.filter((item) => item.amount < 0 && item.number != undefined)
+
         const ctrl = $$.viewController(elt, {
             data: {
-                transactions,
-                initialBalance: 0,
-                finalBalance: 0,
+                transactions: income.concat(checks, expenses),
+                initialBalance,
+                finalBalance,
                 checkedAmount,
                 getDifference: function () {
                     return (this.finalBalance - this.initialBalance - this.checkedAmount).toFixed(2)
@@ -38,7 +44,12 @@ $$.control.registerControl('unclearedTransactions', {
                 },
                 isChecked: function (scope) {
                     return scope.$i.clearedStatus === 'P'
+                },
+                getStyle: function (scope) {
+                    const hadBorder = (scope.trIndex == income.length - 1) || (scope.trIndex == income.length + checks.length - 1)
+                    return { 'border-bottom': hadBorder ? '2px solid black' : '1px solid #ddd' }
                 }
+
             },
             events: {
                 onCheckClick: function () {
@@ -72,10 +83,19 @@ $$.control.registerControl('unclearedTransactions', {
                     title: 'Apply',
                     icon: 'fa fa-check',
                     onClick: async function () {
-                        const clearedStatus = (parseInt(ctrl.model.getDifference()) == 0) ? 'X' : 'P'
+                        const isOk = (parseInt(ctrl.model.getDifference()) == 0)
+                        const clearedStatus = isOk ? 'X' : 'P'
                         const ids = getCheckedTransactions().map((item) => item._id.toString())
                         //console.log('ids', ids)
                         await http.put(`/account/${accountId}/unclearedTransactions`, { ids, clearedStatus })
+
+                        let { initialBalance, finalBalance } = ctrl.model
+                        if (isOk) {
+                            initialBalance = finalBalance
+                            finalBalance = 0
+                        }
+
+                        await http.put(`/account/${accountId}/lastStatementInfo`, { lastStatement: { initialBalance, finalBalance } })
                         pager.popPage()
                     }
                 }

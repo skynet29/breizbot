@@ -90,11 +90,16 @@ $$.control.registerControl('rootPage', {
 			const accountId = accountInfo._id.toString()
 
 			const transactions = await http.get(`/account/${accountId}/unclearedTransactions`)
+
+			const lastStatementInfo = await http.get(`/account/${accountId}/lastStatementInfo`)
+			console.log('lastStatementInfo', lastStatementInfo)
+
 			//console.log('unclearedTransactions', transactions)
 			pager.pushPage('unclearedTransactions', {
 				title: 'Last Statement Balance Transactions',
 				props: {
 					transactions,
+					lastStatementInfo,
 					accountId
 				}
 			})

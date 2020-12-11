@@ -27,8 +27,13 @@
                 <th>Amount</th>
 			</tr>
 		</thead>
-		<tbody bn-each="transactions" bn-lazzy="20" bn-bind="transactions" bn-event="contextmenuchange.item: onItemContextMenu, click.w3-check: onCheckClick">
-			<tr class="item">
+		<tbody
+			bn-each="transactions" 
+			bn-lazzy="20" 
+			bn-index="trIndex"
+			bn-bind="transactions" 
+			bn-event="contextmenuchange.item: onItemContextMenu, click.w3-check: onCheckClick">
+			<tr class="item" bn-style="getStyle">
 				<td bn-text="formatDate" class="date"></td>
                 <td bn-text="$scope.$i.payee"></td>
                 <td>

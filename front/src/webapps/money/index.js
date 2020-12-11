@@ -149,6 +149,39 @@ module.exports = function (ctx, router) {
 
     })
 
+    router.get('/account/:accountId/lastStatementInfo', async function (req, res) {
+
+        const { accountId } = req.params
+
+
+        try {
+            const info = await db.findOne(buildDbId(accountId))
+
+            res.json(info.lastStatement || { initialBalance: 0, finalBalance: 0 })
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
+    router.put('/account/:accountId/lastStatementInfo', async function (req, res) {
+
+        const { accountId } = req.params
+        const { lastStatement } = req.body
+
+
+        try {
+            await db.updateOne(buildDbId(accountId), { $set: { lastStatement } })
+
+            res.sendStatus(200)
+        }
+        catch (e) {
+            res.status(404).send(e.message)
+        }
+
+    })
+
     router.put('/account/:accountId/unclearedTransactions', async function (req, res) {
 
         const { accountId } = req.params

@@ -4,28 +4,40 @@
 		<label>Account Name</label>
 		<input type="text" name="name" required="" autofocus="" bn-prop="{disabled: isEdit}">
 
-		<label>Provider</label>
-		<span bn-control="brainjs.combobox" bn-event="comboboxchange: onProviderChange" bn-val="provider"
-			bn-data="{items: providers}" data-width="180">
-		</span>
-
-
-		<label>User</label>
-		<input type="text" name="user" required="">
-
-		<label>Password</label>
-		<input type="text" name="pwd" required="">
-
 		<label>Email</label>
 		<input type="email" name="email" required="">
 
+		<fieldset>
+			<legend>SMTP</legend>
+			<div class="grid">
+				<label>Host</label>
+				<input type="text" name="smtpHost" required="">
+	
+				<label>User</label>
+				<input type="text" name="smtpUser" required="">
+		
+				<label>Password</label>
+				<input type="text" name="smtpPwd" required="">	
+			</div>
+		</fieldset>
+
+		<fieldset>
+			<legend>IMAP</legend>
+			<div class="grid">
+				<label>Host</label>
+				<input type="text" name="imapHost" required="">
+	
+				<label>User</label>
+				<input type="text" name="user" required="">
+		
+				<label>Password</label>
+				<input type="text" name="pwd" required="">
+	
+			</div>
+		</fieldset>
 
 
-		<label bn-show="show1">IMAP Server</label>
-		<input type="text" name="imapHost" required="" bn-show="show1">
 
-		<label bn-show="show1">SMTP Server</label>
-		<input type="text" name="smtpHost" required="" bn-show="show1">
 
 		<label>Make a copy of sent mail in Sent folder</label>
 		<div bn-control="brainjs.flipswitch" name="makeCopy"></div>

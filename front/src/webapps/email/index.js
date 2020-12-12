@@ -33,6 +33,8 @@ module.exports = function (ctx, router) {
 
 		try {
 			const account = await db.getMailAccount(userName, name)
+			account.smtpUser = account.smtpUser || account.user
+			account.smtpPwd = account.smtpPwd || account.pwd
 
 			res.json(account)
 		}

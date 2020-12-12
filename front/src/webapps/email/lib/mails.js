@@ -401,14 +401,17 @@ module.exports = function (ctx) {
 
     const account = await db.getMailAccount(userName, accountName)
 
+    const user = account.smtpUser || account.user
+    const pass = account.smtpPwd || account.pwd
+
     //console.log('account', account)
     const transporter = nodemailer.createTransport({
       host: account.smtpHost,
       port: 587,
       secure: false,
       auth: {
-        user: account.user,
-        pass: account.pwd
+        user,
+        pass
       }
     })
 

@@ -12,53 +12,10 @@ $$.control.registerControl('accountPage', {
 
 		const {data} = this.props
 
-		const map = {
-			'Gmail': {
-				imapHost: 'imap.gmail.com',
-				smtpHost: 'smtp.gmail.com'
-			},
-			'Outlook': {
-				imapHost: 'imap.outlook.com',
-				smtpHost: 'smtp.outlook.com'
-			},
-			'Free': {
-				imapHost: 'imap.free.fr',
-				smtpHost: 'smtp.free.fr'
-			},
-			'SFR': {
-				imapHost: 'imap.sfr.fr',
-				smtpHost: 'smtp.sfr.fr'
-			},
-			'Orange': {
-				imapHost: 'imap.orange.fr',
-				smtpHost: 'smtp.orange.fr'
-			},
-			'Bouygues Telecom': {
-				imapHost: 'imap.bbox.fr',
-				smtpHost: 'smtp.bbox.fr'
-			},
-			'Other': {
-				imapHost: '',
-				smtpHost: ''
-			},
-		}
-
-		function getProvider(info) {
-			for(let k in map) {
-				if (map[k].imapHost == info.imapHost) {
-					return k
-				}
-			}
-			return 'Other'
-		}
-
 		const ctrl = $$.viewController(elt, {
 			data: {
-				provider: (data != null) ? getProvider(data) : 'Gmail',
-				providers: Object.keys(map),
 				data,
-				isEdit: data != null,
-				show1: function() {return this.provider == 'Other'}
+				isEdit: data != null
 			},
 			events: {
 				onSubmit: async function(ev) {
@@ -73,18 +30,9 @@ $$.control.registerControl('accountPage', {
 					}
 					pager.popPage()
 
-				},
-				onProviderChange: function() {
-					const provider = $(this).getValue()
-					console.log('onProviderChange', provider)
-					ctrl.setData({provider})
-
-					ctrl.scope.form.setFormData(map[provider])
 				}
 			}
 		})
-
-		ctrl.scope.form.setFormData(map[ctrl.model.provider])
 
 		this.getButtons = function() {
 			return {

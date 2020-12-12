@@ -34,9 +34,9 @@ module.exports = function (db) {
 		updateMailAccount: function (userName, data) {
 
 			console.log(`[DB] updateMailAccount`, userName, data)
-			const { email, imapHost, smtpHost, pwd, makeCopy, name, user } = data
+			const { email, imapHost, smtpHost, pwd, makeCopy, name, user, smtpPwd, smtpUser } = data
 
-			const update = { '$set': { email, imapHost, smtpHost, pwd, makeCopy, user } }
+			const update = { '$set': { email, imapHost, smtpHost, pwd, makeCopy, user, smtpUser, smtpPwd } }
 
 			return db.updateOne({ userName, name }, update)
 

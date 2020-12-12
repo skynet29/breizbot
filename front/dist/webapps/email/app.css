@@ -43,20 +43,37 @@
     margin: 10px; }
 
 .accountPage {
-  margin: 10px;
   display: flex;
-  justify-content: center; }
-  .accountPage form {
-    display: grid;
-    grid-template-columns: 130px 1fr;
-    grid-gap: 10px;
-    align-items: center; }
-    .accountPage form label {
-      grid-column: 1 / 2; }
-    .accountPage form input {
-      grid-column: 2 / 3;
-      padding: 5px;
-      max-width: 180px; }
+  overflow: hidden; }
+  .accountPage .main {
+    margin: 10px;
+    display: flex;
+    justify-content: center;
+    overflow-y: auto;
+    flex: 1; }
+    .accountPage .main form {
+      display: grid;
+      grid-template-columns: 130px 1fr;
+      grid-gap: 10px;
+      align-items: center; }
+      .accountPage .main form > label {
+        grid-column: 1 / 2; }
+      .accountPage .main form > input {
+        grid-column: 2 / 3;
+        padding: 5px; }
+      .accountPage .main form > fieldset {
+        grid-column: 1 / 3; }
+        .accountPage .main form > fieldset .grid {
+          display: grid;
+          grid-template-columns: 130px 1fr;
+          grid-gap: 10px;
+          align-items: center; }
+          .accountPage .main form > fieldset .grid > label {
+            grid-column: 1 / 2; }
+          .accountPage .main form > fieldset .grid > input {
+            grid-column: 2 / 3;
+            padding: 5px;
+            max-width: 180px; }
 
 .boxesPage {
   padding: 10px;

@@ -2,7 +2,7 @@
 
 const Alexa = require('ask-sdk-core')
 
-const { NETOS, SKILL_NOT_LINKED, USER_NOT_REGISTERED } = require('./constants')
+const { SKILL_NOT_LINKED, USER_NOT_REGISTERED } = require('./constants')
 const audioPlayer = require('./audioPlayer.js')
 
 const { getPersistenceAdapter } = require('./persistence.js')
@@ -10,7 +10,7 @@ const { getPersistenceAdapter } = require('./persistence.js')
 const ssml = require('./ssml.js')
 
 
-let helpMessage = ''
+const helpMessage = ssml.create()
 
 
 const LaunchRequestHandler = {
@@ -26,17 +26,19 @@ const LaunchRequestHandler = {
 
         let reprompt = `Que puis je faire pour vous aujourd'hui ?`
 
-        let speech = ''
+        const speech = ssml.create()
 
         const currentSong = audioPlayer.getCurrentSong(attributes)
 
         if (currentSong != null) {
             const { title, artist } = currentSong
 
-            speech += ssml.pause('100ms')
-            speech += `Vous étiez en train d'écouter ${ssml.english(title)} par ${artist}`
-            speech += ssml.pause('100ms')
-            speech += `Voulez vous reprendre ?`
+            speech.pause('100ms')
+            speech.say(`Vous étiez en train d'écouter`)
+            speech.english(title)
+            speech.say(`par ${artist}`)
+            speech.pause('100ms')
+            speech.say(`Voulez vous reprendre ?`)
 
             reprompt = `Vous pouvez repondre par oui ou par non`
 
@@ -44,28 +46,32 @@ const LaunchRequestHandler = {
 
         else if (isFirstVisit === undefined) {
             attributes.isFirstVisit = false
-            speech = `Bienvenue sur l'interface vocale du système ${NETOS}`
-            speech += ssml.sentence(`Comme c'est votre première visite,je vais vous 
+            speech.say(`Bienvenue sur l'interface vocale du système`)
+            speech.NetOS()
+            speech.sentence(`Comme c'est votre première visite,je vais vous 
                 expliquer certaines choses que vous pouvez faire.`)
 
-            speech += ssml.sentence(`Vous pouvez dire par exemple:`)
-            speech += ssml.sentence(`joue le titre ${ssml.english('Beat it')} pour écouter le titre ${ssml.english('Beat it')} de Michael Jackson`)
-            speech += ssml.sentence(`ou encore`)
-            speech += ssml.sentence(`joue les titres par Depeche Mode`)
-            speech += ssml.sentence(`pour écouter tous les titres de Depeche Mode présent dans votre bibliothèque`)
-            speech += ssml.sentence(`Vous pouvez demander de l’aide à tout moment.`)
-            speech += ssml.sentence(`Que voulez vous faire maintenant ?`)
+            speech.sentence(`Vous pouvez dire par exemple:`)
+            speech.sentence(`joue le titre`)
+            speech.english('Beat it') 
+            speech.say(`pour écouter le titre de Michael Jackson`)
+            speech.sentence(`ou encore`)
+            speech.sentence(`joue les titres par Depeche Mode`)
+            speech.sentence(`pour écouter tous les titres de Depeche Mode présent dans votre bibliothèque`)
+            speech.sentence(`Vous pouvez demander de l’aide à tout moment.`)
+            speech.sentence(`Que voulez vous faire maintenant ?`)
         }
         else {
-            speech = ssml.sentence(`Bon retour sur l'interface vocale du système ${NETOS}`)
-            speech += ssml.sentence(`C'est bon de vous revoir`)
-            speech += ssml.sentence(`Que puis je faire pour vous aujourd'hui ?`)
+            speech.say(`Bon retour sur l'interface vocale du système`)
+            speech.NetOS()         
+            speech.sentence(`C'est bon de vous revoir`)
+            speech.sentence(`Que puis je faire pour vous aujourd'hui ?`)
         }
 
         //console.log('speech', speech)
 
         return responseBuilder
-            .speak(ssml.toSpeak(speech))
+            .speak(speech.build())
             .reprompt(reprompt)
             .getResponse()
     }
@@ -129,23 +135,31 @@ const ErrorHandler = {
         console.log(`Error handled: ${error.message}`)
         const { responseBuilder } = handlerInput
 
-        let message = 'Désolé, il y a eu un problème'
+        const message = ssml.create()
+
 
         if (error.message == USER_NOT_REGISTERED) {
-            message = 'Utilisateur non identifié'
+            message.say('Utilisateur non identifié')
         }
 
-        if (error.message == SKILL_NOT_LINKED) {
-            message = `La skill ${NETOS} n'est pas associée avec votre compte ${NETOS}.`
-            message += ssml.pause('100ms')
-            message += `Rendez vous sur l'application Alexa pour associer votre compte Amazon avec votre compte ${NETOS}.`
+        else if (error.message == SKILL_NOT_LINKED) {
+            message.say(`La skill`)
+            message.NetOS()
+            message.say(`n'est pas associée avec votre compte`)
+            message.NetOS()
+            message.pause('100ms')
+            message.say(`Rendez vous sur l'application Alexa pour associer votre compte Amazon avec votre compte`)
+            message.NetOS()
 
             responseBuilder.withLinkAccountCard()
 
         }
+        else {
+            message.say('Désolé, il y a eu un problème')
+        }
 
         return responseBuilder
-            .speak(ssml.toSpeak(message))
+            .speak(message.build())
             .withShouldEndSession(true)
             .getResponse()
     }
@@ -179,7 +193,7 @@ const HelpHandler = {
     async handle(handlerInput) {
 
         return handlerInput.responseBuilder
-            .speak(helpMessage)
+            .speak(helpMessage.build())
             .reprompt(`Que voulez vous faire ?`)
             .getResponse()
     },
@@ -207,21 +221,25 @@ skillBuilder
 
 
 function addHelpMessage(text) {
-    helpMessage += ssml.sentence(text)
+    helpMessage.sentence(text)
 }
 
 function addPause(duration) {
-    helpMessage += ssml.pause(duration)
+    helpMessage.pause(duration)
 }
 
-function addCommand(commandText, explainText) {
-    helpMessage += ssml.sentence(ssml.voice('Lea', commandText) + explainText)
+function addCommand(commandText, explainText, addNetOS) {
+    helpMessage.voice('Lea', commandText)
+    helpMessage.say(explainText)
+    if (addNetOS === true) {
+        helpMessage.NetOS()
+    }
 }
 
 function help() {
     addHelpMessage(`Voici une liste des choses que vous pouvez demander.`)
     addPause('500ms')
-    addCommand(`Est ce que j'ai des amis connectés ?`, `pour savoir si vous avez des amis conectés à ${NETOS}`)
+    addCommand(`Est ce que j'ai des amis connectés ?`, `pour savoir si vous avez des amis conectés à`, true)
 
     addPause('500ms')
     addHelpMessage(`Vous pouvez aussi dire`)
@@ -230,7 +248,7 @@ function help() {
     addPause('500ms')
 
     addHelpMessage(`Vous pouvez dire par exemple:`)
-    addHelpMessage(`joue le titre ${ssml.english('Beat it')}`)
+    addHelpMessage(`joue le titre Beat it`)
     addHelpMessage(`ou encore`)
     addHelpMessage(`joue les titres par Depeche Mode`)
     addHelpMessage(`Quand vous écouter un titre, vous pouvez dire à tout moment`)

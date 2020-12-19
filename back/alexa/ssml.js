@@ -1,40 +1,81 @@
 //@ts-check
 
-module.exports = {
-    sayAs: function(interpret, word) {
-        return `<say-as interpret-as="${interpret}">${word}</say-as>`
-    },
-    pause: function(duration) {
-        return `<break time="${duration}" />`
-    },
-    lang: function(lang, text) {
-        return `<lang xml:lang="${lang}">${text}</lang>`
-    },
-    say: function(voice, lang, text) {
-        return this.voice(voice, this.lang(lang, text))
-    },
-    voice: function(voice, text) {
-        return `<voice name="${voice}">${text}</voice>`
-    },
-    english: function(text) {
-        return this.say('Joanna', 'en-US', text)
-    },
-    toSpeak: function(text) {
-        return `<speak>${text}</speak>`
-    },
-    sentence: function(text) {
-        return `<s>${text}</s>`
-    },
-    emphasis: function(text) {
-        return `<emphasis level="strong">${text}</emphasis> `        
-    },
-    // emotion(text, name, intensity = 'medium') {
-    //     return ` <amazon:emotion name="${name}" intensity="${intensity}">${text}</amazon:emotion>`
-    // },
-    whispered: function(text) {
-        return `<amazon:effect name="whispered">${text}</amazon:effect>`
+const xmlescape = require('xml-escape')
+
+function sayAs(interpret, word) {
+    return `<say-as interpret-as="${interpret}">${word}</say-as>`
+}
+function pause(duration) {
+    return `<break time="${duration}" />`
+}
+function lang(lang, text) {
+    return `<lang xml:lang="${lang}">${text}</lang>`
+}
+function say(voice, lang, text) {
+    return voice(voice, lang(lang, text))
+}
+function voice(voiceName, text) {
+    return `<voice name="${voiceName}">${text}</voice>`
+}
+function english(text) {
+    return say('Joanna', 'en-US', text)
+}
+function toSpeak(text) {
+    return `<speak>${text}</speak>`
+}
+function sentence(text) {
+    return `<s>${text}</s>`
+}
+function emphasis(text) {
+    return `<emphasis level="strong">${text}</emphasis> `        
+}
+
+function whispered(text) {
+    return `<amazon:effect name="whispered">${text}</amazon:effect>`
+}
+
+class SsmlBuilder {
+    constructor() {
+        this.elements = []
     }
-    
-   
-    
+
+    NetOS() {
+        this.say('Net')
+        this.sayAs('characters', 'OS')
+    }
+
+    sayAs(interpret, word) {
+        this.elements.push(sayAs(interpret, word))
+    }
+    pause(duration) {
+        this.elements.push(pause(duration))
+    }
+    voice(voiceName, text) {
+        this.elements.push(voice(voiceName, xmlescape(text)))
+    }
+    say(text) {
+        this.elements.push(xmlescape(text))
+    }
+    english(text) {
+        this.elements.push(english(xmlescape(text)))
+    }
+    build() {
+        return toSpeak(this.elements.join(' '))
+    }
+    sentence(text) {
+        this.elements.push(sentence(xmlescape(text)))
+    }
+    emphasis(text) {
+        this.elements.push(emphasis(xmlescape(text)))
+    }
+    whispered(text) {
+        this.elements.push(whispered(xmlescape(text)))
+    }
+
+}
+
+module.exports = {
+    create: function() {
+        return new SsmlBuilder()
+    }
 }

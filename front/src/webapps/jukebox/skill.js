@@ -71,23 +71,23 @@ module.exports = function (ctx) {
             let playlists = await db.getPlaylist(userName)
             console.log('playlists', playlists)
 
-            let speech = ''
+            let speech = ssml.create()
             if (playlists.length == 0) {
-                speech = `Vous n'avez pas encore de playlist`
+                speech.say(`Vous n'avez pas encore de playlist`)
             }
             else {
-                speech = `Vous avez ${playlists.length} playlist` 
-                speech += ssml.pause('100ms')
-                speech += `Voici la liste`
+                speech.say(`Vous avez ${playlists.length} playlist`)
+                speech.pause('100ms')
+                speech.say(`Voici la liste`)
                 playlists.forEach((name) => {
-                    speech += ssml.pause('500ms')
-                    speech += name
+                    speech.pause('500ms')
+                    speech.say(name)
                 })
     
             }
 
             return responseBuilder
-                .speak(speech)
+                .speak(speech.build())
                 .withShouldEndSession(true)
                 .getResponse()
 

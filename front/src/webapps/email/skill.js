@@ -32,23 +32,23 @@ module.exports = function (ctx) {
                     .getResponse()
             }
 
-            let speech = ''
+            const speech = ssml.create()
 
             for await (acc of accounts) {
                 const accountName = acc.name
                 const unreadMessages = await mails.getUnreadInboxMessages(userName, accountName)
                 console.log('unreadMessages', unreadMessages)
                 if (unreadMessages == 0) {
-                    speech += `Vous n'avez pas de messages non lus sur votre compte ${accountName}`
+                    speech.say(`Vous n'avez pas de messages non lus sur votre compte ${accountName}`)
                 }
                 else {
-                    speech += `Vous avez ${unreadMessages} messages non lus sur votre compte ${accountName}`
+                    speech.say(`Vous avez ${unreadMessages} messages non lus sur votre compte ${accountName}`)
                 }
-                speech += ssml.pause('500ms')
+                speech.pause('500ms')
             }
 
             return responseBuilder
-                .speak(ssml.toSpeak(speech))
+                .speak(speech.build())
                 .withShouldEndSession(true)
                 .getResponse()
 

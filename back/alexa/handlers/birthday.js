@@ -33,10 +33,12 @@ const ActivateBirthdayNotifHandler = {
         const nextBirthdayContact = await birthday.getNextBirthdayContact(userName)
         console.log('nextBirthdayContact', nextBirthdayContact)
         if (nextBirthdayContact == null) {
-            let speech = ssml.sentence(`Vous n'avez pas de notification d'anniversaire d'activer pour vos contacts`)
-            speech += ssml.sentence(`Rendez vous sur votre application contacts de ${NETOS}`)
+            const speech = ssml.create()
+            speech.sentence(`Vous n'avez pas de notification d'anniversaire d'activer pour vos contacts`)
+            speech.say(`Rendez vous sur votre application contacts de`)
+            speech.NetOS()
             return responseBuilder
-                .speak(ssml.toSpeak(speech))
+                .speak(speech.build())
                 .withShouldEndSession(true)
                 .getResponse()
 
@@ -78,7 +80,9 @@ const ActivateBirthdayNotifHandler = {
         const reminderPlayload = reminder.getPayload(scheduledTime, text)
 
 
-        let speech = `Un rappel a été programmé pour le ${ssml.sayAs('date', remindDate)}`
+        const speech = ssml.create()
+        speech.say(`Un rappel a été programmé pour le`)
+        speech.sayAs('date', remindDate)
         try {
             const ret = await reminderManagementServiceClient.createReminder(reminderPlayload)
             //console.log('ret', ret)
@@ -86,11 +90,11 @@ const ActivateBirthdayNotifHandler = {
         }
         catch (e) {
             console.error(e)
-            speech = `Quelque chose n'a pas marché`
+            speech.say(`Quelque chose n'a pas marché`)
         }
 
         return responseBuilder
-            .speak(ssml.toSpeak(speech))
+            .speak(speech.build())
             .withShouldEndSession(true)
             .getResponse()
 

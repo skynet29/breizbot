@@ -19,21 +19,21 @@ const ConnectedFriendsRequestHandler = {
         const connectedFriends = friends
             .filter((f) => wss.isUserConnected(f))
 
-        let speech = ''
+        const speech = ssml.create()
         if (connectedFriends.length == 0) {
-            speech = `Vous n'avez pas d'amis connectés`
+            speech.say(`Vous n'avez pas d'amis connectés`)
         }
         else {
-            speech = `Vous avez ${connectedFriends.length} amis connectés`
+            speech.say(`Vous avez ${connectedFriends.length} amis connectés`)
             connectedFriends.forEach((name) => {
-                speech += ssml.pause('500ms')
-                speech += name
+                speech.pause('500ms')
+                speech.say(name)
             })
         }
 
 
         return responseBuilder
-            .speak(ssml.toSpeak(speech))
+            .speak(speech.build())
             .withShouldEndSession(true)
             .getResponse()
     }

@@ -30,28 +30,38 @@ const PlayRequestHandler = {
         }
 
         let songs = []
+        const speech = ssml.create()
         if (title != undefined) {
             let song = null
-            const titleName = ssml.english(title)
             if (artist == undefined) {
                 song = await dbSongs.getMusicByTitle(userName, title)
                 if (song == null) {
+                    speech.say(`Désolé, je n'ai pas trouvé le titre`)
+                    speech.english(title)
+
                     return responseBuilder
                         .withShouldEndSession(true)
-                        .speak(`Désolé, je n'ai pas trouvé le titre ${titleName}`)
+                        .speak(speech.build())
                         .getResponse()
 
                 }
-                const artistName = ssml.english(song.artist)
-                responseBuilder.speak(`${titleName} par ${artistName} ${ssml.pause('100ms')} C'est parti`)
+                speech.english(title)
+                speech.say('par')
+                speech.english(artist)
+                speech.pause('100ms')
+                speech.say(`C'est parti`)
+                responseBuilder.speak(speech.build())
             }
             else {
-                const artistName = ssml.english(artist)
                 song = await dbSongs.getMusicByTitleAndArtist(userName, title, artist)
                 if (song == null) {
+                    speech.say(`Désolé, je n'ai pas trouvé le titre`)
+                    speech.english(title)
+                    speech.say('par')
+                    speech.english(artist)
                     return responseBuilder
                         .withShouldEndSession(true)
-                        .speak(`Désolé, je n'ai pas trouvé le titre ${titleName} par ${artistName}`)
+                        .speak(speech.build())
                         .getResponse()
 
                 }
@@ -65,8 +75,10 @@ const PlayRequestHandler = {
         else {
             songs = await dbSongs.getMusicByArtist(userName, artist)
             if (songs.length == 0) {
+                speech.say(`Désolé, je n'ai pas trouvé le titre par`)
+                speech.english(artist)
                 return responseBuilder
-                    .speak(`Désolé, je n'ai pas trouvé de titre par ${artist}`)
+                    .speak(speech.build())
                     .withShouldEndSession(true)
                     .getResponse()
 
@@ -80,7 +92,9 @@ const PlayRequestHandler = {
         await audioPlayer.initAttributes(handlerInput, songs, 'music')
 
         if (title == undefined) {
-            responseBuilder.speak(`J'ai trouvé ${songs.length} titres par ${artist}`)
+            speech.say(`J'ai trouvé ${songs.length} titres par`)
+            speech.english(artist)
+            responseBuilder.speak(speech.build())
         }
 
         responseBuilder.withShouldEndSession(true)
@@ -163,11 +177,11 @@ const PausePlaybackHandler = {
     async canHandle(handlerInput) {
         const { inPlayback } = await handlerInput.attributesManager.getPersistentAttributes()
 
-        return inPlayback && ( 
+        return inPlayback && (
             util.isIntentRequest(handlerInput, 'AMAZON.StopIntent') ||
             util.isIntentRequest(handlerInput, 'AMAZON.CancelIntent') ||
             util.isIntentRequest(handlerInput, 'AMAZON.PauseIntent')
-            )
+        )
     },
     handle(handlerInput) {
         return audioPlayer.stopPlayback(handlerInput)

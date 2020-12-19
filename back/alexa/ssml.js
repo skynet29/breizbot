@@ -14,8 +14,8 @@ function lang(langName, text) {
     return `<lang xml:lang="${langName}">${text}</lang>`
 }
 
-function say(voice, langName, text) {
-    return voice(voice, lang(langName, text))
+function say(voiceName, langName, text) {
+    return voice(voiceName, lang(langName, text))
 }
 
 function voice(voiceName, text) {

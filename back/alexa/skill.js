@@ -103,10 +103,11 @@ const NoHandler = {
         const { responseBuilder, attributesManager } = handlerInput
         const attributes = await attributesManager.getPersistentAttributes()
         attributes.inPlayback = false
-        let message = ssml.sentence(`D'accord`)
-        message += `Que puis je faire pour vous aujourd'hui ?`
+        const message = ssml.create()
+        message.sentence(`D'accord`)
+        message.sentence(`Que puis je faire pour vous aujourd'hui ?`)
         return responseBuilder
-            .speak(ssml.toSpeak(message))
+            .speak(message.build())
             .reprompt(`Que puis je faire pour vous aujourd'hui ?`)
             .getResponse()
     }

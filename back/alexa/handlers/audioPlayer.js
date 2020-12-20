@@ -1,6 +1,5 @@
 //@ts-check
 
-const Alexa = require('ask-sdk-core')
 
 const dbSongs = require('../../db/songs.js')
 const audioPlayer = require('../audioPlayer.js')
@@ -13,12 +12,12 @@ const PlayRequestHandler = {
         return util.isIntentRequest(handlerInput, 'PlayIntent')
     },
     async handle(handlerInput) {
-        const { requestEnvelope, attributesManager, responseBuilder } = handlerInput
-        const { userName } = attributesManager.getSessionAttributes()
+        const { responseBuilder } = handlerInput
+        const userName  = util.getUserName(handlerInput)
         //console.log('userName', userName)
 
-        const title = Alexa.getSlotValue(requestEnvelope, 'song')
-        const artist = Alexa.getSlotValue(requestEnvelope, 'artist')
+        const title = util.getSlotValue(handlerInput, 'song')
+        const artist = util.getSlotValue(handlerInput, 'artist')
 
         console.log('title', title)
         console.log('artist', artist)
@@ -99,7 +98,7 @@ const PlayRequestHandler = {
 
         responseBuilder.withShouldEndSession(true)
 
-        return audioPlayer.playSong(handlerInput, songs[0])
+        return await audioPlayer.playSong(handlerInput, audioPlayer.PlayAction.START)
     }
 }
 
@@ -108,8 +107,8 @@ const PlayShuffleMusicHandler = {
         return util.isIntentRequest(handlerInput, 'PlayShuffleMusicIntent')
     },
     async handle(handlerInput) {
-        const { attributesManager, responseBuilder } = handlerInput
-        const { userName } = attributesManager.getSessionAttributes()
+        const { responseBuilder } = handlerInput
+        const userName  = util.getUserName(handlerInput)
         //console.log('userName', userName)
 
 
@@ -128,7 +127,7 @@ const PlayShuffleMusicHandler = {
 
         const index = shuffleIndexes[0]
 
-        return audioPlayer.playSong(handlerInput, songs[index])
+        return await audioPlayer.playSong(handlerInput, audioPlayer.PlayAction.START)
     }
 }
 
@@ -139,9 +138,8 @@ const NextPlaybackHandler = {
             util.isIntentRequest(handlerInput, 'AMAZON.NextIntent')
     },
     async handle(handlerInput) {
-        const attributes = await handlerInput.attributesManager.getPersistentAttributes()
 
-        return audioPlayer.playNext(handlerInput, attributes)
+        return await audioPlayer.playSong(handlerInput, audioPlayer.PlayAction.NEXT)
     }
 }
 
@@ -151,9 +149,8 @@ const PreviousPlaybackHandler = {
             util.isIntentRequest(handlerInput, 'AMAZON.PreviousIntent')
     },
     async handle(handlerInput) {
-        const attributes = await handlerInput.attributesManager.getPersistentAttributes()
 
-        return audioPlayer.playPrevious(handlerInput, attributes)
+        return await audioPlayer.playSong(handlerInput, audioPlayer.PlayAction.PREV)
     }
 }
 
@@ -164,18 +161,15 @@ const ResumePlaybackHandler = {
             util.isIntentRequest(handlerInput, 'AMAZON.ResumeIntent')
     },
     async handle(handlerInput) {
-        const attributes = await handlerInput.attributesManager.getPersistentAttributes()
-        const { offsetInMilliseconds, action } = attributes
-        const song = audioPlayer.getCurrentSong(attributes)
 
-        return audioPlayer.playSong(handlerInput, song, { offsetInMilliseconds, action })
+        return await audioPlayer.playSong(handlerInput, audioPlayer.PlayAction.RESUME)
     }
 }
 
 
 const PausePlaybackHandler = {
     async canHandle(handlerInput) {
-        const { inPlayback } = await handlerInput.attributesManager.getPersistentAttributes()
+        const { inPlayback } = await util.getPersistentAttributes(handlerInput)
 
         return inPlayback && (
             util.isIntentRequest(handlerInput, 'AMAZON.StopIntent') ||
@@ -193,11 +187,11 @@ const AudioPlayerEventHandler = {
         return util.isAudioPlayerEvent(handlerInput)
     },
     async handle(handlerInput) {
-        const { requestEnvelope, attributesManager, responseBuilder } = handlerInput
+        const { requestEnvelope, responseBuilder } = handlerInput
 
         const audioPlayerEventName = util.getAudioPlayerEventName(handlerInput)
         //console.log('audioPlayerEventName', audioPlayerEventName)
-        const attributes = await attributesManager.getPersistentAttributes()
+        const attributes = await util.getPersistentAttributes(handlerInput)
 
         const { token, offsetInMilliseconds } = requestEnvelope.request
         //console.log('token', token)
@@ -216,7 +210,7 @@ const AudioPlayerEventHandler = {
                 attributes.offsetInMilliseconds = offsetInMilliseconds
                 break
             case 'PlaybackNearlyFinished':
-                return await audioPlayer.playNext(handlerInput, attributes, true)
+                return await audioPlayer.playSong(handlerInput, audioPlayer.PlayAction.NEXT, true)
 
             case 'PlaybackFailed':
                 break

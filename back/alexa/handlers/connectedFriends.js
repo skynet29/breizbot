@@ -11,9 +11,9 @@ const ConnectedFriendsRequestHandler = {
         return util.isIntentRequest(handlerInput, 'ConnectedFriendsIntent')
     },
     async handle(handlerInput) {
-        const { responseBuilder, attributesManager } = handlerInput
+        const { responseBuilder } = handlerInput
 
-        const { userName } = attributesManager.getSessionAttributes()
+        const userName = util.getUserName(handlerInput)
 
         const friends = await dbFriends.getFriends(userName)
         const connectedFriends = friends

@@ -1,5 +1,8 @@
 //@ts-check
 
+const Alexa = require('ask-sdk-core')
+
+
 function knuthShuffle(length) {
     //console.log('knuthShuffle', length)
     let arr = []
@@ -46,10 +49,39 @@ function getAudioPlayerEventName(handlerInput) {
     return request.type.split('.')[1]
 }
 
+async function getPersistentAttributes(handlerInput) {
+    let { attributes } = handlerInput
+    if (attributes == undefined) {
+        attributes = await handlerInput.attributesManager.getPersistentAttributes()
+        handlerInput.attributes = attributes
+    }
+    return attributes
+}
+
+function getSlotValue(handlerInput, slotName) {
+    return Alexa.getSlotValue(handlerInput.requestEnvelope, slotName)
+}
+
+function getUserName(handlerInput) {
+    const { userName } = handlerInput.attributesManager.getSessionAttributes()
+    return userName
+}
+
+function getConsentToken(handlerInput) {
+    const { permissions } = handlerInput.requestEnvelope.context.System.user
+
+    return permissions && permissions.consentToken
+}
+
+
 module.exports = {
     knuthShuffle,
     isIntentRequest,
     isPlaybackControllerCmd,
     isAudioPlayerEvent,
-    getAudioPlayerEventName
+    getAudioPlayerEventName,
+    getPersistentAttributes,
+    getSlotValue,
+    getUserName,
+    getConsentToken
 }

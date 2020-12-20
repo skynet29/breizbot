@@ -4,7 +4,8 @@ const Alexa = require('ask-sdk-core')
 
 module.exports = function (ctx) {
 
-    const { skillInterface, ssml } = ctx
+    const { skillInterface } = ctx
+    const { ssml, alexa } = skillInterface
 
     skillInterface.addPause('500ms')
     skillInterface.addHelpMessage(`Vous pouvez dire aussi`)
@@ -16,12 +17,11 @@ module.exports = function (ctx) {
 
     const MessageRequestHandler = {
         canHandle(handlerInput) {
-            return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-                Alexa.getIntentName(handlerInput.requestEnvelope) === 'MessageIntent'
+            return alexa.isIntentRequest(handlerInput, 'MessageIntent')
         },
         async handle(handlerInput) {
-            const { attributesManager, responseBuilder } = handlerInput
-            const { userName } = attributesManager.getSessionAttributes()
+            const { responseBuilder } = handlerInput
+            const userName  = alexa.getUserName(handlerInput)
             //console.log('userName', userName)
 
             const accounts = await db.getMailAccounts(userName)

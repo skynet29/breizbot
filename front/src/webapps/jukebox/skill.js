@@ -1,9 +1,10 @@
-const Alexa = require('ask-sdk-core')
 const PROMPT = `Que puis je faire pour vous aujourd'hui ?`
 
 module.exports = function (ctx) {
 
-    const { skillInterface, app, util, ssml } = ctx
+    const { skillInterface, app, util } = ctx
+
+    const { audioPlayer, alexa, ssml } = skillInterface
 
     const db = require('./lib/db.js')(ctx)
 
@@ -13,15 +14,14 @@ module.exports = function (ctx) {
 
     const PlayPlayListRequestHandler = {
         canHandle(handlerInput) {
-            return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-                Alexa.getIntentName(handlerInput.requestEnvelope) === 'PlayPlaylistIntent'
+            return alexa.isIntentRequest(handlerInput, 'PlayPlaylistIntent')
         },
         async handle(handlerInput) {
-            const { requestEnvelope, attributesManager, responseBuilder } = handlerInput
-            const { userName } = attributesManager.getSessionAttributes()
+            const { responseBuilder } = handlerInput
+            const userName  = alexa.getUserName(handlerInput)
             //console.log('userName', userName)
 
-            const playlist = Alexa.getSlotValue(requestEnvelope, 'playlist')
+            const playlist = alexa.getSlotValue(handlerInput, 'playlist')
 
             console.log('playlist', playlist)
             let songs = await db.getPlaylistSongs(userName, playlist)
@@ -40,19 +40,17 @@ module.exports = function (ctx) {
             //console.log('songs', songs)
             if (songs.length == 0) {
                 return responseBuilder
-                    .speak(`Désolé, je n'ai pas trouvé la playlist ${playlist}`)   
+                    .speak(`Désolé, je n'ai pas trouvé la playlist ${playlist}`)
                     .withShouldEndSession(true)
                     .getResponse()
 
             }
 
-            const action = 'playlist'
-
-            await skillInterface.audioPlayer.initAttributes(handlerInput, songs, action)
+            await audioPlayer.initAttributes(handlerInput, songs, 'playlist')
 
             responseBuilder.speak(`c'est parti`).withShouldEndSession(true)
 
-            return skillInterface.audioPlayer.playSong(handlerInput, songs[0], { action })
+            return await audioPlayer.playSong(handlerInput, audioPlayer.PlayAction.START)
 
         }
     }
@@ -60,12 +58,11 @@ module.exports = function (ctx) {
 
     const GetPlayListRequestHandler = {
         canHandle(handlerInput) {
-            return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest' &&
-                Alexa.getIntentName(handlerInput.requestEnvelope) === 'GetPlaylistIntent'
+            return alexa.isIntentRequest(handlerInput, 'GetPlaylistIntent')
         },
         async handle(handlerInput) {
-            const { attributesManager, responseBuilder } = handlerInput
-            const { userName } = attributesManager.getSessionAttributes()
+            const { responseBuilder } = handlerInput
+            const userName  = alexa.getUserName(handlerInput)
             //console.log('userName', userName)
 
             let playlists = await db.getPlaylist(userName)
@@ -83,7 +80,7 @@ module.exports = function (ctx) {
                     speech.pause('500ms')
                     speech.say(name)
                 })
-    
+
             }
 
             return responseBuilder

@@ -4,7 +4,6 @@
 const birthday = require('../birthday.js')
 const reminder = require('../reminder.js')
 const ssml = require('../ssml.js')
-const { NETOS } = require('../constants.js')
 const util = require('../util.js')
 
 const dbUsers = require('../../db/users.js')
@@ -15,10 +14,9 @@ const ActivateBirthdayNotifHandler = {
         return util.isIntentRequest(handlerInput, 'ActivateBirthdayNotifIntent')
     },
     async handle(handlerInput) {
-        const { responseBuilder, attributesManager, requestEnvelope, serviceClientFactory } = handlerInput
+        const { responseBuilder, serviceClientFactory } = handlerInput
 
-        const consentToken = requestEnvelope.context.System.user.permissions
-            && requestEnvelope.context.System.user.permissions.consentToken
+        const consentToken = util.getConsentToken(handlerInput)
 
         if (!consentToken) {
             return responseBuilder
@@ -27,7 +25,7 @@ const ActivateBirthdayNotifHandler = {
                 .getResponse()
         }
 
-        const { userName } = attributesManager.getSessionAttributes()
+        const userName  = util.getUserName(handlerInput)
         //console.log('userName', userName)
 
         const nextBirthdayContact = await birthday.getNextBirthdayContact(userName)
@@ -54,7 +52,7 @@ const ActivateBirthdayNotifHandler = {
 
         const reminderManagementServiceClient = serviceClientFactory.getReminderManagementServiceClient()
 
-        const persistentAttributes = await attributesManager.getPersistentAttributes()
+        const persistentAttributes = await util.getPersistentAttributes(handlerInput)
         //console.log('persistentAttributes', persistentAttributes)
         const { reminderId } = persistentAttributes
         console.log('reminderId', reminderId)
@@ -106,10 +104,9 @@ const DesactivateBirthdayNotifHandler = {
         return util.isIntentRequest(handlerInput, 'DesactivateBirthdayNotifIntent')
     },
     async handle(handlerInput) {
-        const { responseBuilder, attributesManager, requestEnvelope, serviceClientFactory } = handlerInput
+        const { responseBuilder, serviceClientFactory } = handlerInput
 
-        const consentToken = requestEnvelope.context.System.user.permissions
-            && requestEnvelope.context.System.user.permissions.consentToken
+        const consentToken = util.getConsentToken(handlerInput)
 
         if (!consentToken) {
             return responseBuilder
@@ -120,7 +117,7 @@ const DesactivateBirthdayNotifHandler = {
 
         const reminderManagementServiceClient = serviceClientFactory.getReminderManagementServiceClient()
 
-        const persistentAttributes = attributesManager.getPersistentAttributes()
+        const persistentAttributes = await util.getPersistentAttributes(handlerInput)
         const { reminderId } = persistentAttributes
         console.log('reminderId', reminderId)
 

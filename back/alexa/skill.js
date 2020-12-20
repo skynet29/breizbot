@@ -8,6 +8,7 @@ const audioPlayer = require('./audioPlayer.js')
 const { getPersistenceAdapter } = require('./persistence.js')
 
 const ssml = require('./ssml.js')
+const util = require('./util.js')
 
 
 const helpMessage = ssml.create()
@@ -18,9 +19,9 @@ const LaunchRequestHandler = {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest'
     },
     async handle(handlerInput) {
-        const { responseBuilder, attributesManager } = handlerInput
+        const { responseBuilder } = handlerInput
 
-        const attributes = await attributesManager.getPersistentAttributes()
+        const attributes = await util.getPersistentAttributes(handlerInput)
         //console.log('attributes', attributes)
         const { isFirstVisit } = attributes
 
@@ -28,7 +29,7 @@ const LaunchRequestHandler = {
 
         const speech = ssml.create()
 
-        const currentSong = audioPlayer.getCurrentSong(attributes)
+        const currentSong = await audioPlayer.getCurrentSong(handlerInput)
 
         if (currentSong != null) {
             const { title, artist } = currentSong
@@ -78,26 +79,19 @@ const LaunchRequestHandler = {
 }
 
 const YesHandler = {
-    async canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request
-
-        return request.type === 'IntentRequest' && request.intent.name === 'AMAZON.YesIntent'
+    canHandle(handlerInput) {
+        return util.isIntentRequest(handlerInput, 'AMAZON.YesIntent')
     },
     async handle(handlerInput) {
-        const attributes = await handlerInput.attributesManager.getPersistentAttributes()
-        const { offsetInMilliseconds, action } = attributes
-        const song = audioPlayer.getCurrentSong(attributes)
         handlerInput.responseBuilder.speak(`C'est parti`).withShouldEndSession(true)
 
-        return audioPlayer.playSong(handlerInput, song, { offsetInMilliseconds, action })
+        return audioPlayer.playSong(handlerInput, audioPlayer.PlayAction.RESUME)
     }
 }
 
 const NoHandler = {
-    async canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request
-
-        return request.type === 'IntentRequest' && request.intent.name === 'AMAZON.NoIntent'
+    canHandle(handlerInput) {
+        return util.isIntentRequest(handlerInput, 'AMAZON.NoIntent')
     },
     async handle(handlerInput) {
         const { responseBuilder, attributesManager } = handlerInput
@@ -168,14 +162,9 @@ const ErrorHandler = {
 
 const ExitHandler = {
     async canHandle(handlerInput) {
-        const request = handlerInput.requestEnvelope.request
+        const { inPlayback } = await util.getPersistentAttributes(handlerInput)
 
-        const { inPlayback } = await handlerInput.attributesManager.getPersistentAttributes()
-
-        return !inPlayback &&
-            request.type === 'IntentRequest' &&
-            (request.intent.name === 'AMAZON.StopIntent' ||
-                request.intent.name === 'AMAZON.CancelIntent')
+        return !inPlayback && (util.isIntentRequest(handlerInput, 'AMAZON.StopIntent') || util.isIntentRequest(handlerInput, 'AMAZON.CancelIntent'))
     },
     handle(handlerInput) {
         return handlerInput.responseBuilder
@@ -188,8 +177,7 @@ const ExitHandler = {
 
 const HelpHandler = {
     canHandle(handlerInput) {
-        return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
-            handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent'
+        return util.isIntentRequest(handlerInput, 'AMAZON.HelpIntent')
     },
     async handle(handlerInput) {
 
@@ -274,5 +262,7 @@ module.exports = {
         return skillBuilder
             .addRequestHandlers(HelpHandler)
             .create()
-    }
+    },
+    alexa: util,
+    ssml
 }

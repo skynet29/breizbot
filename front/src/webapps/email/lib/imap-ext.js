@@ -20,6 +20,7 @@ function parseStruct(struct, parts) {
 
 
 function create(account) {
+    console.log('imap create', account)
     const imap = new Imap({
         user: account.user,
         password: account.pwd,
@@ -33,15 +34,28 @@ function create(account) {
 
     function connect() {
 
+
+        console.log('imap connect')
+
         return new Promise((resolve, reject) => {
 
             imap.once('ready', function () {
+                console.log('event ready')
                 resolve()
             })
 
             imap.once("error", function (err) {
                 console.log('error', err)
                 reject(err)
+            })
+
+            imap.once("close", function (hadError) {
+                console.log('event close', hadError)
+            })
+
+            imap.once("end", function () {
+                console.log('event end')
+                reject(new Error('Connection broken'))
             })
 
             imap.connect()
@@ -138,10 +152,21 @@ function create(account) {
     }
 
     function close() {
-        imap.end()
+
+        console.log('imap close connection')
+        return new Promise((resolve, reject) => {
+            imap.end()
+
+            imap.once("close", function (hadError) {
+                resolve()
+            })
+    
+        })
     }
 
     function openBox(mailboxName, readOnly) {
+
+        console.log('imap openBox', mailboxName, readOnly)
 
         return new Promise((resolve, reject) => {
             imap.openBox(mailboxName, readOnly, function (err, mailbox) {
@@ -157,6 +182,24 @@ function create(account) {
 
             })
         })
+    }
+
+    function closeBox() {
+        return new Promise((resolve, reject) => {
+            imap.closeBox(function (err) {
+                console.log('closeBox')
+                if (err) {
+                    console.log('err', err)
+                    imap.end()
+                    reject(err)
+                    return
+                }
+
+                resolve()
+
+            })
+        })
+
     }
 
     function search(query) {
@@ -259,6 +302,7 @@ function create(account) {
         getBoxes,
         addBox,
         openBox,
+        closeBox,
         addFlags,
         moveMessages,
         appendMessage,

@@ -19,6 +19,7 @@
     "body-parser": "^1.18.3",
     "colors": "^1.4.0",
     "connect-mongodb-session": "^2.3.2",
+    "console-stamp": "^0.2.9",
     "cookie": "^0.3.1",
     "dynamodb-localhost": "0.0.9",
     "ejs": "^2.7.4",

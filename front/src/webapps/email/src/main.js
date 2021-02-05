@@ -155,7 +155,7 @@ $$.control.registerControl('rootPage', {
 			console.log('loadMailboxes')
 			const { currentAccount } = ctrl.model
 			try {
-				const mailboxes = await srvMail.getMailboxes(currentAccount)
+				const mailboxes = await srvMail.getMailboxes(currentAccount, true)
 				console.log('mailboxes', mailboxes)
 
 				ctrl.setData({

@@ -25,8 +25,8 @@ $$.service.registerService('app.mails', {
 				return http.post('/updateMailAccount', data)
 			},
 
-			getMailboxes: function (name) {
-				return http.post(`/getMailboxes`, { name })
+			getMailboxes: function (name, addUnseenNb = false) {
+				return http.post(`/getMailboxes`, { name, addUnseenNb })
 			},
 
 			addMailbox: function (name, mailboxName) {

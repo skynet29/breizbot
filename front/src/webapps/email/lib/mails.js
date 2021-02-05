@@ -210,7 +210,7 @@ module.exports = function (ctx) {
     await imap.close()
   }
 
-  async function getMailboxes(userName, name) {
+  async function getMailboxes(userName, name, addUnseenNb = false) {
     console.log('getMailboxes', userName, name)
     const account = await db.getMailAccount(userName, name)
     const imap = Imap.create(account)
@@ -224,12 +224,14 @@ module.exports = function (ctx) {
 
       if (k.toUpperCase() == 'INBOX') {
         data.icon = 'fa fa-inbox'
-        await imap.openBox(k, true)
-        const results = await imap.search(['UNSEEN'])
-        await imap.closeBox()
-        console.log('results', results)
-        if (results.length != 0) {
-          data.title = `<strong>${k} (${results.length})</strong>`
+        if (addUnseenNb) {
+          await imap.openBox(k, true)
+          const results = await imap.search(['UNSEEN'])
+          await imap.closeBox()
+          console.log('results', results)
+          if (results.length != 0) {
+            data.title = `<strong>${k} (${results.length})</strong>`
+          }  
         }
       }
       else if (k.toUpperCase() == 'TRASH') {

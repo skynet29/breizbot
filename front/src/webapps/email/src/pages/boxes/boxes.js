@@ -35,7 +35,7 @@ $$.control.registerControl('boxesPage', {
 					const token = targetName.split('/')
 					token.shift()
 					targetName = token.join('/')
-					//console.log('targetName', targetName)
+					console.log('targetName', targetName)
 
 
 					pager.popPage(targetName)					
@@ -85,6 +85,8 @@ $$.control.registerControl('boxesPage', {
 							return
 						}
 						const targetName = tree.getNodePath(node)
+						console.log('targetName', targetName)
+
 		
 						pager.popPage(targetName)
 		

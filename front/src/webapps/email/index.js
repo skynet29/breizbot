@@ -86,9 +86,9 @@ module.exports = function (ctx, router) {
 
 	router.post('/getMailboxes', async function (req, res) {
 		const userName = req.session.user
-		const { name } = req.body
+		const { name, addUnseenNb } = req.body
 		try {
-			const mailboxes = await mails.getMailboxes(userName, name)
+			const mailboxes = await mails.getMailboxes(userName, name, addUnseenNb)
 			res.json(mailboxes)
 		}
 		catch (e) {

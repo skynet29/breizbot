@@ -20,7 +20,7 @@ function parseStruct(struct, parts) {
 
 
 function create(account) {
-    console.log('imap create', account)
+    //console.log('imap create', account)
     const imap = new Imap({
         user: account.user,
         password: account.pwd,
@@ -35,12 +35,12 @@ function create(account) {
     function connect() {
 
 
-        console.log('imap connect')
+        //console.log('imap connect')
 
         return new Promise((resolve, reject) => {
 
             imap.once('ready', function () {
-                console.log('event ready')
+                //console.log('event ready')
                 resolve()
             })
 
@@ -50,7 +50,7 @@ function create(account) {
             })
 
             imap.once("close", function (hadError) {
-                console.log('event close', hadError)
+                //console.log('event close', hadError)
             })
 
             imap.once("end", function () {
@@ -153,7 +153,7 @@ function create(account) {
 
     function close() {
 
-        console.log('imap close connection')
+        //console.log('imap close connection')
         return new Promise((resolve, reject) => {
             imap.end()
 
@@ -166,7 +166,7 @@ function create(account) {
 
     function openBox(mailboxName, readOnly) {
 
-        console.log('imap openBox', mailboxName, readOnly)
+        //console.log('imap openBox', mailboxName, readOnly)
 
         return new Promise((resolve, reject) => {
             imap.openBox(mailboxName, readOnly, function (err, mailbox) {
@@ -187,7 +187,7 @@ function create(account) {
     function closeBox() {
         return new Promise((resolve, reject) => {
             imap.closeBox(function (err) {
-                console.log('closeBox')
+                //console.log('closeBox')
                 if (err) {
                     console.log('err', err)
                     imap.end()

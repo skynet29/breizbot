@@ -144,7 +144,7 @@ module.exports = function (ctx, router) {
             .noVideo()
             .format('mp3')
             .outputOptions('-ab', '192k')
-            .once('error', (e) => {
+            .on('error', (e) => {
                 console.log('ffpmeg error', e)
                 wss.sendToClient(srcId, { topic: 'breizbot.mp3.progress', data: { error: e.message } })
             })

@@ -155,6 +155,7 @@ $$.control.registerControl('rootPage', {
 								const { percent, finish, error } = msg.data
 								if (error) {
 									progressDlg.hide()
+									broker.offTopic('breizbot.mp3.progress', onProgress)
 									$$.ui.showAlert({title: 'Error', content: error})
 
 								}

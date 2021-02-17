@@ -71,6 +71,7 @@ module.exports = function (ctx, router) {
 
 		video.on('error', (e) => {
 			console.log('ytdl Error', e)
+			wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { error: e } })
 		})
 
 		video.on('progress', (chunkLength, totalDownloaded, total) => {

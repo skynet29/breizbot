@@ -80,9 +80,10 @@ module.exports = function (ctx, router) {
 			}
 		})
 
-		video.on('response', (data) => {
-			res.sendStatus(200)
-		})
+		res.sendStatus(200)
+
+		// video.on('response', (data) => {
+		// })
 		const destPath = path.join(config.CLOUD_HOME, userName, 'apps/ytdl')
 		fs.lstat(destPath)
 			.catch(function (err) {

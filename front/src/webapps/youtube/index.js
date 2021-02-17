@@ -69,6 +69,10 @@ module.exports = function (ctx, router) {
 
 		let lastPercent = 0
 
+		video.on('error', (e) => {
+			console.log('ytdl Error', e)
+		})
+
 		video.on('progress', (chunkLength, totalDownloaded, total) => {
 			const info = { chunkLength, totalDownloaded, total }
 			//console.log('progress', info)

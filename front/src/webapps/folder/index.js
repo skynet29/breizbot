@@ -146,6 +146,7 @@ module.exports = function (ctx, router) {
             .outputOptions('-ab', '192k')
             .on('error', (e) => {
                 console.log('ffpmeg error', e)
+                wss.sendToClient(srcId, { topic: 'breizbot.mp3.progress', data: { error: e } })
             })
             .on('progress', (event) => {
                 const { percent } = event

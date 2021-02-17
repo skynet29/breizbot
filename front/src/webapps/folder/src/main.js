@@ -152,8 +152,13 @@ $$.control.registerControl('rootPage', {
 									return
 								}
 								console.log('progress', msg.data)
-								const { percent, finish } = msg.data
-								if (finish === true) {
+								const { percent, finish, error } = msg.data
+								if (error) {
+									progressDlg.hide()
+									$$.ui.showAlert({title: 'Error', content: error})
+
+								}
+								else if (finish === true) {
 									await $$.util.wait(500)
 									progressDlg.hide()									
 									const info = await srvFiles.fileInfo(resp.outFileName)

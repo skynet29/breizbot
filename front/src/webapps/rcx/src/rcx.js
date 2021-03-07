@@ -1,6 +1,8 @@
 $$.service.registerService('app.rcx', {
+
+    deps: ['app.srecord'],
     
-    init: function(config) {
+    init: function(config, srecord) {
 
 		let port
 		let toggle = true
@@ -9,6 +11,14 @@ $$.service.registerService('app.rcx', {
 		let respBuff = []
         let callback = null
         let timer = null
+
+        function loByte(a) {
+            return a & 0xFF
+        }
+
+        function hiByte(a) {
+            return (a >> 8) & 0xFF
+        }
 
 
 		async function beep(type) {
@@ -19,7 +29,7 @@ $$.service.registerService('app.rcx', {
 		async function connect() {
 			port = await navigator.serial.requestPort()
 
-			await port.open({baudrate: 2400, parity: 'odd' })
+			await port.open({baudRate: 2400, parity: 'odd' })
 
 			readLoop()
 		}
@@ -65,11 +75,15 @@ $$.service.registerService('app.rcx', {
 
 		function getRespSize(opcode) {
 			switch(opcode) {
+                case 0x45:
+                    return 2
                 case 0x12:
 				case 0x30:
 					return 3
 				case 0x15:
 					return 9
+                case 0xA5:
+                    return 26
 				default:
 					return 1
 			}
@@ -146,6 +160,63 @@ $$.service.registerService('app.rcx', {
 	
 			})
 
+        }
+
+        async function downloadFirmware(srec, chunkSize) {
+            console.log('rcx.downloadFirmware')
+            let ret = srecord.parse(srec)
+            console.log('parse ret', ret)
+            const data = Object.values(ret.mem).flat()
+            console.log('data', data)
+            let checksum = 0
+            data.forEach((val) => {
+                checksum = (checksum + val) % 65536
+            })
+            console.log('checksum', checksum)   
+            await deleteFirmware()      
+            await startDownloadFirmware(ret.boot, checksum)  
+            
+            let remain = data.length
+            let seq = 1
+            let offset = 0
+            while (remain > 0) {
+                let n = chunkSize
+                if (remain <= chunkSize) {
+                    seq = 0
+                    n = chunkSize
+                }
+                ret = await transferData(seq++, data.substr(offset, n))
+                remain -= n
+                offset += n
+            }
+
+            ret = await unlockFirmware()
+
+
+        }
+
+        async function deleteFirmware() {
+            return await sendData(0x65, 1, 3, 5, 7, 11)
+        }
+
+        async function unlockFirmware() {
+            return await sendData(0xA5, 0x4C, 0x45, 0xAF, 0xAE)  // "LEGO®"
+        }
+
+        async function startDownloadFirmware(entryAddr, checksum) {
+            const resp = await sendData(0x75, loByte(entryAddr), hiByte(entryAddr), loByte(checksum), hiByte(checksum), 0)
+            return resp[1]
+        }
+
+        async function transferData(index, data) {
+            const checksum = 0
+            data.forEach((val) => {
+                checksum = (checksum + val) % 256
+            })
+            let length = data.length
+            console.log('transferData data length=', length, 'checksum=', checksum)
+            const resp = await sendData(0x45, loByte(index), hiByte(index), loByte(length), hiByte(length), ...data, checksum)
+            return resp[1]
         }
         
         async function getBatteryLevel() {
@@ -227,7 +298,12 @@ $$.service.registerService('app.rcx', {
             motorFwd,
             motorBkd,
             motorPower,
-            motorStatus
+            motorStatus,
+            deleteFirmware,
+            startDownloadFirmware,
+            unlockFirmware,
+            transferData,
+            downloadFirmware
 
         }
 

@@ -12,6 +12,7 @@
   .rootPage .beep {
     display: flex;
     margin-bottom: 10px;
+    margin-top: 10px;
     align-items: center; }
     .rootPage .beep button {
       margin-right: 30px; }

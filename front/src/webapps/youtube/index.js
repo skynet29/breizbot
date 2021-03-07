@@ -49,7 +49,8 @@ module.exports = function (ctx, router) {
 		const { url } = req.query
 
 		const info = await ytdl.getBasicInfo(url)
-		console.log('info', Object.keys(info.player_response.videoDetails))
+		console.log('info', JSON.stringify(info.formats, null, 4))
+		//console.log('info', Object.keys(info.formats))
 		const { title, shortDescription, lengthSeconds, thumbnail } = info.player_response.videoDetails
 		res.json({
 			title,

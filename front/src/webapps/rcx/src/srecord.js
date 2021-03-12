@@ -27,32 +27,36 @@ $$.service.registerService('app.srecord', {
             console.log('nb srecs', srecs.length)
             const ret = {mem: {}}
             srecs.forEach((s) => {
-                if (s[0] != 'S') {
-                    throw 'Bad header'
-                }
-                const type = parseInt(s[1])
-                //console.log('type', type)
-
-                const alen = getAddrLen(type)
-                const addr = parseInt(s.substr(4, alen * 2), 16)
-                const len = parseInt(s.substr(2, 2), 16)
-                const dataLen = len - 1 - alen
-                const b = []
-                for(let i = 0, k = 4 + alen * 2; i < dataLen; i++, k+= 2) {
-                    b.push(parseInt(s.substr(k, 2), 16))
-                }
-                if (type == 1) {
-                    ret.mem[addr] = b
-                }
-                else if (type == 9) {
-                    ret.boot = addr
-                }
-                else if (type == 0) {
-                    let info = ''
-                    b.forEach((val) => {
-                      info += String.fromCharCode(val)  
-                    })
-                    ret.info = info
+                //console.log('lineLength', s.length)
+                if (s.length != 0)
+                {
+                    if (s[0] != 'S') {
+                        throw 'Bad header ' + s[0]
+                    }
+                    const type = parseInt(s[1])
+                    //console.log('type', type)
+    
+                    const alen = getAddrLen(type)
+                    const addr = parseInt(s.substr(4, alen * 2), 16)
+                    const len = parseInt(s.substr(2, 2), 16)
+                    const dataLen = len - 1 - alen
+                    const b = []
+                    for(let i = 0, k = 4 + alen * 2; i < dataLen; i++, k+= 2) {
+                        b.push(parseInt(s.substr(k, 2), 16))
+                    }
+                    if (type == 1) {
+                        ret.mem[addr] = b
+                    }
+                    else if (type == 9) {
+                        ret.boot = addr
+                    }
+                    else if (type == 0) {
+                        let info = ''
+                        b.forEach((val) => {
+                          info += String.fromCharCode(val)  
+                        })
+                        ret.info = info
+                    }    
                 }
 
             })

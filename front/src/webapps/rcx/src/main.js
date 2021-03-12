@@ -51,6 +51,9 @@ $$.control.registerControl('rootPage', {
 					console.log('beepType', beepType)
 					await rcx.beep(beepType)
 				},
+				onPing: async function() {
+					await rcx.isAlive()
+				},
 				onBattery: async function() {
 					const level = await rcx.getBatteryLevel()
 					console.log('level', level)

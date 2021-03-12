@@ -11,6 +11,7 @@ $$.service.registerService('app.rcx', {
 		let respBuff = []
         let callback = null
         let timer = null
+        const defaultTimeout = 2000 // 2 sec
 
         function loByte(a) {
             return a & 0xFF
@@ -23,7 +24,7 @@ $$.service.registerService('app.rcx', {
 
 		async function beep(type) {
 			console.log('beep')
-			return sendData(0x51, type)
+			return sendData(defaultTimeout, 0x51, type)
 		}
 
 		async function connect() {
@@ -40,17 +41,15 @@ $$.service.registerService('app.rcx', {
 
 			while(true) {
 				const {value, done} = await reader.read()				
-				console.log(value, done)
+				//console.log(value, done)
 				if (respExpectedSize != 0) {
 					respBuff = respBuff.concat(Array.from(value))
                 }
                 
-                if (respBuff.length >= sentCmdSize) {
-                    console.log('resp echo ok')
-                }
+                //console.log('respBuffLength', respBuff.length)
 
 				if (respExpectedSize == respBuff.length) {
-					//console.log('respBuff', respBuff)
+					
 					const resp = decodeResp(respBuff.slice(sentCmdSize))
                     console.log('resp', resp)
                     
@@ -76,6 +75,7 @@ $$.service.registerService('app.rcx', {
 		function getRespSize(opcode) {
 			switch(opcode) {
                 case 0x45:
+                case 0x75:
                     return 2
                 case 0x12:
 				case 0x30:
@@ -126,13 +126,13 @@ $$.service.registerService('app.rcx', {
 			view[off++] = sum
 			view[off++] = ~sum & 0xff
 
-			//console.log('buffer', buffer)
+			//console.log('encodeBytes', view)
 			return buffer
 
 		}
 
-		function sendData(...bytes) {
-            console.log('sendData', bytes)
+		function sendData(timeout, ...bytes) {
+            //console.log('sendData', bytes)
             respBuff = []
             if (timer != null) {
                 return Promise.reject('Busy')
@@ -145,18 +145,21 @@ $$.service.registerService('app.rcx', {
 
 				const writer = port.writable.getWriter()
 	
-		
-				writer.write(encode(bytes))
+                const encodedData = encode(bytes)
+	
+				writer.write(encodedData)
 	
 				respExpectedSize = (bytes.length + respSize) * 2 + 10
-				//console.log('respExpectedSize', respExpectedSize)
+				//console.log('respSize', respSize)
+				//console.log('respExpectedBytes', respExpectedSize)
 	
                 writer.releaseLock()
-                
-                timer = setTimeout(() => {
-                    timer = null
-                    reject('Timeout, check your RCX is switched on')
-                }, 1000)
+                if (timeout != 0) {
+                    timer = setTimeout(() => {
+                        timer = null
+                        reject('Timeout, check your RCX is switched on')
+                    }, timeout)    
+                }
 	
 			})
 
@@ -174,63 +177,85 @@ $$.service.registerService('app.rcx', {
             })
             console.log('checksum', checksum)   
             await deleteFirmware()      
-            await startDownloadFirmware(ret.boot, checksum)  
+            ret = await startDownloadFirmware(ret.boot, checksum)  
+            if (ret != 0) {
+                throw 'startDownloadFirmware failed'
+            }
             
             let remain = data.length
             let seq = 1
             let offset = 0
             while (remain > 0) {
+                console.log('remainBytes', remain)
                 let n = chunkSize
                 if (remain <= chunkSize) {
                     seq = 0
                     n = chunkSize
                 }
-                ret = await transferData(seq++, data.substr(offset, n))
+                console.log('chunkSize', n)
+                ret = await transferData(seq++, data.slice(offset, offset + n))
+                if (ret != 0) {
+                    throw 'transferData error=' + ret
+                }
                 remain -= n
                 offset += n
             }
 
             ret = await unlockFirmware()
+            console.log('ret', ret)
 
 
         }
 
         async function deleteFirmware() {
-            return await sendData(0x65, 1, 3, 5, 7, 11)
+            console.log('deleteFirmware')
+            return await sendData(defaultTimeout, 0x65, 1, 3, 5, 7, 11)
         }
 
         async function unlockFirmware() {
-            return await sendData(0xA5, 0x4C, 0x45, 0xAF, 0xAE)  // "LEGO®"
+            console.log('unlockFirmware')
+            return await sendData(0, 0xA5, 76, 69, 71, 79, 174)  // "LEGO®"
         }
 
         async function startDownloadFirmware(entryAddr, checksum) {
-            const resp = await sendData(0x75, loByte(entryAddr), hiByte(entryAddr), loByte(checksum), hiByte(checksum), 0)
+            console.log('startDownloadFirmware', entryAddr, '0x', checksum.toString(16))
+            const resp = await sendData(defaultTimeout, 0x75, loByte(entryAddr), hiByte(entryAddr), loByte(checksum), hiByte(checksum), 0)
             return resp[1]
         }
 
         async function transferData(index, data) {
-            const checksum = 0
+            let checksum = 0
             data.forEach((val) => {
                 checksum = (checksum + val) % 256
             })
             let length = data.length
             console.log('transferData data length=', length, 'checksum=', checksum)
-            const resp = await sendData(0x45, loByte(index), hiByte(index), loByte(length), hiByte(length), ...data, checksum)
+            const resp = await sendData(defaultTimeout * 10, 0x45, loByte(index), hiByte(index), loByte(length), hiByte(length), ...data, checksum)
             return resp[1]
         }
         
         async function getBatteryLevel() {
-            const resp = await sendData(0x30)
+            const resp = await sendData(defaultTimeout, 0x30)
             return resp[1] + (resp[2] << 8)
+
         }
 
         async function getVersion() {
-            const resp = await sendData(0x12, 35, 0)
-            return resp[1] + (resp[2] << 8)
+            const resp = await sendData(defaultTimeout, 0x15, 1, 3, 5, 7, 11)
+            return {
+                romVersion: {
+                    major: (resp[1] << 8) + resp[2],
+                    minor: (resp[3] << 8) + resp[4]
+                },
+                firmwareVersion: {
+                    major: (resp[5] << 8) + resp[6],
+                    minor: (resp[7] << 8) + resp[8]
+                }
+            }
         }
 
         async function powerOff() {
-            return await sendData(0x60)
+            return await sendData(defaultTimeout, 0x60)
         }
 
         function getMotorList(list) {
@@ -245,36 +270,40 @@ $$.service.registerService('app.rcx', {
             return ret
         }
 
+        async function isAlive() {
+            return sendData(defaultTimeout, 0x10)
+        }
+
         async function motorOn(motorList) {
-            return sendData(0x21, 0xC0 | getMotorList(motorList))
+            return sendData(defaultTimeout, 0x21, 0xC0 | getMotorList(motorList))
         }
 
         async function motorOff(motorList) {
-            return sendData(0x21, 0x10 | getMotorList(motorList))
+            return sendData(defaultTimeout, 0x21, 0x10 | getMotorList(motorList))
         }
 
         async function motorFwd(motorList) {
-            return sendData(0xE1, 0x80 | getMotorList(motorList))
+            return sendData(defaultTimeout, 0xE1, 0x80 | getMotorList(motorList))
         }
 
         async function motorBkd(motorList) {
-            return sendData(0xE1, 0x00 | getMotorList(motorList))
+            return sendData(defaultTimeout, 0xE1, 0x00 | getMotorList(motorList))
         }
 
         async function motorPower(motorList, power /* 0 to 7 */) {
-            return sendData(0x13, getMotorList(motorList), 2, power)
+            return sendData(defaultTimeout, 0x13, getMotorList(motorList), 2, power)
         }
 
         async function setDate() {
             const d = new Date()
 
-            return sendData(0x22, d.getHours(), d.getMinutes())
+            return sendData(defaultTimeout, 0x22, d.getHours(), d.getMinutes())
         }
 
         async function motorStatus(motor) {
             motor = motor.charCodeAt(0) - 65
 
-            const resp = await sendData(0x12, 3, motor)
+            const resp = await sendData(defaultTimeout, 0x12, 3, motor)
             const mask = resp[1]
             const ret = {
                 power: mask & 0x07,
@@ -303,7 +332,8 @@ $$.service.registerService('app.rcx', {
             startDownloadFirmware,
             unlockFirmware,
             transferData,
-            downloadFirmware
+            downloadFirmware,
+            isAlive
 
         }
 

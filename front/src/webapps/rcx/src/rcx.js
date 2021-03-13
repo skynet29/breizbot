@@ -13,6 +13,20 @@ $$.service.registerService('app.rcx', {
         let timer = null
         const defaultTimeout = 2000 // 2 sec
 
+        const SensorType = {
+            'RAW': 0,
+            'TOUCH': 1,
+            'TEMPERATURE': 2, // en °C
+            'LIGHT': 3,
+            'ROTATION': 4
+        }
+
+        const SensorIndex = {
+            SENSOR_1: 0,
+            SENSOR_2: 1,
+            SENSOR_3: 2
+        }
+
         function loByte(a) {
             return a & 0xFF
         }
@@ -46,7 +60,7 @@ $$.service.registerService('app.rcx', {
 					respBuff = respBuff.concat(Array.from(value))
                 }
                 
-                //console.log('respBuffLength', respBuff.length)
+                console.log('respBuffLength', respBuff.length)
 
 				if (respExpectedSize == respBuff.length) {
 					
@@ -151,7 +165,7 @@ $$.service.registerService('app.rcx', {
 	
 				respExpectedSize = (bytes.length + respSize) * 2 + 10
 				//console.log('respSize', respSize)
-				//console.log('respExpectedBytes', respExpectedSize)
+				console.log('respExpectedBytes', respExpectedSize)
 	
                 writer.releaseLock()
                 if (timeout != 0) {
@@ -254,6 +268,20 @@ $$.service.registerService('app.rcx', {
             }
         }
 
+        async function setSensorType(sensorIndex, sensorType) {
+            console.log('setSensorType', sensorIndex, sensorType)
+            const idx = SensorIndex[sensorIndex]
+            const type = SensorType[sensorType]
+            return await sendData(defaultTimeout, 0x32, idx, type)
+        }
+
+        async function clearSensorValue(sensorIndex) {
+            console.log('clearSensorValue', sensorIndex)
+            const idx = SensorIndex[sensorIndex]
+            return await sendData(defaultTimeout, 0xD1, idx)
+
+        }
+
         async function powerOff() {
             return await sendData(defaultTimeout, 0x60)
         }
@@ -333,7 +361,9 @@ $$.service.registerService('app.rcx', {
             unlockFirmware,
             transferData,
             downloadFirmware,
-            isAlive
+            isAlive,
+            setSensorType,
+            clearSensorValue
 
         }
 

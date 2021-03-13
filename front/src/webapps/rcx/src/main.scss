@@ -26,4 +26,17 @@
             margin-right: 30px;
         }
     }
+    .container {
+        padding-top: 10px;
+    }
+
+    .vert_container {
+        padding-top: 10px;
+        display: flex;
+        align-items: center;
+
+        label {
+            width: 60px;
+        }
+    }
 }

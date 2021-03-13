@@ -16,3 +16,11 @@
     align-items: center; }
     .rootPage .beep button {
       margin-right: 30px; }
+  .rootPage .container {
+    padding-top: 10px; }
+  .rootPage .vert_container {
+    padding-top: 10px;
+    display: flex;
+    align-items: center; }
+    .rootPage .vert_container label {
+      width: 60px; }

@@ -56,6 +56,42 @@
         <button class="w3-button w3-blue" bn-event="click: onMotorOn">Motor On</button>
         <button class="w3-button w3-blue" bn-event="click: onMotorOff">Motor Off</button>
 
+        <fieldset>
+            <legend>Sensor</legend>
+            <div class="vert_container">
+                <label>Index</label>
+                <div bn-control="brainjs.combobox", 
+                    bn-val="sensorIndex"
+                    bn-update="comboboxchange"
+                    bn-data="{items: [
+                        'SENSOR_1',
+                        'SENSOR_2',
+                        'SENSOR_3'
+                    ]}">
+                </div>     
+            </div>
+            <div class="vert_container">
+                <label>Type</label>
+                <div bn-control="brainjs.combobox", 
+                    bn-val="sensorType"
+                    bn-update="comboboxchange"
+                    bn-data="{items: [
+                        'RAW',
+                        'TOUCH',
+                        'TEMPERATURE',
+                        'LIGHT',
+                        'ROTATION'
+                    ]}">
+                </div>     
+            </div>
+
+            <div class="container">
+                <button class="w3-button w3-blue" bn-event="click: onSensorType">Set Type</button>
+                <button class="w3-button w3-blue" bn-event="click: onSensorClearValue">Clear Value</button>
+            </div>
+
+        </fieldset>
+
     </div>
 
 

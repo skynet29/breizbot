@@ -1,10 +1,10 @@
 $$.control.registerControl('rootPage', {
 
-	template: {gulp_inject: './main.html'},
+	template: { gulp_inject: './main.html' },
 
 	deps: ['app.rcx', 'breizbot.pager', 'breizbot.files'],
 
-	init: function(elt, rcx, pager, files) {
+	init: function (elt, rcx, pager, files) {
 
 
 		const ctrl = $$.viewController(elt, {
@@ -12,12 +12,14 @@ $$.control.registerControl('rootPage', {
 				notSupported: !('serial' in navigator),
 				connected: false,
 				beep: 0,
-				showConnect: function() {
+				showConnect: function () {
 					return !this.notSupported && !this.connected
-				}
+				},
+				sensorType: 'TOUCH',
+				sensorIndex: 'SENSOR_1'
 			},
 			events: {
-				onDownloadFirmware: function() {
+				onDownloadFirmware: function () {
 					//console.log('onDownloadFirmware')
 					pager.pushPage('breizbot.files', {
 						title: 'Open File',
@@ -42,32 +44,39 @@ $$.control.registerControl('rootPage', {
 					})
 
 				},
-				onConnect: async function() {
+				onConnect: async function () {
 					await rcx.connect()
-					ctrl.setData({connected: true})
+					ctrl.setData({ connected: true })
 				},
-				onBeep: async function() {
+				onBeep: async function () {
 					const beepType = parseInt(ctrl.scope.beepType.getValue())
 					console.log('beepType', beepType)
 					await rcx.beep(beepType)
 				},
-				onPing: async function() {
+				onPing: async function () {
 					await rcx.isAlive()
 				},
-				onBattery: async function() {
+				onSensorType: async function () {
+					const { sensorIndex, sensorType } = ctrl.model
+					await rcx.setSensorType(sensorIndex, sensorType)
+				},
+				onSensorClearValue: async function() {
+					await rcx.clearSensorValue(ctrl.model.sensorIndex)
+				},
+				onBattery: async function () {
 					const level = await rcx.getBatteryLevel()
 					console.log('level', level)
-					$$.ui.showAlert({title: 'Battery Level', content: `${level} mV`})
+					$$.ui.showAlert({ title: 'Battery Level', content: `${level} mV` })
 				},
-				onVersion: async function() {
+				onVersion: async function () {
 					const version = await rcx.getVersion()
 					console.log('version', version)
-					$$.ui.showAlert({title: 'Firmware version', content: version})
+					$$.ui.showAlert({ title: 'Firmware version', content: version })
 				},
-				onPowerOff: async function() {
+				onPowerOff: async function () {
 					await rcx.powerOff()
 				},
-				onMotorOn: async function() {
+				onMotorOn: async function () {
 					const motorList = ctrl.scope.motorList.getValue()
 					const motorDir = ctrl.scope.motorDir.getValue()
 					console.log('motorList', motorList)
@@ -80,16 +89,16 @@ $$.control.registerControl('rootPage', {
 					}
 					await rcx.motorOn(motorList)
 				},
-				onMotorOff: async function() {
+				onMotorOff: async function () {
 					const motorList = ctrl.scope.motorList.getValue()
 					console.log('motorList', motorList)
 					await rcx.motorOff(motorList)
 				},
-				onMotorStatus: async function() {
+				onMotorStatus: async function () {
 					const retA = await rcx.motorStatus('A')
 					const retB = await rcx.motorStatus('B')
 					const retC = await rcx.motorStatus('C')
-					let status =  {
+					let status = {
 						A: retA, B: retB, C: retC
 					}
 					status = JSON.stringify(status, null, 4)

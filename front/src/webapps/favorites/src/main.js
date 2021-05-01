@@ -188,7 +188,7 @@ $$.control.registerControl('rootPage', {
 					}
 					else if (action == 'getPwd') {
 						if (keyPwd == null) {
-							keyPwd = await $$.ui.showPrompt({ title: 'Key Password', label: 'password' })
+							keyPwd = await $$.ui.showPrompt({ title: 'Key Password', label: 'password', attrs: {type: 'password'} })
 							//console.log('keyPwd', keyPwd)
 						}
 						if (keyPwd != null) {

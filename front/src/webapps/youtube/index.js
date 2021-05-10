@@ -66,7 +66,7 @@ module.exports = function (ctx, router) {
 		const userName = req.session.user
 		fileName = fileName.replace(/\/|\||:|"|-| /g, '_')
 
-		const video = ytdl(url)
+		const video = ytdl(url, {filter: 'videoandaudio'})
 
 		let lastPercent = 0
 

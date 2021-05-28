@@ -14,7 +14,7 @@ $$.control.registerControl('infoPage', {
 
         const progressDlg = $$.ui.progressDialog('Downloading...')
 
-        const { title, thumbnail, description, length_seconds, videoUrl, videoId } = this.props.info
+        const { title, thumbnail, description, length_seconds, videoUrl, videoId, formats } = this.props.info
 
         const { width, height } = thumbnail
         const ctrl = $$.viewController(elt, {
@@ -61,14 +61,20 @@ $$.control.registerControl('infoPage', {
         })
 
         this.getButtons = function () {
+            let items = {}
+            formats.forEach((f) => {
+                items[f.itag] = {name: f.qualityLabel}
+            })
+            console.log('getButtons items', items)
             return {
                 download: {
                     title: 'Download',
                     icon: 'fa fa-download',
-                    onClick: function () {
-                        console.log('onDownload', videoUrl)
+                    items,
+                    onClick: function (cmd) {
+                        console.log('onDownload', videoUrl, cmd)
                         const fileName = title + '.mp4'
-                        ytdl.download(videoUrl, fileName)
+                        ytdl.download(videoUrl, fileName, cmd)
                         progressDlg.show()
 
                     }

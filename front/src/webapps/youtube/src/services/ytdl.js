@@ -13,8 +13,8 @@ $$.service.registerService('app.ytdl', {
 				return http.get(`/info`, {url})
 			},
 
-			download: function(url, fileName) {
-				return http.post(`/download`, {url, fileName, srcId})
+			download: function(url, fileName, itag) {
+				return http.post(`/download`, {url, fileName, srcId, itag})
 			},
 
 			search: function(query, maxResults = 3)	{

@@ -51,22 +51,27 @@ module.exports = function (ctx, router) {
 		const info = await ytdl.getBasicInfo(url)
 		console.log('info', JSON.stringify(info.formats, null, 4))
 		//console.log('info', Object.keys(info.formats))
+		const formats = info.formats.filter((f) => f.audioChannels != undefined && f.qualityLabel != undefined).map((f) => {
+			const {itag, qualityLabel} = f
+			return {itag, qualityLabel}
+		})
 		const { title, shortDescription, lengthSeconds, thumbnail } = info.player_response.videoDetails
 		res.json({
 			title,
 			description: shortDescription,
 			length_seconds: lengthSeconds,
-			thumbnail: thumbnail.thumbnails.pop()
+			thumbnail: thumbnail.thumbnails.pop(),
+			formats
 		})
 	})
 
 	router.post('/download', function (req, res) {
 		console.log('youtube/download', req.body)
-		let { url, fileName, srcId } = req.body
+		let { url, fileName, srcId, itag } = req.body
 		const userName = req.session.user
 		fileName = fileName.replace(/\/|\||:|"|-| /g, '_')
 
-		const video = ytdl(url, {filter: 'videoandaudio'})
+		const video = ytdl(url, {quality: itag})
 
 		let lastPercent = 0
 

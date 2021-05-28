@@ -49,7 +49,7 @@ module.exports = function (ctx, router) {
 		const { url } = req.query
 
 		const info = await ytdl.getBasicInfo(url)
-		console.log('info', JSON.stringify(info.formats, null, 4))
+		//console.log('info', JSON.stringify(info.formats, null, 4))
 		//console.log('info', Object.keys(info.formats))
 		const formats = info.formats.filter((f) => f.audioChannels != undefined && f.qualityLabel != undefined).map((f) => {
 			const {itag, qualityLabel} = f

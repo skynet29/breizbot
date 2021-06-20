@@ -210,6 +210,18 @@ module.exports = function (ctx) {
     await imap.close()
   }
 
+  async function getUnreadMessage(imap, k, data)
+  {
+    await imap.openBox(k, true)
+    const results = await imap.search(['UNSEEN'])
+    await imap.closeBox()
+    console.log('results', results)
+    if (results.length != 0) {
+      data.title = `<strong>${k} (${results.length})</strong>`
+    }  
+
+  }
+
   async function getMailboxes(userName, name, addUnseenNb = false) {
     console.log('getMailboxes', userName, name)
     const account = await db.getMailAccount(userName, name)
@@ -225,13 +237,12 @@ module.exports = function (ctx) {
       if (k.toUpperCase() == 'INBOX') {
         data.icon = 'fa fa-inbox'
         if (addUnseenNb) {
-          await imap.openBox(k, true)
-          const results = await imap.search(['UNSEEN'])
-          await imap.closeBox()
-          console.log('results', results)
-          if (results.length != 0) {
-            data.title = `<strong>${k} (${results.length})</strong>`
-          }  
+          await getUnreadMessage(imap, k, data)
+        }
+      }
+      else if (['COMMERCIAL', 'JUNK'].includes(k.toUpperCase())) {
+        if (addUnseenNb) {
+          await getUnreadMessage(imap, k, data)
         }
       }
       else if (k.toUpperCase() == 'TRASH') {

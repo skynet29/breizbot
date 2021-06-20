@@ -118,9 +118,8 @@ $$.control.registerControl('rootPage', {
 							mailboxName
 						},
 						onBack: function () {
-							if (mailboxName == 'INBOX') {
-								loadMailboxes()
-							}
+
+							loadMailboxes()
 							const activeNode = ctrl.scope.tree.getActiveNode()
 							if (activeNode != null) {
 								activeNode.setActive(false)

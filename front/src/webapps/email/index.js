@@ -122,6 +122,7 @@ module.exports = function (ctx, router) {
 			res.json(messages)
 		}
 		catch (e) {
+			console.error(e)
 			res.sendStatus(400)
 		}
 

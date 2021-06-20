@@ -78,7 +78,7 @@ function decodeHeaders(buffer, myEmail) {
       name: addr.name || addr.address,
       email: addr.address
     },
-    subject: headers.subject[0],
+    subject: (headers.subject != undefined) ? headers.subject[0] : "<Sans objet>",
     date: headers.date[0]
   }
 }

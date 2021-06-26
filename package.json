@@ -38,6 +38,8 @@
     "node-fetch": "^2.6.0",
     "node-id3": "^0.1.16",
     "redirect-https": "^1.3.1",
+    "request": "^2.88.2",
+    "request-progress": "^3.0.0",
     "simple-thumbnail": "^1.6.5",
     "ssml-builder": "^0.4.3",
     "uniqid": "^5.2.0",

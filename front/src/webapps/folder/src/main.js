@@ -61,7 +61,7 @@ $$.control.registerControl('rootPage', {
 								ret.makeResizedCopy = { name: 'Make resized copy', icon: 'fas fa-compress-arrows-alt' }
 							}
 							if (!folder) {
-								ret.download = { name: 'Download', icon: 'fas fa-download' }
+								ret.download = { name: 'Download', icon: 'fas fa-upload' }
 							}
 							if (name.toLowerCase().endsWith('.mp4')) {
 								ret.convertToMP3 = { name: 'Convert to MP3' }
@@ -83,6 +83,42 @@ $$.control.registerControl('rootPage', {
 
 			},
 			events: {
+				onImportUrl: async function () {
+					//console.log('onImportUrl')
+					progressDlg.setPercentage(0)
+					progressDlg.show('Downloading...')
+					const url = await $$.ui.showPrompt({ title: 'Inport URL', label: 'URL', attrs: { type: 'url' } })
+					if (url != null) {
+						const resp = await folder.importUrl(ctrl.model.rootDir, url)
+						//console.log('resp', resp)
+
+						async function onProgress(msg) {
+							if (msg.hist == true) {
+								return
+							}
+							const { percent } = msg.data
+							//console.log('progress', percent)
+							progressDlg.setPercentage(percent / 100)
+							if (Math.floor(percent) == 100) {
+								await $$.util.wait(500)
+								progressDlg.hide()
+								const info = await srvFiles.fileInfo(resp.outFileName)
+								//console.log('info', info)
+								ctrl.scope.files.insertFile(info)
+								broker.offTopic('breizbot.importUrl.progress', onProgress)
+							}
+						}
+
+						broker.onTopic('breizbot.importUrl.progress', onProgress)
+
+
+
+					}
+
+
+
+				},
+
 				onContextMenu: async function (ev, data) {
 					//console.log('onContextMenu', data)
 					const { rootDir, name, idx, cmd } = data
@@ -156,12 +192,12 @@ $$.control.registerControl('rootPage', {
 								if (error) {
 									progressDlg.hide()
 									broker.offTopic('breizbot.mp3.progress', onProgress)
-									$$.ui.showAlert({title: 'Error', content: error})
+									$$.ui.showAlert({ title: 'Error', content: error })
 
 								}
 								else if (finish === true) {
 									await $$.util.wait(500)
-									progressDlg.hide()									
+									progressDlg.hide()
 									const info = await srvFiles.fileInfo(resp.outFileName)
 									//console.log('info', info)
 									ctrl.scope.files.insertFile(info, idx)
@@ -454,7 +490,7 @@ $$.control.registerControl('rootPage', {
 		}
 
 		async function getSharingGroups() {
-			sharingGroups = await srvFiles.list('/share', {folderOnly: true})
+			sharingGroups = await srvFiles.list('/share', { folderOnly: true })
 			sharingGroups = sharingGroups.map((f) => f.name)
 			//console.log('sharingGroups', sharingGroups)
 		}

@@ -57,6 +57,12 @@ $$.service.registerService('app.folder', {
             unzipFile: function (folderPath, fileName) {
                 console.log('[FileService] unzipFile', folderPath, fileName)
                 return http.post('/unzipFile', { folderPath, fileName, srcId })
+            },
+
+            importUrl: function(folderPath, url) {
+                console.log('[FileService] importUrl', folderPath, url)
+                return http.post('/importUrl', { folderPath, srcId, url })
+
             }
 
         }

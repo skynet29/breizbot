@@ -14,7 +14,15 @@
 				title="Import file" 
 				data-cmd="importFile"
 				bn-event="click: onImportFile">
-					<i class="fa fa-upload"></i>
+					<i class="fa fa-download"></i>
+				</button>
+
+				<button 
+				class="w3-button" 
+				title="Import url" 
+				data-cmd="importUrl"
+				bn-event="click: onImportUrl">
+					<i class="fa fa-cloud-download-alt"></i>
 				</button>
 
 			<button 
@@ -64,7 +72,7 @@
 				trigger: 'left',
 				items: {
 				 	newFolder: {name: 'New folder', icon: 'fas fa-folder-plus'},
-				 	importFile: {name: 'Import file', icon: 'fas fa-upload'},
+				 	importFile: {name: 'Import file', icon: 'fas fa-download'},
 				 	reload: {name: 'Reload', icon: 'fas fa-sync-alt'}
 				}
 			}">

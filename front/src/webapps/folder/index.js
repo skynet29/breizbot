@@ -5,6 +5,8 @@ const fs = require('fs-extra')
 const ffmpeg = require('fluent-ffmpeg')
 const unpacker = require('unpacker-with-progress')
 const archiver = require('archiver')
+const request = require('request')
+const progress = require('request-progress')
 
 
 module.exports = function (ctx, router) {
@@ -154,7 +156,7 @@ module.exports = function (ctx, router) {
             })
             .on('end', () => {
                 console.log('Finsihed!')
-                wss.sendToClient(srcId, { topic: 'breizbot.mp3.progress', data: { finish: true } })                
+                wss.sendToClient(srcId, { topic: 'breizbot.mp3.progress', data: { finish: true } })
             })
             .run()
 
@@ -194,7 +196,7 @@ module.exports = function (ctx, router) {
                 const { total, processed } = data.entries
                 if (started) {
                     wss.sendToClient(srcId, {
-                        topic: 'breizbot.zip.progress', 
+                        topic: 'breizbot.zip.progress',
                         data: {
                             percent: (processed / total) * 100
                         }
@@ -206,7 +208,7 @@ module.exports = function (ctx, router) {
             zipArchive.directory(fullFolderPath, false)
             zipArchive.finalize()
 
-            res.status(200).json({outFileName: path.join(folderPath, fileName)})
+            res.status(200).json({ outFileName: path.join(folderPath, fileName) })
 
 
         }
@@ -264,6 +266,36 @@ module.exports = function (ctx, router) {
                 console.log('error', e)
                 res.status(400).send(e.message)
             })
+    })
+
+    router.post('/importUrl', function (req, res) {
+        console.log('folder/importUrl', req.body)
+        let { url, folderPath, srcId } = req.body
+        const userName = req.session.user
+        const fileName = url.split('/').pop()
+
+        const fullFileName = path.join(util.getFilePath(userName, folderPath), fileName)
+        console.log('fullFileName', fullFileName)
+
+        progress(request(url), {
+
+        })
+            .on('progress', (state) => {
+                //console.log('progress', state)
+                wss.sendToClient(srcId, { topic: 'breizbot.importUrl.progress', data: { percent: state.percent * 100} })
+            })
+            .on('eeror', (e) => {
+                console.error(e)
+                wss.sendToClient(srcId, { topic: 'breizbot.importUrl.progress', data: { error: e } })
+
+            })
+            .on('end', () => {
+                console.log('end')
+                wss.sendToClient(srcId, { topic: 'breizbot.importUrl.progress', data: { percent: 100 } })
+             })
+            .pipe(fs.createWriteStream(fullFileName))
+
+        res.status(200).json({ outFileName: path.join(folderPath, fileName) })
     })
 
 

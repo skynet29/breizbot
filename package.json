@@ -15,7 +15,7 @@
     "ask-sdk-model": "^1.29.0",
     "aws-sdk": "^2.725.0",
     "basic-auth": "^2.0.1",
-    "bcrypt": "^4.0.1",
+    "bcrypt": "^5.0.0",
     "body-parser": "^1.18.3",
     "colors": "^1.4.0",
     "connect-mongodb-session": "^2.3.2",

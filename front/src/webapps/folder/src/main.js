@@ -85,11 +85,11 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onImportUrl: async function () {
 					//console.log('onImportUrl')
-					progressDlg.setPercentage(0)
-					progressDlg.show('Downloading...')
 					const url = await $$.ui.showPrompt({ title: 'Inport URL', label: 'URL', attrs: { type: 'url' } })
 					if (url != null) {
-						const resp = await folder.importUrl(ctrl.model.rootDir, url)
+						progressDlg.setPercentage(0)
+						progressDlg.show('Downloading...')
+							const resp = await folder.importUrl(ctrl.model.rootDir, url)
 						//console.log('resp', resp)
 
 						async function onProgress(msg) {

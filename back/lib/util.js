@@ -135,18 +135,19 @@ async function search(theme, query, options) {
 	const params = {
 		q: query,
 		t: theme,
-		uiv: 4
+		//uiv: 4,
+		locale: 'fr_FR'
 	}
 
 	if (count) {
-		params.count = count
+		params.count = Math.min(count, 50)
 	}
 
 	if (offset) {
 		params.offset = offset
 	}
 
-	const qwantUrl = getEncodedUrl(`https://api.qwant.com/api/search/${theme}`, params)
+	const qwantUrl = getEncodedUrl(`https://api.qwant.com/v3/search/${theme}`, params)
 	//console.log('qwantUrl', qwantUrl)
 
 	const scraperapiParams = {
@@ -156,7 +157,7 @@ async function search(theme, query, options) {
 	const url = getEncodedUrl('http://api.scraperapi.com', scraperapiParams)
 	//console.log('url', url)
 
-	const resp = await fetch(url)
+	const resp = await fetch(qwantUrl)
 	const json = await resp.json()
 	console.log('json', json)
 	return json.data

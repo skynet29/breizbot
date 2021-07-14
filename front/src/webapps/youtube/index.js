@@ -24,7 +24,7 @@ module.exports = function (ctx, router) {
 				const { items } = data.result
 
 				res.json(items
-					.filter((i) => i.source == 'youtube')
+					.filter((i) => i.source.toUpperCase() == 'YOUTUBE')
 					.map((i) => {
 						return {
 							id: i.media_id,
@@ -33,7 +33,7 @@ module.exports = function (ctx, router) {
 							date: i.date
 						}
 					})
-					.slice(0, maxResults)
+					// .slice(0, maxResults)
 				)
 			}
 		}

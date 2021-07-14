@@ -64,7 +64,7 @@ $$.control.registerControl('rootPage', {
 			//console.log('searchInfo', query)
 			ctrl.setData({waiting: true})
 			const results = await ytdl.search(query, 20)
-			//console.log('results', results)
+			console.log('results', results)
 			if (typeof results == 'string') {
 				$$.ui.showAlert({title: 'Error', content: results})
 			}

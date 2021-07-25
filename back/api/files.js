@@ -6,6 +6,7 @@ const fg = require('fast-glob')
 
 const config = require('../lib/config')
 const util = require('../lib/util')
+const login = require('../lib/login')
 const { genThumbnail, isImage, getFileInfo } = util
 const dbFriends = require('../db/friends')
 const events = require('../lib/events')
@@ -154,7 +155,7 @@ router.get('/load', async function (req, res) {
 	const { fileName, friendUser } = req.query
 	const { user, userInfo } = req.session
 	try {
-		const filePath = await util.getFilePathChecked(user, fileName, friendUser)
+		const filePath = await login.getFilePathChecked(user, fileName, friendUser)
 		const { autoImageResizing } = userInfo.settings || {}
 		console.log('autoImageResizing', autoImageResizing)
 
@@ -178,7 +179,7 @@ router.get('/loadThumbnail', async function (req, res) {
 	const user = req.session.user
 
 	try {
-		const filePath = await util.getFilePathChecked(user, fileName, friendUser)
+		const filePath = await login.getFilePathChecked(user, fileName, friendUser)
 
 		genThumbnail(filePath, res, size)
 	}

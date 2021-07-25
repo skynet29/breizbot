@@ -21,15 +21,15 @@ const stdCategories = {
 
 module.exports = function (ctx, router) {
 
-    const { db, buildDbId, util } = ctx
+    const { db, util } = ctx
+    const { buildDbId } = db.constructor
+
 
     router.post('/account', async function (req, res) {
 
-        const userName = req.session.user
         const data = req.body
 
         data.type = 'account'
-        data.userName = userName
         data.finalBalance = data.initialBalance
 
         try {
@@ -105,12 +105,11 @@ module.exports = function (ctx, router) {
 
     router.get('/account', async function (req, res) {
 
-        const userName = req.session.user
         const { synthesis } = req.query
 
 
         try {
-            const accounts = await db.find({ userName, type: 'account' }).toArray()
+            const accounts = await db.find({ type: 'account' }).toArray()
             if (synthesis === '1') {
                 const now = new Date()
 
@@ -220,8 +219,8 @@ module.exports = function (ctx, router) {
 
     })
 
-    async function getAccountIds(userName) {
-        const accounts = await db.find({ userName, type: 'account' }).toArray()
+    async function getAccountIds() {
+        const accounts = await db.find({ type: 'account' }).toArray()
 
         const accountIds = []
 
@@ -235,11 +234,10 @@ module.exports = function (ctx, router) {
 
     router.get('/account/oldestYearTransaction', async function (req, res) {
 
-        const userName = req.session.user
 
         try {
 
-            const accountIds = await getAccountIds(userName)
+            const accountIds = await getAccountIds()
 
             const oldestTransaction = await db.find({
                 accountId: { $in: accountIds },
@@ -282,13 +280,11 @@ module.exports = function (ctx, router) {
 
         const { year } = req.query
 
-        const userName = req.session.user
-
         const months = Array.from(Array(12).keys())
         const syntheses = []
 
         try {
-            const accountIds = await getAccountIds(userName)
+            const accountIds = await getAccountIds()
 
             for await (const month of months) {
                 let income = 0
@@ -490,7 +486,6 @@ module.exports = function (ctx, router) {
     router.post('/account/:accountId/transaction', async function (req, res) {
 
         const { accountId } = req.params
-        const userName = req.session.user
 
         const data = req.body
         data.type = 'transaction'
@@ -503,7 +498,7 @@ module.exports = function (ctx, router) {
             await db.updateOne(buildDbId(accountId), { $inc: { finalBalance: data.amount } })
 
             if (data.category == 'virement') {
-                const toAccount = await db.findOne({ type: 'account', name: data.payee, userName })
+                const toAccount = await db.findOne({ type: 'account', name: data.payee })
                 const fromAccount = await db.findOne(buildDbId(accountId))
                 data.amount *= -1
                 data.payee = fromAccount.name

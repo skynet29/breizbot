@@ -4,7 +4,7 @@ require('colors')
 
 const config = require('../lib/config')
 const dbUsers = require('../db/users.js')
-const { renderLogin, checkLogin } = require('../lib/util')
+const { renderLogin, checkLogin } = require('../lib/login')
 
 module.exports = function (app) {
 

@@ -2,7 +2,9 @@
 
 module.exports = function (ctx, router) {
 
-    const { websocket, db, buildDbId, wss } = ctx
+    const { websocket, db, wss } = ctx
+    const { buildDbId } = db.constructor
+
 
     const wssServer = websocket.addServer('/stream/server/', true, false, (sock, userName) => {
 

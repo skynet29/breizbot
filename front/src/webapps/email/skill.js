@@ -22,9 +22,10 @@ module.exports = function (ctx) {
         async handle(handlerInput) {
             const { responseBuilder } = handlerInput
             const userName  = alexa.getUserName(handlerInput)
+            ctx.db.setUserName(userName)
             //console.log('userName', userName)
 
-            const accounts = await db.getMailAccounts(userName)
+            const accounts = await db.getMailAccounts()
             console.log('accounts', accounts)
             if (accounts.length == 0) {
                 return responseBuilder
@@ -36,7 +37,7 @@ module.exports = function (ctx) {
 
             for await (acc of accounts) {
                 const accountName = acc.name
-                const unreadMessages = await mails.getUnreadInboxMessages(userName, accountName)
+                const unreadMessages = await mails.getUnreadInboxMessages(accountName)
                 console.log('unreadMessages', unreadMessages)
                 if (unreadMessages == 0) {
                     speech.say(`Vous n'avez pas de messages non lus sur votre compte ${accountName}`)

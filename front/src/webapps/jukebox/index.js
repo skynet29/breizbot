@@ -10,11 +10,6 @@ module.exports = function (ctx, router) {
 
 	const db = require('./lib/db.js')(ctx)
 
-	events.on('userDeleted', async (userName) => {
-		await db.cleanDb(userName)
-	})
-
-
 	router.post('/swapSongIndex', async function (req, res) {
 		try {
 			const { id1, id2 } = req.body
@@ -32,14 +27,14 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/getPlaylist', async function (req, res) {
-		const list = await db.getPlaylist(req.session.user)
+		const list = await db.getPlaylist()
 		res.json(list)
 	})
 
 	router.post('/removePlaylist', async function (req, res) {
 		const { name } = req.body
 		try {
-			await db.removePlaylist(req.session.user, name)
+			await db.removePlaylist(name)
 			res.sendStatus(200)
 		}
 		catch (e) {
@@ -50,14 +45,14 @@ module.exports = function (ctx, router) {
 
 	router.post('/getPlaylistSongs', async function (req, res) {
 		const { name } = req.body
-		const list = await db.getPlaylistSongs(req.session.user, name)
+		const list = await db.getPlaylistSongs(name)
 		res.json(list)
 	})
 
 	router.post('/addSong', async function (req, res) {
 		const { name, fileInfo, checkExists } = req.body
 
-		const ret = await db.addSong(req.session.user, name, fileInfo, checkExists)
+		const ret = await db.addSong(name, fileInfo, checkExists)
 		res.json(ret)
 	})
 

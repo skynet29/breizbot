@@ -1,35 +1,32 @@
 module.exports = function (ctx) {
 
-    const { db, buildDbId, util } = ctx
+    const { db, util } = ctx
+    const { buildDbId } = db.constructor
 
     return {
-
-        cleanDb: function (userName) {
-            return db.deleteMany({ userName })
-        },
 
         removeSong: async function (songId) {
             console.log(`removeSong`, songId)
             return db.deleteOne(buildDbId(songId))
         },
 
-        getPlaylist: async function (userName) {
+        getPlaylist: async function () {
 
-            return db.distinct('name', { userName })
+            return db.distinct('name')
         },
 
-        removePlaylist: async function (userName, name) {
-            return db.deleteMany({ userName, name })
+        removePlaylist: async function (name) {
+            return db.deleteMany({ name })
         },
 
-        getPlaylistSongs: async function (userName, name) {
-            
+        getPlaylistSongs: async function (name) {
+
             const records = await db
-                .find({ userName, name: { $regex: name, $options: 'i' } })
+                .find({ name: { $regex: name, $options: 'i' } })
                 .sort({ idx: 1 }).toArray()
             const promises = records.map(async (f) => {
                 const { fileName, rootDir, friendUser } = f.fileInfo
-                const filePath = util.getFilePath(userName, rootDir + fileName, friendUser)
+                const filePath = db.getFilePath(rootDir + fileName, friendUser)
                 //console.log('filePath', filePath)
                 try {
                     const info = await util.getFileInfo(filePath, { getMP3Info: true })
@@ -42,7 +39,7 @@ module.exports = function (ctx) {
             return await Promise.all(promises)
         },
 
-        getPlaylistSong: async function (id) {            
+        getPlaylistSong: async function (id) {
             return await db.findOne(buildDbId(id))
         },
 
@@ -56,13 +53,13 @@ module.exports = function (ctx) {
 
         },
 
-        addSong: async function (userName, name, fileInfo, checkExists) {
-            console.log('addSong', userName, name, fileInfo, checkExists)
-            const count = await db.countDocuments({ userName, name })
+        addSong: async function (name, fileInfo, checkExists) {
+            console.log('addSong', name, fileInfo, checkExists)
+            const count = await db.countDocuments({ name })
             if (checkExists && count != 0) {
                 return false
             }
-            await db.insertOne({ userName, name, fileInfo, idx: count })
+            await db.insertOne({ name, fileInfo, idx: count })
             return true
 
         }

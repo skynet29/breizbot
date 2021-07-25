@@ -4,41 +4,40 @@ module.exports = function (db) {
 	return {
 
 
-		getMailAccounts: function (userName) {
+		getMailAccounts: function () {
 			//console.log(`[DB] getMailAccounts`, userName)
-			return db.find({ userName }).toArray()
+			return db.find().toArray()
 		},
 
-		removeMailAccounts: function (userName) {
-			return db.deleteMany({ userName })
+		removeMailAccounts: function () {
+			return db.deleteMany()
 		},
 
-		getMailAccount: function (userName, name) {
+		getMailAccount: function (name) {
 			//console.log(`[DB] getMailAccount`, userName, name)
-			return db.findOne({ userName, name })
+			return db.findOne({ name })
 		},
 
-		removeMailAccount: function (userName, name) {
-			return db.deleteOne({ userName, name })
+		removeMailAccount: function ( name) {
+			return db.deleteOne({ name })
 		},
 
-		createMailAccount: function (userName, data) {
+		createMailAccount: function (data) {
 
-			console.log(`[DB] createMaiAccount`, userName, data)
+			console.log(`[DB] createMaiAccount`,  data)
 			data.createDate = Date.now()
-			data.userName = userName
 
 			return db.insertOne(data)
 		},
 
-		updateMailAccount: function (userName, data) {
+		updateMailAccount: function (data) {
 
-			console.log(`[DB] updateMailAccount`, userName, data)
+			console.log(`[DB] updateMailAccount`, data)
 			const { email, imapHost, smtpHost, pwd, makeCopy, name, user, smtpPwd, smtpUser } = data
 
 			const update = { '$set': { email, imapHost, smtpHost, pwd, makeCopy, user, smtpUser, smtpPwd } }
 
-			return db.updateOne({ userName, name }, update)
+			return db.updateOne({ name }, update)
 
 		}
 

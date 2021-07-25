@@ -4,21 +4,11 @@ module.exports = function (ctx, router) {
 	const mails = require('./lib/mails')(ctx)
 	const { events } = ctx
 
-	events.on('userDeleted', async (userName) => {
-		try {
-			await db.removeMailAccounts(userName)
-
-		}
-		catch (e) {
-			console.error(e)
-		}
-	})
-
+	
 	router.get('/getMailAccounts', async function (req, res) {
-		const userName = req.session.user
 
 		try {
-			const accounts = await db.getMailAccounts(userName)
+			const accounts = await db.getMailAccounts()
 
 			res.json(accounts.map((acc) => acc.name))
 		}
@@ -28,11 +18,10 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/getMailAccount', async function (req, res) {
-		const userName = req.session.user
 		const { name } = req.body
 
 		try {
-			const account = await db.getMailAccount(userName, name)
+			const account = await db.getMailAccount(name)
 			account.smtpUser = account.smtpUser || account.user
 			account.smtpPwd = account.smtpPwd || account.pwd
 
@@ -45,11 +34,10 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/removeMailAccount', async function (req, res) {
-		const userName = req.session.user
 		const { name } = req.body
 
 		try {
-			await db.removeMailAccount(userName, name)
+			await db.removeMailAccount(name)
 
 			res.sendStatus(200)
 		}
@@ -61,11 +49,10 @@ module.exports = function (ctx, router) {
 
 
 	router.post('/updateMailAccount', async function (req, res) {
-		const userName = req.session.user
 		const data = req.body
 
 		try {
-			await db.updateMailAccount(userName, data)
+			await db.updateMailAccount(data)
 			res.sendStatus(200)
 		}
 		catch (e) {
@@ -75,7 +62,7 @@ module.exports = function (ctx, router) {
 
 	router.post('/createMailAccount', async function (req, res) {
 		try {
-			const data = await db.createMailAccount(req.session.user, req.body)
+			const data = await db.createMailAccount(req.body)
 			res.json(data)
 		}
 		catch (e) {
@@ -85,10 +72,9 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/getMailboxes', async function (req, res) {
-		const userName = req.session.user
 		const { name, addUnseenNb } = req.body
 		try {
-			const mailboxes = await mails.getMailboxes(userName, name, addUnseenNb)
+			const mailboxes = await mails.getMailboxes(name, addUnseenNb)
 			res.json(mailboxes)
 		}
 		catch (e) {
@@ -99,11 +85,10 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/addMailbox', async function (req, res) {
-		const userName = req.session.user
 		const { name, mailboxName } = req.body
 
 		try {
-			await mails.addMailbox(userName, name, mailboxName)
+			await mails.addMailbox(name, mailboxName)
 			res.sendStatus(200)
 
 		}
@@ -114,11 +99,10 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/openMailbox', async function (req, res) {
-		const userName = req.session.user
 		const { name, mailboxName, idx } = req.body
 
 		try {
-			const messages = await mails.openMailbox(userName, name, mailboxName, idx)
+			const messages = await mails.openMailbox(name, mailboxName, idx)
 			res.json(messages)
 		}
 		catch (e) {
@@ -129,11 +113,10 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/openMessage', async function (req, res) {
-		const userName = req.session.user
 		const { name, mailboxName, seqNo, partID } = req.body
 
 		try {
-			const data = await mails.openMessage(userName, name, mailboxName, seqNo, partID)
+			const data = await mails.openMessage(name, mailboxName, seqNo, partID)
 			res.json(data)
 		}
 		catch (e) {
@@ -144,11 +127,10 @@ module.exports = function (ctx, router) {
 
 
 	router.post('/openAttachment', async function (req, res) {
-		const userName = req.session.user
 		const { name, mailboxName, seqNo, partID } = req.body
 
 		try {
-			const data = await mails.openAttachment(userName, name, mailboxName, seqNo, partID)
+			const data = await mails.openAttachment(name, mailboxName, seqNo, partID)
 			res.json(data)
 
 		}
@@ -159,11 +141,10 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/deleteMessage', async function (req, res) {
-		const userName = req.session.user
 		const { name, mailboxName, seqNos } = req.body
 
 		try {
-			await mails.deleteMessage(userName, name, mailboxName, seqNos)
+			await mails.deleteMessage(name, mailboxName, seqNos)
 			res.sendStatus(200)
 
 		}
@@ -174,11 +155,10 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/moveMessage', async function (req, res) {
-		const userName = req.session.user
 		const { name, mailboxName, seqNos, targetName } = req.body
 
 		try {
-			await mails.moveMessage(userName, name, mailboxName, targetName, seqNos)
+			await mails.moveMessage(name, mailboxName, targetName, seqNos)
 			res.sendStatus(200)
 
 		}
@@ -189,11 +169,10 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/sendMail', async function (req, res) {
-		const userName = req.session.user
 		const { accountName, data } = req.body
 
 		try {
-			const ret = await mails.sendMail(userName, accountName, data)
+			const ret = await mails.sendMail(accountName, data)
 			console.log('sendMail', ret)
 			res.sendStatus(200)
 		}

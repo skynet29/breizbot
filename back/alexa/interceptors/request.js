@@ -11,12 +11,12 @@ const RequestInterceptor = {
         const { requestEnvelope, attributesManager } = handlerInput
         //console.log('requestEnvelope', requestEnvelope)
         const type = Alexa.getRequestType(requestEnvelope)
-        console.log('type', type)
+        console.log('[Alexa] type', type)
         if (type === 'IntentRequest') {
-            console.log('name', Alexa.getIntentName(requestEnvelope))
+            console.log('[Alexa] name', Alexa.getIntentName(requestEnvelope))
         }
-        if (requestEnvelope.session && requestEnvelope.session.new === true) {
-            const { accessToken } = requestEnvelope.session.user
+        if (Alexa.isNewSession(requestEnvelope)) {
+            const accessToken = Alexa.getAccountLinkingAccessToken(requestEnvelope)
             if (accessToken == undefined) {
                 throw new Error(constants.SKILL_NOT_LINKED)
             }

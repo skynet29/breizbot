@@ -19,12 +19,14 @@ module.exports = function (ctx) {
         async handle(handlerInput) {
             const { responseBuilder } = handlerInput
             const userName  = alexa.getUserName(handlerInput)
+            ctx.db.setUserName(userName)
+
             //console.log('userName', userName)
 
             const playlist = alexa.getSlotValue(handlerInput, 'playlist')
 
             console.log('playlist', playlist)
-            let songs = await db.getPlaylistSongs(userName, playlist)
+            let songs = await db.getPlaylistSongs(playlist)
             //console.log('songs', songs)
 
             songs = songs
@@ -63,9 +65,11 @@ module.exports = function (ctx) {
         async handle(handlerInput) {
             const { responseBuilder } = handlerInput
             const userName  = alexa.getUserName(handlerInput)
+            ctx.db.setUserName(userName)
+
             //console.log('userName', userName)
 
-            let playlists = await db.getPlaylist(userName)
+            let playlists = await db.getPlaylist()
             console.log('playlists', playlists)
 
             let speech = ssml.create()

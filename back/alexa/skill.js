@@ -127,7 +127,7 @@ const ErrorHandler = {
         return true
     },
     handle(handlerInput, error) {
-        console.log(`Error handled: ${error.message}`)
+        console.log(`[Alexa] Error handled: ${error.message}`)
         const { responseBuilder } = handlerInput
 
         const message = ssml.create()

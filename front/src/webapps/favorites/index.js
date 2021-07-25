@@ -3,42 +3,18 @@ const getFavicons = require('get-website-favicon')
 
 module.exports = function (ctx, router) {
 
-    const { db, buildDbId, events } = ctx
+    const { db } = ctx
+    const { buildDbId } = db.constructor
 
-    events.on('userDeleted', async (userName) => {
-        try {
-            await db.deleteMany({ userName })
-        }
-        catch (e) {
-            console.error(e)
-        }
-    })
-
-    events.on('addFavorite', async (data) => {
-        console.log('addFavorite', data)
-        const { userName, name, link } = data
-        try {
-            await addFavorite(userName, "0", {
-                type: 'link',
-                link,
-                name
-            })
-        }
-        catch (e) {
-            console.error(e)
-        }
-    })
-
-
-    async function changeParent(userName, id, newParentId) {
-        const count = await db.countDocuments({ userName, parentId: newParentId })
+    async function changeParent(id, newParentId) {
+        const count = await db.countDocuments({ parentId: newParentId })
         const update = { parentId: newParentId, idx: count }
         return db.updateOne(buildDbId(id), { $set: update })
     }
 
-    async function insertBefore(userName, id, newParentId, beforeIdx) {
+    async function insertBefore(id, newParentId, beforeIdx) {
         let update = { $inc: { idx: 1 } }
-        let filter = { userName, parentId: newParentId, idx: { $gte: beforeIdx } }
+        let filter = { parentId: newParentId, idx: { $gte: beforeIdx } }
         await db.updateMany(filter, update)
 
         update = { $set: { parentId: newParentId, idx: beforeIdx } }
@@ -63,7 +39,7 @@ module.exports = function (ctx, router) {
 
     }
 
-    async function addFavorite(userName, parentId, info) {
+    async function addFavorite(parentId, info) {
         const { type, link } = info
 
         const count = await db.countDocuments({ userName, parentId })
@@ -81,7 +57,7 @@ module.exports = function (ctx, router) {
             }
         }
 
-        const ret = await db.insertOne({ userName, parentId, info, idx: count })
+        const ret = await db.insertOne({ parentId, info, idx: count })
         return { id: ret.insertedId.toString(), info }
     }
 
@@ -95,8 +71,8 @@ module.exports = function (ctx, router) {
         }
     }
 
-    async function getFavorites(userName, result) {
-        const children = await db.find({ userName, parentId: result.key }).sort({ idx: 1 })
+    async function getFavorites(result) {
+        const children = await db.find({ parentId: result.key }).sort({ idx: 1 })
         while (await children.hasNext()) {
             const child = await children.next()
             const id = child._id.toString()
@@ -110,7 +86,7 @@ module.exports = function (ctx, router) {
                 newChild.children = []
             }
             result.children.push(newChild)
-            await getFavorites(userName, newChild)
+            await getFavorites(newChild)
         }
     }
 
@@ -126,13 +102,12 @@ module.exports = function (ctx, router) {
 
 
     router.post('/getFavorites', async function (req, res) {
-        const userName = req.session.user
 
         //console.log('getFavorites', userName, parentId)
 
         try {
             const result = { title: 'Home', key: '0', folder: true, children: [] }
-            await getFavorites(userName, result)
+            await getFavorites(result)
             res.json(result)
         }
         catch (e) {
@@ -142,13 +117,12 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/addFavorite', async function (req, res) {
-        const userName = req.session.user
         const { parentId, info } = req.body
 
         //console.log('addFavorite', userName, parentId, info)
 
         try {
-            const ret = await addFavorite(userName, parentId, info)
+            const ret = await addFavorite(parentId, info)
             res.json(ret)
         }
         catch (e) {
@@ -157,7 +131,6 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/updateLink', async function (req, res) {
-        const userName = req.session.user
         const { id, name, link } = req.body
 
         //console.log('addFavorite', userName, parentId, info)
@@ -172,7 +145,6 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/setPwd', async function (req, res) {
-        const userName = req.session.user
         const { id, pwd } = req.body
 
         //console.log('addFavorite', userName, parentId, info)
@@ -187,7 +159,6 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/getPwd', async function (req, res) {
-        const userName = req.session.user
         const { id } = req.body
 
         //console.log('addFavorite', userName, parentId, info)
@@ -203,13 +174,12 @@ module.exports = function (ctx, router) {
 
 
     router.post('/insertBefore', async function (req, res) {
-        const userName = req.session.user
         const { id, newParentId, beforeIdx } = req.body
 
         //console.log('changeParent', userName, id, newParentId)
 
         try {
-            await insertBefore(userName, id, newParentId, beforeIdx)
+            await insertBefore(id, newParentId, beforeIdx)
             res.sendStatus(200)
         }
         catch (e) {
@@ -219,13 +189,12 @@ module.exports = function (ctx, router) {
 
 
     router.post('/changeParent', async function (req, res) {
-        const userName = req.session.user
         const { id, newParentId } = req.body
 
         //console.log('changeParent', userName, id, newParentId)
 
         try {
-            const ret = await changeParent(userName, id, newParentId)
+            const ret = await changeParent(id, newParentId)
             res.sendStatus(200)
         }
         catch (e) {

@@ -2,6 +2,7 @@
 
 const dbSongs = require('../db/songs.js')
 const util = require('../lib/util.js')
+const login = require('../lib/login.js')
 
 
 module.exports = function (app) {
@@ -25,14 +26,14 @@ module.exports = function (app) {
 			return
 		}
 
-		util.renderLogin(res, { state, redirect_uri })
+		login.renderLogin(res, { state, redirect_uri })
 	})
 
 	app.post('/alexa/login', async function (req, res) {
 
 		console.log('post alexa login', req.body)
 
-		const data = await util.checkLogin(req, res)
+		const data = await login.checkLogin(req, res)
 		console.log('data', data)
 		if (data === false) {
 			return

@@ -23,6 +23,7 @@ const apisPath = path.join(__dirname, './api')
 const apis = fs.readdirSync(apisPath)
 
 const ssml = require('./alexa/ssml.js')
+const dbWrappers = {}
 
 dbUtil.init().then(dbReady)
 	.catch((e) => {
@@ -64,16 +65,26 @@ function dbReady() {
 	const app = express()
 
 	const skillInterface = require('./alexa/skill.js')
+	
+	events.setMaxListeners(apps.length + 10)
 
 	apps.forEach((appName) => {
+
+		const dbWrapper = new dbUtil.DbWrapper(appName)
+		dbWrappers[appName] = dbWrapper
+
+		events.on('userDeleted', async (userName) => {
+			dbWrapper.setUserName(userName)
+			await dbWrapper.deleteMany()
+		})
+
 		const appPath = path.join(appsPath, appName, 'skill.js')
 		if (fs.existsSync(appPath)) {
 			console.log(`add skill IntentHandler for app ${appName}`.blue)
 
 			require(appPath)({
 				skillInterface,
-				db: dbUtil.collection('app.' + appName),
-				buildDbId: dbUtil.buildDbId,
+				db: dbWrapper,
 				util,
 				config,
 				app
@@ -141,6 +152,7 @@ function dbReady() {
 			res.sendStatus(401)
 		}
 		else {
+			dbWrappers[req.appName].setUserName(req.session.user)
 			next()
 		}
 	})
@@ -166,17 +178,17 @@ function dbReady() {
 	apps.forEach((appName) => {
 		//console.log('check path', appName)
 		const appPath = path.join(appsPath, appName, 'index.js')
+
 		if (fs.existsSync(appPath)) {
 			const ctx = {
 				wss,
 				config,
-				db: dbUtil.collection('app.' + appName),
+				db: dbWrappers[appName],
 				util,
-				buildDbId: dbUtil.buildDbId,
-				events,
 				websocket
 			}
 			console.log(`add API router for app ${appName}`.blue)
+
 
 			const router = express.Router()
 			require(appPath)(ctx, router)

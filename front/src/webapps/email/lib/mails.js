@@ -188,9 +188,9 @@ module.exports = function (ctx) {
 
   const db = require('./db')(ctx.db)
 
-  async function getUnreadInboxMessages(userName, name) {
-    console.log('getUnreadInboxMessages', userName, name)
-    const account = await db.getMailAccount(userName, name)
+  async function getUnreadInboxMessages(name) {
+    console.log('getUnreadInboxMessages', name)
+    const account = await db.getMailAccount(name)
     const imap = Imap.create(account)
     await imap.connect()
     const boxes = await imap.getBoxes()
@@ -222,9 +222,9 @@ module.exports = function (ctx) {
 
   }
 
-  async function getMailboxes(userName, name, addUnseenNb = false) {
-    console.log('getMailboxes', userName, name)
-    const account = await db.getMailAccount(userName, name)
+  async function getMailboxes(name, addUnseenNb = false) {
+    console.log('getMailboxes', name)
+    const account = await db.getMailAccount(name)
     const imap = Imap.create(account)
     await imap.connect()
     const boxes = await imap.getBoxes()
@@ -273,10 +273,10 @@ module.exports = function (ctx) {
 
   }
 
-  async function addMailbox(userName, name, mailboxName) {
+  async function addMailbox(name, mailboxName) {
     console.log('addMailbox', userName, name, mailboxName)
 
-    const account = await db.getMailAccount(userName, name)
+    const account = await db.getMailAccount(name)
     const imap = Imap.create(account)
     await imap.connect()
     await imap.addBox(mailboxName)
@@ -287,10 +287,10 @@ module.exports = function (ctx) {
   const nbMsgPerPage = 20
 
 
-  async function openMailbox(userName, name, mailboxName, idx) {
-    console.log('openMailbox', userName, name, mailboxName, idx)
+  async function openMailbox(name, mailboxName, idx) {
+    console.log('openMailbox', name, mailboxName, idx)
 
-    const account = await db.getMailAccount(userName, name)
+    const account = await db.getMailAccount(name)
     const imap = Imap.create(account)
     await imap.connect()
     const nbMsg = await imap.openBox(mailboxName, true)
@@ -328,11 +328,11 @@ module.exports = function (ctx) {
 
 
 
-  async function openMessage(userName, name, mailboxName, seqNo, partID) {
+  async function openMessage(name, mailboxName, seqNo, partID) {
 
-    console.log('openMessage', userName, name, mailboxName, seqNo, partID)
+    console.log('openMessage', name, mailboxName, seqNo, partID)
 
-    const account = await db.getMailAccount(userName, name)
+    const account = await db.getMailAccount(name)
     const imap = Imap.create(account)
     await imap.connect()
 
@@ -354,11 +354,11 @@ module.exports = function (ctx) {
   }
 
 
-  async function openAttachment(userName, name, mailboxName, seqNo, partID) {
+  async function openAttachment(name, mailboxName, seqNo, partID) {
 
-    console.log('openAttachment', userName, name, mailboxName, seqNo, partID)
+    console.log('openAttachment', name, mailboxName, seqNo, partID)
 
-    const account = await db.getMailAccount(userName, name)
+    const account = await db.getMailAccount(name)
     const imap = Imap.create(account)
     await imap.connect()
 
@@ -372,11 +372,11 @@ module.exports = function (ctx) {
   }
 
 
-  async function deleteMessage(userName, name, mailboxName, seqNos) {
+  async function deleteMessage(name, mailboxName, seqNos) {
 
-    console.log('deleteMessage', userName, name, mailboxName, seqNos)
+    console.log('deleteMessage', name, mailboxName, seqNos)
 
-    const account = await db.getMailAccount(userName, name)
+    const account = await db.getMailAccount(name)
     const imap = Imap.create(account)
     await imap.connect()
 
@@ -388,11 +388,11 @@ module.exports = function (ctx) {
 
   }
 
-  async function moveMessage(userName, name, mailboxName, targetName, seqNos) {
+  async function moveMessage(name, mailboxName, targetName, seqNos) {
 
-    console.log('moveMessage', userName, name, mailboxName, targetName, seqNos)
+    console.log('moveMessage', name, mailboxName, targetName, seqNos)
 
-    const account = await db.getMailAccount(userName, name)
+    const account = await db.getMailAccount(name)
     const imap = Imap.create(account)
     await imap.connect()
 
@@ -416,10 +416,10 @@ module.exports = function (ctx) {
 
   }
 
-  async function sendMail(userName, accountName, data) {
+  async function sendMail(accountName, data) {
     console.log('sendMail', userName, accountName)
 
-    const account = await db.getMailAccount(userName, accountName)
+    const account = await db.getMailAccount(accountName)
 
     const user = account.smtpUser || account.user
     const pass = account.smtpPwd || account.pwd

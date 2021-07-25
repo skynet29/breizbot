@@ -19,7 +19,7 @@ class DbWrapper {
 	}
 
 	setUserName(userName) {
-		console.log('setUserName', this.appName, userName)
+		//console.log('setUserName', this.appName, userName)
 		this.userName = userName
 	}
 
@@ -32,7 +32,7 @@ class DbWrapper {
 	find(filter) {
 		filter = filter || {}
 		filter.userName = this.userName
-		console.log('[DBWRAPPER] find', filter)
+		//console.log('[DBWRAPPER] find', filter)
 		return this.collection.find(filter)
 	}
 

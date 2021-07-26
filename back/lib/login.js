@@ -1,6 +1,8 @@
 const path = require('path')
 const dbUsers = require('../db/users.js')
 const dbFriends = require('../db/friends.js')
+const bcrypt = require('bcrypt')
+
 
 const cloudPath = require('./config.js').CLOUD_HOME
 

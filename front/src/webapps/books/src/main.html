@@ -15,6 +15,7 @@
                 <th>Title</th>
                 <th>Author</th>
                 <th>Year</th>
+                <th>Medium</th>
                 <th>Series</th>
             </tr>
         </thead>
@@ -23,6 +24,11 @@
                 <td bn-text="$scope.$i.title"></td>
                 <td bn-text="$scope.$i.author"></td>
                 <td bn-text="$scope.$i.year"></td>
+                <td>
+                    <ul bn-each="$scope.$i.medium" bn-iter="medium">
+                        <li bn-text="$scope.medium"></li>
+                    </ul>
+                </td>
                 <td bn-text="$scope.$i.series"></td>
             </tr>
 

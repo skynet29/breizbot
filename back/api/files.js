@@ -157,7 +157,7 @@ router.get('/load', async function (req, res) {
 	try {
 		const filePath = await login.getFilePathChecked(user, fileName, friendUser)
 		const { autoImageResizing } = userInfo.settings || {}
-		console.log('autoImageResizing', autoImageResizing)
+		//console.log('autoImageResizing', autoImageResizing)
 
 		if (util.isImage(filePath) && autoImageResizing === true) {
 			//console.log('resize image')

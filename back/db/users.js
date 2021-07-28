@@ -76,7 +76,7 @@ module.exports = {
 
 		console.log(`[DB] createUser`, data)
 		data.pwd = 'welcome'
-		data.apps = []
+		data.apps = ['folder', 'friends', 'share', 'youtube', 'gallery', 'jukebox']
 		data.createDate = Date.now()
 		data.lastLoginDate = 0
 

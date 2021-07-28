@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fa fa-book fa-2x",
+	"colorCls": "w3-green",
+	"title": "Books",
+	"styles": ["app.css"]
+}

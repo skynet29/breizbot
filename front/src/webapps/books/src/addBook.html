@@ -1,0 +1,33 @@
+<div>
+    <form bn-event="submit: onSubmit" bn-form="data">
+        <label>Title</label>
+        <input type="text" required name="title">
+
+        <label>Author</label>
+        <input type="text" name="author" bn-control="brainjs.autocomplete" bn-data="{source: authors}" required bn-event="autocompleteselect: onAuthorChange"> 
+
+        <label>Year</label>
+        <input type="number" name="year">
+
+        <label>Series</label>
+        <input type="text" name="series" bn-control="brainjs.autocomplete" bn-data="{source: series}">
+
+        <fieldset bn-control="brainjs.checkgroup" name="medium">
+            <legend>Medium</legend>
+            <div>
+                <input type="checkbox" value="pocket" class="w3-check">
+                <label>Pocket</label>
+            </div>
+            <div>
+                <input type="checkbox" value="paperback" class="w3-check">
+                <label>Paperback</label>
+            </div>
+            <div>
+                <input type="checkbox" value="ebook" class="w3-check">
+                <label>eBook</label>
+            </div>
+        </fieldset>
+
+        <input type="submit" hidden bn-bind="submit">
+    </form>
+</div>

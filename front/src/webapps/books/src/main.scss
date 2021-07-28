@@ -1,0 +1,44 @@
+.rootPage {
+    display: flex;
+	flex-direction: column;
+	
+	> .toolbar {
+		display: flex;
+		justify-content: space-between;
+		background-color: #128C7E;
+		color: white;
+
+		.left {
+			display: flex;
+		}
+		.group {
+			//border-right: 1px solid white;	
+			display: flex;	
+			align-items: center;
+			.separator {
+				border-left: 1px solid white;
+				height: 80%;
+			}
+		}
+	}   
+	
+	> .scrollBar {
+		flex: 1;
+		overflow-y: auto;
+		//border: 1px solid black;
+
+		table {
+			border: none;
+			th {
+				position: sticky;
+				top: 0;
+				z-index: 2;
+				//background-color: rgb(76, 175, 80);
+				background-color: #666;
+                color: white;
+            }
+            
+
+		}
+	}
+}

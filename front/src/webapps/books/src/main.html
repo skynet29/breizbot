@@ -1,0 +1,29 @@
+<div class="toolbar">
+    <button 
+        class="w3-button" 
+        title="Add Book" 
+        bn-event="click: onAddBook" 
+        bn-icon="fas fa-plus">
+    </button>
+
+</div>
+
+<div class="scrollBar">
+    <table class="w3-table-all w3-hoverable w3-small">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Year</th>
+            </tr>
+        </thead>
+        <tbody bn-each="books" bn-lazzy="getBooks">
+            <tr>
+                <td bn-text="$scope.$i.title"></td>
+                <td bn-text="$scope.$i.author"></td>
+                <td bn-text="$scope.$i.year"></td>
+            </tr>
+
+        </tbody>
+    </table>
+</div>

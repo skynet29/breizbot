@@ -17,6 +17,18 @@ module.exports = function (ctx, router) {
 
     })
 
+    router.get('/booksQty', async function (req, resp) {
+
+        try {
+            const booksQty = await db.countDocuments()
+            resp.json({booksQty})
+        }
+        catch (e) {
+            resp.status(404).send(e.message)
+        }
+
+    })    
+
     router.post('/addBook', async function (req, resp) {
 
         const data = req.body

@@ -30,9 +30,12 @@
     display: flex;
     justify-content: space-between;
     background-color: #128C7E;
-    color: white; }
+    color: white;
+    align-items: center; }
     .rootPage > .toolbar .left {
       display: flex; }
+    .rootPage > .toolbar .right {
+      margin-right: 10px; }
     .rootPage > .toolbar .group {
       display: flex;
       align-items: center; }

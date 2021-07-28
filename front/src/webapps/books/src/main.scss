@@ -7,9 +7,14 @@
 		justify-content: space-between;
 		background-color: #128C7E;
 		color: white;
+		align-items: center;
 
 		.left {
 			display: flex;
+		}
+
+		.right {
+			margin-right: 10px;
 		}
 		.group {
 			//border-right: 1px solid white;	

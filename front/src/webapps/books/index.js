@@ -3,12 +3,12 @@ module.exports = function (ctx, router) {
     const { db, util } = ctx
     const { buildDbId } = db.constructor
 
-    router.get('/', async function (req, resp) {
+    router.post('/', async function (req, resp) {
 
-        const offset = parseInt(req.query.offset)
+        const { offset, filters } = req.body
 
         try {
-            const books = await db.find().sort({ year: -1 }).skip(offset).limit(20).toArray()
+            const books = await db.find(filters).sort({ year: -1 }).skip(offset).limit(20).toArray()
             resp.json(books)
         }
         catch (e) {
@@ -17,17 +17,20 @@ module.exports = function (ctx, router) {
 
     })
 
-    router.get('/booksQty', async function (req, resp) {
+    router.post('/booksQty', async function (req, resp) {
+
+        const { filters } = req.body
+
 
         try {
-            const booksQty = await db.countDocuments()
-            resp.json({booksQty})
+            const booksQty = await db.countDocuments(filters)
+            resp.json({ booksQty })
         }
         catch (e) {
             resp.status(404).send(e.message)
         }
 
-    })    
+    })
 
     router.post('/addBook', async function (req, resp) {
 

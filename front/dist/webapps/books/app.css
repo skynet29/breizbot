@@ -23,6 +23,22 @@
           top: 0;
           margin-right: 10px; }
 
+.filter {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center; }
+  .filter form {
+    max-width: 400px;
+    width: 400px;
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 10px; }
+    .filter form label {
+      grid-column: 1/2; }
+    .filter form input {
+      grid-column: 2/3; }
+
 .rootPage {
   display: flex;
   flex-direction: column; }

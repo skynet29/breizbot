@@ -133,6 +133,9 @@ function dbReady() {
 			res.sendStatus(401)
 		}
 		else {
+			if ((req.method == 'POST' || req.method == 'PUT') && req.url.split('/').pop() != 'position') {
+				console.log('url', req.session.user, req.url, req.body)
+			}
 			const referer = req.headers.referer
 			if (referer != undefined) {
 				const url = parseUrl(referer)

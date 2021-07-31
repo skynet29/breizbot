@@ -182,10 +182,6 @@ function getEmbeddedImages(parts) {
 
 module.exports = function (ctx) {
 
-  const { config } = ctx
-
-  const cloudPath = config.CLOUD_HOME
-
   const db = require('./db')(ctx.db)
 
   async function getUnreadInboxMessages(name) {
@@ -338,13 +334,27 @@ module.exports = function (ctx) {
 
     await imap.openBox(mailboxName, false)
 
-    const data = await imap.fetch(seqNo, { bodies: [partID], markSeen: true })
+    const options = { markSeen: true }
 
+    if (partID != false) {
+      options.bodies = [partID]
+    }
+
+    const data = await imap.fetch(seqNo, options)
+
+    //console.log('data', data)
     const { parts, buffer } = data[0]
     //console.log('parts', parts)
 
-    const info = getPartInfo(parts, partID)
-    const text = decodeBody(buffer, info)
+    let text = ''
+
+    if (partID != false)
+    {
+      const info = getPartInfo(parts, partID)
+      text = decodeBody(buffer, info)  
+    }
+
+    //console.log('text', text)
     const attachments = getAttachments(parts)
     const embeddedImages = getEmbeddedImages(parts)
 
@@ -417,7 +427,7 @@ module.exports = function (ctx) {
   }
 
   async function sendMail(accountName, data) {
-    console.log('sendMail', userName, accountName)
+    console.log('sendMail', accountName)
 
     const account = await db.getMailAccount(accountName)
 
@@ -438,7 +448,7 @@ module.exports = function (ctx) {
     data.from = account.email
 
      data.attachments.forEach((a) => {
-       a.path = path.join(cloudPath, userName, a.path)
+       a.path = ctx.db.getFilePath(a.path)
       })
 
       console.log('data', data)

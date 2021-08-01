@@ -5,8 +5,6 @@ const fs = require('fs-extra')
 
 module.exports = function (ctx, router) {
 
-	console.log('start API youtube')
-
 	const { wss, config, util } = ctx
 
 
@@ -45,7 +43,6 @@ module.exports = function (ctx, router) {
 	})
 
 	router.get('/info', async function (req, res) {
-		console.log('youtube/info', req.query)
 		const { url } = req.query
 
 		const info = await ytdl.getBasicInfo(url)
@@ -66,7 +63,6 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/download', function (req, res) {
-		console.log('youtube/download', req.body)
 		let { url, fileName, srcId, itag } = req.body
 		const userName = req.session.user
 		fileName = fileName.replace(/\/|\||:|"|-| /g, '_')

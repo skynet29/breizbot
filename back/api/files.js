@@ -22,7 +22,6 @@ events.on('userDeleted', async (userName) => {
 
 
 router.post('/fileInfo', async function (req, res) {
-	console.log('fileInfo', req.body)
 	const user = req.session.user
 	const { filePath, friendUser, options } = req.body
 	const rootPath = util.getFilePath(user, filePath, friendUser)
@@ -105,7 +104,6 @@ router.post('/list', async function (req, res) {
 
 
 router.post('/save', function (req, res) {
-	console.log('save req')
 	if (!req.files) {
 		return res.status(400).send('No files were uploaded.');
 

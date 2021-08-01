@@ -53,10 +53,10 @@ function findUser(client, store) {
 }
 
 function init(httpServer, store) {
-    console.log('init')
+    //console.log('init')
     httpServer.on('upgrade', function (request, socket, head) {
         const pathname = url.parse(request.url).pathname
-        console.log('upgrade', pathname)
+        //console.log('upgrade', pathname)
 
         const foundServer = servers.find((server) => pathname.startsWith(server.startPath))
 

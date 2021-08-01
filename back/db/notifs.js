@@ -13,7 +13,6 @@ events.on('userDeleted', async (userName) => {
 module.exports = {
 
 	addNotif: function (to, from, notif) {
-		console.log(`[DB] addNotif`, to, from, notif)
 		db.insertOne({ to, from, notif, date: Date.now() })
 	},
 
@@ -28,7 +27,6 @@ module.exports = {
 	},
 
 	removeNotif: async function (notifId) {
-		console.log(`[DB] removeNotif`, notifId)
 		await db.deleteOne(buildDbId(notifId))
 	}
 

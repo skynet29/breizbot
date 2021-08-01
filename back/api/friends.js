@@ -5,7 +5,6 @@ const dbFriends = require('../db/friends.js')
 const wss = require('../lib/wss')
 
 router.get('/getFriends', async function (req, res) {
-	console.log('getFriends', req.session.user)
 
 	const userName = req.session.user
 
@@ -25,7 +24,6 @@ router.get('/getFriends', async function (req, res) {
 
 router.post('/getFriendInfo', async function (req, res) {
 	const { friend } = req.body
-	console.log('getFriendInfo', req.session.user)
 
 	const userName = req.session.user
 
@@ -40,7 +38,6 @@ router.post('/getFriendInfo', async function (req, res) {
 
 router.post('/setFriendInfo', async function (req, res) {
 	const { friend, groups, positionAuth } = req.body
-	console.log('setFriendInfo', req.session.user)
 
 	const userName = req.session.user
 
@@ -54,7 +51,6 @@ router.post('/setFriendInfo', async function (req, res) {
 })
 
 router.post('/addFriend', async function (req, res) {
-	console.log('addFriend', req.session.user)
 
 	const userName = req.session.user
 	const { friendUserName } = req.body

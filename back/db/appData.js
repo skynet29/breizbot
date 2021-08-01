@@ -19,7 +19,6 @@ module.exports = {
 	},
 
 	saveAppData: async function (userName, appName, data) {
-		console.log(`[DB] saveAppData`, { userName, appName, data })
 
 		const update = { '$set': { data } }
 

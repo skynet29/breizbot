@@ -134,7 +134,10 @@ function dbReady() {
 		}
 		else {
 			if ((req.method == 'POST' || req.method == 'PUT') && req.url.split('/').pop() != 'position') {
-				console.log('url', req.session.user, req.url, req.body)
+				console.log(`[${req.method}]`, req.session.user, req.url, req.body)
+			}
+			else if (req.method == 'GET') {
+				console.log(`[${req.method}]`, req.session.user, parseUrl(req.url).pathname, req.query)
 			}
 			const referer = req.headers.referer
 			if (referer != undefined) {

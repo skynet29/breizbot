@@ -6,7 +6,6 @@ const wss = require('../lib/wss')
 
 
 router.post('/sendNotif', async function (req, res) {
-	console.log('sendNotif', req.body)
 	const { to, notif } = req.body
 	const from = req.session.user
 
@@ -24,7 +23,6 @@ router.post('/sendNotif', async function (req, res) {
 
 
 router.delete('/removeNotif/:id', async function (req, res) {
-	console.log('removeNotif', req.params)
 	const { id } = req.params
 	const to = req.session.user
 
@@ -40,7 +38,6 @@ router.delete('/removeNotif/:id', async function (req, res) {
 })
 
 router.get('/getNotifs', async function (req, res) {
-	console.log('getNotifs', req.session.user)
 
 	try {
 		const notifs = await dbNotifs.getNotifs(req.session.user)
@@ -52,7 +49,6 @@ router.get('/getNotifs', async function (req, res) {
 })
 
 router.get('/getNotifCount', async function (req, res) {
-	console.log('getNotifCount', req.session.user)
 
 	try {
 		const notifCount = await dbNotifs.getNotifCount(req.session.user)

@@ -4,7 +4,6 @@ const router = require('express').Router()
 const dbContacts = require('../db/contacts.js')
 
 router.post('/addContact', async function (req, res) {
-	console.log('addContact', req.session.user, req.body)
 
 	const userName = req.session.user
 
@@ -33,7 +32,6 @@ router.get('/getContacts', async function (req, res) {
 
 
 router.delete('/removeContact/:id', async function (req, res) {
-	console.log('removeContact', req.params)
 	const { id } = req.params
 
 	try {

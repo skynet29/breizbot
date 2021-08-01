@@ -70,7 +70,6 @@ router.delete('/:userName', async function (req, res) {
 router.post('/activateApp', async function (req, res) {
 
 	const { appName, activated } = req.body
-	console.log('activateApp', appName, activated)
 
 	try {
 		await dbUsers.activateApp(req.session.user, appName, activated)
@@ -100,8 +99,6 @@ router.post('/getUserSettings', async function (req, res) {
 
 
 router.post('/setUserSettings', async function (req, res) {
-
-	console.log('setUserSettings', req.body)
 
 	try {
 		await dbUsers.setUserSettings(req.session.user, req.body)

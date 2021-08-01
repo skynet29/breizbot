@@ -54,7 +54,6 @@ module.exports = {
 
 	changePassword: async function (username, newPwd) {
 
-		console.log(`[DB] changePassword`, username)
 		const pwd = await bcrypt.hash(newPwd, 10)
 		const update = { '$set': { pwd, crypted: true } }
 
@@ -74,7 +73,6 @@ module.exports = {
 
 	createUser: async function (data) {
 
-		console.log(`[DB] createUser`, data)
 		data.pwd = 'welcome'
 		data.apps = ['folder', 'friends', 'share', 'youtube', 'gallery', 'jukebox']
 		data.createDate = Date.now()
@@ -87,7 +85,6 @@ module.exports = {
 
 
 	deleteUser: async function (username) {
-		console.log(`[DB] deleteUser`, username)
 
 		await db.deleteOne({ username })
 		
@@ -95,7 +92,6 @@ module.exports = {
 	},
 
 	activateApp: async function (username, appName, activated) {
-		console.log(`[DB] activateApp`, username, appName, activated)
 		const data = { apps: appName }
 		let update = (activated) ? { $push: data } : { $pull: data }
 

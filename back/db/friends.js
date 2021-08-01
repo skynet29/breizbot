@@ -13,7 +13,6 @@ events.on('userDeleted', async (userName) => {
 module.exports = {
 
 	getFriends: async function (username) {
-		console.log(`[DB] getFriends`, username)
 		const friends = await db
 			.find({ username })
 			.toArray()
@@ -45,7 +44,6 @@ module.exports = {
 
 
 	addFriend: async function (username, friend) {
-		console.log(`[DB] addFriend`, username, friend)
 		await db.insertOne({ username, friend, groups: [] })
 		await db.insertOne({ username: friend, friend: username, groups: [] })
 	}

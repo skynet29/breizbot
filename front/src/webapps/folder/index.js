@@ -28,7 +28,6 @@ module.exports = function (ctx, router) {
     }
 
     router.post('/mkdir', async function (req, res) {
-        console.log('mkdir req', req.body)
         const { fileName } = req.body
         const user = req.session.user
         const folderPath = util.getFilePath(user, fileName)
@@ -43,7 +42,6 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/delete', function (req, res) {
-        console.log('delete req', req.body)
         const fileNames = req.body
         const user = req.session.user
 
@@ -62,7 +60,6 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/move', function (req, res) {
-        console.log('move req', req.body)
         var fileNames = req.body.fileNames
         var destPath = req.body.destPath
 
@@ -86,7 +83,6 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/rename', async function (req, res) {
-        console.log('move req', req.body)
         const { filePath, oldFileName, newFileName } = req.body
 
         var user = req.session.user
@@ -108,7 +104,6 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/resizeImage', async function (req, res) {
-        console.log('resizeImage', req.body)
         const { filePath, fileName, resizeFormat } = req.body
 
         var user = req.session.user
@@ -126,7 +121,6 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/convertToMP3', async function (req, res) {
-        console.log('convertToMP3', req.body)
         const { filePath, fileName, srcId } = req.body
 
         const user = req.session.user
@@ -220,7 +214,6 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/unzipFile', async function (req, res) {
-        console.log('unzipFile', req.body)
         const { folderPath, fileName, srcId } = req.body
 
         const user = req.session.user
@@ -246,7 +239,6 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/copy', function (req, res) {
-        console.log('copy req', req.body)
         const { fileNames, destPath } = req.body
 
         const user = req.session.user
@@ -269,7 +261,6 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/importUrl', function (req, res) {
-        console.log('folder/importUrl', req.body)
         let { url, folderPath, srcId } = req.body
         const userName = req.session.user
         const fileName = url.split('/').pop()

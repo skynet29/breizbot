@@ -16,10 +16,10 @@ $$.control.registerControl('showDetails', {
 			data: {
 				data,
 				getCoverUrl: function () {
-					return (data.cover) ? srvFile.fileAppUrl(data.cover) : '#'
+					return (this.data.cover) ? srvFile.fileAppUrl(this.data.cover) : '#'
 				},
 				getDescription: function() {
-					return (data.description) ? data.description.replace(/\n/g, '<br><br>') : ''
+					return (this.data.description) ? this.data.description.replace(/\n/g, '<br><br>') : ''
 				}
 			},
 			events: {

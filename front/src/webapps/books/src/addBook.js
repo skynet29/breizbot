@@ -21,7 +21,7 @@ $$.control.registerControl('addBook', {
                 series: [],
                 data,
                 getCoverUrl: function() {
-                    return (data.cover) ? srvFile.fileAppUrl(data.cover) :  '#'
+                    return (this.data.cover) ? srvFile.fileAppUrl(this.data.cover) :  '#'
                 }
             },
             events: {

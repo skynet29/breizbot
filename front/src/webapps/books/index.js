@@ -35,10 +35,33 @@ module.exports = function (ctx, router) {
     router.post('/addBook', async function (req, resp) {
 
         const data = req.body
-        console.log('[Book] addBook', data)
 
         try {
             await db.insertOne(data)
+            resp.sendStatus(200)
+        }
+        catch (e) {
+            resp.status(404).send(e.message)
+        }
+    })
+
+    router.post('/updateBook/:bookId', async function (req, resp) {
+
+        const data = req.body
+
+        try {
+            await db.updateOne(buildDbId(req.params.bookId), { $set: data })
+            resp.sendStatus(200)
+        }
+        catch (e) {
+            resp.status(404).send(e.message)
+        }
+    })
+
+    router.post('/deleteBook/:bookId', async function (req, resp) {
+
+        try {
+            await db.deleteOne(buildDbId(req.params.bookId))
             resp.sendStatus(200)
         }
         catch (e) {

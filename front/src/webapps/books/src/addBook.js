@@ -1,22 +1,28 @@
+
 $$.control.registerControl('addBook', {
 
     template: { gulp_inject: './addBook.html' },
 
-    deps: ['breizbot.pager', 'breizbot.http'],
+    deps: ['breizbot.pager', 'breizbot.http', 'breizbot.files'],
 
     props: {
         data: {},
-        authors: [],
-        series: []
     },
 
-    init: function (elt, pager, http) {
+    init: function (elt, pager, http, srvFile) {
 
         const { data } = this.props
 
+        console.log('data', data)
+
         const ctrl = $$.viewController(elt, {
             data: {
-                data
+                authors: [],
+                series: [],
+                data,
+                getCoverUrl: function() {
+                    return (data.cover) ? srvFile.fileAppUrl(data.cover) :  '#'
+                }
             },
             events: {
                 onSubmit: function (ev) {
@@ -28,6 +34,19 @@ $$.control.registerControl('addBook', {
                 onAuthorChange: async function(ev, ui) {
                     console.log('onAuthorChange', ui.item.value)
                     await getSeries(ui.item.value)
+                },
+
+                onDownloadCover: function() {
+                    $$.util.openFileDialog(async (file) => {
+						console.log('file', file)
+                        const ext = file.name.split('.').pop()
+                        const fileName = `Cover${Date.now()}.${ext}`
+                        console.log('fileName', fileName)
+                        await srvFile.saveFile(file, fileName)
+                        ctrl.model.data.cover = fileName
+                        ctrl.update()
+
+					}, false)
                 }
             }
         })

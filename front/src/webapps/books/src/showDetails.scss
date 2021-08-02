@@ -1,0 +1,9 @@
+.showDetails {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    > div {
+        padding: 10px;
+        overflow-y: auto;
+    }
+}

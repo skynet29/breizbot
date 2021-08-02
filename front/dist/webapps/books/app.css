@@ -13,6 +13,15 @@
       grid-column: 1/2; }
     .addBook form > input {
       grid-column: 2/3; }
+    .addBook form > textarea {
+      grid-column: 1/3;
+      resize: none; }
+    .addBook form .cover {
+      display: flex;
+      align-items: flex-start; }
+      .addBook form .cover img {
+        height: 100px;
+        margin-right: 10px; }
     .addBook form > fieldset {
       grid-column: 1/3; }
       .addBook form > fieldset > div {
@@ -71,3 +80,13 @@
         color: white; }
       .rootPage > .scrollBar table ul {
         margin: 0; }
+      .rootPage > .scrollBar table td {
+        cursor: pointer; }
+
+.showDetails {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px; }
+  .showDetails > div {
+    padding: 10px;
+    overflow-y: auto; }

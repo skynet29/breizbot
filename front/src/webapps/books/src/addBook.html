@@ -4,13 +4,25 @@
         <input type="text" required name="title">
 
         <label>Author</label>
-        <input type="text" name="author" bn-control="brainjs.autocomplete" bn-data="{source: authors}" required bn-event="autocompleteselect: onAuthorChange"> 
+        <input type="text" name="author" bn-control="brainjs.autocomplete" bn-data="{source: authors}" required
+            bn-event="autocompleteselect: onAuthorChange">
 
         <label>Year</label>
         <input type="number" name="year">
 
         <label>Series</label>
         <input type="text" name="series" bn-control="brainjs.autocomplete" bn-data="{source: series}">
+
+        <label>Cover</label>
+        <div class="cover">
+            <img bn-attr="{src:getCoverUrl}" bn-show="data.cover">
+            <button type="button" class="w3-btn w3-blue" bn-icon="fas fa-download" title="Download"
+                bn-event="click: onDownloadCover"></button>
+            <input type="hidden" name="cover">
+        </div>
+
+        <label>Description</label><br>
+        <textarea name="description" rows="5"></textarea>
 
         <fieldset bn-control="brainjs.checkgroup" name="medium">
             <legend>Medium</legend>

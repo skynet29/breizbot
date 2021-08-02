@@ -24,6 +24,11 @@ $$.service.registerService('breizbot.files', {
 				return $$.util.getUrlParams('/api/files/load', { fileName, friendUser })
 			},
 
+			fileAppUrl: function(fileName) {
+				fileName = `/apps/${params.$appName}/${fileName}`
+				return $$.util.getUrlParams('/api/files/load', { fileName })
+			},
+
 			fileThumbnailUrl: function (fileName, size, friendUser) {
 				return $$.util.getUrlParams('/api/files/loadThumbnail', { fileName, size, friendUser })
 			},

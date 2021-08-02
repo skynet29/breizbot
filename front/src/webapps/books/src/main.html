@@ -27,8 +27,17 @@
                 <th>Series</th>
             </tr>
         </thead>
-        <tbody bn-each="books" bn-lazzy="getBooks">
-            <tr>
+        <tbody bn-each="books" bn-lazzy="getBooks" bn-event="contextmenuchange.item: onItemContextMenu, click.item: onBookDetail">
+            <tr class="item" bn-control="brainjs.contextmenu" bn-data="{items: {
+				del: {
+					name: 'Delete',
+					icon: 'fas fa-trash-alt'
+				},
+				edit: {
+					name: 'Edit',
+					icon: 'fas fa-edit'
+				}
+			}}">
                 <td bn-text="$scope.$i.title"></td>
                 <td bn-text="$scope.$i.author"></td>
                 <td bn-text="$scope.$i.year"></td>

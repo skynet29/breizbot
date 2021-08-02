@@ -23,6 +23,46 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				onBookDetail: function() {
+                    const idx = $(this).index()
+                    const info = ctrl.model.books[idx]
+                    //console.log('onBookDetail', info)
+					pager.pushPage('showDetails', {
+						title: info.title,
+						props: {
+							data: info
+						}
+					})
+
+				},
+                onItemContextMenu: function (ev, data) {
+                    const idx = $(this).index()
+                    //console.log('onItemContextMenu', idx, data)
+                    const { cmd } = data
+                    const info = ctrl.model.books[idx]
+                    console.log('info', info)
+					const bookId = info._id.toString()
+					if (cmd == 'del') {
+                        $$.ui.showConfirm({ title: 'Delete Book', content: 'Are you sure ?' }, async () => {
+                            await http.post(`/deleteBook/${bookId}`)
+							loadBooks()
+                        })
+                    }
+					else if (cmd == 'edit')
+					{
+						pager.pushPage('addBook', {
+							title: 'Edit Book',
+							props: {
+								data: info
+							},
+							onReturn: async function (formData) {
+								console.log('formData', formData)
+								await http.post(`/updateBook/${bookId}`, formData)
+								loadBooks()
+							}
+						})
+					}
+				},				
 				onAddBook: function () {
 					//console.log('onAddBook')
 					pager.pushPage('addBook', {

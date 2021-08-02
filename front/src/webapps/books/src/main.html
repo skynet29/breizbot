@@ -20,6 +20,7 @@
     <table class="w3-table-all w3-hoverable w3-small">
         <thead>
             <tr>
+                <th></th>
                 <th>Title</th>
                 <th>Author</th>
                 <th>Year</th>
@@ -38,6 +39,9 @@
 					icon: 'fas fa-edit'
 				}
 			}}">
+                <td>
+                    <img bn-attr="{src: getCoverUrl}" bn-show="$scope.$i.cover">
+                </td>
                 <td bn-text="$scope.$i.title"></td>
                 <td bn-text="$scope.$i.author"></td>
                 <td bn-text="$scope.$i.year"></td>

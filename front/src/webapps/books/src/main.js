@@ -2,9 +2,9 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'breizbot.http'],
+	deps: ['breizbot.pager', 'breizbot.http', 'breizbot.files'],
 
-	init: function (elt, pager, http) {
+	init: function (elt, pager, http, srvFiles) {
 
 		let filters = {}
 
@@ -20,6 +20,10 @@ $$.control.registerControl('rootPage', {
 
 				getBooksQty: function () {
 					return (this.booksQty > 0) ? `${this.booksQty} books` : ''
+				},
+
+				getCoverUrl(scope) {
+					return (scope.$i.cover) ?  srvFiles.fileAppThumbnailUrl(scope.$i.cover, '50x?'): '#'
 				}
 			},
 			events: {

@@ -33,6 +33,11 @@ $$.service.registerService('breizbot.files', {
 				return $$.util.getUrlParams('/api/files/loadThumbnail', { fileName, size, friendUser })
 			},
 
+			fileAppThumbnailUrl: function (fileName, size) {
+				fileName = `/apps/${params.$appName}/${fileName}`
+				return $$.util.getUrlParams('/api/files/loadThumbnail', { fileName, size })
+			},
+
 			uploadFile: function (blob, saveAsfileName, destPath, onUploadProgress) {
 				console.log('[FileService] uploadFile', saveAsfileName, destPath)
 				if (!(blob instanceof Blob)) {

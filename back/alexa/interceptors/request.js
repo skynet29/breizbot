@@ -15,8 +15,10 @@ const RequestInterceptor = {
         if (type === 'IntentRequest') {
             console.log('[Alexa] name', Alexa.getIntentName(requestEnvelope))
         }
-        if (Alexa.isNewSession(requestEnvelope)) {
-            const accessToken = Alexa.getAccountLinkingAccessToken(requestEnvelope)
+
+        if (requestEnvelope.session && requestEnvelope.session.new === true) {
+            const { accessToken } = requestEnvelope.session.user
+
             if (accessToken == undefined) {
                 throw new Error(constants.SKILL_NOT_LINKED)
             }

@@ -42,7 +42,7 @@ module.exports = function (ctx, router) {
     async function addFavorite(parentId, info) {
         const { type, link } = info
 
-        const count = await db.countDocuments({ userName, parentId })
+        const count = await db.countDocuments({ parentId })
         //console.log('count', count)
 
         if (type == 'link') {

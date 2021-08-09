@@ -1,9 +1,14 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
 	deps: ['breizbot.rtc'],
 
+	/**
+	 * 
+	 * @param {Breizbot.RTC.Interface} rtc 
+	 */
 	init: function(elt, rtc) {
 
 		const whiteSquareGrey = '#a9a9a9'

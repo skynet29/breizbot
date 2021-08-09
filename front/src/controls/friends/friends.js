@@ -10,6 +10,9 @@ $$.control.registerControl('breizbot.friends', {
 
 	template: {gulp_inject: './friends.html'},
 
+	/** 
+	 * @param {Breizbot.Broker.Interface} broker 
+	 * */
 	init: function(elt, friendsSrv, notifsSrv, broker) {
 
 		const {showSelection, showSendMessage, showConnectionState} = this.props
@@ -62,6 +65,11 @@ $$.control.registerControl('breizbot.friends', {
 			}
 		})	
 
+		/**
+		 * 
+		 * @param {Breizbot.Broker.Msg} msg 
+		 * @returns 
+		 */
 		function onUpdate(msg) {
 			//console.log('msg', msg)
 			if (msg.hist === true) {

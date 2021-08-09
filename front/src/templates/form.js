@@ -1,3 +1,5 @@
+// @ts-check
+
 $$.control.registerControl('form', {
 
     template: { gulp_inject: './form.html' },
@@ -8,6 +10,10 @@ $$.control.registerControl('form', {
         data: {}
     },
 
+    /**
+     * 
+     * @param {Breizbot.Pager.Interface} pager 
+     */
     init: function (elt, pager) {
 
         const { data } = this.props

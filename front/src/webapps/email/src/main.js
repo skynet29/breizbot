@@ -1,10 +1,15 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
 	deps: ['app.mails', 'breizbot.pager'],
 
-
+	/**
+	 * 
+	 * @param {AppEmail.Interface} srvMail 
+	 * @param {Breizbot.Pager.Interface} pager 
+	 */
 	init: function (elt, srvMail, pager) {
 
 		const ctrl = $$.viewController(elt, {

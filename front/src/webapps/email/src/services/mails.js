@@ -58,16 +58,6 @@ $$.service.registerService('app.mails', {
 				return http.post(`/sendMail`, { accountName, data })
 			}
 		}
-	},
+	}
 
-	$iface: `
-		getMailAccount():Promise;
-		createMaiAccount(data):Promise;
-		getMailboxes(name):Promise;
-		openMailbox(name, mailboxName, pageNo):Promise;
-		openMessage(name, mailboxName, seqNo, partID):Promise;
-		openAttachment(name, mailboxName, seqNo, partID):Promise;
-		deleteMessage(name, mailboxName, seqNos):Promise;
-		moveMessage(name, mailboxName, targetName, seqNos):Promise
-		`
 });

@@ -187,17 +187,6 @@ $$.service.registerService('breizbot.rtc', {
 			isCallee
 
 		}
-	},
-	$iface: `
-		call(to, appName, iconCls):Promise;
-		cancel(to):Promise;
-		deny():Promise;
-		bye():Promise;
-		sendData(type, data):Promise;
-		onData(callback(data, time)),
-		processCall(),
-		on(event, callback),
-		getRemoteClientId():Number
-	`
+	}
 });
 

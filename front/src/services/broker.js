@@ -159,7 +159,7 @@ $$.service.registerService('breizbot.broker', {
 		function unregister(topic, callback) {
 
 			topics.off(topic, callback)
-			
+
 			if (--registeredTopics[topic] == 0) {
 				delete registeredTopics[topic]
 				sendMsg({ type: 'unregister', topic })
@@ -177,16 +177,9 @@ $$.service.registerService('breizbot.broker', {
 			on: events.on.bind(events)
 
 		}
-	},
+	}
 
-	$iface: `
-			emitTopic(topicName, data);
-			register(topicName, callback);
-			unregister(topicName, callback);
-			onTopic(topicName, callback)
-			on(event, callback)
 
-		`
 });
 
 

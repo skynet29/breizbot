@@ -73,15 +73,6 @@ $$.service.registerService('breizbot.files', {
 			}
 
 		}
-	},
-
-	$iface: `
-		list(path, options, friendUser):Promise<[FileInfo]>;
-		fileInfo(filePath, friendUser, options):Promise<FileInfo>
-		fileUrl(fileName, friendUser):string;
-		fileThumbnailUrl(fileName, size, friendUser):string;
-		uploadFile(blob, saveAsfileName, destPath, [onUploadProgress]):Promise;
-		saveFile(blob, saveAsfileName, [destPath]):Promise;
-	`
+	}
 
 });

@@ -1,13 +1,19 @@
+// @ts-check
+
 $$.control.registerControl('rootPage', {
 
-	template: {gulp_inject: './main.html'},
+	template: { gulp_inject: './main.html' },
 
 	deps: ['breizbot.pager'],
 
-    props: {
-    },
+	props: {
+	},
 
-	init: function(elt, pager) {
+	/**
+	 * 
+	 * @param {Breizbot.Pager.Interface} pager 
+	 */
+	init: function (elt, pager) {
 
 
 		const ctrl = $$.viewController(elt, {

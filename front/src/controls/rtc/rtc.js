@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('breizbot.rtc', {
 
 	deps: ['breizbot.rtc', 'breizbot.pager'],
@@ -10,11 +11,17 @@ $$.control.registerControl('breizbot.rtc', {
 
 	//template: {gulp_inject: './rtc.html'},
 
+	/**
+	 * 
+	 * @param {Breizbot.RTC.Interface} rtc 
+	 * @param {Breizbot.Pager.Interface} pager 
+	 */
 	init: function(elt, rtc, pager) {
 
 		const {appName, iconCls, title} = this.props
 
 		const $children = elt.children().remove()
+		//@ts-ignore
 		elt.append({gulp_inject: './rtc.html'})
 
 		rtc.on('status', (data) => {

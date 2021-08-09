@@ -1,4 +1,4 @@
-
+// @ts-check
 $$.control.registerControl('addBook', {
 
     template: { gulp_inject: './addBook.html' },
@@ -9,6 +9,12 @@ $$.control.registerControl('addBook', {
         data: {},
     },
 
+    /**
+     * 
+     * @param {Breizbot.Pager.Interface} pager 
+     * @param {Breizbot.Http.Interface} http 
+     * @param {Breizbot.Files.Interface} srvFile 
+     */
     init: function (elt, pager, http, srvFile) {
 
         const { data } = this.props
@@ -20,8 +26,8 @@ $$.control.registerControl('addBook', {
                 authors: [],
                 series: [],
                 data,
-                getCoverUrl: function() {
-                    return (this.data.cover) ? srvFile.fileAppThumbnailUrl(this.data.cover, '100x?') :  '#'
+                getCoverUrl: function () {
+                    return (this.data.cover) ? srvFile.fileAppThumbnailUrl(this.data.cover, '100x?') : '#'
                 }
             },
             events: {
@@ -31,14 +37,14 @@ $$.control.registerControl('addBook', {
 
                 },
 
-                onAuthorChange: async function(ev, ui) {
+                onAuthorChange: async function (ev, ui) {
                     console.log('onAuthorChange', ui.item.value)
                     await getSeries(ui.item.value)
                 },
 
-                onDownloadCover: function() {
+                onDownloadCover: function () {
                     $$.util.openFileDialog(async (file) => {
-						console.log('file', file)
+                        console.log('file', file)
                         const ext = file.name.split('.').pop()
                         const fileName = `Cover${Date.now()}.${ext}`
                         console.log('fileName', fileName)
@@ -46,7 +52,7 @@ $$.control.registerControl('addBook', {
                         ctrl.model.data.cover = fileName
                         ctrl.update()
 
-					}, false)
+                    }, false)
                 }
             }
         })
@@ -70,7 +76,7 @@ $$.control.registerControl('addBook', {
         }
 
         async function getSeries(author) {
-            const series = await http.post('/series', {author})
+            const series = await http.post('/series', { author })
             console.log('series', series)
             ctrl.setData({ series })
 

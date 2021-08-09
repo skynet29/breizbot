@@ -1,9 +1,14 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
 	deps: ['breizbot.files'],
 
+	/**
+	 * 
+	 * @param {Breizbot.Files.Interface} files 
+	 */
 	init: function (elt, files) {
 
 		let mediaRecorder = null

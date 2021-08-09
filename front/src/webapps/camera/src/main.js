@@ -1,10 +1,15 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	deps: ['breizbot.files', 'breizbot.pager'],
 
 	template: { gulp_inject: './main.html' },
 
-
+	/**
+	 * 
+	 * @param {Breizbot.Files.Interface} srvFiles 
+	 * @param {Breizbot.Pager.Interface} pager 
+	 */
 	init: function (elt, srvFiles, pager) {
 
 		const audio = new Audio('/webapps/camera/assets/camera_shutter.mp3')

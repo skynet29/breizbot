@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	deps: [
@@ -9,6 +10,13 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.Apps.Interface} srvApps 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {Breizbot.Services.User.Interface} users 
+	 * @param {Breizbot.Services.Scheduler.Interface} scheduler 
+	 */
 	init: function(elt, srvApps, pager, users, scheduler) {
 
 		const ctrl = $$.viewController(elt, {

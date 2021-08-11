@@ -8,7 +8,7 @@ $$.control.registerControl('rootPage', {
 	/**
 	 * 
 	 * @param {AppEmail.Interface} srvMail 
-	 * @param {Breizbot.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 */
 	init: function (elt, srvMail, pager) {
 
@@ -109,6 +109,7 @@ $$.control.registerControl('rootPage', {
 
 				onTreeActivate: function () {
 					console.log('onTreeActivate')
+					/**@type {Brainjs.Controls.Tree.Interface} */
 					const tree = $(this).iface()
 
 					const node = tree.getActiveNode()

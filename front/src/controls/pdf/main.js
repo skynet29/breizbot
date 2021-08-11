@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('breizbot.pdf', {
 
 	template: { gulp_inject: './main.html' },
@@ -6,9 +7,7 @@ $$.control.registerControl('breizbot.pdf', {
 		url: ''
 	},
 
-	deps: ['breizbot.files'],
-
-	init: function (elt, files) {
+	init: function (elt) {
 
 		const { url } = this.props
 
@@ -35,38 +34,41 @@ $$.control.registerControl('breizbot.pdf', {
 						}
 					})
 					ctrl.setData({ wait: true })
-					const currentPage =  await ctrl.scope.pdf.setPage(pageNo)
+					const currentPage =  await pdf.setPage(pageNo)
 					ctrl.setData({ currentPage, wait: false })
 				},
 				onPrint: function() {
-					ctrl.scope.pdf.print()
+					pdf.print()
 				},
 				onNextPage: async function (ev) {
 					//console.log('onNextPage')
 					ctrl.setData({ wait: true })
-					const currentPage = await ctrl.scope.pdf.nextPage()
+					const currentPage = await pdf.nextPage()
 					ctrl.setData({ currentPage, wait: false })
 				},
 
 				onPrevPage: async function (ev) {
 					//console.log('onPrevPage')
 					ctrl.setData({ wait: true })
-					const currentPage = await ctrl.scope.pdf.prevPage()
+					const currentPage = await pdf.prevPage()
 					ctrl.setData({ currentPage, wait: false })
 				},
 
 				onFit: function (ev) {
-					ctrl.scope.pdf.fit()
+					pdf.fit()
 				}
 
 			}
 		})
 
+		/**@type {Brainjs.Controls.Pdf.Interface} */
+		const pdf = ctrl.scope.pdf
+
 		async function openFile(url, title) {
 
 			ctrl.setData({ wait: true })
 
-			const numPages = await ctrl.scope.pdf.openFile(url)
+			const numPages = await pdf.openFile(url)
 			console.log('file loaded')
 			ctrl.setData({
 				title,

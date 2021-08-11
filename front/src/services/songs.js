@@ -12,9 +12,5 @@ $$.service.registerService('breizbot.songs', {
 			}
 			
 		}
-	},
-
-	$iface: `
-        generateDb():Promise
-		`
+	}
 });

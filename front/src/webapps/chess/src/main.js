@@ -7,7 +7,7 @@ $$.control.registerControl('rootPage', {
 
 	/**
 	 * 
-	 * @param {Breizbot.RTC.Interface} rtc 
+	 * @param {Breizbot.Services.RTC.Interface} rtc 
 	 */
 	init: function(elt, rtc) {
 

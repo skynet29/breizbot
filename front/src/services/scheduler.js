@@ -18,10 +18,5 @@ $$.service.registerService('breizbot.scheduler', {
 				return http.post('/api/logout')
 			}		 
 		}
-	},
-
-	$iface: `
-		openApp(appName, appParams);
-		logout()
-		`
+	}
 });

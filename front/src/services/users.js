@@ -48,16 +48,5 @@ $$.service.registerService('breizbot.users', {
 			}
 
 		}
-	},
-	$iface: `
-		list():Promise;
-		add(data):Promise;
-		remove(user):Promise;
-		update(user, data):Promise;
-		get(user):Promise;
-		activateApp(appName, activated):Promise;
-		changePwd(newPwd):Promise;
-		getUserSettings():Promise
-		setUserSettings(settings):Promise
-	`
+	}
 });

@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('breizbot.home', {
 
 	deps: [
@@ -18,6 +19,18 @@ $$.control.registerControl('breizbot.home', {
 
 	template: { gulp_inject: './home.html' },
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.Broker.Interface} broker 
+	 * @param {Breizbot.Services.User.Interface} users 
+	 * @param {Breizbot.Services.Notif.Interface} notifsSrv 
+	 * @param {Breizbot.Services.Geoloc.Interface} geoloc 
+	 * @param {Breizbot.Services.RTC.Interface} rtc 
+	 * @param {Breizbot.Services.Apps.Interface} srvApps 
+	 * @param {Breizbot.Services.Scheduler.Interface} scheduler 
+	 * @param {Breizbot.Services.WakeLock.Interface} wakelock 
+	 * @param {Breizbot.Services.FullScreen.Interface} fullscreen 
+	 */
 	init: function (elt, broker, users, notifsSrv, geoloc, rtc, srvApps, scheduler, wakelock, fullscreen) {
 
 		function createAudio() {
@@ -168,6 +181,9 @@ $$.control.registerControl('breizbot.home', {
 			}
 		})
 
+		/**@type {Brainjs.Controls.Tabs.Interface} */
+		const tabs = ctrl.scope.tabs
+
 		fullscreen.init((fullScreen) => {
 			ctrl.setData({ fullScreen })
 		})
@@ -199,6 +215,7 @@ $$.control.registerControl('breizbot.home', {
 			if (msg.hist === true) {
 				return
 			}
+			//@ts-ignore
 			const { isConnected, userName } = msg.data
 			if (isConnected) {
 				$.notify(`'${userName}' is connected`, 'success')
@@ -223,10 +240,10 @@ $$.control.registerControl('breizbot.home', {
 			const appInfo = ctrl.model.apps.find((a) => a.appName == appName)
 			const title = appInfo.props.title
 			//console.log('openApp', appName, params)
-			let idx = ctrl.scope.tabs.getTabIndexFromTitle(title)
+			let idx = tabs.getTabIndexFromTitle(title)
 			const appUrl = $$.util.getUrlParams(`/apps/${appName}`, params)
 			if (idx < 0) { // apps not already run
-				idx = ctrl.scope.tabs.addTab(title, {
+				idx = tabs.addTab(title, {
 					removable: true,
 					control: 'breizbot.appTab',
 					props: {
@@ -235,13 +252,13 @@ $$.control.registerControl('breizbot.home', {
 				})
 			}
 			else {
-				const info = ctrl.scope.tabs.getTabInfo(idx)
+				const info = tabs.getTabInfo(idx)
 				if (params != undefined) {
 					info.ctrlIface.setAppUrl(appUrl)
 				}
 			}
 
-			ctrl.scope.tabs.setSelectedTabIndex(idx)
+			tabs.setSelectedTabIndex(idx)
 
 		}
 

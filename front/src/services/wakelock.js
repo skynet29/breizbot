@@ -32,8 +32,5 @@ $$.service.registerService('breizbot.wakelock', {
         return {
             requestWakeLock
         }
-    },
-    $iface: `
-        async requestWakeLock()
-	`
+    }
 });

@@ -1,9 +1,16 @@
-$$.control.registerControl('rootPage', {
+//@ts-check
+$$.control.registerControl('rootPage', {	
 
 	template: {gulp_inject: './main.html'},
 
 	deps: ['app.ytdl', 'breizbot.params', 'breizbot.pager'],
 
+	/**
+	 * 
+	 * @param {AppYoutube.Interface} ytdl 
+	 * @param {*} params 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 */
 	init: function(elt ,ytdl, params, pager) {
 
 		const url1 = 'https://www.youtube.com/watch?v='

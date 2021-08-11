@@ -1,7 +1,5 @@
 $$.control.registerControl('breizbot.apps', {
 
-	deps: ['breizbot.scheduler'],
-
 	props: {
 		apps: [],
 		showActivated: false,
@@ -12,7 +10,7 @@ $$.control.registerControl('breizbot.apps', {
 
 	template: {gulp_inject: './apps.html'},
 
-	init: function(elt, scheduler) {
+	init: function(elt) {
 
 		const {apps, showActivated, items} = this.props
 

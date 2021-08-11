@@ -1,10 +1,15 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	deps: ['breizbot.files', 'breizbot.pager'],
 
 	template: { gulp_inject: './main.html' },
 
-
+	/**
+	 * 
+	 * @param {Breizbot.Services.Files.Interface} srvFiles 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 */
 	init: function (elt, srvFiles, pager) {
 
 		let timer = null
@@ -83,12 +88,11 @@ $$.control.registerControl('rootPage', {
 				},
 				onCameraReady: async function () {
 					//console.log('onCameraReady')
-					const iface = $(this).iface()
-					const capabilities = await iface.getCapabilities()
+					const capabilities = await camera.getCapabilities()
 					//console.log('capabilities', capabilities)
 
 					if (capabilities.zoom) {
-						const settings = iface.getSettings()
+						const settings = camera.getSettings()
 						//console.log('settings', settings)
 						const { min, max, step } = capabilities.zoom
 						ctrl.scope.slider.setData({ min, max, step })
@@ -116,10 +120,13 @@ $$.control.registerControl('rootPage', {
 				onZoomChange: function (ev) {
 					const value = $(this).getValue()
 					console.log('onZoomChange', value)
-					ctrl.scope.camera.setZoom(value)
+					camera.setZoom(value)
 				}
 			}
 		})
+
+		/**@type {Brainjs.Controls.Camera.Interface} */
+		const camera = ctrl.scope.camera
 
 		async function getVideoDevices() {
 			const videoDevices = await $$.util.getVideoDevices()

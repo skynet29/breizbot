@@ -48,8 +48,5 @@ $$.service.registerService('breizbot.geoloc', {
 
 			startWatch
 		}
-	},
-	$iface: `
-		startWatch()
-	`
+	}
 });

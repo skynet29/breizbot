@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('addFriendPage', {
 
 	deps: ['breizbot.users', 'breizbot.notifs', 'breizbot.params'],
@@ -8,6 +9,13 @@ $$.control.registerControl('addFriendPage', {
 		friends: []
 	},
 
+	/**
+	 * 
+	 * @param {*} elt 
+	 * @param {Breizbot.Services.User.Interface} users 
+	 * @param {Breizbot.Services.Notif.Interface} notifsSrv 
+	 * @param {*} params 
+	 */
 	init: function(elt, users, notifsSrv, params) {
 
 		const currentFriends = this.props.friends

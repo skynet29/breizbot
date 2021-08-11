@@ -7,8 +7,8 @@ $$.control.registerControl('rootPage', {
 
 	/**
 	 * 
-	 * @param {Breizbot.Files.Interface} srvFiles 
-	 * @param {Breizbot.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Files.Interface} srvFiles 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 */
 	init: function (elt, srvFiles, pager) {
 

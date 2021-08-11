@@ -11,7 +11,7 @@ $$.control.registerControl('breizbot.friends', {
 	template: {gulp_inject: './friends.html'},
 
 	/** 
-	 * @param {Breizbot.Broker.Interface} broker 
+	 * @param {Breizbot.Services.Broker.Interface} broker 
 	 * */
 	init: function(elt, friendsSrv, notifsSrv, broker) {
 
@@ -67,7 +67,7 @@ $$.control.registerControl('breizbot.friends', {
 
 		/**
 		 * 
-		 * @param {Breizbot.Broker.Msg} msg 
+		 * @param {Breizbot.Services.Broker.Msg} msg 
 		 * @returns 
 		 */
 		function onUpdate(msg) {

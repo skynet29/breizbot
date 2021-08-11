@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('breizbot.htmleditor', {
 
 	template: { gulp_inject: './editor.html' },
@@ -8,8 +9,15 @@ $$.control.registerControl('breizbot.htmleditor', {
 		useDataUrlForImg: false
 	},
 
+	/**
+	 * 
+	 * @param {*} elt 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Files.Interface} files 
+	 */
 	init: function (elt, pager, files) {
 
+		//@ts-ignore
 		const { useDataUrlForImg } = this.props
 		console.log('useDataUrlForImg', useDataUrlForImg)
 

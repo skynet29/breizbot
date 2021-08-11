@@ -24,11 +24,5 @@ $$.service.registerService('breizbot.notifs', {
 			}
 
 		}
-	},
-	$iface: `
-		sendNotif(to, notif):Promise
-		removeNotif(notifId):Promise
-		getNotifs():Promise
-		getNotifCount():Promise
-	`
+	}
 });

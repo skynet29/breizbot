@@ -1,7 +1,5 @@
 $$.control.registerControl('breizbot.viewer', {
 
-	deps: ['breizbot.files'],
-
 	template: {gulp_inject: './viewer.html'},
 
 	props: {
@@ -9,7 +7,7 @@ $$.control.registerControl('breizbot.viewer', {
 		url: '#'
 	},
 	
-	init: function(elt, files) {
+	init: function(elt) {
 
 		let {type, url} = this.props
 

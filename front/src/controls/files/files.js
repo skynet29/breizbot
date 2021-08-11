@@ -1,5 +1,11 @@
+//@ts-check
 (function () {
 
+	/**
+	 * 
+	 * @param {string} name 
+	 * @returns 
+	 */
 	function getIconClass(name) {
 		name = name.toLowerCase()
 		if (name.endsWith('.pdf')) {
@@ -21,6 +27,10 @@
 		return 'fa-file'
 	}
 
+	/**
+	 * 
+	 * @param {[Breizbot.Services.Files.FileInfo]} files 
+	 */
 	function sortFiles(files) {
 		files.sort((a, b) => {
 			if (a.folder && !b.folder) {
@@ -49,10 +59,14 @@
 
 		template: { gulp_inject: './files.html' },
 
+		/**
+		 * 
+		 * @param {*} elt 
+		 * @param {Breizbot.Services.Files.Interface} srvFiles 
+		 */
 		init: function (elt, srvFiles) {
 
 			const thumbnailSize = '100x?'
-			const maxUploadSize = 10 * 1024 * 2014 // 10 Mo
 
 			let selected = false
 
@@ -116,7 +130,7 @@
 							const filterValue = this.mp3Filters[f]
 							//console.log('filterValue', filterValue)
 							if (filterValue != 'All') {
-								ret &= (filterValue === value)
+								ret &&= (filterValue === value)
 							}
 						}
 						//console.log('ret', ret)
@@ -409,25 +423,7 @@
 			this.getMP3Filters = function () {
 				return ctrl.model.mp3Filters
 			}
-		},
-
-		$iface: `
-			reload();
-			updateFile(idx, fileInfo);
-			insertFile(fileInfo, idx);
-			removeFiles([number]);
-			setMP3Filters(mp3Filter);
-			getMP3Filters(): Mp3Filter;
-			getFiles(): [FileInfo];
-			getFilteredFiles(): [FileInfo];
-			getSelFiles(): [{fileName, idx}];
-			getSelFileNames() :[string];
-			getNbSelFiles(): number;
-			toggleSelection();
-			getRootDir(): string;
-		`,
-		$events: 'fileclick;contextmenuItem,selchange,dirchange'
-
+		}
 	});
 
 })();

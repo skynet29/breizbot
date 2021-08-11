@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
@@ -7,7 +8,12 @@ $$.control.registerControl('rootPage', {
 	props: {
 		birthdayScheduleTime: '1000'
 	},
-
+	/**
+	 * 
+	 * @param {Breizbot.Services.User.Interface} users 
+	 * @param {Breizbot.Services.Songs.Interface} songs 
+	 * @param {*} params 
+	 */
 	init: function (elt, users, songs, params) {
 
 		const settings = $.extend(this.props, params)
@@ -40,6 +46,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onApply: async function(ev) {
 					ev.preventDefault()
+					/**@type {Breizbot.Services.User.UserSettings} */
 					const data = $(this).getFormData()
 					console.log('data', data)
 					await users.setUserSettings(data)

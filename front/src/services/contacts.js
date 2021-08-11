@@ -25,10 +25,5 @@ $$.service.registerService('breizbot.contacts', {
 			
 
 		}
-	},
-	$iface: `
-		addContact(name, email):Promise
-		getContacts():Promise(contacts)
-		removeContact(contactId):Promise
-	`
+	}
 });

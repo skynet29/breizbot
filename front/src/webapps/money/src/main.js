@@ -1,9 +1,15 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
 	deps: ['breizbot.pager', 'breizbot.http'],
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Http.Interface} http 
+	 */
 	init: function (elt, pager, http) {
 
 		const cmdMap = {

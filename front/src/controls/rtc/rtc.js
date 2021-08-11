@@ -13,8 +13,8 @@ $$.control.registerControl('breizbot.rtc', {
 
 	/**
 	 * 
-	 * @param {Breizbot.RTC.Interface} rtc 
-	 * @param {Breizbot.Pager.Interface} pager 
+	 * @param {Breizbot.Services.RTC.Interface} rtc 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 */
 	init: function(elt, rtc, pager) {
 

@@ -11,9 +11,9 @@ $$.control.registerControl('addBook', {
 
     /**
      * 
-     * @param {Breizbot.Pager.Interface} pager 
-     * @param {Breizbot.Http.Interface} http 
-     * @param {Breizbot.Files.Interface} srvFile 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     * @param {Breizbot.Services.Http.Interface} http 
+     * @param {Breizbot.Services.Files.Interface} srvFile 
      */
     init: function (elt, pager, http, srvFile) {
 

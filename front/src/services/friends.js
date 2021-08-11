@@ -26,11 +26,5 @@ $$.service.registerService('breizbot.friends', {
 
 
 		}
-	},
-	$iface: `
-        getFriends():Promise
-        getFriendInfo(friend):Promise
-        setFriendInfo(friend, groups, positionAuth):Promise
-		addFriend(friendUserName):Promise
-	`
+	}
 });

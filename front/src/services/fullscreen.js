@@ -44,10 +44,5 @@ $$.service.registerService('breizbot.fullscreen', {
             enter,
             exit
         }
-    },
-    $iface: `
-        init(callback(isFullScreen))
-        enter()
-        exit()
-	`
+    }
 });

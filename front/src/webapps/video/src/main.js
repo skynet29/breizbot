@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 
@@ -5,6 +6,10 @@ $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.RTC.Interface} rtc 
+	 */
 	init: function(elt, rtc) {
 
 		rtc.on('status', (data) => {

@@ -12,7 +12,7 @@ $$.control.registerControl('form', {
 
     /**
      * 
-     * @param {Breizbot.Pager.Interface} pager 
+     * @param {Breizbot.Services.Pager.Interface} pager 
      */
     init: function (elt, pager) {
 

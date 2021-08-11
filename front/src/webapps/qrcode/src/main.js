@@ -1,4 +1,6 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
+	
 
 	template: { gulp_inject: './main.html' },
 
@@ -13,7 +15,6 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onBarcode: function (ev, barcode) {
 					console.log('onBarcode', barcode)
-					const iface = $(this).iface()
 					const { format, rawValue } = barcode
 					let content = null
 					if (format == 'qr_code') {
@@ -28,17 +29,16 @@ $$.control.registerControl('rootPage', {
 						}
 					}
 					$$.ui.showAlert({ title: 'BarCode Detected', content }, () => {
-						iface.startBarcodeDetection()
+						camera.startBarcodeDetection()
 					})
 				},
 				onCameraReady: async function (ev) {
 					console.log('onCameraReady')
-					const iface = $(this).iface()
-					const capabilities = await iface.getCapabilities()
+					const capabilities = await camera.getCapabilities()
 					console.log('capabilities', capabilities)
 
 					if (capabilities.zoom) {
-						const settings = iface.getSettings()
+						const settings = camera.getSettings()
 						//console.log('settings', settings)
 						const { min, max, step } = capabilities.zoom
 						ctrl.scope.slider.setData({ min, max, step })
@@ -46,20 +46,23 @@ $$.control.registerControl('rootPage', {
 						ctrl.setData({ hasZoom: true })
 					}
 
-					iface.startBarcodeDetection()
+					camera.startBarcodeDetection()
 
 				},
 				onZoomChange: function (ev) {
 					const value = $(this).getValue()
 					console.log('onZoomChange', value)
-					ctrl.scope.camera.setZoom(value)
+					camera.setZoom(value)
 				}
 			}
 		})
 
+		/**@type {Brainjs.Controls.Camera.Interface} */
+		const camera = ctrl.scope.camera
+
 		$$.util.getVideoDevices().then((videoDevices) => {
 			if (videoDevices.length > 0) {
-				ctrl.scope.camera.start()
+				camera.start()
 			}
 			else {
 				ctrl.setData({ showMessage: true })

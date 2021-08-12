@@ -34,12 +34,11 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onCameraReady: async function () {
 					console.log('onCameraReady')
-					const iface = $(this).iface()
-					const capabilities = await iface.getCapabilities()
+					const capabilities = await camera.getCapabilities()
 					console.log('capabilities', capabilities)
 
 					if (capabilities.zoom) {
-						const settings = iface.getSettings()
+						const settings = camera.getSettings()
 						//console.log('settings', settings)
 						const { min, max, step } = capabilities.zoom
 						ctrl.scope.slider.setData({ min, max, step })
@@ -52,7 +51,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onTakePicture: async function (ev) {
 					audio.play()
-					const blob = await ctrl.scope.camera.takePicture()
+					const blob = await camera.takePicture()
 					const url = URL.createObjectURL(blob)
 					pager.pushPage('breizbot.viewer', {
 						title: 'Snapshot',
@@ -87,10 +86,13 @@ $$.control.registerControl('rootPage', {
 				onZoomChange: function (ev) {
 					const value = $(this).getValue()
 					console.log('onZoomChange', value)
-					ctrl.scope.camera.setZoom(value)
+					camera.setZoom(value)
 				}
 			}
 		})
+
+		/**@type {Brainjs.Controls.Camera.Interface} */
+		const camera = ctrl.scope.camera
 
 		async function getVideoDevices() {
 			const videoDevices = await $$.util.getVideoDevices()
@@ -101,7 +103,7 @@ $$.control.registerControl('rootPage', {
 			})
 
 			if (videoDevices.length > 0) {
-				ctrl.scope.camera.start()
+				camera.start()
 			}
 			else {
 				ctrl.setData({ showMessage: true })

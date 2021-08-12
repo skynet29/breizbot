@@ -1,9 +1,16 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	deps: ['breizbot.broker', 'breizbot.appData', 'breizbot.pager'],
 
 	template: { gulp_inject: './main.html' },
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.Broker.Interface} broker 
+	 * @param {Breizbot.Services.AppData.Interface} appData 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 */
 	init: function (elt, broker, appData, pager) {
 
 		let { zoom, center, markers } = appData.getData()
@@ -22,15 +29,15 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onShapeContextMenu: function (ev, data) {
 					//console.log('onShapeContextMenu', data)
-					const {id, latlng, cmd} = data
+					const {id, cmd} = data
 					if (cmd == 'remove') {
-						ctrl.scope.map.removeShape(id)
+						map.removeShape(id)
 						delete markers[id]	
 					}
 					if (cmd == "zoom") {
-						const info = ctrl.scope.map.getShapeInfo(id)
+						const info = map.getShapeInfo(id)
 						//console.log('info', info)
-						ctrl.scope.map.flyTo(info.latlng, 13)
+						map.flyTo(info.latlng, 13)
 					}
 
 				},
@@ -57,15 +64,15 @@ $$.control.registerControl('rootPage', {
 							//console.log('onReturn', coord)
 							const latlng = { lat: coord.lat, lng: coord.lon }
 							try {
-								ctrl.scope.map.updateShape('marker', { latlng })
+								map.updateShape('marker', { latlng })
 							}
 							catch (e) {
-								ctrl.scope.map.addShape('marker', {
+								map.addShape('marker', {
 									type: 'marker',
 									latlng
 								})
 							}
-							ctrl.scope.map.flyTo(latlng, 13)
+							map.flyTo(latlng, 13)
 						}
 					})
 				},
@@ -92,6 +99,9 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
+		/**@type {Brainjs.Controls.Map.Interface} */
+		const map = ctrl.scope.map
+
 		function initMarkers() {			
 			for(let [id, data] of Object.entries(markers)) {
 				addMarker(id, data.latlng, data.tooltip)
@@ -104,7 +114,7 @@ $$.control.registerControl('rootPage', {
 
 		function addMarker(shapeId, latlng, tooltip) {
 			//console.log('addMarker', shapeId, latlng, tooltip)
-			ctrl.scope.map.addShape(shapeId, {
+			map.addShape(shapeId, {
 				type: 'marker',
 				layer: 'markers',
 				latlng,
@@ -146,10 +156,10 @@ $$.control.registerControl('rootPage', {
 			}
 			//console.log('updateLocation', latlng)
 			try {
-				ctrl.scope.map.updateShape('location', { latlng })
+				map.updateShape('location', { latlng })
 			}
 			catch (e) {
-				ctrl.scope.map.addShape('location', {
+				map.addShape('location', {
 					type: 'marker',
 					icon: {
 						type: 'font',
@@ -173,13 +183,13 @@ $$.control.registerControl('rootPage', {
 			const shapeId = 'friends.' + data.userName
 			const popupContent = data.userName + '<br>' + time
 			try {
-				ctrl.scope.map.updateShape(shapeId, {
+				map.updateShape(shapeId, {
 					latlng: data.coords,
 					popupContent
 				})
 			}
 			catch (e) {
-				ctrl.scope.map.addShape(shapeId, {
+				map.addShape(shapeId, {
 					type: 'marker',
 					layer: 'friends',
 					latlng: data.coords,
@@ -209,21 +219,20 @@ $$.control.registerControl('rootPage', {
 			const shape = msg.data
 
 			if (shape == undefined) {
-				ctrl.scope.map.removeShape(shapeId)
+				map.removeShape(shapeId)
 				return
 			}
 
 			try {
-				ctrl.scope.map.updateShape(shapeId, shape)
+				map.updateShape(shapeId, shape)
 			}
 			catch (e) {
-				ctrl.scope.map.addShape(shapeId, shape)
+				map.addShape(shapeId, shape)
 			}
 		})
 
 		this.onAppExit = function () {
 			//console.log('[map] onAppExit')
-			const { map } = ctrl.scope
 			return appData.saveData({ 
 				zoom: map.getZoom(), 
 				center: map.getCenter(),

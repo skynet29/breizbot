@@ -17,10 +17,5 @@ $$.service.registerService('breizbot.appData', {
 			}
 			
 		}
-	},
-
-	$iface: `
-		getData():Data;
-		saveData(data):Promise 
-		`
+	}
 });

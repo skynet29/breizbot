@@ -130,7 +130,7 @@
 							const filterValue = this.mp3Filters[f]
 							//console.log('filterValue', filterValue)
 							if (filterValue != 'All') {
-								ret &&= (filterValue === value)
+								ret &= (filterValue === value)
 							}
 						}
 						//console.log('ret', ret)

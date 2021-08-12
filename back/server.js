@@ -133,7 +133,7 @@ function dbReady() {
 			res.sendStatus(401)
 		}
 		else {
-			if ((req.method == 'POST' || req.method == 'PUT') && req.url.split('/').pop() != 'position') {
+			if ((['POST', 'PUT', 'DELETE'].includes(req.method)) && req.url.split('/').pop() != 'position') {
 				console.log(`[${req.method}]`, req.session.user, req.url, req.body)
 			}
 			else if (req.method == 'GET') {

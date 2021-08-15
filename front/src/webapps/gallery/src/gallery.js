@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('gallery', {
 
 	template: {gulp_inject: './gallery.html'},
@@ -11,8 +12,14 @@ $$.control.registerControl('gallery', {
 		friendUser: ''
 	},
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.Files.Interface} filesSrv 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 */
 	init: function(elt, filesSrv, pager) {
 
+		//@ts-ignore
 		const {rootDir, files, firstIdx, friendUser} = this.props
 		const diaporamaInterval = 10 * 1000 // 10 sec
 

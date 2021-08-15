@@ -3,13 +3,18 @@
 'use strict';
 
 const avs = require('./lib/avs')
-
+//@ts-check
 
 $$.control.registerControl('rootPage', {
 	template: {gulp_inject: './main.html'},
 
 	deps: ['breizbot.broker', 'breizbot.appData'],
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.Broker.Interface} broker 
+	 * @param {Breizbot.Services.AppData.Interface} appData 
+	 */
 	init: function(elt, broker, appData) {
 
 		let cnxId

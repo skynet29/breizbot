@@ -1,10 +1,17 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
 	deps: ['breizbot.pager', 'breizbot.files', 'app.folder', 'breizbot.broker'],
 
-
+	/**
+	 * 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Files.Interface} srvFiles 
+	 * @param {AppFolder.Interface} folder 
+	 * @param {Breizbot.Services.Broker.Interface} broker 
+	 */
 	init: function (elt, pager, srvFiles, folder, broker) {
 
 		const progressDlg = $$.ui.progressDialog()
@@ -54,26 +61,24 @@ $$.control.registerControl('rootPage', {
 						//console.log('getItems', info)
 						const { name, folder, isImage } = info
 						const ret = {}
-						if (name != '..') {
-							ret.delete = { name: 'Delete', icon: 'fas fa-trash' }
-							ret.rename = { name: 'Rename', icon: 'fas fa-i-cursor' }
-							if (isImage) {
-								ret.makeResizedCopy = { name: 'Make resized copy', icon: 'fas fa-compress-arrows-alt' }
-							}
-							if (!folder) {
-								ret.download = { name: 'Download', icon: 'fas fa-upload' }
-							}
-							if (name.toLowerCase().endsWith('.mp4')) {
-								ret.convertToMP3 = { name: 'Convert to MP3' }
-							}
-							if (folder) {
-								ret.zipFolder = { name: 'Zip Folder', icon: 'fas fa-compress' }
-							}
-							if (!folder && name.endsWith('.zip')) {
-								ret.unzipFile = { name: 'Unzip File', icon: 'fas fa-expand-alt' }
-							}
-
+						ret.delete = { name: 'Delete', icon: 'fas fa-trash' }
+						ret.rename = { name: 'Rename', icon: 'fas fa-i-cursor' }
+						if (isImage) {
+							ret.makeResizedCopy = { name: 'Make resized copy', icon: 'fas fa-compress-arrows-alt' }
 						}
+						if (!folder) {
+							ret.download = { name: 'Download', icon: 'fas fa-upload' }
+						}
+						if (name.toLowerCase().endsWith('.mp4')) {
+							ret.convertToMP3 = { name: 'Convert to MP3' }
+						}
+						if (folder) {
+							ret.zipFolder = { name: 'Zip Folder', icon: 'fas fa-compress' }
+						}
+						if (!folder && name.endsWith('.zip')) {
+							ret.unzipFile = { name: 'Unzip File', icon: 'fas fa-expand-alt' }
+						}
+
 						return ret
 					}
 
@@ -89,7 +94,7 @@ $$.control.registerControl('rootPage', {
 					if (url != null) {
 						progressDlg.setPercentage(0)
 						progressDlg.show('Downloading...')
-							const resp = await folder.importUrl(ctrl.model.rootDir, url)
+						const resp = await folder.importUrl(ctrl.model.rootDir, url)
 						//console.log('resp', resp)
 
 						async function onProgress(msg) {

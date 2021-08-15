@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('groups', {
 
     template: { gulp_inject: './groups.html' },
@@ -8,8 +9,15 @@ $$.control.registerControl('groups', {
         friendUserName: ''
     },
 
+    /**
+     * 
+     * @param {Breizbot.Services.Friends.Interface} friendsSrv 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     * @param {Breizbot.Services.Files.Interface} filesSrv 
+     */
     init: function (elt, friendsSrv, pager, filesSrv) {
 
+        //@ts-ignore
         const { friendUserName } = this.props
 
         const ctrl = $$.viewController(elt, {
@@ -24,14 +32,14 @@ $$.control.registerControl('groups', {
         })
 
         async function getGroups() {
-            let groups = await filesSrv.list('/share', {folderOnly: true})
-            groups = groups.map((f) => f.name)
-            console.log('groups', groups)
+            const groups = await filesSrv.list('/share', {folderOnly: true})
+            const groupsName = groups.map((f) => f.name)
+            //console.log('groupsName', groupsName)
             const info = await friendsSrv.getFriendInfo(friendUserName)
             //console.log('friendInfo', info)
             const selectedGroups = info.groups
             const { positionAuth } = info
-            ctrl.setData({ groups, selectedGroups: [], positionAuth })
+            ctrl.setData({ groups: groupsName, selectedGroups: [], positionAuth })
             ctrl.setData({ selectedGroups })
         }
 

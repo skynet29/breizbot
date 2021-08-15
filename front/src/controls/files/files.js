@@ -278,17 +278,7 @@
 						const info = ctrl.model.getFiles()[idx]
 
 						const dirName = info.name
-						let newDir
-						//console.log('onFolderClick', dirName)
-						if (dirName == '..') {
-							const split = ctrl.model.rootDir.split('/')
-							split.pop()
-							split.pop()
-							newDir = split.join('/') + '/'
-						}
-						else {
-							newDir = ctrl.model.rootDir + dirName + '/'
-						}
+						const newDir = ctrl.model.rootDir + dirName + '/'
 						ev.stopPropagation()
 						elt.trigger('dirchange', { newDir })
 						loadData(newDir)
@@ -305,11 +295,6 @@
 				ctrl.setData({ loading: true })
 				const files = await srvFiles.list(rootDir, { filterExtension, imageOnly, getMP3Info }, friendUser)
 				//console.log('files', files)
-
-
-				if (rootDir != '/') {
-					files.unshift({ name: '..', folder: true })
-				}
 
 				sortFiles(files)
 
@@ -331,16 +316,16 @@
 
 			function isShareSelected() {
 				return ctrl.model.rootDir == '/' &&
-						(ctrl.model.files.findIndex((f) => f.name == 'share' && f.folder && f.checked) != -1)
+					(ctrl.model.files.findIndex((f) => f.name == 'share' && f.folder && f.checked) != -1)
 
 			}
 
 			this.getSelFiles = function () {
 				const selFiles = []
-				ctrl.model.files.forEach((f, idx) => {	
-					const { name, checked }	= f			
+				ctrl.model.files.forEach((f, idx) => {
+					const { name, checked } = f
 					if (checked === true && name != '..') {
-						selFiles.push({ fileName: ctrl.model.rootDir + name, idx})
+						selFiles.push({ fileName: ctrl.model.rootDir + name, idx })
 					}
 				})
 				//console.log('selFiles', selFiles)	
@@ -358,7 +343,7 @@
 			this.toggleSelection = function () {
 				selected = !selected
 				elt.find('.check').prop('checked', selected)
-				ctrl.model.files.forEach((f) => {f.checked = selected})
+				ctrl.model.files.forEach((f) => { f.checked = selected })
 				ctrl.updateArrayValue('files', 'files')
 				elt.trigger('selchange', { isShareSelected: isShareSelected() })
 			}
@@ -401,7 +386,7 @@
 				idx = files.findIndex((i) => i.name == fileName)
 				files[idx] = info
 				//console.log('files', files)
-			}			
+			}
 
 			this.getFiles = function () {
 				return ctrl.model.files.filter((f) => !f.folder)

@@ -1,7 +1,15 @@
+//@ts-check
 $$.service.registerService('app.folder', {
 
     deps: ['breizbot.http', 'breizbot.broker'],
 
+    /**
+     * 
+     * @param {*} config 
+     * @param {Breizbot.Services.Http.Interface} http 
+     * @param {Breizbot.Services.Broker.Interface} broker 
+     * @returns 
+     */
     init: function (config, http, broker) {
 
 		let srcId

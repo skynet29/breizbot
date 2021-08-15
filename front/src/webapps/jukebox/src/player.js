@@ -1,3 +1,4 @@
+//@ts-check
 (function () {
 
 	function getTime(duration) {
@@ -22,8 +23,15 @@
 			isPlaylist: false
 		},
 
+		/**
+		 * 
+		 * @param {Breizbot.Services.Files.Interface} filesSrv 
+		 * @param {Breizbot.Services.Http.Interface} http 
+		 * @param {Breizbot.Services.Pager.Interface} pager 
+		 */
 		init: function (elt, filesSrv, http, pager) {
 
+			//@ts-ignore
 			const { rootDir, files, firstIdx, friendUser, fileCtrl, isPlaylist } = this.props
 
 			let shuffleIndexes = null
@@ -67,7 +75,7 @@
 					},
 					onLoad: function () {
 						//console.log('duration', this.duration)
-						ctrl.setData({ duration: Math.floor(this.duration), volume: audio.volume })
+						ctrl.setData({ duration: Math.floor(audio.duration), volume: audio.volume })
 					},
 
 					onTimeUpdate: function () {
@@ -153,6 +161,7 @@
 				})
 			}
 
+			/**@type {HTMLAudioElement} */
 			const audio = ctrl.scope.audio.get(0)
 
 			function getName(idx) {

@@ -154,9 +154,9 @@ $$.control.registerControl('breizbot.home', {
 				},
 				onTabRemove: function (ev, idx) {
 					//console.log('onTabRemove', idx)
-					const info = ctrl.scope.tabs.getTabInfo(idx)
+					const info = tabs.getTabInfo(idx)
 					info.ctrlIface.onAppExit().then(() => {
-						ctrl.scope.tabs.removeTab(idx)
+						tabs.removeTab(idx)
 					})
 				},
 				onTabActivate: function (ev, ui) {
@@ -165,11 +165,11 @@ $$.control.registerControl('breizbot.home', {
 					const newTabIdx = newTab.index()
 					const oldTabIdx = oldTab.index()
 					if (oldTabIdx > 0) {
-						const info = ctrl.scope.tabs.getTabInfo(oldTabIdx)
+						const info = tabs.getTabInfo(oldTabIdx)
 						info.ctrlIface.onAppSuspend()
 					}
 					if (newTabIdx > 0) {
-						const info = ctrl.scope.tabs.getTabInfo(newTabIdx)
+						const info = tabs.getTabInfo(newTabIdx)
 						info.ctrlIface.onAppResume()
 					}
 					if (newTabIdx == 0) {

@@ -28,27 +28,8 @@ const assets = task('assets',
 	{dest: 'assets'}
 )
 
-const docJs = task('doc.js',
-	[
-		'./doc/*.js',
-	],
-	{isCode: true, concat: 'doc.js'}
 
-)
-
-const docHtml = task('doc.html',
-	[
-		'./doc/index.html',
-	],
-	{concat: 'doc.html'}
-)
-
-
-//gulp.task('doc', gulp.series(docJs, docHtml))
-const doc = gulp.series(docJs, docHtml)
-
-
-const all = gulp.series(breizbotJs, breizbotCss, assets, doc)
+const all = gulp.series(breizbotJs, breizbotCss, assets)
 
 exports.default = all
 
@@ -57,7 +38,5 @@ exports.watch = gulp.series(all, function() {
 	gulp.watch(['./src/controls/**/*.js', './src/controls/**/*.html', './src/services/**/*.js'], breizbotJs)
 	gulp.watch(['./src/controls/**/*.scss'], breizbotCss)
 	gulp.watch(['./src/assets/*'], assets)
-	gulp.watch(['./doc/*.html', './doc/*.js'], doc)
 	
-
 })

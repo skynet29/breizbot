@@ -359,7 +359,12 @@
 				else {
 					idx = ctrl.model.getFiles().filter((f) => f.folder).length
 					//console.log('idx', idx)
-					ctrl.insertArrayItemAfter('files', idx - 1, fileInfo, 'files')
+					if (idx == 0) { // no folder, insert at the begining
+						ctrl.insertArrayItemBefore('files', 0, fileInfo, 'files')
+					}
+					else { // insert after last folder
+						ctrl.insertArrayItemAfter('files', idx - 1, fileInfo, 'files')
+					}
 				}
 				//console.log('files', ctrl.model.files)
 				ctrl.updateNode('info')

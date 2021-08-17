@@ -3,4 +3,4 @@ start.sh
 env.sh
 .vscode
 back/alexa/music
-*.d.ts
+global.d.ts

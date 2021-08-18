@@ -12,7 +12,7 @@
 
 		template: { gulp_inject: './player.html' },
 
-		deps: ['breizbot.files', 'breizbot.http', 'breizbot.pager'],
+		deps: ['breizbot.files', 'app.jukebox', 'breizbot.pager'],
 
 		props: {
 			rootDir: '',
@@ -26,12 +26,19 @@
 		/**
 		 * 
 		 * @param {Breizbot.Services.Files.Interface} filesSrv 
-		 * @param {Breizbot.Services.Http.Interface} http 
+		 * @param {AppJukebox.Interface} srvApp 
 		 * @param {Breizbot.Services.Pager.Interface} pager 
 		 */
-		init: function (elt, filesSrv, http, pager) {
+		init: function (elt, filesSrv, srvApp, pager) {
 
-			//@ts-ignore
+			/**@type {{
+			 * rootDir: string, 
+			 * files: Breizbot.Services.Files.FileInfo[] | AppJukebox.PlaylistInfo[], 
+			 * firstIdx: number,
+			 * friendUser: string,
+			 * fileCtrl: Breizbot.Controls.Files.Interface
+			 * isPlaylist: boolean
+			 * }} */
 			const { rootDir, files, firstIdx, friendUser, fileCtrl, isPlaylist } = this.props
 
 			let shuffleIndexes = null
@@ -194,7 +201,7 @@
 
 			async function getPlaylist() {
 				//console.log('getPlaylist')
-				playlist = await http.post('/getPlaylist')
+				playlist = await srvApp.getPlaylist()
 				//console.log('playlist', playlist)
 			}
 
@@ -228,7 +235,7 @@
 							if (cmd == 'new') {
 								const name = await $$.ui.showPrompt({ title: 'Add Playlist', label: 'Name:' })
 								if (name != null) {
-									const ret = await http.post('/addSong', { name, fileInfo, checkExists: true })
+									const ret = await srvApp.addSong(name, fileInfo, true)
 									if (!ret) {
 										$$.ui.showAlert({ title: 'Error', content: 'Playlist already exists' })
 									}
@@ -238,7 +245,7 @@
 								}
 							}
 							else {
-								await http.post('/addSong', { name: cmd, fileInfo, checkExists: false })
+								await srvApp.addSong(cmd, fileInfo, false)
 							}
 						}
 					}
@@ -261,11 +268,7 @@
 									//console.group('onReturn', tags)
 									files[idx].mp3 = tags
 									ctrl.setData(tags)
-									await http.post('/saveInfo', {
-										filePath: rootDir + name,
-										friendUser,
-										tags
-									})
+									await srvApp.saveInfo(rootDir + name, friendUser, tags)
 									await fileCtrl.updateFileInfo(name, { getMP3Info: true })
 								}
 							})

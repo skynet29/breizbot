@@ -295,7 +295,7 @@
 				//console.log('loadData', rootDir)
 				ctrl.setData({ loading: true })
 				const files = await srvFiles.list(rootDir, { filterExtension, imageOnly, getMP3Info }, friendUser)
-				//console.log('files', files)
+				console.log('files', files)
 
 				sortFiles(files)
 

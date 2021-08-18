@@ -11,6 +11,10 @@ $$.control.registerControl('rootPage', {
 	 */
 	init: function (elt, pager) {
 
+		/**
+		 * 
+		 * @param {Breizbot.Controls.Files.Interface} iface 
+		 */
 		function openFilterPage(iface) {
 			const mp3Filters = iface.getMP3Filters()
 			const files = iface.getFiles()
@@ -29,7 +33,8 @@ $$.control.registerControl('rootPage', {
 		}
 
 		function openFilePage(title, friendUser) {
-			pager.pushPage('breizbot.files', {
+			/**@type {Breizbot.Controls.Files.Interface} */
+			const fileCtrl = pager.pushPage('breizbot.files', {
 				title,
 				props: {
 					filterExtension: 'mp3',
@@ -41,7 +46,7 @@ $$.control.registerControl('rootPage', {
 						title: 'Filter',
 						icon: 'fas fa-filter',
 						onClick: function () {
-							openFilterPage(this)
+							openFilterPage(fileCtrl)
 						}
 					}
 				},
@@ -49,11 +54,10 @@ $$.control.registerControl('rootPage', {
 					fileclick: function (ev, info) {
 						console.log('info', info)
 						const { rootDir, fileName } = info
-						const iface = $(this).iface()
-						const files = iface.getFilteredFiles()
+						const files = fileCtrl.getFilteredFiles()
 						//console.log('files', files)
 						const firstIdx = files.findIndex((f) => f.name == fileName)
-						console.log('firstIdx', firstIdx)
+						//console.log('firstIdx', firstIdx)
 						pager.pushPage('player', {
 							title: 'Player',
 							props: {
@@ -61,7 +65,7 @@ $$.control.registerControl('rootPage', {
 								files,
 								rootDir,
 								friendUser,
-								fileCtrl: iface
+								fileCtrl
 							}
 						})
 

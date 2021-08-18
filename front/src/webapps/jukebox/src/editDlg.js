@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('editDlg', {
 
     template: {gulp_inject: './editDlg.html'},
@@ -9,8 +10,15 @@ $$.control.registerControl('editDlg', {
         fileName: ''
     },
 
+    /**
+     * 
+     * @param {Breizbot.Services.Http.Interface} http 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     */
     init: function(elt, http, pager) {
 
+        /**@type {{mp3: Breizbot.Services.Files.Mp3Info, fileName: string}} */
+        // @ts-ignore
         const {mp3, fileName} = this.props
 
         const ctrl = $$.viewController(elt, {

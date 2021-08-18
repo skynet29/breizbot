@@ -122,6 +122,7 @@ $$.control.registerControl('breizbot.pager', {
 			curInfo = { title, buttons, onReturn, onBack, ctrl: control }
 
 			ctrl.setData({ showBack: stack.length > 0, title, buttons: $$.util.objToArray(buttons, 'name') })
+			return control.iface()
 		}
 
 		this.setButtonVisible = function (buttonsVisible) {

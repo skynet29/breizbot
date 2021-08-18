@@ -38,6 +38,13 @@ declare namespace Breizbot {
                 width: number;
                 height: number;
             }
+
+            interface Mp3Info {
+                title: string;
+                artist: string;
+                year?: number;
+                genre?: string;
+            }
     
             interface FileInfo {
                 name: string;
@@ -46,6 +53,7 @@ declare namespace Breizbot {
                 isImage?: boolean;
                 mtime?: number;
                 dimension?: Dimension;
+                mp3?: Mp3Info;
             };
     
             interface FileOptions {
@@ -105,7 +113,7 @@ declare namespace Breizbot {
     
             interface Interface {
                 popPage(data: any): void;
-                pushPage(ctrlName: string, options: PagerOptions): void;
+                pushPage(ctrlName: string, options: PagerOptions): any;
     
                 setButtonVisible(buttonsVisible: { [buttonName]: boolean } | boolean): void;
                 setButtonEnabled(buttonsEnabled: { [buttonName]: boolean } | boolean): void;
@@ -328,14 +336,15 @@ declare namespace Breizbot {
 
             interface Interface {
                 reload();
-                updateFile(idx: number, fileInfo: Files.FileInfo): void;
-                insertFile(fileInfo: Files.FileInfo, idx?: number): void;
+                updateFile(idx: number, fileInfo: Services.Files.FileInfo): void;
+                insertFile(fileInfo: Services.Files.FileInfo, idx?: number): void;
                 removeFiles(fileIdx: number[]): void;
                 setMP3Filters(mp3Filter: Mp3Filter);
                 getMP3Filters(): Mp3Filter;
-                getFiles(): Files.FileInfo[];
-                getFilteredFiles():Files.FileInfo[];
-                getSelFiles(): FileDesc[];
+                getFiles(): Services.Files.FileInfo[];
+                getFilteredFiles(): Services.Files.FileInfo[];
+                updateFileInfo(fileName: string, options: Services.Files.FileOptions):Promise;
+                getSelFiles(): FileDesc[]
                 getSelFileNames() :string[];
                 getNbSelFiles(): number;
                 toggleSelection(): void;

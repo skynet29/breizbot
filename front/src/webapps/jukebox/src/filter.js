@@ -1,4 +1,4 @@
-
+//@ts-check
 $$.control.registerControl('filterDlg', {
 
     template: { gulp_inject: './filter.html' },
@@ -10,8 +10,16 @@ $$.control.registerControl('filterDlg', {
         mp3Filters: null
     },
 
+    /**
+     * 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     */
     init: function (elt, pager) {
 
+        /**@type {{
+         * files: Breizbot.Services.Files.FileInfo[], 
+         * mp3Filters: Breizbot.Controls.Files.Mp3Filter}}  */
+        // @ts-ignore
         let { files, mp3Filters } = this.props
 
         mp3Filters = mp3Filters || {}

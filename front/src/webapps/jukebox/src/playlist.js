@@ -1,9 +1,15 @@
+//@ts-check
 $$.control.registerControl('playlist', {
-    deps: ['breizbot.http', 'breizbot.pager'],
+    deps: ['app.jukebox', 'breizbot.pager'],
 
     template: { gulp_inject: './playlist.html' },
 
-    init: function (elt, http, pager) {
+    /**
+     * 
+     * @param {AppJukebox.Interface} srvApp 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     */
+    init: function (elt, srvApp, pager) {
 
         let selectedIndex = -1
 
@@ -49,7 +55,7 @@ $$.control.registerControl('playlist', {
                     const idx = $(this).closest('.item').index()
                     //console.log('idx', idx)
                     const id = ctrl.model.songs[idx].id
-                    await http.delete('/removeSong/' + id)
+                    await srvApp.removeSong(id)
                     ctrl.removeArrayItem('songs', idx, 'songs')
                     ctrl.updateNode('nbSongs')
                     pager.setButtonVisible({ play: ctrl.model.songs.length != 0 })
@@ -88,7 +94,7 @@ $$.control.registerControl('playlist', {
 
         async function getPlaylist() {
             //console.log('getPlaylist')
-            const playlist = await http.post('/getPlaylist')
+            const playlist = await srvApp.getPlaylist()
             //console.log('playlist', playlist)
             ctrl.setData({ playlist })
             if (playlist.length != 0) {
@@ -100,8 +106,8 @@ $$.control.registerControl('playlist', {
         }
 
         async function getPlaylistSongs(name) {
-            const songs = await http.post('/getPlaylistSongs', { name })
-            console.log('songs', songs)
+            const songs = await srvApp.getPlaylistSongs(name)
+            //console.log('songs', songs)
             ctrl.setData({ songs })
             pager.setButtonVisible({ play: songs.length != 0 })
             selectedIndex = -1
@@ -124,7 +130,7 @@ $$.control.registerControl('playlist', {
                         selectedIndex--
                         ctrl.scope.songs.find('.item').eq(selectedIndex).addClass('w3-blue')
                         setUpDownState()
-                        await http.post('/swapSongIndex', {id1, id2})
+                        await srvApp.swapSongIndex(id1, id2)
                     }
                 },
                 moveDown: {
@@ -139,7 +145,7 @@ $$.control.registerControl('playlist', {
                         selectedIndex++
                         ctrl.scope.songs.find('.item').eq(selectedIndex).addClass('w3-blue')
                         setUpDownState()
-                        await http.post('/swapSongIndex', {id1, id2})
+                        await srvApp.swapSongIndex(id1, id2)
 
                     }
 
@@ -155,7 +161,7 @@ $$.control.registerControl('playlist', {
                         },
                             async () => {
                                 console.log('OK')
-                                await http.post('/removePlaylist', { name })
+                                await srvApp.removePlaylist(name)
                                 getPlaylist()
                             })
                     }
@@ -167,8 +173,8 @@ $$.control.registerControl('playlist', {
                     icon: 'fa fa-play',
                     onClick: function () {
                         pager.pushPage('player', {
+                            title: 'Player',
                             props: {
-                                title: 'Player',
                                 isPlaylist: true,
                                 files: ctrl.model.songs,
                                 firstIdx: Math.max(0, selectedIndex)

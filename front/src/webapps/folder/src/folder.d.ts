@@ -1,15 +1,15 @@
 declare namespace AppFolder {
 
     interface Interface {
-        removeFiles(fileNames: [string]):Promise;
+        removeFiles(fileNames: string[]):Promise;
 
         mkdir(fileName: string): Promise;
  
-        moveFiles(fileNames: [string], destPath: string): Promise;
+        moveFiles(fileNames: string[], destPath: string): Promise;
  
-        shareFiles(fileNames: [string], groupName: string): Promise;
+        shareFiles(fileNames: string[], groupName: string): Promise;
  
-        copyFiles(fileNames: [string], destPath: string): Promise;
+        copyFiles(fileNames: string[], destPath: string): Promise;
  
         renameFile(filePath: string, oldFileName: string, newFileName: string): Promise;
  

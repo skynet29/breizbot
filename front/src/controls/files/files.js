@@ -29,7 +29,7 @@
 
 	/**
 	 * 
-	 * @param {[Breizbot.Services.Files.FileInfo]} files 
+	 * @param {Breizbot.Services.Files.FileInfo[]} files 
 	 */
 	function sortFiles(files) {
 		files.sort((a, b) => {
@@ -70,15 +70,16 @@
 
 			let selected = false
 
+			/**@type {Breizbot.Controls.Files.Props} */
 			let {
 				selectionEnabled,
 				filterExtension,
 				friendUser,
 				imageOnly,
 				getMP3Info,
-				mp3Filters,
+				mp3Filters,				
 				menuItems
-			} = this.props
+			} = this.props 
 
 			const ctrl = $$.viewController(elt, {
 

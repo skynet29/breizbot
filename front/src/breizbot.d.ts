@@ -57,13 +57,13 @@ declare namespace Breizbot {
             };
     
             interface Interface {
-                list(path: string, options: FileOptions, friendUser?: string): Promise<[FileInfo]>;
+                list(path: string, options: FileOptions, friendUser?: string): Promise<FileInfo[]>;
                 fileInfo(filePath: string, friendUser?: string, options?: FileOptions): Promise<FileInfo>;
                 fileUrl(fileName: string, friendUser?: string): string;
                 fileThumbnailUrl(fileName: string, size: string, friendUser?: string): string;
                 fileAppUrl(fileName: string): string;
                 fileAppThumbnailUrl(fileName: string, size: string): string;
-                uploadFile(blob: Blob, saveAsfileName: string, destPath: string, onUploadProgress: function): Promise;
+                uploadFile(blob: Blob, saveAsfileName: string, destPath: string, onUploadProgress: (percentComplete: number) => void): Promise;
                 saveFile(blob: Blob, saveAsfileName: string, destPath?: string): Promise;
             }
     
@@ -107,8 +107,8 @@ declare namespace Breizbot {
                 popPage(data: any): void;
                 pushPage(ctrlName: string, options: PagerOptions): void;
     
-                setButtonVisible(buttonsVisible: { [buttonName]: boolean }): void;
-                setButtonEnabled(buttonsEnabled: { [buttonName]: boolean }): void;
+                setButtonVisible(buttonsVisible: { [buttonName]: boolean } | boolean): void;
+                setButtonEnabled(buttonsEnabled: { [buttonName]: boolean } | boolean): void;
             }
     
         };
@@ -158,7 +158,7 @@ declare namespace Breizbot {
             interface Interface {
                 sendNotif(to: string, notif: NotifDesc):Promise;
                 removeNotif(notifId: string):Promise;
-                getNotifs():Promise<[NotifInfo]>;
+                getNotifs():Promise<NotifInfo[]>;
                 getNotifCount():Promise<number>
             }
         }
@@ -182,7 +182,7 @@ declare namespace Breizbot {
     
             interface Interface {
                 addContact(info: ContactInfo):Promise
-                getContacts():Promise<[ContactInfo]>
+                getContacts():Promise<ContactInfo[]>
                 removeContact(contactId: string):Promise
                 updateContactInfo(contactId: string, info: ContactInfo): Promise
             }
@@ -209,13 +209,13 @@ declare namespace Breizbot {
             }
     
             interface UserInfo extends UserCreateInfo {
-                apps: [string];
+                apps: string[];
                 createDate: number;
                 lastLoginDate: number;
             }
     
             interface AdminInterface {
-                list():Promise<[UserInfo]>;
+                list():Promise<UserInfo[]>;
                 add(data: UserCreateInfo):Promise;
                 remove(user: string):Promise;
                 update(user: string, data: UserInfo):Promise;
@@ -227,7 +227,7 @@ declare namespace Breizbot {
                 changePwd(newPwd: string):Promise;
                 getUserSettings():Promise<UserSettings>
                 setUserSettings(settings: UserSettings):Promise
-                match(match: string):Promise<[UserCreateInfo]>;
+                match(match: string):Promise<UserCreateInfo[]>;
     
             }
         }
@@ -243,29 +243,31 @@ declare namespace Breizbot {
                 iconCls: string;
                 colorCls: string;
                 title: string;
+                description: string;
             }
     
             interface AppInfo {
                 activated: boolean;
+                name: string;
                 props: AppProps;
             }
             
             interface Interface {
-                listAll():Promise<[AppInfo]>;
+                listAll():Promise<AppInfo[]>;
             }
         }
     
         declare namespace Friends {
             interface FriendInfo {
                 friend: string;
-                groups: [string];
+                groups: string[];
                 positionAuth: boolean;
             }
     
             interface Interface {
-                getFriends():Promise<[FriendInfo]>;
+                getFriends():Promise<FriendInfo[]>;
                 getFriendInfo(friend: string):Promise<FriendInfo>
-                setFriendInfo(friend: string, groups: [string], positionAuth: boolean):Promise
+                setFriendInfo(friend: string, groups: string[], positionAuth: boolean):Promise
                 addFriend(friendUserName):Promise
             }
         }
@@ -303,7 +305,8 @@ declare namespace Breizbot {
         declare namespace Files {
 
             interface Mp3Filter {
-
+                artist?: string;
+                genre?: string;
             }
 
             type Events = 'fileclick' |  'contextmenuItem' | 'selchange' | 'dirchange';
@@ -315,20 +318,25 @@ declare namespace Breizbot {
                 getMP3Info: boolean;
                 friendUser: string;
                 mp3Filters: Mp3Filter;
-                menuItems: (data) => {};
+                menuItems: (data: Services.Files.FileInfo) => {};
+            }
+
+            interface FileDesc {
+                fileName: string;
+                idx: number;
             }
 
             interface Interface {
                 reload();
                 updateFile(idx: number, fileInfo: Files.FileInfo): void;
-                insertFile(fileInfo: Files.FileInfo, idx: number): void;
-                removeFiles([number]): void;
+                insertFile(fileInfo: Files.FileInfo, idx?: number): void;
+                removeFiles(fileIdx: number[]): void;
                 setMP3Filters(mp3Filter: Mp3Filter);
                 getMP3Filters(): Mp3Filter;
-                getFiles(): [Files.FileInfo];
-                getFilteredFiles(): [Files.FileInfo];
-                getSelFiles(): [{fileName: string, idx: number}];
-                getSelFileNames() :[string];
+                getFiles(): Files.FileInfo[];
+                getFilteredFiles():Files.FileInfo[];
+                getSelFiles(): FileDesc[];
+                getSelFileNames() :string[];
                 getNbSelFiles(): number;
                 toggleSelection(): void;
                 getRootDir(): string; 

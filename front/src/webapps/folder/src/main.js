@@ -57,6 +57,7 @@ $$.control.registerControl('rootPage', {
 				},
 				getItems: function () {
 
+					/**@param {Breizbot.Services.Files.FileInfo} info */
 					return function (info) {
 						//console.log('getItems', info)
 						const { name, folder, isImage } = info
@@ -393,7 +394,7 @@ $$.control.registerControl('rootPage', {
 
 				onDeleteFiles: function (ev) {
 
-					const selFiles = ctrl.scope.files.getSelFiles()
+					const selFiles = files.getSelFiles()
 					//console.log('onDeleteFiles', selFiles)
 
 					if (selFiles.length == 0) {
@@ -487,11 +488,14 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
+		/**@type {Breizbot.Controls.Files.Interface} */
+		const files = ctrl.scope.files
+
 		getSharingGroups()
 
 		function reload() {
 			ctrl.setData({ selectedFiles: [], operation: 'none', nbSelection: 0 })
-			ctrl.scope.files.reload()
+			files.reload()
 		}
 
 		async function getSharingGroups() {
@@ -500,6 +504,10 @@ $$.control.registerControl('rootPage', {
 			//console.log('sharingGroups', sharingGroups)
 		}
 
+		/**
+		 * 
+		 * @param {File} file 
+		 */
 		async function uploadFile(file) {
 			try {
 				const data = {
@@ -521,7 +529,7 @@ $$.control.registerControl('rootPage', {
 				downloads.splice(idx, 1)
 				ctrl.updateNodeTree('downloads')
 				const fileInfo = await srvFiles.fileInfo(rootDir + data.fileName)
-				ctrl.scope.files.insertFile(fileInfo)
+				files.insertFile(fileInfo)
 			}
 			catch (resp) {
 				console.log('resp', resp)
@@ -530,6 +538,9 @@ $$.control.registerControl('rootPage', {
 
 		}
 
+		/**
+		 * @param {Breizbot.Controls.Files.FileDesc[]} fileNames
+		 */
 		function deleteFiles(fileNames) {
 			//console.log('deleteFiles', fileNames)
 			$$.ui.showConfirm({
@@ -539,7 +550,7 @@ $$.control.registerControl('rootPage', {
 				try {
 					const resp = await folder.removeFiles(fileNames.map((i) => i.fileName))
 					console.log('resp', resp)
-					ctrl.scope.files.removeFiles(fileNames.map((i) => i.idx))
+					files.removeFiles(fileNames.map((i) => i.idx))
 				}
 				catch (resp) {
 					console.log('resp', resp)

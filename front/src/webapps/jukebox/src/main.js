@@ -36,6 +36,7 @@ $$.control.registerControl('rootPage', {
 			/**@type {Breizbot.Controls.Files.Interface} */
 			const fileCtrl = pager.pushPage('breizbot.files', {
 				title,
+				/**@type {Breizbot.Controls.Files.Props} */
 				props: {
 					filterExtension: 'mp3',
 					getMP3Info: true,
@@ -51,8 +52,11 @@ $$.control.registerControl('rootPage', {
 					}
 				},
 				events: {
+					/**
+					 * 
+					 * @param {Breizbot.Controls.Files.EventData.FileClick} info 
+					 */
 					fileclick: function (ev, info) {
-						console.log('info', info)
 						const { rootDir, fileName } = info
 						const files = fileCtrl.getFilteredFiles()
 						//console.log('files', files)
@@ -85,10 +89,15 @@ $$.control.registerControl('rootPage', {
 				onShare: function () {
 					pager.pushPage('breizbot.friends', {
 						title: 'Shared files',
+						/**@type {Breizbot.Controls.Friends.Props} */
 						props: {
 							showConnectionState: false
 						},
 						events: {
+							/**
+							 * 
+							 * @param {Breizbot.Controls.Friends.EventData.FriendClick} data 
+							 */
 							friendclick: function (ev, data) {
 								//console.log('onSelectFriend', data)
 								const { userName } = data

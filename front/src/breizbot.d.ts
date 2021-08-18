@@ -310,6 +310,29 @@ declare namespace Breizbot {
     
         }        
 
+        declare namespace Friends {
+            interface Props {
+                showSelection?: boolean;
+                showSendMessage?: boolean;
+                showConnectionState?: boolean;
+            }
+
+            type Events = 'friendclick'
+
+            declare namespace EventData {
+                interface FriendClick {
+                    userName: string;
+                }
+            }
+
+            interface Interface {
+                getSelection(): string;
+                getFriends(): string[];
+                update(): void;
+
+            }
+        }
+
         declare namespace Files {
 
             interface Mp3Filter {
@@ -319,14 +342,37 @@ declare namespace Breizbot {
 
             type Events = 'fileclick' |  'contextmenuItem' | 'selchange' | 'dirchange';
 
+            declare namespace EventData {
+                interface DirChange {
+                    newDir: string;
+                }
+
+                interface ContextMenuItem {
+                    cmd: string;
+                    idx: number;
+                    name: string;
+                    rootDir: string;
+                }
+
+                interface FileClick {
+                    fileName: string;
+                    rootDir:string;
+                    isImage: boolean;
+                }
+
+                interface SelChange {
+                    isShareSelected: boolean;
+                }
+            }
+
             interface Props {
-                selectionEnabled: boolean;
-                imageOnly: boolean;
-                filterExtension: string;
-                getMP3Info: boolean;
-                friendUser: string;
-                mp3Filters: Mp3Filter;
-                menuItems: (data: Services.Files.FileInfo) => {};
+                selectionEnabled?: boolean;
+                imageOnly?: boolean;
+                filterExtension?: string;
+                getMP3Info?: boolean;
+                friendUser?: string;
+                mp3Filters?: Mp3Filter;
+                menuItems?: (data: Services.Files.FileInfo) => {};
             }
 
             interface FileDesc {

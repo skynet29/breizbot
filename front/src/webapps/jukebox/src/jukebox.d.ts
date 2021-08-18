@@ -12,7 +12,7 @@ declare namespace AppJukebox {
     }
 
     interface Interface {
-        getPlaylist(): string[];
+        getPlaylist(): Promise<string[]>;
         getPlaylistSongs(name: string): Promise<PlaylistInfo[]>;
 
         swapSongIndex(id1: string, id2: string):Promise;

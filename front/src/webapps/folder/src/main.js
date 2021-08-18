@@ -110,7 +110,7 @@ $$.control.registerControl('rootPage', {
 								progressDlg.hide()
 								const info = await srvFiles.fileInfo(resp.outFileName)
 								//console.log('info', info)
-								ctrl.scope.files.insertFile(info)
+								files.insertFile(info)
 								broker.offTopic('breizbot.importUrl.progress', onProgress)
 							}
 						}
@@ -125,6 +125,10 @@ $$.control.registerControl('rootPage', {
 
 				},
 
+				/**
+				 * 
+				 * @param {Breizbot.Controls.Files.EventData.ContextMenuItem} data 
+				 */
 				onContextMenu: async function (ev, data) {
 					//console.log('onContextMenu', data)
 					const { rootDir, name, idx, cmd } = data
@@ -141,7 +145,7 @@ $$.control.registerControl('rootPage', {
 							try {
 								const resp = await folder.renameFile(rootDir, oldFileName, newFileName)
 								//console.log('resp', resp)
-								ctrl.scope.files.updateFile(idx, resp)
+								files.updateFile(idx, resp)
 							}
 							catch (resp) {
 								console.log('resp', resp)
@@ -167,7 +171,7 @@ $$.control.registerControl('rootPage', {
 							try {
 								const resp = await folder.resizeImage(rootDir, name, percentage + '%')
 								//console.log('resp', resp)
-								ctrl.scope.files.insertFile(resp, idx)
+								files.insertFile(resp, idx)
 
 							}
 							catch (resp) {
@@ -206,7 +210,7 @@ $$.control.registerControl('rootPage', {
 									progressDlg.hide()
 									const info = await srvFiles.fileInfo(resp.outFileName)
 									//console.log('info', info)
-									ctrl.scope.files.insertFile(info, idx)
+									files.insertFile(info, idx)
 									broker.offTopic('breizbot.mp3.progress', onProgress)
 								}
 								else {
@@ -244,7 +248,7 @@ $$.control.registerControl('rootPage', {
 									progressDlg.hide()
 									const info = await srvFiles.fileInfo(resp.outFileName)
 									//console.log('info', info)
-									ctrl.scope.files.insertFile(info, idx)
+									files.insertFile(info, idx)
 									broker.offTopic('breizbot.zip.progress', onProgress)
 								}
 							}
@@ -252,7 +256,6 @@ $$.control.registerControl('rootPage', {
 							broker.onTopic('breizbot.zip.progress', onProgress)
 
 
-							//ctrl.scope.files.insertFile(resp, idx)
 						}
 						catch (resp) {
 							console.log('resp', resp)
@@ -281,7 +284,7 @@ $$.control.registerControl('rootPage', {
 									progressDlg.hide()
 									broker.offTopic('breizbot.unzip.progress', onProgress)
 
-									ctrl.scope.files.reload()
+									files.reload()
 								}
 							}
 							broker.onTopic('breizbot.unzip.progress', onProgress)
@@ -304,10 +307,19 @@ $$.control.registerControl('rootPage', {
 
 
 				},
+				/**
+				 * 
+				 * @param {Breizbot.Controls.Files.EventData.DirChange} data 
+				 */
 				onDirChange: function (ev, data) {
 					//console.log('onDirChange', data)
 					ctrl.setData({ rootDir: data.newDir, nbSelection: 0 })
 				},
+
+				/**
+				 * 
+				 * @param {Breizbot.Controls.Files.EventData.FileClick} data 
+				 */
 				onFileClick: function (ev, data) {
 					//console.log('onFileClick', data)
 					const { fileName, rootDir } = data
@@ -329,16 +341,26 @@ $$.control.registerControl('rootPage', {
 
 				},
 				onToggleSelection: function () {
-					ctrl.scope.files.toggleSelection()
-					ctrl.setData({ nbSelection: ctrl.scope.files.getNbSelFiles() })
+					files.toggleSelection()
+					ctrl.setData({ nbSelection: files.getNbSelFiles() })
 				},
+
+				/**
+				 * 
+				 * @param {Breizbot.Controls.Files.EventData.SelChange} data 
+				 */
 				onSelChange: function (ev, data) {
 					//console.log('onSelChange', data)
 					const { isShareSelected } = data
 
-					ctrl.setData({ nbSelection: ctrl.scope.files.getNbSelFiles(), isShareSelected })
+					ctrl.setData({ nbSelection: files.getNbSelFiles(), isShareSelected })
 
 				},
+
+				/**
+				 * 
+				 * @param {Brainjs.Controls.ContextMenu.EventData.ContextMenuChange} data 
+				 */
 				onToolbarContextMenu: function (ev, data) {
 					//console.log('onToolbarContextMenu', data)
 					elt.find(`button[data-cmd=${data.cmd}]`).click()
@@ -359,7 +381,7 @@ $$.control.registerControl('rootPage', {
 				},
 
 				onCreateFolder: async function () {
-					var rootDir = ctrl.scope.files.getRootDir()
+					const rootDir = files.getRootDir()
 					console.log('onCreateFolder', rootDir)
 					const folderName = await $$.ui.showPrompt({
 						label: 'Folder name:',
@@ -371,7 +393,7 @@ $$.control.registerControl('rootPage', {
 					try {
 						const resp = await folder.mkdir(rootDir + folderName)
 						console.log('resp', resp)
-						ctrl.scope.files.insertFile(resp)
+						files.insertFile(resp)
 					}
 					catch (resp) {
 						console.log('resp', resp)
@@ -383,7 +405,7 @@ $$.control.registerControl('rootPage', {
 				},
 
 				onCopyFiles: function (ev) {
-					const selectedFiles = ctrl.scope.files.getSelFileNames()
+					const selectedFiles = files.getSelFileNames()
 					//console.log('onCopyFiles', selectedFiles)
 					ctrl.setData({
 						selectedFiles,
@@ -410,7 +432,7 @@ $$.control.registerControl('rootPage', {
 				},
 
 				onCutFiles: function (ev) {
-					const selectedFiles = ctrl.scope.files.getSelFileNames()
+					const selectedFiles = files.getSelFileNames()
 					//console.log('onCutFiles', selectedFiles)
 					ctrl.setData({
 						selectedFiles,
@@ -468,7 +490,7 @@ $$.control.registerControl('rootPage', {
 								return
 							}
 						}
-						const selFiles = ctrl.scope.files.getSelFileNames()
+						const selFiles = files.getSelFileNames()
 						await folder.shareFiles(selFiles, name)
 						reload()
 					}

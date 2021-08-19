@@ -43,7 +43,7 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onStartRecord: function (ev) {
-					ctrl.scope.camera.startRecord()
+					camera.startRecord()
 					ctrl.setData({ recording: true, recordingTime: '00:00' })
 					startTime = Date.now()
 					timer = setInterval(() => {
@@ -58,13 +58,18 @@ $$.control.registerControl('rootPage', {
 					}, 1000)
 				},
 				onStopRecord: function (ev) {
-					ctrl.scope.camera.stopRecord()
+					camera.stopRecord()
 					clearInterval(timer)
 					timer = null
 					ctrl.setData({ recording: false })
 				},
-				onVideoRecord: function (ev, blob) {
-					//console.log('onVideoRecord', blob)
+				/**
+				 * 
+				 * @param {Brainjs.Controls.Camera.EventData.VideoRcord} data 
+				 */
+				onVideoRecord: function (ev, data) {
+					console.log('onVideoRecord', data)
+					const { blob } = data
 
 					const url = URL.createObjectURL(blob)
 

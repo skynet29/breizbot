@@ -13,9 +13,13 @@ $$.control.registerControl('rootPage', {
 				hasZoom: false
 			},
 			events: {
-				onBarcode: function (ev, barcode) {
-					console.log('onBarcode', barcode)
-					const { format, rawValue } = barcode
+				/**
+				 * 
+				 * @param {Brainjs.Controls.Camera.EventData.BarCode} data 
+				 */
+				onBarcode: function (ev, data) {
+					console.log('onBarcode', data)
+					const { format, rawValue } = data.barcode
 					let content = null
 					if (format == 'qr_code') {
 						content = {

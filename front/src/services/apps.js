@@ -1,3 +1,4 @@
+//@ts-check
 $$.service.registerService('breizbot.apps', {
 
 	deps: ['brainjs.http'],
@@ -9,9 +10,5 @@ $$.service.registerService('breizbot.apps', {
 				return http.get('/api/apps/all')
 			}			
 		}
-	},
-
-	$iface: `
-		listAll():Promise;
-		`
+	}
 });

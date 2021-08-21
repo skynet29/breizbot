@@ -1,3 +1,4 @@
+//@ts-check
 (function() {
 
 'use strict';
@@ -13,7 +14,7 @@ const InvalidAccessTokenException = 'com.amazon.alexahttpproxy.exceptions.Invali
 
 function blobToAudioBuffer(blob) {
 
-	return $$.util.decodeAudioData(blob).then((buffer) => {
+	return $$.media.decodeAudioData(blob).then((buffer) => {
 		//console.log('buffer', buffer)
 		const {numberOfChannels, sampleRate} = buffer
 
@@ -165,7 +166,7 @@ function promptUserLogin(cnxId) {
 	  }
 	}
 
-	const authUrl = $$.util.getUrlParams('https://www.amazon.com/ap/oa', {
+	const authUrl = $$.url.getUrlParams('https://www.amazon.com/ap/oa', {
 		client_id: clientId,
 		scope,
 		scope_data: JSON.stringify(scopeData),

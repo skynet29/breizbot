@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('recurringTransactions', {
 
     template: { gulp_inject: './transactions.html' },
@@ -8,9 +9,14 @@ $$.control.registerControl('recurringTransactions', {
         accountId: null
     },
 
+    /**
+     * 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     * @param {Breizbot.Services.Http.Interface} http 
+     */
     init: function (elt, pager, http) {
 
-
+        //@ts-ignore
         const { accountId } = this.props
 
         const ctrl = $$.viewController(elt, {

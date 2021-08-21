@@ -28,7 +28,7 @@ $$.control.registerControl('rootPage', {
 							fileclick: function(ev, info) {
 								const fullName = info.rootDir + info.fileName
 
-								const type = $$.util.getFileType(info.fileName)
+								const type = $$.file.getFileType(info.fileName)
 								if (type != undefined) {
 									pager.pushPage('breizbot.viewer', {
 										title: info.fileName,

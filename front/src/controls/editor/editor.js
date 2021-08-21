@@ -278,7 +278,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 					let url = files.fileUrl(rootDir + fileName)
 					//console.log('url', url)
 					if (useDataUrlForImg) {
-						url = await $$.util.imageUrlToDataUrl(url)
+						url = await $$.url.imageUrlToDataUrl(url)
 					}
 					const img = document.createElement('img')
 					img.src = url

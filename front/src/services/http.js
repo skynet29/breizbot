@@ -1,3 +1,4 @@
+//@ts-check
 $$.service.registerService('breizbot.http', {
 
 	deps: ['brainjs.resource', 'breizbot.params'],

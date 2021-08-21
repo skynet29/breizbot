@@ -1,9 +1,14 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	deps: ['breizbot.broker'],
 
 	template: {gulp_inject: './main.html'},
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.Broker.Interface} broker 
+	 */
 	init: function(elt, broker) {
 
 		const ctrl = $$.viewController(elt, {

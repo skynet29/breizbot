@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('addLink', {
 
     template: { gulp_inject: './addlink.html' },
@@ -8,6 +9,10 @@ $$.control.registerControl('addLink', {
         data: {}
     },
 
+    /**
+     * 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     */
     init: function (elt, pager) {
 
         const { data } = this.props

@@ -1,9 +1,16 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
 	deps: ['breizbot.pager', 'breizbot.http', 'breizbot.files'],
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Http.Interface} http 
+	 * @param {Breizbot.Services.Files.Interface} srvFiles 
+	 */
 	init: function (elt, pager, http, srvFiles) {
 
 		let filters = {}

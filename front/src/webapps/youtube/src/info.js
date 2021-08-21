@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('infoPage', {
 
     template: { gulp_inject: './info.html' },
@@ -8,6 +9,11 @@ $$.control.registerControl('infoPage', {
         info: null
     },
 
+    /**
+     * 
+     * @param {AppYoutube.Interface} ytdl 
+     * @param {Breizbot.Services.Broker.Interface} broker 
+     */
     init: function (elt, ytdl, broker) {
 
         console.log('props', this.props)

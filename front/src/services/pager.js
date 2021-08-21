@@ -1,3 +1,4 @@
+//@ts-check
 $$.service.registerService('breizbot.pager', {
 
 	init: function(config) {

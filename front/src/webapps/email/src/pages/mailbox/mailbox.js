@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('mailboxPage', {
 
 	template: { gulp_inject: './mailbox.html' },
@@ -9,8 +10,14 @@ $$.control.registerControl('mailboxPage', {
 		mailboxName: ''
 	},
 
+	/**
+	 * 
+	 * @param {AppEmail.Interface} srvMail 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 */
 	init: function (elt, srvMail, pager) {
 
+		//@ts-ignore
 		const { currentAccount, mailboxName } = this.props
 
 		const ctrl = $$.viewController(elt, {

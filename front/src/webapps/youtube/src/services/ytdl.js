@@ -1,7 +1,14 @@
+//@ts-check
 $$.service.registerService('app.ytdl', {
 
 	deps: ['breizbot.http', 'breizbot.broker'],
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.Http.Interface} http 
+	 * @param {Breizbot.Services.Broker.Interface} broker 
+	 * @returns 
+	 */
 	init: function(config, http, broker) {
 
 		let srcId

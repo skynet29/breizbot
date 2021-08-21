@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('breizbot.viewer', {
 
 	template: {gulp_inject: './viewer.html'},
@@ -9,6 +10,7 @@ $$.control.registerControl('breizbot.viewer', {
 	
 	init: function(elt) {
 
+		//@ts-ignore
 		let {type, url} = this.props
 
 		const ctrl = $$.viewController(elt, {

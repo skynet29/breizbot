@@ -1,5 +1,4 @@
-
-
+//@ts-check
 $$.service.registerService('breizbot.broker', {
 
 	init: function (config) {

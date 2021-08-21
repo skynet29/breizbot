@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('infoPage', {
 
     template: {gulp_inject: './info.html'},

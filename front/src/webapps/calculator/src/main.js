@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	template: {gulp_inject: './main.html'},

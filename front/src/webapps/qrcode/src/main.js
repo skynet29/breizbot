@@ -64,7 +64,7 @@ $$.control.registerControl('rootPage', {
 		/**@type {Brainjs.Controls.Camera.Interface} */
 		const camera = ctrl.scope.camera
 
-		$$.util.getVideoDevices().then((videoDevices) => {
+		$$.media.getVideoDevices().then((videoDevices) => {
 			if (videoDevices.length > 0) {
 				camera.start()
 			}

@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('messagePage', {
 
 	template: { gulp_inject: './message.html' },
@@ -10,6 +11,13 @@ $$.control.registerControl('messagePage', {
 		item: null
 	},
 
+	/**
+	 * 
+	 * @param {AppEmail.Interface} srvMail 
+	 * @param {Breizbot.Services.Scheduler.Interface} scheduler 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Files.Interface} srvFiles 
+	 */
 	init: function (elt, srvMail, scheduler, pager, srvFiles) {
 
 		const { currentAccount, mailboxName, item } = this.props
@@ -67,11 +75,11 @@ $$.control.registerControl('messagePage', {
 						const message = await srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID)
 						//console.log('message', message)
 						waitDlg.hide()
-						const url = $$.util.buildDataURL(type, subtype, message.data)
+						const url = $$.url.buildDataURL(type, subtype, message.data)
 						pager.pushPage('breizbot.viewer', {
 							title: info.name,
 							props: {
-								type: $$.util.getFileType(info.name),
+								type: $$.file.getFileType(info.name),
 								url
 							},
 							buttons: {
@@ -79,7 +87,7 @@ $$.control.registerControl('messagePage', {
 									title: 'Save',
 									icon: 'fa fa-save',
 									onClick: async function () {
-										const blob = $$.util.dataURLtoBlob(url)
+										const blob = $$.url.dataURLtoBlob(url)
 										await srvFiles.saveFile(blob, info.name)
 									}
 								}
@@ -100,8 +108,8 @@ $$.control.registerControl('messagePage', {
 								const message = await srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID)
 								//console.log('message', message)
 								waitDlg.hide()
-								const url = $$.util.buildDataURL(type, subtype, message.data)
-								$$.util.downloadUrl(url, info.name)
+								const url = $$.url.buildDataURL(type, subtype, message.data)
+								$$.url.downloadUrl(url, info.name)
 							}
 						)
 
@@ -131,7 +139,7 @@ $$.control.registerControl('messagePage', {
 					embeddedImages.forEach(async (e) => {
 						const { type, subtype, partID, cid } = e
 						const message = await srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID)
-						const url = $$.util.buildDataURL(type, subtype, message.data)
+						const url = $$.url.buildDataURL(type, subtype, message.data)
 						const $img = $iframe.find(`img[src="cid:${cid}"]`)
 						$img.attr('src', url)
 					})
@@ -203,7 +211,7 @@ $$.control.registerControl('messagePage', {
 			if (encoding.toUpperCase() != 'BASE64') {
 				return false
 			}
-			const type = $$.util.getFileType(name)
+			const type = $$.file.getFileType(name)
 			if (type == undefined) {
 				if (subtype == 'pdf') {
 					info.name += '.pdf'

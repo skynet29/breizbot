@@ -1,6 +1,7 @@
+//@ts-check
 $$.control.registerControl('accountPage', {
 
-	template: {gulp_inject: './account.html'},
+	template: { gulp_inject: './account.html' },
 
 	deps: ['app.mails', 'breizbot.pager'],
 
@@ -8,9 +9,14 @@ $$.control.registerControl('accountPage', {
 		data: null
 	},
 
-	init: function(elt, srvMail, pager) {
+	/**
+	 * 
+	 * @param {AppEmail.Interface} srvMail 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 */
+	init: function (elt, srvMail, pager) {
 
-		const {data} = this.props
+		const { data } = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -18,7 +24,7 @@ $$.control.registerControl('accountPage', {
 				isEdit: data != null
 			},
 			events: {
-				onSubmit: async function(ev) {
+				onSubmit: async function (ev) {
 					ev.preventDefault()
 					const formData = $(this).getFormData()
 					console.log('formData', formData)
@@ -34,16 +40,16 @@ $$.control.registerControl('accountPage', {
 			}
 		})
 
-		this.getButtons = function() {
+		this.getButtons = function () {
 			return {
 				apply: {
 					title: 'Apply',
 					icon: 'fa fa-check',
-					onClick: function() {
+					onClick: function () {
 						ctrl.scope.submit.click()
 					}
 				}
-			}				
+			}
 		}
 
 	}

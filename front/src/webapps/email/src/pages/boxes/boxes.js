@@ -1,6 +1,7 @@
+//@ts-check
 $$.control.registerControl('boxesPage', {
 
-	template: {gulp_inject: './boxes.html'},
+	template: { gulp_inject: './boxes.html' },
 
 	deps: ['app.mails', 'breizbot.pager'],
 
@@ -9,9 +10,14 @@ $$.control.registerControl('boxesPage', {
 		showForm: false
 	},
 
-	init: function(elt, srvMail, pager) {
+	/**
+	 * 
+	 * @param {AppEmail.Interface} srvMail 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 */
+	init: function (elt, srvMail, pager) {
 
-		const {currentAccount, showForm} = this.props
+		const { currentAccount, showForm } = this.props
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -19,15 +25,15 @@ $$.control.registerControl('boxesPage', {
 				showForm
 			},
 			events: {
-				onSubmit: function(ev) {
+				onSubmit: function (ev) {
 					ev.preventDefault()
-					const {name} = $(this).getFormData()
+					const { name } = $(this).getFormData()
 					//console.log('onSubmit', name)
 
-					const {tree} = ctrl.scope
+					const { tree } = ctrl.scope
 					const node = tree.getActiveNode()
 					if (node == null) {
-						$$.ui.showAlert({title: 'Warning', content: 'Please select a target mailbox'})
+						$$.ui.showAlert({ title: 'Warning', content: 'Please select a target mailbox' })
 						return
 					}
 					let targetName = tree.getNodePath(node) + '/' + name
@@ -38,7 +44,7 @@ $$.control.registerControl('boxesPage', {
 					console.log('targetName', targetName)
 
 
-					pager.popPage(targetName)					
+					pager.popPage(targetName)
 				}
 			}
 		})
@@ -67,32 +73,32 @@ $$.control.registerControl('boxesPage', {
 
 		loadMailboxes()
 
-		this.getButtons = function() {
+		this.getButtons = function () {
 			return {
 				apply: {
 					title: 'Apply',
 					icon: 'fa fa-check',
-					onClick: function() {
+					onClick: function () {
 						if (showForm) {
 							ctrl.scope.submit.click()
 							return
 						}
-		
-						const {tree} = ctrl.scope
+
+						const { tree } = ctrl.scope
 						const node = tree.getActiveNode()
 						if (node == null) {
-							$$.ui.showAlert({title: 'Select Target Mailbox', content: 'Please select a target mailbox'})
+							$$.ui.showAlert({ title: 'Select Target Mailbox', content: 'Please select a target mailbox' })
 							return
 						}
 						const targetName = tree.getNodePath(node)
 						console.log('targetName', targetName)
 
-		
+
 						pager.popPage(targetName)
-		
+
 					}
 				}
-			}					
+			}
 		}
 
 	}

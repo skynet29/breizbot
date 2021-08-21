@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('breizbot.addContactPage', {
 
 	template: { gulp_inject: './addContact.html' },
@@ -8,6 +9,11 @@ $$.control.registerControl('breizbot.addContactPage', {
 		data: {}
 	},
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Contact.Interface} contactsSrv 
+	 	 */
 	init: function (elt, pager, contactsSrv, citiesSrv) {
 
 		const info = this.props.info || {}

@@ -1,3 +1,4 @@
+//@ts-check
 $$.service.registerService('breizbot.cities', {
 
 	deps: ['brainjs.resource', 'brainjs.http'],
@@ -31,10 +32,5 @@ $$.service.registerService('breizbot.cities', {
 
 			
 		}
-	},
-
-	$iface: `
-		getCountries():Promise;
-		getCities(country, search):Promise;
-		`
+	}
 });

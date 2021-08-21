@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('filter', {
 
     template: { gulp_inject: './filter.html' },
@@ -8,8 +9,14 @@ $$.control.registerControl('filter', {
         filters: null
     },
 
+    /**
+     * 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     * @param {Breizbot.Services.Http.Interface} http 
+     */
     init: function (elt, pager, http) {
 
+        //@ts-ignore
         const filters = $.extend({author: 'All'}, this.props.filters)
 
         //console.log('filters', filters)

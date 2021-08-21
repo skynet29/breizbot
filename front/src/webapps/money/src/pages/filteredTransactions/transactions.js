@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('filteredTransactions', {
 
     template: { gulp_inject: './transactions.html' },

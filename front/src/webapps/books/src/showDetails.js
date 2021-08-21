@@ -1,14 +1,19 @@
+//@ts-check
 $$.control.registerControl('showDetails', {
 
 	template: { gulp_inject: './showDetails.html' },
 
-	deps: ['breizbot.pager', 'breizbot.files'],
+	deps: ['breizbot.files'],
 
 	props: {
 		data: {}
 	},
 
-	init: function (elt, pager, srvFile) {
+	/**
+	 * 
+	 * @param {Breizbot.Services.Files.Interface} srvFile 
+	 */
+	init: function (elt, srvFile) {
 
 		const { data } = this.props
 

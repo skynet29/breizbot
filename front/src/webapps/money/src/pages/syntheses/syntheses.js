@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('syntheses', {
 
     template: { gulp_inject: './syntheses.html' },
@@ -8,6 +9,10 @@ $$.control.registerControl('syntheses', {
         accountId: null
     },
 
+    /**
+     * 
+     * @param {Breizbot.Services.Http.Interface} http 
+     */
     init: function (elt, http) {
 
         const { accountId } = this.props

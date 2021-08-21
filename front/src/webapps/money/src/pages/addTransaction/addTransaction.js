@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('addTransaction', {
 
     template: { gulp_inject: './addTransaction.html' },
@@ -11,7 +12,14 @@ $$.control.registerControl('addTransaction', {
         formData: null
     },
 
+    /**
+     * 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     * @param {Breizbot.Services.Http.Interface} http 
+     */
     init: function (elt, pager, http) {
+
+        //@ts-ignore
         const { accountId, formData, isAdd, isRecurring } = this.props
 
         let type = 'credit'

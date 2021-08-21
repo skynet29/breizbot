@@ -241,7 +241,7 @@ $$.control.registerControl('breizbot.home', {
 			const title = appInfo.props.title
 			//console.log('openApp', appName, params)
 			let idx = tabs.getTabIndexFromTitle(title)
-			const appUrl = $$.util.getUrlParams(`/apps/${appName}`, params)
+			const appUrl = $$.url.getUrlParams(`/apps/${appName}`, params)
 			if (idx < 0) { // apps not already run
 				idx = tabs.addTab(title, {
 					removable: true,

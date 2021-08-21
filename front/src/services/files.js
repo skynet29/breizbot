@@ -1,3 +1,4 @@
+//@ts-check
 $$.service.registerService('breizbot.files', {
 
 	deps: ['brainjs.resource', 'breizbot.params'],
@@ -21,21 +22,21 @@ $$.service.registerService('breizbot.files', {
 			},
 
 			fileUrl: function (fileName, friendUser) {
-				return $$.util.getUrlParams('/api/files/load', { fileName, friendUser })
+				return $$.url.getUrlParams('/api/files/load', { fileName, friendUser })
 			},
 
 			fileAppUrl: function(fileName) {
 				fileName = `/apps/${params.$appName}/${fileName}`
-				return $$.util.getUrlParams('/api/files/load', { fileName })
+				return $$.url.getUrlParams('/api/files/load', { fileName })
 			},
 
 			fileThumbnailUrl: function (fileName, size, friendUser) {
-				return $$.util.getUrlParams('/api/files/loadThumbnail', { fileName, size, friendUser })
+				return $$.url.getUrlParams('/api/files/loadThumbnail', { fileName, size, friendUser })
 			},
 
 			fileAppThumbnailUrl: function (fileName, size) {
 				fileName = `/apps/${params.$appName}/${fileName}`
-				return $$.util.getUrlParams('/api/files/loadThumbnail', { fileName, size })
+				return $$.url.getUrlParams('/api/files/loadThumbnail', { fileName, size })
 			},
 
 			uploadFile: function (blob, saveAsfileName, destPath, onUploadProgress) {

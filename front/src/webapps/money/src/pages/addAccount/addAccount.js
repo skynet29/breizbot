@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('addAccount', {
 
     template: { gulp_inject: './addAccount.html' },
@@ -10,8 +11,13 @@ $$.control.registerControl('addAccount', {
         }
     },
 
+    /**
+     * 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     */
     init: function (elt, pager) {
 
+        //@ts-ignore
         const { formData } = this.props
 
         const ctrl = $$.viewController(elt, {

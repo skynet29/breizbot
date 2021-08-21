@@ -1,7 +1,12 @@
+//@ts-check
 $$.service.registerService('breizbot.appData', {
 
 	deps: ['brainjs.http'],
 
+	/**
+	 * 
+	 * @returns 
+	 */
 	init: function(config, http) {
 
 		let _data = config

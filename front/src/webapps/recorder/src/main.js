@@ -134,7 +134,7 @@ $$.control.registerControl('rootPage', {
 		const camera = ctrl.scope.camera
 
 		async function getVideoDevices() {
-			const videoDevices = await $$.util.getVideoDevices()
+			const videoDevices = await $$.media.getVideoDevices()
 			ctrl.setData({
 				videoDevices: videoDevices.map((i) => {
 					return { value: i.id, label: i.label }

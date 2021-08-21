@@ -325,7 +325,7 @@ $$.control.registerControl('rootPage', {
 					const { fileName, rootDir } = data
 					const fullName = rootDir + fileName
 
-					let type = $$.util.getFileType(fileName)
+					let type = $$.file.getFileType(fileName)
 					if (fileName.endsWith('.hdoc')) {
 						type = 'hdoc'
 					}
@@ -467,7 +467,7 @@ $$.control.registerControl('rootPage', {
 				},
 
 				onImportFile: function (ev) {
-					$$.util.openFileDialog((files) => {
+					$$.ui.openFileDialog((files) => {
 						console.log('files', files)
 						for (const file of files) {
 							uploadFile(file)

@@ -293,6 +293,14 @@ declare namespace Breizbot {
                 requestWakeLock(): Promise;
             }
         }
+
+        declare namespace City {
+            interface Interface {
+                getCountries(): Promise<string[]>;
+                getCities(country: string, search: string): Promise<string[]>;
+                getCitesFromPostalCode(postalCode: string): Promise<string[]>;
+            }
+        }
     }
 
 

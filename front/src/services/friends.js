@@ -1,3 +1,4 @@
+//@ts-check
 $$.service.registerService('breizbot.friends', {
 
 	deps: ['brainjs.resource'],

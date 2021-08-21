@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('unclearedTransactions', {
 
     template: { gulp_inject: './transactions.html' },
@@ -10,9 +11,14 @@ $$.control.registerControl('unclearedTransactions', {
         lastStatementInfo: null
     },
 
+    /**
+     * 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     * @param {Breizbot.Services.Http.Interface} http 
+     */
     init: function (elt, pager, http) {
 
-
+        //@ts-ignore
         const { transactions, accountId, lastStatementInfo } = this.props
         const { initialBalance, finalBalance } = lastStatementInfo
 

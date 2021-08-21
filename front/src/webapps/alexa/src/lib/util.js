@@ -1,3 +1,4 @@
+//@ts-check
 function writeFloat32 (output, offset, input) {
   for (var i = 0; i < input.length; i++, offset += 4) {
     output.setFloat32(offset, input[i], true)

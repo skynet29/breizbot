@@ -1,10 +1,15 @@
+//@ts-check
 $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
 	deps: ['breizbot.pager', 'breizbot.http'],
 
-
+	/**
+	 * 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Http.Interface} http 
+	 */
 	init: function (elt, pager, http) {
 
 		let keyPwd = null
@@ -178,7 +183,7 @@ $$.control.registerControl('rootPage', {
 							//console.log('keyPwd', keyPwd)
 						}
 						if (keyPwd != null) {
-							const sitePwd = await $$.ui.showPrompt({ title: 'Site Password', bale: 'password' })
+							const sitePwd = await $$.ui.showPrompt({ title: 'Site Password', label: 'password' })
 							//console.log('sitePwd', sitePwd)
 							const encryptedPwd = await $$.crypto.encrypt(keyPwd, sitePwd)
 							//console.log('encryptedPwd', encryptedPwd)

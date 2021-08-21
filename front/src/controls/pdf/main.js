@@ -9,6 +9,7 @@ $$.control.registerControl('breizbot.pdf', {
 
 	init: function (elt) {
 
+		//@ts-ignore
 		const { url } = this.props
 
 		const ctrl = $$.viewController(elt, {

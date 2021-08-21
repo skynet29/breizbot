@@ -1,3 +1,4 @@
+//@ts-check
 $$.service.registerService('breizbot.params', {
 
 	init: function(config) {

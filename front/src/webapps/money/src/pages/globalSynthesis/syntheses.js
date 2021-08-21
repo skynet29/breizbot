@@ -1,9 +1,14 @@
+//@ts-check
 $$.control.registerControl('globalSynthesis', {
 
     template: { gulp_inject: './syntheses.html' },
 
     deps: ['breizbot.http'],
 
+    /**
+     * 
+     * @param {Breizbot.Services.Http.Interface} http 
+     */
     init: function (elt, http) {
 
         const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Total']

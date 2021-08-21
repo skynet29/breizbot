@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('breizbot.contacts', {
 
 	deps: ['breizbot.contacts'],
@@ -10,8 +11,13 @@ $$.control.registerControl('breizbot.contacts', {
 
 	template: { gulp_inject: './contacts.html' },
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.Contact.Interface} contactsSrv 
+	 */
 	init: function (elt, contactsSrv) {
 
+		//@ts-ignore
 		const { showSelection, contextMenu, hasSearchbar } = this.props
 		//console.log('props', this.props)
 

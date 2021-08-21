@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('writeMailPage', {
 
 	template: { gulp_inject: './writeMail.html' },
@@ -9,6 +10,11 @@ $$.control.registerControl('writeMailPage', {
 		data: {}
 	},
 
+	/**
+	 * 
+	 * @param {AppEmail.Interface} srvMail 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 */
 	init: function (elt, srvMail, pager) {
 
 		const { accountName, data } = this.props
@@ -42,7 +48,7 @@ $$.control.registerControl('writeMailPage', {
 					$html.find('img').each(function () {
 						const src = $(this).attr('src')
 						const urlParams = src.split('?')[1]
-						const { fileName } = $$.util.parseUrlParams(urlParams)
+						const { fileName } = $$.url.parseUrlParams(urlParams)
 						//console.log('fileName', fileName)
 						const cid = 'IMG' + Date.now()
 						data.attachments.push({

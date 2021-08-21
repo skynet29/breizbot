@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('synthCategories', {
 
     template: { gulp_inject: './syntheses.html' },
@@ -8,6 +9,11 @@ $$.control.registerControl('synthCategories', {
         accountId: null
     },
 
+    /**
+     * 
+     * @param {Breizbot.Services.Http.Interface} http 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     */
     init: function (elt, http, pager) {
 
         const { accountId } = this.props
@@ -114,7 +120,7 @@ $$.control.registerControl('synthCategories', {
             let categories = {}
             syntheses.forEach((item, idx) => {
 
-                for (cat in item.categories) {
+                for (let cat in item.categories) {
                     if (categories[cat] == undefined) {
                         categories[cat] = new Array(13).fill(0)
                     }

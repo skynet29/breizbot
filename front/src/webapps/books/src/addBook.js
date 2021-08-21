@@ -17,6 +17,7 @@ $$.control.registerControl('addBook', {
      */
     init: function (elt, pager, http, srvFile) {
 
+        //@ts-ignore
         const { data } = this.props
 
         console.log('data', data)
@@ -43,7 +44,7 @@ $$.control.registerControl('addBook', {
                 },
 
                 onDownloadCover: function () {
-                    $$.util.openFileDialog(async (file) => {
+                    $$.ui.openFileDialog(async (file) => {
                         console.log('file', file)
                         const ext = file.name.split('.').pop()
                         const fileName = `Cover${Date.now()}.${ext}`

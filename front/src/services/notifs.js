@@ -1,3 +1,4 @@
+//@ts-check
 $$.service.registerService('breizbot.notifs', {
 
 	deps: ['brainjs.resource'],

@@ -1,10 +1,14 @@
+//@ts-check
 $$.control.registerControl('breizbot.addUser', {
 
 	template: {gulp_inject: './addUser.html'},
 
 	deps: ['breizbot.pager'],
 
-
+	/**
+	 * 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 */
 	init: function(elt, pager) {
 
 

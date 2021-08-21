@@ -34,7 +34,7 @@ $$.control.registerControl('infoPage', {
                     console.log('ratio', ret)
                     return ret
                 },
-                videoUrl: $$.util.getUrlParams(`https://www.youtube-nocookie.com/embed/${videoId}`, {
+                videoUrl: $$.url.getUrlParams(`https://www.youtube-nocookie.com/embed/${videoId}`, {
                     rel: 0,
                     modestbranding: 1,
                     showinfo: 0

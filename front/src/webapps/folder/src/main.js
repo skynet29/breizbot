@@ -134,7 +134,7 @@ $$.control.registerControl('rootPage', {
 					const { rootDir, name, idx, cmd } = data
 					if (cmd == 'download') {
 						const url = srvFiles.fileUrl(rootDir + name)
-						$$.util.downloadUrl(url, name)
+						$$.url.downloadUrl(url, name)
 					}
 
 					if (cmd == 'rename') {

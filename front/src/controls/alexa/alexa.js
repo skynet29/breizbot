@@ -1,3 +1,4 @@
+//@ts-check
 $$.control.registerControl('breizbot.alexa', {
 
 	deps: ['brainjs.http'],
@@ -6,7 +7,7 @@ $$.control.registerControl('breizbot.alexa', {
 		const hash = window.location.hash.substr(1)
 
 		//console.log('hash', hash)
-		const params = $$.util.parseUrlParams(hash)
+		const params = $$.url.parseUrlParams(hash)
 		//console.log('params', params)
 		http.post('/api/alexa/auth', params).then(() => {
 			window.close()

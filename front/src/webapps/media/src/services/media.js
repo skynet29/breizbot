@@ -13,7 +13,7 @@ $$.service.registerService('app.media', {
 			},
 
 			fileUrl: function(driveName, fileName) {
-				return $$.util.getUrlParams('/api/app/media/load', {driveName, fileName})
+				return $$.url.getUrlParams('/api/app/media/load', {driveName, fileName})
 			},
 
 		}

@@ -19,7 +19,7 @@ $$.control.registerControl('rootPage', {
 				 */
 				onBarcode: function (ev, data) {
 					console.log('onBarcode', data)
-					const { format, rawValue } = data.barcode
+					const { format, rawValue } = data
 					let content = null
 					if (format == 'qr_code') {
 						content = {

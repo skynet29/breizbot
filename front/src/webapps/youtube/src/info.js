@@ -6,21 +6,25 @@ $$.control.registerControl('infoPage', {
     deps: ['app.ytdl', 'breizbot.broker'],
 
     props: {
-        info: null
+        info: null,
+        videoUrl: '',
+        videoId: ''
     },
 
     /**
      * 
-     * @param {AppYoutube.Interface} ytdl 
+     * @param {AppYoutube.Services.Interface} ytdl 
      * @param {Breizbot.Services.Broker.Interface} broker 
      */
     init: function (elt, ytdl, broker) {
 
-        console.log('props', this.props)
+        /**@type AppYoutube.Controls.InfoPage.Props */
+        const props = this.props
 
         const progressDlg = $$.ui.progressDialog('Downloading...')
+        const {videoUrl, videoId} = props
 
-        const { title, thumbnail, description, length_seconds, videoUrl, videoId, formats } = this.props.info
+        const { title, thumbnail, description, length_seconds, formats } = props.info
 
         const { width, height } = thumbnail
         const ctrl = $$.viewController(elt, {

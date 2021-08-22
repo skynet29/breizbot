@@ -7,7 +7,7 @@ $$.control.registerControl('rootPage', {
 
 	/**
 	 * 
-	 * @param {AppYoutube.Interface} ytdl 
+	 * @param {AppYoutube.Services.Interface} ytdl 
 	 * @param {*} params 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 */
@@ -59,15 +59,14 @@ $$.control.registerControl('rootPage', {
 			}
 			//console.log('videoId', videoId)
 			const info = await ytdl.info(videoUrl)
-			//@ts-ignore
-			info.videoUrl = videoUrl
-			//@ts-ignore
-			info.videoId = videoId
 			console.log('info', info)
 			pager.pushPage('infoPage', {
 				title: info.title,
+				/**@type AppYoutube.Controls.InfoPage.Props */
 				props: {
-					info
+					info,
+					videoUrl,
+					videoId
 				}
 			})
 

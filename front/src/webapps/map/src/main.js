@@ -177,7 +177,8 @@ $$.control.registerControl('rootPage', {
 			if (msg.hist) {
 				return
 			}
-			const {data} = msg
+			/**@type {Breizbot.Services.Broker.Events.FriendPosition} */
+			const data = msg.data
 			//console.log('breizbot.friendPosition', msg)	
 			const time = new Date(msg.time).toLocaleTimeString('fr-FR')		
 			const shapeId = 'friends.' + data.userName

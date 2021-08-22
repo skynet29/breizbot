@@ -188,6 +188,10 @@ $$.control.registerControl('breizbot.home', {
 			ctrl.setData({ fullScreen })
 		})
 
+		/**
+		 * 
+		 * @param {number} nbNotif 
+		 */
 		function updateNotifs(nbNotif) {
 			ctrl.setData({ nbNotif })
 
@@ -215,7 +219,7 @@ $$.control.registerControl('breizbot.home', {
 			if (msg.hist === true) {
 				return
 			}
-			//@ts-ignore
+			/**@type Breizbot.Services.Broker.Events.Friends */
 			const { isConnected, userName } = msg.data
 			if (isConnected) {
 				$.notify(`'${userName}' is connected`, 'success')

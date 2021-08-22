@@ -29,6 +29,25 @@ declare namespace Breizbot {
                 on(event: string, callback: (data: any) => void): void;
     
             }
+
+            declare namespace Events {
+
+                interface Friends {
+                    isConnected: boolean;
+                    userName: string;
+                }
+
+                interface FriendPosition {
+                    coords: Brainjs.Controls.Map.LatLng;
+                    userName: string;
+                }
+
+                declare namespace HomeBox {
+                    interface Status {
+                        connected: boolean;
+                    }                    
+                }
+            }
     
         };
     

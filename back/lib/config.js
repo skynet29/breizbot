@@ -33,6 +33,26 @@ if (USESSL == true && CERTIF_HOME == undefined) {
 	process.exit(1)
 }
 
+const httpPort = process.env.HTTP_PORT
+if (httpPort == undefined) {
+	console.log('Missing HTTP_PORT env var !')
+	process.exit(1)
+}
+
+const httpsPort = process.env.HTTPS_PORT
+if (httpsPort == undefined) {
+	console.log('Missing HTTPS_PORT env var !')
+	process.exit(1)
+}
+
+const domain = process.env.DOMAIN
+if (domain == undefined) {
+	console.log('Missing DOMAIN env var !')
+	process.exit(1)
+}
+
+
+
 module.exports = {
 	CERTIF_HOME,
 	USESSL,
@@ -40,11 +60,10 @@ module.exports = {
 	ADMIN_USER,
 	ADMIN_PWD,
 	CLOUD_HOME,
-	httpPort: 80,
-	httpsPort: 443,
-	domain: 'www.breizbot.ovh',
+	httpPort,
+	httpsPort,
+	domain,
 	email: 'marc.delomez@free.com',
 	dbUrl: 'mongodb://localhost:27017',
-	dbName: 'breizbot',
-	wsPort: 8090
+	dbName: 'breizbot'
 }

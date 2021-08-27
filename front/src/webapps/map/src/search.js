@@ -1,15 +1,23 @@
+//@ts-check
 $$.control.registerControl('searchPage', {
 
 	template: {gulp_inject: './search.html'},
 
 	deps: ['breizbot.cities', 'breizbot.pager'],
 
+	/**
+	 * 
+	 * @param {Breizbot.Services.City.Interface} srvCities 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 */
 	init: function(elt, srvCities, pager) {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				/**@type {string[]} */
 				countries: [],
 				currentCountry: '',
+				/**@type {Breizbot.Services.City.CityInfo[]} */
 				cities: [],
 				message: '',
 				running: false,
@@ -40,6 +48,7 @@ $$.control.registerControl('searchPage', {
 				},
 				onItemClick: function(ev) {
 					const idx = $(this).index()
+					/**@type {Breizbot.Services.City.CityInfo} */
 					const info = ctrl.model.cities[idx]
 					console.log('onItemClick', info)
 					pager.popPage(info.coord)

@@ -99,14 +99,7 @@ declare namespace Breizbot {
     
         declare namespace Http {
     
-            interface Interface {
-                get(url: string, params?: { [param]: any }): Promise;
-    
-                fetch(url: string, params?: { [param]: any }): Promise;
-    
-                post(url: string, params?: { [param]: any }): Promise;
-                put(url: string, params?: { [param]: any }): Promise;
-                postFormData(url: string, fd: FormData, onUploadProgress: () => void): Promise;
+            interface Interface extends Brainjs.Services.Http.Interface {
             }
     
     
@@ -314,9 +307,21 @@ declare namespace Breizbot {
         }
 
         declare namespace City {
+
+            interface CityCoordinates {
+                lon: number;
+                lat: number;
+            }
+
+            interface CityInfo {
+                country: string;
+                name: string;
+                coord: CityCoordinates;
+            }
+
             interface Interface {
                 getCountries(): Promise<string[]>;
-                getCities(country: string, search: string): Promise<string[]>;
+                getCities(country: string, search: string): Promise<CityInfo[]>;
                 getCitesFromPostalCode(postalCode: string): Promise<string[]>;
             }
         }

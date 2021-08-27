@@ -49,12 +49,12 @@
 				data: {
 					idx: firstIdx,
 					nbFiles: files.length,
-					src: getFileUrl(firstIdx),
-					name: getName(firstIdx),
-					title: getTitle(firstIdx),
-					artist: getArtist(firstIdx),
-					genre: getGenre(firstIdx),
-					year: getYear(firstIdx),
+					src: '#',
+					name: '',
+					title: '',
+					artist: '',
+					genre: '',
+					year: 0,
 					volume: 0,
 					duration: 0,
 					curTime: 0,
@@ -133,6 +133,22 @@
 				}
 			})
 
+			setIndex(firstIdx)
+
+			function isFirst() {
+				if (shuffleIndexes != null) {
+					return true
+				}
+				return (ctrl.model.idx == 0)
+			}
+
+			function isLast() {
+				if (shuffleIndexes != null) {
+					return (shuffleIndexes.length == 0)
+				}
+				return (ctrl.model.idx == ctrl.model.nbFiles - 1)
+			}
+	
 			function prev() {
 				let { idx } = ctrl.model
 				if (idx > 0) {
@@ -156,7 +172,7 @@
 			}
 
 			function setIndex(idx) {
-				//console.log('idx', idx)
+				//console.log('setIndex', idx)
 				ctrl.setData({
 					src: getFileUrl(idx),
 					title: getTitle(idx),
@@ -166,6 +182,17 @@
 					year: getYear(idx),
 					idx
 				})
+				if (navigator.mediaSession) {
+					navigator.mediaSession.metadata = new MediaMetadata({
+						title: getTitle(idx),
+						artist: getArtist(idx)
+					})
+
+					navigator.mediaSession.setActionHandler('previoustrack', isFirst() ? null : prev)		
+					navigator.mediaSession.setActionHandler('nexttrack', isLast() ? null : next)		
+
+
+				}
 			}
 
 			/**@type {HTMLAudioElement} */

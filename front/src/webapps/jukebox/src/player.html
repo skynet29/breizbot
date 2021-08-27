@@ -21,20 +21,16 @@
 	</div>
 </div>
 <div class="toolbar">
-	<button bn-prop="{disabled: isFirst}" bn-event="click: onPrev" class="w3-btn w3-blue" title="Previous">
-		<i class="fa fa-lg fa-step-backward"></i>
+	<button bn-prop="{disabled: isFirst}" bn-event="click: onPrev" class="w3-btn w3-blue" title="Previous" bn-icon="fa fa-lg fa-step-backward">
 	</button>
 
-	<button bn-show="!playing" bn-event="click: onPlay" class="w3-btn w3-blue" title="Play">
-		<i class="fa fa-lg fa-play"></i>
+	<button bn-show="!playing" bn-event="click: onPlay" class="w3-btn w3-blue" title="Play" bn-icon="fa fa-lg fa-play">
 	</button>
 
-	<button bn-show="playing" bn-event="click: onPause" class="w3-btn w3-blue" title="Pause">
-		<i class="fa fa-lg fa-pause"></i>
+	<button bn-show="playing" bn-event="click: onPause" class="w3-btn w3-blue" title="Pause" bn-icon="fa fa-lg fa-pause">
 	</button>
 
-	<button bn-prop="{disabled: isLast}" bn-event="click: onNext" class="w3-btn w3-blue" title="Next">
-		<i class="fa fa-lg fa-step-forward"></i>
+	<button bn-prop="{disabled: isLast}" bn-event="click: onNext" class="w3-btn w3-blue" title="Next" bn-icon="fa fa-lg fa-step-forward">
 	</button>
 
 </div>

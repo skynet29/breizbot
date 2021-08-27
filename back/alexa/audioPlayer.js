@@ -20,7 +20,11 @@ function getIndex(songs, token) {
     })
 }
 
-
+/**
+ * 
+ * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+ * @returns 
+ */
 async function getCurrentSong(handlerInput) {
     const { inPlayback, token, songs } = await util.getPersistentAttributes(handlerInput)
 
@@ -33,6 +37,8 @@ async function getCurrentSong(handlerInput) {
 }
 
 /**
+ *  
+ * @param {import('ask-sdk-core').HandlerInput} handlerInput 
  * @param {string} playAction
  * @param {Boolean} enQueue
  */
@@ -108,7 +114,11 @@ async function playSong(handlerInput, playAction, enQueue = false) {
 
 
 
-
+/**
+ * 
+ * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+ * @returns 
+ */
 function stopPlayback(handlerInput) {
     return handlerInput.responseBuilder
         .addAudioPlayerStopDirective()
@@ -116,6 +126,13 @@ function stopPlayback(handlerInput) {
 
 }
 
+/**
+ * 
+ * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+ * @param {*} songs 
+ * @param {*} action 
+ * @param {*} shuffleIndexes 
+ */
 async function initAttributes(handlerInput, songs, action, shuffleIndexes) {
     const attributes = await util.getPersistentAttributes(handlerInput)
     attributes.songs = songs

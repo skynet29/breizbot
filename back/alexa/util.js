@@ -2,7 +2,11 @@
 
 const Alexa = require('ask-sdk-core')
 
-
+/**
+ * 
+ * @param {number} length 
+ * @returns {number[]}
+ */
 function knuthShuffle(length) {
     //console.log('knuthShuffle', length)
     let arr = []
@@ -20,9 +24,11 @@ function knuthShuffle(length) {
     }
     return arr;
 }
-
 /**
- * @param {string} intentName
+ * 
+ * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+ * @param {string} intentName 
+ * @returns {boolean}
  */
 function isIntentRequest(handlerInput, intentName) {
     const { request } = handlerInput.requestEnvelope
@@ -30,25 +36,42 @@ function isIntentRequest(handlerInput, intentName) {
 }
 
 /**
+ * @param {import('ask-sdk-core').HandlerInput} handlerInput 
  * @param {string} cmdName
+ * @returns {boolean}
  */
 function isPlaybackControllerCmd(handlerInput, cmdName) {
     const { request } = handlerInput.requestEnvelope
     return (request.type === `PlaybackController.${cmdName}`)
 }
 
+/**
+ * 
+ * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+ * @returns {boolean}
+ */
 function isAudioPlayerEvent(handlerInput) {
     const { request } = handlerInput.requestEnvelope
 
     return request.type.startsWith('AudioPlayer.')
 }
 
+/**
+ * 
+ * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+ * @returns {string}
+ */
 function getAudioPlayerEventName(handlerInput) {
     const { request } = handlerInput.requestEnvelope
 
     return request.type.split('.')[1]
 }
 
+/**
+ * 
+ * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+ * @returns 
+ */
 async function getPersistentAttributes(handlerInput) {
     let { attributes } = handlerInput
     if (attributes == undefined) {
@@ -58,15 +81,31 @@ async function getPersistentAttributes(handlerInput) {
     return attributes
 }
 
+/**
+ * 
+ * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+ * @param {string} slotName 
+ * @returns {string}
+ */
 function getSlotValue(handlerInput, slotName) {
     return Alexa.getSlotValue(handlerInput.requestEnvelope, slotName)
 }
 
+/**
+ * 
+ * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+ * @returns {string}
+ */
 function getUserName(handlerInput) {
     const { userName } = handlerInput.attributesManager.getSessionAttributes()
     return userName
 }
 
+/**
+ * 
+ * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+ * @returns {string}
+ */
 function getConsentToken(handlerInput) {
     const { permissions } = handlerInput.requestEnvelope.context.System.user
 

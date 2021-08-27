@@ -27,6 +27,10 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				/**
+				 * 
+				 * @param {Brainjs.Controls.Map.EventData.MapShapeContextMenu} data 
+				 */
 				onShapeContextMenu: function (ev, data) {
 					//console.log('onShapeContextMenu', data)
 					const {id, cmd} = data
@@ -35,12 +39,18 @@ $$.control.registerControl('rootPage', {
 						delete markers[id]	
 					}
 					if (cmd == "zoom") {
+						/**@type {Brainjs.Controls.Map.Shape.Marker} */
+						// @ts-ignore
 						const info = map.getShapeInfo(id)
 						//console.log('info', info)
 						map.flyTo(info.latlng, 13)
 					}
 
 				},
+				/**
+				 * 
+				 * @param {Brainjs.Controls.Map.EventData.MapContextMenu} data 
+				 */
 				onMapContextMenu: async function (ev, data) {
 					//console.log('onMapContextMenu', data)
 					const { latlng } = data
@@ -60,6 +70,10 @@ $$.control.registerControl('rootPage', {
 					//console.log('onSearch')
 					pager.pushPage('searchPage', {
 						title: 'Search City',
+						/**
+						 * 
+						 * @param {Breizbot.Services.City.CityCoordinates} coord 
+						 */
 						onReturn: function (coord) {
 							//console.log('onReturn', coord)
 							const latlng = { lat: coord.lat, lng: coord.lon }
@@ -93,7 +107,7 @@ $$.control.registerControl('rootPage', {
 					else {
 						navigator.geolocation.clearWatch(ctrl.model.watchID)
 						ctrl.setData({ watchID: null })
-						ctrl.scope.map.removeShape('location')
+						map.removeShape('location')
 					}
 				}
 			}
@@ -112,9 +126,16 @@ $$.control.registerControl('rootPage', {
 		initMarkers()
 
 
+		/**
+		 * 
+		 * @param {string} shapeId 
+		 * @param {Brainjs.Controls.Map.LatLng} latlng 
+		 * @param {string} tooltip 
+		 */
 		function addMarker(shapeId, latlng, tooltip) {
 			//console.log('addMarker', shapeId, latlng, tooltip)
-			map.addShape(shapeId, {
+			/**@type Brainjs.Controls.Map.Shape.Marker */
+			const shapeInfo = {
 				type: 'marker',
 				layer: 'markers',
 				latlng,
@@ -140,7 +161,8 @@ $$.control.registerControl('rootPage', {
 						iconCls: 'fas fa-search-plus w3-text-blue'
 					}
 				}
-			})
+			}
+			map.addShape(shapeId, shapeInfo)
 	
 		}
 
@@ -149,6 +171,10 @@ $$.control.registerControl('rootPage', {
 			console.log('geolocation error')
 		}
 
+		/**
+		 * 
+		 * @param {GeolocationPosition} position 
+		 */
 		function updateLocation(position) {
 			const latlng = {
 				lat: position.coords.latitude,
@@ -170,7 +196,7 @@ $$.control.registerControl('rootPage', {
 					latlng
 				})
 			}
-			ctrl.scope.map.panTo(latlng)
+			map.panTo(latlng)
 		}
 
 		broker.register('breizbot.friendPosition', (msg) => {

@@ -15,10 +15,16 @@ const helpMessage = ssml.create()
 
 
 const LaunchRequestHandler = {
+    /**
+     * @param {import("ask-sdk-core").HandlerInput} handlerInput
+     */
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest'
     },
-    async handle(handlerInput) {
+    /**
+     * @param {import("ask-sdk-core").HandlerInput} handlerInput
+     */
+     async handle(handlerInput) {
         const { responseBuilder } = handlerInput
 
         const attributes = await util.getPersistentAttributes(handlerInput)
@@ -79,9 +85,20 @@ const LaunchRequestHandler = {
 }
 
 const YesHandler = {
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+     * @returns 
+     */    
     canHandle(handlerInput) {
         return util.isIntentRequest(handlerInput, 'AMAZON.YesIntent')
     },
+
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+     * @returns 
+     */
     async handle(handlerInput) {
         handlerInput.responseBuilder.speak(`C'est parti`).withShouldEndSession(true)
 
@@ -90,9 +107,19 @@ const YesHandler = {
 }
 
 const NoHandler = {
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+     * @returns 
+     */
     canHandle(handlerInput) {
         return util.isIntentRequest(handlerInput, 'AMAZON.NoIntent')
     },
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+     * @returns 
+     */
     async handle(handlerInput) {
         const { responseBuilder, attributesManager } = handlerInput
         const attributes = await attributesManager.getPersistentAttributes()
@@ -110,9 +137,19 @@ const NoHandler = {
 
 
 const SessionEndedRequestHandler = {
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+     * @returns 
+     */
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'SessionEndedRequest'
     },
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+     * @returns 
+     */
     handle(handlerInput) {
         console.log(`Session ended with reason: ${handlerInput.requestEnvelope.request.reason}`)
         if (handlerInput.requestEnvelope.request.error) {
@@ -122,10 +159,16 @@ const SessionEndedRequestHandler = {
     }
 }
 
-const ErrorHandler = {
+const ErrorHandler = {    
     canHandle() {
         return true
     },
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+     * @param {*} error 
+     * @returns 
+     */
     handle(handlerInput, error) {
         console.log(`[Alexa] Error handled: ${error.message}`)
         const { responseBuilder } = handlerInput
@@ -161,11 +204,21 @@ const ErrorHandler = {
 }
 
 const ExitHandler = {
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+     * @returns 
+     */
     async canHandle(handlerInput) {
         const { inPlayback } = await util.getPersistentAttributes(handlerInput)
 
         return !inPlayback && (util.isIntentRequest(handlerInput, 'AMAZON.StopIntent') || util.isIntentRequest(handlerInput, 'AMAZON.CancelIntent'))
     },
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+     * @returns 
+     */
     handle(handlerInput) {
         return handlerInput.responseBuilder
             .speak('Au revoir !')
@@ -176,9 +229,19 @@ const ExitHandler = {
 
 
 const HelpHandler = {
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+     * @returns 
+     */
     canHandle(handlerInput) {
         return util.isIntentRequest(handlerInput, 'AMAZON.HelpIntent')
     },
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+     * @returns 
+     */
     async handle(handlerInput) {
 
         return handlerInput.responseBuilder

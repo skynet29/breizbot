@@ -48,6 +48,7 @@
     "xml-escape": "^1.1.0"
   },
   "devDependencies": {
+    "@types/alexa-sdk": "^1.1.2",
     "gulp": "^4.0.0",
     "gulp-browserify": "^0.5.1",
     "gulp-concat": "^2.6.1",

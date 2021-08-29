@@ -1,9 +1,16 @@
 .showDetails {
     display: flex;
-    justify-content: space-between;
+    flex-direction: row;
     padding: 10px;
-    > div {
-        padding: 10px;
+    img {
+        width: 30%;
+        object-fit: contain;
+        object-position: 0px 0px;
+    }
+
+    .description {
+        padding: 0px 10px;
         overflow-y: auto;
     }
+
 }

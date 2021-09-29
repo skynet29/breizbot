@@ -1,0 +1,17 @@
+<div>
+    <form bn-event="submit: onSubmit" bn-form="data">
+        <label>Title</label>
+        <input type="text" required name="title">
+
+        <label>Year</label>
+        <input type="number" required name="year">
+
+        <label>Style</label>
+        <input type="text" name="style" bn-control="brainjs.autocomplete" bn-data="{source: styles}">
+        
+        <label>Franchise</label>
+        <input type="text" name="franchise" bn-control="brainjs.autocomplete" bn-data="{source: franchises}">
+
+        <input type="submit" hidden bn-bind="submit">
+    </form>
+</div>

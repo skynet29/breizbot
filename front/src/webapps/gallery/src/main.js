@@ -12,17 +12,29 @@ $$.control.registerControl('rootPage', {
 	 */
 	init: function(elt, pager) {
 
+		/**
+		 * 
+		 * @param {string} title 
+		 * @param {string} friendUser 
+		 */
 		function openFilePage(title, friendUser) {
 			pager.pushPage('breizbot.files', {
 				title,
+				/**@type {Breizbot.Controls.Files.Props} */
 				props: {
 					filterExtension: 'jpg,png,jpeg',
 					friendUser
 				},
 				events: {
+					/**
+					 * 
+					 * @param {Breizbot.Controls.Files.EventData.FileClick} info 
+					 */
 					fileclick: function(ev, info) {
 						const {rootDir, fileName } = info
-						const files = $(this).iface().getFiles()
+						/**@type {Breizbot.Controls.Files.Interface} */
+						const fileCtrl = $(this).iface()
+						const files = fileCtrl.getFiles()
 						//console.log('files', files)
 						const firstIdx = files.findIndex((f) => f.name == fileName)
 						//console.log('firstIdx', firstIdx)
@@ -52,10 +64,15 @@ $$.control.registerControl('rootPage', {
 				onShare: function() {
 					pager.pushPage('breizbot.friends', {
 						title: 'Shared files',
+						/**@type {Breizbot.Controls.Friends.Props} */
 						props: {
 							showConnectionState: false
 						},
 						events: {
+							/**
+							 * 
+							 * @param {Breizbot.Controls.Friends.EventData.FriendClick} data 
+							 */
 							friendclick: function(ev, data) {
 								//console.log('onSelectFriend', data)
 								const {userName} = data

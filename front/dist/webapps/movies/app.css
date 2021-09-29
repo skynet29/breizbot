@@ -1,0 +1,64 @@
+.addMovie {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center; }
+  .addMovie form {
+    max-width: 400px;
+    width: 400px;
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 10px; }
+    .addMovie form label {
+      grid-column: 1/2; }
+    .addMovie form input {
+      grid-column: 2/3; }
+
+.filter {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center; }
+  .filter form {
+    max-width: 400px;
+    width: 400px;
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 10px; }
+    .filter form label {
+      grid-column: 1/2; }
+    .filter form input {
+      grid-column: 2/3; }
+
+.rootPage {
+  display: flex;
+  flex-direction: column; }
+  .rootPage > .toolbar {
+    display: flex;
+    justify-content: space-between;
+    background-color: #128C7E;
+    color: white;
+    align-items: center; }
+    .rootPage > .toolbar .left {
+      display: flex; }
+    .rootPage > .toolbar .right {
+      margin-right: 10px; }
+    .rootPage > .toolbar .group {
+      display: flex;
+      align-items: center; }
+      .rootPage > .toolbar .group .separator {
+        border-left: 1px solid white;
+        height: 80%; }
+  .rootPage > .scrollBar {
+    flex: 1;
+    overflow-y: auto; }
+    .rootPage > .scrollBar table {
+      border: none; }
+      .rootPage > .scrollBar table th {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        background-color: #666;
+        color: white; }
+      .rootPage > .scrollBar table td {
+        cursor: pointer; }

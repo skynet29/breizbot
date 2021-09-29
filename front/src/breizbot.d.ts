@@ -6,7 +6,7 @@ declare namespace Breizbot {
 
             interface Interface {
                 getData():any;
-                saveData(data):Promise; 
+                saveData(data):Promise<void>; 
             }
         }
 
@@ -90,8 +90,8 @@ declare namespace Breizbot {
                 fileThumbnailUrl(fileName: string, size: string, friendUser?: string): string;
                 fileAppUrl(fileName: string): string;
                 fileAppThumbnailUrl(fileName: string, size: string): string;
-                uploadFile(blob: Blob, saveAsfileName: string, destPath: string, onUploadProgress: (percentComplete: number) => void): Promise;
-                saveFile(blob: Blob, saveAsfileName: string, destPath?: string): Promise;
+                uploadFile(blob: Blob, saveAsfileName: string, destPath: string, onUploadProgress: (percentComplete: number) => void): Promise<void>;
+                saveFile(blob: Blob, saveAsfileName: string, destPath?: string): Promise<void>;
             }
     
     
@@ -138,18 +138,18 @@ declare namespace Breizbot {
             type EventName = 'ready' | 'accept' | 'bye' | 'status' | 'call' | 'cancel';
     
             interface Interface {
-                call(to: string, appName: string, iconCls: string): Promise;
-                cancel(updateStatus: boolean = true): Promise;
-                accept(): Promise;
-                deny(): Promise;
-                bye(): Promise;
-                sendData(type: string, data: any): Promise;
+                call(to: string, appName: string, iconCls: string): Promise<void>;
+                cancel(updateStatus: boolean = true): Promise<void>;
+                accept(): Promise<void>;
+                deny(): Promise<void>;
+                bye(): Promise<void>;
+                sendData(type: string, data: any): Promise<void>;
                 onData(type: string, callback: (data, time) => void): void;
                 processCall(): void;
                 on(eventName: EventName, callback: () => void): void;
                 getRemoteClientId(): number;
                 isCallee(): boolean;
-                exit(): Promise;
+                exit(): Promise<void>;
             }
         }
     
@@ -157,7 +157,7 @@ declare namespace Breizbot {
     
             interface Interface {
                 openApp(appName: string, appParams: any): void;
-                logout(): Promise;
+                logout(): Promise<void>;
             }
         }
     
@@ -176,8 +176,8 @@ declare namespace Breizbot {
             }
     
             interface Interface {
-                sendNotif(to: string, notif: NotifDesc):Promise;
-                removeNotif(notifId: string):Promise;
+                sendNotif(to: string, notif: NotifDesc):Promise<void>;
+                removeNotif(notifId: string):Promise<void>;
                 getNotifs():Promise<NotifInfo[]>;
                 getNotifCount():Promise<number>
             }
@@ -236,15 +236,15 @@ declare namespace Breizbot {
     
             interface AdminInterface {
                 list():Promise<UserInfo[]>;
-                add(data: UserCreateInfo):Promise;
-                remove(user: string):Promise;
-                update(user: string, data: UserInfo):Promise;
+                add(data: UserCreateInfo):Promise<void>;
+                remove(user: string):Promise<void>;
+                update(user: string, data: UserInfo):Promise<void>;
                 get(user: string):Promise<UserInfo>;
             }
     
             interface Interface {
-                activateApp(appName: string, activated: boolean):Promise;
-                changePwd(newPwd: string):Promise;
+                activateApp(appName: string, activated: boolean):Promise<void>;
+                changePwd(newPwd: string):Promise<void>;
                 getUserSettings():Promise<UserSettings>
                 setUserSettings(settings: UserSettings):Promise
                 match(match: string):Promise<UserCreateInfo[]>;
@@ -254,7 +254,7 @@ declare namespace Breizbot {
     
         declare namespace Songs {
             interface Interface {
-                generateDb():Promise;
+                generateDb():Promise<void>;
             }
         }
     
@@ -302,7 +302,7 @@ declare namespace Breizbot {
     
         declare namespace WakeLock {
             interface Interface {
-                requestWakeLock(): Promise;
+                requestWakeLock(): Promise<void>;
             }
         }
 
@@ -365,6 +365,13 @@ declare namespace Breizbot {
             }
         }
 
+        declare namespace Viewer {
+            interface Props {
+                url: string;
+                type: 'image' | 'pdf' | 'audio' | 'video' | 'hdoc'
+            }
+        }
+
         declare namespace Files {
 
             interface Mp3Filter {
@@ -398,10 +405,10 @@ declare namespace Breizbot {
             }
 
             interface Props {
-                selectionEnabled?: boolean;
-                imageOnly?: boolean;
+                selectionEnabled?: boolean; // default false
+                imageOnly?: boolean;        // default false
                 filterExtension?: string;
-                getMP3Info?: boolean;
+                getMP3Info?: boolean;       // default false
                 friendUser?: string;
                 mp3Filters?: Mp3Filter;
                 menuItems?: (data: Services.Files.FileInfo) => {};
@@ -421,7 +428,7 @@ declare namespace Breizbot {
                 getMP3Filters(): Mp3Filter;
                 getFiles(): Services.Files.FileInfo[];
                 getFilteredFiles(): Services.Files.FileInfo[];
-                updateFileInfo(fileName: string, options: Services.Files.FileOptions):Promise;
+                updateFileInfo(fileName: string, options: Services.Files.FileOptions):Promise<void>;
                 getSelFiles(): FileDesc[]
                 getSelFileNames() :string[];
                 getNbSelFiles(): number;

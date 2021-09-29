@@ -1,12 +1,12 @@
 //@ts-check
 
-const { MongoClient, ObjectID } = require('mongodb')
+const { MongoClient, ObjectID, Db } = require('mongodb')
 const redirectHttps = require('redirect-https')
 
 const config = require('./config')
 const util = require('./util.js')
 
-
+/**@type {Db} */
 let db = null
 
 
@@ -33,6 +33,7 @@ class DbWrapper {
 		filter = filter || {}
 		filter.userName = this.userName
 		//console.log('[DBWRAPPER] find', filter)
+
 		return this.collection.find(filter)
 	}
 
@@ -53,6 +54,15 @@ class DbWrapper {
 		data = data || {}
 		data.userName = this.userName
 		return this.collection.insertOne(data)
+	}
+
+	/**
+	 * 
+	 * @param {Array<object>} docs 
+	 */
+	insertMany(docs) {
+		docs.forEach(doc => {doc.userName = this.userName})
+		return this.collection.insertMany(docs)
 	}
 
 	deleteOne(filter) {

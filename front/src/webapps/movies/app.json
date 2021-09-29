@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fa fa-film fa-2x",
+	"colorCls": "w3-green",
+	"title": "Movies",
+	"styles": ["app.css"]
+}

@@ -7,12 +7,9 @@ const path = require('path')
 const fs = require('fs-extra')
 const NodeID3 = require('node-id3')
 const config = require('./config')
-const { ObjectID } = require('mongodb')
 const ExifImage = require('exif').ExifImage
 const fetch = require('node-fetch')
 const querystring = require('querystring')
-const bcrypt = require('bcrypt')
-
 
 const cloudPath = config.CLOUD_HOME
 
@@ -24,7 +21,11 @@ function getFilePath(user, filePath, friendUser) {
 	return rootPath
 }
 
-
+/**
+ * 
+ * @param {string} fileName 
+ * @returns 
+ */
 function isImage(fileName) {
 	return (/\.(gif|jpg|jpeg|png)$/i).test(fileName)
 }
@@ -33,7 +34,20 @@ function genThumbnail(filePath, res, size) {
 	return simpleThumbnail(filePath, res, size)
 }
 
+/**
+ * @typedef {Object} Mp3Info
+ * @property {string} genre
+ * @property {string} artist
+ * @property {string} title
+ * @property {number} year
+ */
 
+
+/**
+ * 
+ * @param {string} filePath 
+ * @returns {Promise<Mp3Info>}
+ */
 function readID3(filePath) {
 	return new Promise(function (resolve, reject) {
 		NodeID3.read(filePath, function (err, tags) {
@@ -51,6 +65,11 @@ function readID3(filePath) {
 
 }
 
+/**
+ * 
+ * @param {string} fileName 
+ * @returns 
+ */
 function getExif(fileName) {
 	return new Promise((resolve, reject) => {
 		try {
@@ -67,6 +86,24 @@ function getExif(fileName) {
 	})
 }
 
+
+
+/**
+ * @typedef {Object} FileInfo
+ * @property {string} name
+ * @property {boolean} folder
+ * @property {number} size
+ * @property {boolean} isImage
+ * @property {number} mtime
+ * @property {Mp3Info} [mp3]
+ */
+
+/**
+ * 
+ * @param {string} filePath 
+ * @param {{getMP3Info?: boolean, getExifInfo?: boolean}} [options] 
+ * @returns {Promise<FileInfo>}
+ */
 async function getFileInfo(filePath, options) {
 	options = options || {}
 	const statInfo = await fs.lstat(filePath)
@@ -111,6 +148,13 @@ function getEncodedUrl(url, params) {
 	return url + '?' + querystring.stringify(params)
 }
 
+/**
+ * 
+ * @param {string} theme 
+ * @param {string} query 
+ * @param {{count?: number, offset?: number}} [options] 
+ * @returns 
+ */
 async function search(theme, query, options) {
 	console.log('search', theme, options)
 	const scraperapiKey = '36a62a3d7ef78359360098cfeba82c3d'

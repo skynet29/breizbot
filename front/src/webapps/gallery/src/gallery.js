@@ -19,6 +19,7 @@ $$.control.registerControl('gallery', {
 	 */
 	init: function(elt, filesSrv, pager) {
 
+		/**@type {{rootDir: string, files: Breizbot.Services.Files.FileInfo[], firstIdx: number, friendUser: string}} */
 		//@ts-ignore
 		const {rootDir, files, firstIdx, friendUser} = this.props
 		const diaporamaInterval = 10 * 1000 // 10 sec
@@ -70,6 +71,11 @@ $$.control.registerControl('gallery', {
 			$img.get(0).scrollIntoView()
 		}
 
+		/**
+		 * 
+		 * @param {number} idx 
+		 * @returns 
+		 */
 		function getFileUrl(idx) {
 			return filesSrv.fileUrl(rootDir + files[idx].name, friendUser)
 		}

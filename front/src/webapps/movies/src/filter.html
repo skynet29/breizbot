@@ -1,0 +1,11 @@
+<div>
+    <form bn-event="submit: onSubmit" bn-form="filters">
+        <label>Style</label>
+        <div bn-control="brainjs.combobox" bn-data="{items: styles}" name="style"></div>    
+
+        <label>Franchise</label>
+        <div bn-control="brainjs.combobox" bn-data="{items: franchises}" name="franchise"></div>    
+        
+        <input type="submit" hidden bn-bind="submit">
+    </form>
+</div>

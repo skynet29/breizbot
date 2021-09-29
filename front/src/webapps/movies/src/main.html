@@ -1,0 +1,52 @@
+<div class="toolbar">
+    <div class="left">
+        <button class="w3-button" title="Import from JSON file" bn-event="click: onImport" bn-icon="fas fa-download">
+        </button>
+
+        <button class="w3-button" title="Add Movie" bn-event="click: onAddMovie" bn-icon="fas fa-plus">
+        </button>
+
+        <button class="w3-button" title="Filter" bn-event="click: onFilter" bn-icon="fas fa-filter">
+        </button>
+
+        
+    </div>
+
+    <div class="right">
+        <span bn-text="getMoviesQty"></span>
+    </div>
+
+
+</div>
+
+<div class="scrollBar">
+    <table class="w3-table-all w3-hoverable w3-small">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Year</th>
+                <th>Style</th>
+                <th>Franchise</th>
+            </tr>
+        </thead>
+            <tbody bn-each="movies" bn-lazzy="getMovies" bn-event="contextmenuchange.item: onItemContextMenu">
+                <tr class="item" bn-control="brainjs.contextmenu" bn-data="{items: {
+                    del: {
+                        name: 'Delete',
+                        icon: 'fas fa-trash-alt'
+                    },
+                    edit: {
+                        name: 'Edit',
+                        icon: 'fas fa-edit'
+                    }
+                }}">
+    
+                <td bn-text="$scope.$i.title"></td>
+                <td bn-text="$scope.$i.year"></td>
+                <td bn-text="$scope.$i.style"></td>
+                <td bn-text="$scope.$i.franchise"></td>
+            </tr>
+
+        </tbody>
+    </table>
+</div>

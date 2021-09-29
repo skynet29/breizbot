@@ -55,6 +55,7 @@ $$.control.registerControl('rootPage', {
 					const url = URL.createObjectURL(blob)
 					pager.pushPage('breizbot.viewer', {
 						title: 'Snapshot',
+						/**@type {Breizbot.Controls.Viewer.Props} */
 						props: { url, type: 'image' },
 						buttons: {
 							save: {

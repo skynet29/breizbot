@@ -134,7 +134,7 @@ $$.control.registerControl('rootPage', {
 		 */
 		function addMarker(shapeId, latlng, tooltip) {
 			//console.log('addMarker', shapeId, latlng, tooltip)
-			/**@type Brainjs.Controls.Map.Shape.Marker */
+			/**@type {Brainjs.Controls.Map.Shape.Marker} */
 			const shapeInfo = {
 				type: 'marker',
 				layer: 'markers',

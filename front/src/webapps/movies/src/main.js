@@ -93,7 +93,7 @@ $$.control.registerControl('rootPage', {
 						onReturn: async function(fileInfo) {
 							console.log('onReturn', fileInfo)
 							await http.post('/importFile', {filePath: fileInfo.rootDir + fileInfo.fileName})
-							loadMovies
+							loadMovies()
 						}
 					})
 				},

@@ -21,7 +21,10 @@ $$.control.registerControl('addMovie', {
 
         const ctrl = $$.viewController(elt, {
             data: {
-                data
+                data,
+                styles: [],
+                franchises: [],
+                actors: []
             },
             events: {
                 onSubmit: function (ev) {
@@ -35,10 +38,11 @@ $$.control.registerControl('addMovie', {
         async function getStyles() {
             const styles = await http.get('/getStyles')
             const franchises = await http.get('/getFranchises')
-            ctrl.setData({ styles,  franchises})
+            const actors = await http.get('/getActors')
+            ctrl.setData({ styles, franchises, actors })
         }
 
-        getStyles()           
+        getStyles()
 
         this.getButtons = function () {
             return {

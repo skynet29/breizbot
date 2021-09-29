@@ -25,7 +25,8 @@ $$.control.registerControl('filter', {
             data: {
                 filters: {},
                 styles: [],
-                franchises: []
+                franchises: [],
+                actors: []
             },
             events: {
                 onSubmit: function (ev) {
@@ -42,7 +43,9 @@ $$.control.registerControl('filter', {
             styles.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
             const franchises = await http.get('/getFranchises')
             franchises.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
-            ctrl.setData({ styles,  franchises})
+            const actors = await http.get('/getActors')
+            actors.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
+            ctrl.setData({ styles,  franchises, actors})
             ctrl.setData({ filters })
         }
 

@@ -103,6 +103,17 @@ module.exports = function (ctx, router) {
         }
     })  
     
+    router.get('/getActors', async function (req, resp) {
+
+
+        try {
+            const mainActors = await db.distinct('mainActor')
+            resp.json(mainActors)
+        }
+        catch (e) {
+            resp.status(404).send(e.message)
+        }
+    })      
 
     router.post('/deleteMovie/:movieId', async function (req, resp) {
 

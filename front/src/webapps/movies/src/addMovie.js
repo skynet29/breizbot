@@ -24,7 +24,8 @@ $$.control.registerControl('addMovie', {
                 data,
                 styles: [],
                 franchises: [],
-                actors: []
+                actors: [],
+                directors: []
             },
             events: {
                 onSubmit: function (ev) {
@@ -39,7 +40,8 @@ $$.control.registerControl('addMovie', {
             const styles = await http.get('/getStyles')
             const franchises = await http.get('/getFranchises')
             const actors = await http.get('/getActors')
-            ctrl.setData({ styles, franchises, actors })
+            const directors = await http.get('/getDirectors')
+            ctrl.setData({ styles, franchises, actors, directors })
         }
 
         getStyles()

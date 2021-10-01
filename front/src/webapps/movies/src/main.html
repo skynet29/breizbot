@@ -27,10 +27,11 @@
                 <th>Year</th>
                 <th>Style</th>
                 <th>Main Actor</th>
+                <th>Director</th>
                 <th>Franchise</th>
             </tr>
         </thead>
-            <tbody bn-each="movies" bn-lazzy="getMovies" bn-event="contextmenuchange.item: onItemContextMenu">
+            <tbody bn-each="movies" bn-lazzy="getMovies" bn-event="contextmenuchange.item: onItemContextMenu" bn-bind="movies">
                 <tr class="item" bn-control="brainjs.contextmenu" bn-data="{items: {
                     del: {
                         name: 'Delete',
@@ -46,6 +47,7 @@
                 <td bn-text="$scope.$i.year"></td>
                 <td bn-text="$scope.$i.style"></td>
                 <td bn-text="$scope.$i.mainActor"></td>
+                <td bn-text="$scope.$i.director"></td>
                 <td bn-text="$scope.$i.franchise"></td>
             </tr>
 

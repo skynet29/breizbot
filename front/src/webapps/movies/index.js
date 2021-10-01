@@ -5,7 +5,7 @@ module.exports = function (ctx, router) {
     const { db, util } = ctx
     const { buildDbId } = db.constructor
 
-    router.post('/', async function (req, resp) {
+    router.post('/getMovies', async function (req, resp) {
 
         const { offset, filters } = req.body
 
@@ -53,13 +53,15 @@ module.exports = function (ctx, router) {
 
     })    
 
-    router.post('/', async function (req, resp) {
+    router.post('/addMovie', async function (req, resp) {
 
         const data = req.body
 
         try {
-            await db.insertOne(data)
-            resp.sendStatus(200)
+            const ret = await db.insertOne(data)
+            //console.log('addMovie', ret.insertedId)
+            const info = await db.findOne({_id: ret.insertedId})
+            resp.json(info)
         }
         catch (e) {
             resp.status(404).send(e.message)
@@ -71,8 +73,10 @@ module.exports = function (ctx, router) {
         const data = req.body
 
         try {
-            await db.updateOne(buildDbId(req.params.movieId), { $set: data })
-            resp.sendStatus(200)
+            const id = buildDbId(req.params.movieId)
+            await db.updateOne(id, { $set: data })
+            const ret = await db.findOne(id)
+            resp.json(ret)
         }
         catch (e) {
             resp.status(404).send(e.message)
@@ -80,7 +84,6 @@ module.exports = function (ctx, router) {
     })
 
     router.get('/getStyles', async function (req, resp) {
-
 
         try {
             const styles = await db.distinct('style')
@@ -93,10 +96,9 @@ module.exports = function (ctx, router) {
 
     router.get('/getFranchises', async function (req, resp) {
 
-
-        try {
+     try {
             const franchises = await db.distinct('franchise')
-            resp.json(franchises)
+            resp.json(franchises.filter(i => i != ''))
         }
         catch (e) {
             resp.status(404).send(e.message)
@@ -105,15 +107,26 @@ module.exports = function (ctx, router) {
     
     router.get('/getActors', async function (req, resp) {
 
-
         try {
             const mainActors = await db.distinct('mainActor')
-            resp.json(mainActors)
+            resp.json(mainActors.filter(i => i != ''))
         }
         catch (e) {
             resp.status(404).send(e.message)
         }
     })      
+
+    router.get('/getDirectors', async function (req, resp) {
+
+        try {
+            const directors = await db.distinct('director')
+            resp.json(directors.filter(i => i != ''))
+        }
+        catch (e) {
+            resp.status(404).send(e.message)
+        }
+    })      
+
 
     router.post('/deleteMovie/:movieId', async function (req, resp) {
 

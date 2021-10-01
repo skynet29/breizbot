@@ -34,8 +34,10 @@ $$.control.registerControl('rootPage', {
 				onAddMovie: function() {
 					pager.pushPage('addMovie', {
 						title: 'Add Movie',
-						onReturn: function(info) {
+						onReturn: async function(info) {
 							console.log('onReturn', info)
+							await http.post('/addMovie', info)
+							loadMovies()
 						}
 					})
 				},
@@ -48,12 +50,12 @@ $$.control.registerControl('rootPage', {
                     //console.log('onItemContextMenu', idx, data)
                     const { cmd } = data
                     const info = ctrl.model.movies[idx]
-                    console.log('info', info)
+                    //console.log('info', info)
 					const movieId = info._id.toString()
 					if (cmd == 'del') {
                         $$.ui.showConfirm({ title: 'Delete Movie', content: 'Are you sure ?' }, async () => {
                             await http.post(`/deleteMovie/${movieId}`)
-							loadMovies()
+							ctrl.removeArrayItem('movies', idx, 'movies')
                         })
                     }
 					else if (cmd == 'edit')
@@ -64,9 +66,9 @@ $$.control.registerControl('rootPage', {
 								data: info
 							},
 							onReturn: async function (formData) {
-								console.log('formData', formData)
-								await http.post(`/updateMovie/${movieId}`, formData)
-								loadMovies()
+								//console.log('formData', formData)
+								const ret = await http.post(`/updateMovie/${movieId}`, formData)
+								ctrl.updateArrayItem('movies', idx, ret, 'movies')
 							}
 						})
 					}
@@ -105,7 +107,7 @@ $$.control.registerControl('rootPage', {
 							filters
 						},
 						onReturn: async function (formData) {
-							console.log('formData', formData)
+							//console.log('formData', formData)
 							Object.keys(formData).forEach((k) => {
 								if (formData[k] == 'All') {
 									delete formData[k]
@@ -123,7 +125,7 @@ $$.control.registerControl('rootPage', {
 		async function loadMovies(offset) {
 			offset = offset || 0
 
-			const movies = await http.post('/', { offset, filters })
+			const movies = await http.post('/getMovies', { offset, filters })
 			//console.log('movies', offset, filters, movies)
 			if (offset == 0) {
 				const { moviesQty } = await http.post('/moviesQty', { filters })

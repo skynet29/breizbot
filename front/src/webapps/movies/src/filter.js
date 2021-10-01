@@ -26,7 +26,8 @@ $$.control.registerControl('filter', {
                 filters: {},
                 styles: [],
                 franchises: [],
-                actors: []
+                actors: [],
+                directors: []
             },
             events: {
                 onSubmit: function (ev) {
@@ -39,13 +40,18 @@ $$.control.registerControl('filter', {
 
         async function getStyles() {
             const styles = await http.get('/getStyles')
-            //console.log('authors', authors)
             styles.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
+
             const franchises = await http.get('/getFranchises')
             franchises.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
+
             const actors = await http.get('/getActors')
             actors.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
-            ctrl.setData({ styles,  franchises, actors})
+
+            const directors = await http.get('/getDirectors')
+            directors.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
+
+            ctrl.setData({ styles,  franchises, actors, directors})
             ctrl.setData({ filters })
         }
 

@@ -17,7 +17,7 @@ $$.control.registerControl('filter', {
     init: function (elt, pager, http) {
 
         //@ts-ignore
-        const filters = $.extend({author: 'All'}, this.props.filters)
+        let filters = $.extend({author: 'All'}, this.props.filters)
 
         //console.log('filters', filters)
 
@@ -34,6 +34,17 @@ $$.control.registerControl('filter', {
                     ev.preventDefault()
                     pager.popPage($(this).getFormData())
 
+                },
+                onReset: function() {
+                    //console.log('onReset')
+                    filters = {
+                        author: 'All',
+                        style: 'All',
+                        director: 'All',
+                        franchise: 'All',
+                        year: ''
+                    }
+                    ctrl.setData({filters}, true)
                 }
             }
         })

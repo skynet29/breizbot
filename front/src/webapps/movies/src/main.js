@@ -107,7 +107,7 @@ $$.control.registerControl('rootPage', {
 							filters
 						},
 						onReturn: async function (formData) {
-							console.log('formData', formData)
+							//console.log('formData', formData)
 							Object.keys(formData).forEach((k) => {
 								if (formData[k] == 'All' || (k == 'year' && isNaN(formData[k]))) {
 									delete formData[k]

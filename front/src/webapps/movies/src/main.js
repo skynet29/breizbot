@@ -100,16 +100,16 @@ $$.control.registerControl('rootPage', {
 					})
 				},
 				onFilter: function () {
-					console.log('onFilter')
+					//console.log('onFilter')
 					pager.pushPage('filter', {
 						title: 'Set Filter',
 						props: {
 							filters
 						},
 						onReturn: async function (formData) {
-							//console.log('formData', formData)
+							console.log('formData', formData)
 							Object.keys(formData).forEach((k) => {
-								if (formData[k] == 'All') {
+								if (formData[k] == 'All' || (k == 'year' && isNaN(formData[k]))) {
 									delete formData[k]
 								}
 							})

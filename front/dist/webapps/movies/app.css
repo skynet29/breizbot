@@ -29,8 +29,10 @@
     align-items: center; }
     .filter form label {
       grid-column: 1/2; }
-    .filter form input {
+    .filter form .year {
       grid-column: 2/3; }
+      .filter form .year input {
+        max-width: 80px; }
 
 .rootPage {
   display: flex;

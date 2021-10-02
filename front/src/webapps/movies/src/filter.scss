@@ -17,8 +17,12 @@
             grid-column: 1/2;
         }
 
-        input {
+        .year {
             grid-column: 2/3;
+            input {
+                max-width: 80px;
+            }
         }
+
     }
 }

@@ -87,7 +87,7 @@ module.exports = function (ctx, router) {
 
         try {
             const styles = await db.distinct('style')
-            resp.json(styles)
+            resp.json(styles.filter(i => i != ''))
         }
         catch (e) {
             resp.status(404).send(e.message)

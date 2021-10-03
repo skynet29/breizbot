@@ -50,8 +50,10 @@ module.exports = function (ctx, router) {
         const data = req.body
 
         try {
-            await db.updateOne(buildDbId(req.params.bookId), { $set: data })
-            resp.sendStatus(200)
+            const id = buildDbId(req.params.bookId)
+            await db.updateOne(id, { $set: data })
+            const ret = await db.findOne(id)
+            resp.json(ret)
         }
         catch (e) {
             resp.status(404).send(e.message)

@@ -56,7 +56,9 @@ $$.control.registerControl('rootPage', {
                         $$.ui.showConfirm({ title: 'Delete Movie', content: 'Are you sure ?' }, async () => {
                             await http.post(`/deleteMovie/${movieId}`)
 							ctrl.removeArrayItem('movies', idx, 'movies')
-                        })
+							ctrl.model.moviesQty--
+							ctrl.updateNode('moviesQty')
+						})
                     }
 					else if (cmd == 'edit')
 					{

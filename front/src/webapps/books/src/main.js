@@ -26,6 +26,7 @@ $$.control.registerControl('rootPage', {
 				booksQty: 0,
 
 				getBooksQty: function () {
+					console.log('getBooksQty', this.booksQty)
 					return (this.booksQty > 0) ? `${this.booksQty} books` : ''
 				},
 
@@ -56,7 +57,9 @@ $$.control.registerControl('rootPage', {
 					if (cmd == 'del') {
                         $$.ui.showConfirm({ title: 'Delete Book', content: 'Are you sure ?' }, async () => {
                             await http.post(`/deleteBook/${bookId}`)
-							loadBooks()
+							ctrl.removeArrayItem('books', idx, 'books')
+							ctrl.model.booksQty--;
+							ctrl.updateNode('booksQty')
                         })
                     }
 					else if (cmd == 'edit')
@@ -68,8 +71,8 @@ $$.control.registerControl('rootPage', {
 							},
 							onReturn: async function (formData) {
 								console.log('formData', formData)
-								await http.post(`/updateBook/${bookId}`, formData)
-								loadBooks()
+								const ret = await http.post(`/updateBook/${bookId}`, formData)
+								ctrl.updateArrayItem('books', idx, ret, 'books')
 							}
 						})
 					}

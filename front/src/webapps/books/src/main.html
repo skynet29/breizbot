@@ -10,7 +10,7 @@
     </div>
 
     <div class="right">
-        <span bn-text="getBooksQty"></span>
+        <span bn-text="getBooksQty" bn-bind="booksQty"></span>
     </div>
 
 
@@ -28,7 +28,7 @@
                 <th>Series</th>
             </tr>
         </thead>
-        <tbody bn-each="books" bn-lazzy="getBooks" bn-event="contextmenuchange.item: onItemContextMenu, click.item: onBookDetail">
+        <tbody bn-each="books" bn-lazzy="getBooks" bn-event="contextmenuchange.item: onItemContextMenu, click.item: onBookDetail" bn-bind="books">
             <tr class="item" bn-control="brainjs.contextmenu" bn-data="{items: {
 				del: {
 					name: 'Delete',

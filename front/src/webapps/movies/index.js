@@ -5,12 +5,22 @@ module.exports = function (ctx, router) {
     const { db, util } = ctx
     const { buildDbId } = db.constructor
 
+    function buildFilter(filters) {
+        if (filters.actor != undefined) {
+            filters.$or = [{actor1: filters.actor},{actor2: filters.actor}]
+            delete filters.actor
+        }
+        //console.log('filters', filters)
+    }
+
     router.post('/getMovies', async function (req, resp) {
 
         const { offset, filters } = req.body
 
+        buildFilter(filters)
+
         try {
-            const movies = await db.find(filters).sort({ year: -1 }).skip(offset).limit(20).toArray()
+            const movies = await db.find(filters).sort({ year: -1, title: 1 }).skip(offset).limit(20).toArray()
             resp.json(movies)
         }
         catch (e) {
@@ -42,6 +52,7 @@ module.exports = function (ctx, router) {
 
         const { filters } = req.body
 
+        buildFilter(filters)
 
         try {
             const moviesQty = await db.countDocuments(filters)
@@ -108,8 +119,10 @@ module.exports = function (ctx, router) {
     router.get('/getActors', async function (req, resp) {
 
         try {
-            const mainActors = await db.distinct('mainActor')
-            resp.json(mainActors.filter(i => i != ''))
+            const actor1 = await db.distinct('actor1')
+            const actor2 = await db.distinct('actor2')
+            const actors = util.mergeArray(actor1, actor2)
+            resp.json(actors.filter(i => i != ''))
         }
         catch (e) {
             resp.status(404).send(e.message)

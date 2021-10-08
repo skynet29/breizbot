@@ -26,7 +26,7 @@
                 <th>Title</th>
                 <th>Year</th>
                 <th>Style</th>
-                <th>Main Actor</th>
+                <th>Actors</th>
                 <th>Director</th>
                 <th>Franchise</th>
             </tr>
@@ -46,7 +46,10 @@
                 <td bn-text="$scope.$i.title"></td>
                 <td bn-text="$scope.$i.year"></td>
                 <td bn-text="$scope.$i.style"></td>
-                <td bn-text="$scope.$i.mainActor"></td>
+                <td>
+					<span bn-text="$scope.$i.actor1"></span><br>
+					<span bn-text="$scope.$i.actor2"></span>
+                </td>
                 <td bn-text="$scope.$i.director"></td>
                 <td bn-text="$scope.$i.franchise"></td>
             </tr>

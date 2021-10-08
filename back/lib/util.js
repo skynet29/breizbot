@@ -195,7 +195,9 @@ async function search(theme, query, options) {
 }
 
 
-
+function mergeArray(a, b) {
+	return [...new Set([...a, ...b])] 
+}
 
 
 module.exports = {
@@ -203,5 +205,6 @@ module.exports = {
 	genThumbnail,
 	getFileInfo,
 	getFilePath,
-	search
+	search,
+	mergeArray
 }

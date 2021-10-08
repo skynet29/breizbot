@@ -122,7 +122,7 @@ module.exports = function (ctx, router) {
             const actor1 = await db.distinct('actor1')
             const actor2 = await db.distinct('actor2')
             const actors = util.mergeArray(actor1, actor2)
-            resp.json(actors.filter(i => i != ''))
+            resp.json(actors.filter(i => i != '').sort())
         }
         catch (e) {
             resp.status(404).send(e.message)

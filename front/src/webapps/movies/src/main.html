@@ -31,7 +31,7 @@
                 <th>Franchise</th>
             </tr>
         </thead>
-            <tbody bn-each="movies" bn-lazzy="getMovies" bn-event="contextmenuchange.item: onItemContextMenu" bn-bind="movies">
+            <tbody bn-each="movies" bn-lazzy="getMovies" bn-event="contextmenuchange.item: onItemContextMenu, click.item: onDetails" bn-bind="movies">
                 <tr class="item" bn-control="brainjs.contextmenu" bn-data="{items: {
                     del: {
                         name: 'Delete',

@@ -14,6 +14,9 @@
       grid-column: 1/2; }
     .addMovie form input {
       grid-column: 2/3; }
+    .addMovie form > textarea {
+      grid-column: 1/3;
+      resize: none; }
 
 .filter {
   padding: 10px;
@@ -66,3 +69,11 @@
         color: white; }
       .rootPage > .scrollBar table td {
         cursor: pointer; }
+
+.showDetails {
+  display: flex;
+  flex-direction: row;
+  padding: 10px; }
+  .showDetails .description {
+    padding: 0px 10px;
+    overflow-y: auto; }

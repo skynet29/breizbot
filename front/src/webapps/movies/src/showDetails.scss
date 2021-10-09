@@ -1,0 +1,11 @@
+.showDetails {
+    display: flex;
+    flex-direction: row;
+    padding: 10px;
+
+    .description {
+        padding: 0px 10px;
+        overflow-y: auto;
+    }
+
+}

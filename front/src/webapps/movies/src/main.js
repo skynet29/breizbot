@@ -31,6 +31,19 @@ $$.control.registerControl('rootPage', {
 
 			},
 			events: {
+				onDetails: function() {
+					const idx = $(this).index()
+                    const info = ctrl.model.movies[idx]
+
+					console.log('onDetails', info)
+					pager.pushPage('showDetails', {
+						title: info.title,
+						props: {
+							data: info
+						}
+					})
+
+				},
 				onAddMovie: function() {
 					pager.pushPage('addMovie', {
 						title: 'Add Movie',

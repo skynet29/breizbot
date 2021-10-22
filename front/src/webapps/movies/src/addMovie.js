@@ -36,15 +36,14 @@ $$.control.registerControl('addMovie', {
             }
         })
 
-        async function getStyles() {
-            const styles = await http.get('/getStyles')
-            const franchises = await http.get('/getFranchises')
-            const actors = await http.get('/getActors')
-            const directors = await http.get('/getDirectors')
+        async function getInfos() {
+            const infos = await http.get('/getInfos')
+            const { styles, franchises, actors, directors } = infos
+
             ctrl.setData({ styles, franchises, actors, directors })
         }
 
-        getStyles()
+        getInfos()
 
         this.getButtons = function () {
             return {

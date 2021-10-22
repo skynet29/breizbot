@@ -17,7 +17,7 @@ $$.control.registerControl('filter', {
     init: function (elt, pager, http) {
 
         //@ts-ignore
-        let filters = $.extend({author: 'All'}, this.props.filters)
+        let filters = $.extend({ author: 'All' }, this.props.filters)
 
         //console.log('filters', filters)
 
@@ -35,7 +35,7 @@ $$.control.registerControl('filter', {
                     pager.popPage($(this).getFormData())
 
                 },
-                onReset: function() {
+                onReset: function () {
                     //console.log('onReset')
                     filters = {
                         author: 'All',
@@ -44,29 +44,25 @@ $$.control.registerControl('filter', {
                         franchise: 'All',
                         year: ''
                     }
-                    ctrl.setData({filters}, true)
+                    ctrl.setData({ filters }, true)
                 }
             }
         })
 
-        async function getStyles() {
-            const styles = await http.get('/getStyles')
+        async function getInfos() {
+            const infos = await http.get('/getInfos')
+            const { styles, franchises, actors, directors } = infos
+
             styles.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
-
-            const franchises = await http.get('/getFranchises')
             franchises.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
-
-            const actors = await http.get('/getActors')
             actors.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
-
-            const directors = await http.get('/getDirectors')
             directors.unshift({ value: 'All', label: 'All', style: 'font-weight: bold;' })
 
-            ctrl.setData({ styles,  franchises, actors, directors})
+            ctrl.setData({ styles, franchises, actors, directors })
             ctrl.setData({ filters })
         }
 
-        getStyles()        
+        getInfos()
 
         this.getButtons = function () {
             return {

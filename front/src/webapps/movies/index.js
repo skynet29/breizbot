@@ -94,51 +94,29 @@ module.exports = function (ctx, router) {
         }
     })
 
-    router.get('/getStyles', async function (req, resp) {
-
+    router.get('/getInfos', async function (req, resp) {
         try {
-            const styles = await db.distinct('style')
-            resp.json(styles.filter(i => i != ''))
-        }
-        catch (e) {
-            resp.status(404).send(e.message)
-        }
-    })    
+            let styles = await db.distinct('style')
+            styles = styles.filter(i => i != '')
 
-    router.get('/getFranchises', async function (req, resp) {
+            let franchises = await db.distinct('franchise')
+            franchises = franchises.filter(i => i != '')
 
-     try {
-            const franchises = await db.distinct('franchise')
-            resp.json(franchises.filter(i => i != ''))
-        }
-        catch (e) {
-            resp.status(404).send(e.message)
-        }
-    })  
-    
-    router.get('/getActors', async function (req, resp) {
-
-        try {
             const actor1 = await db.distinct('actor1')
             const actor2 = await db.distinct('actor2')
-            const actors = util.mergeArray(actor1, actor2)
-            resp.json(actors.filter(i => i != '').sort())
+            let actors = util.mergeArray(actor1, actor2)
+            actors = actors.filter(i => i != '').sort()
+
+            let directors = await db.distinct('director')
+            directors = directors.filter(i => i != '')
+
+            resp.json({styles, actors, directors, franchises})
         }
         catch (e) {
             resp.status(404).send(e.message)
         }
-    })      
 
-    router.get('/getDirectors', async function (req, resp) {
-
-        try {
-            const directors = await db.distinct('director')
-            resp.json(directors.filter(i => i != ''))
-        }
-        catch (e) {
-            resp.status(404).send(e.message)
-        }
-    })      
+    })
 
 
     router.post('/deleteMovie/:movieId', async function (req, resp) {

@@ -31,6 +31,26 @@ $$.control.registerControl('rootPage', {
 
 			},
 			events: {
+				onAction: function(ev) {
+					ev.preventDefault()
+					ev.stopPropagation()
+					const elt = $(this)
+					const idx = elt.closest('.item').index()
+                    const info = ctrl.model.movies[idx]
+					//console.log('onAction', info)
+
+					if (elt.hasClass('actor1')) {
+						filters = {actor: info.actor1}
+					}
+					else if (elt.hasClass('actor2')) {
+						filters = {actor: info.actor2}
+					}
+					else if (elt.hasClass('director')) {
+						filters = {director: info.director}
+					}
+					loadMovies()
+
+				},
 				onDetails: function() {
 					const idx = $(this).index()
                     const info = ctrl.model.movies[idx]
@@ -139,6 +159,8 @@ $$.control.registerControl('rootPage', {
 
 		async function loadMovies(offset) {
 			offset = offset || 0
+			//console.log('loadMovies', offset, filters)
+
 
 			const movies = await http.post('/getMovies', { offset, filters })
 			//console.log('movies', offset, filters, movies)

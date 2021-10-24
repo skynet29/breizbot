@@ -19,6 +19,17 @@
 
 </div>
 
+<div class="filters w3-grey"  bn-show="hasFilters">
+    <h1>Filters</h1>
+    <ul bn-each="getFilters">
+        <li>
+            <span bn-text="getFilterLabel" class="label"></span>
+            <span bn-text="getFilterValue"></span>
+        </li>
+
+    </ul>
+</div>
+
 <div class="scrollBar">
     <table class="w3-table-all w3-hoverable w3-small">
         <thead>

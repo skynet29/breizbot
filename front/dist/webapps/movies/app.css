@@ -56,6 +56,19 @@
       .rootPage > .toolbar .group .separator {
         border-left: 1px solid white;
         height: 80%; }
+  .rootPage > .filters {
+    padding: 0 10px 10px 10px; }
+    .rootPage > .filters h1 {
+      font-size: 16px;
+      font-weight: bold;
+      margin: 0; }
+    .rootPage > .filters ul {
+      list-style: none;
+      margin: 0px;
+      padding: 0px 0px 0px 10px; }
+      .rootPage > .filters ul .label {
+        width: 80px;
+        display: inline-block; }
   .rootPage > .scrollBar {
     flex: 1;
     overflow-y: auto; }

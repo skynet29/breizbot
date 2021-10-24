@@ -18,6 +18,14 @@ $$.control.registerControl('rootPage', {
 
 		let filters = {}
 
+		const labelMap = {
+			actor:     'Actor:',
+			year:      'Year:',
+			director:  'Director:',
+			franchise: 'Franchise:',
+			style: 'Style:'
+		}
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				moviesQty: 0,
@@ -28,6 +36,18 @@ $$.control.registerControl('rootPage', {
 				getMoviesQty: function () {
 					return (this.moviesQty > 0) ? `${this.moviesQty} movies` : ''
 				},
+				getFilters: function() {
+					return Object.entries(filters)
+				},
+				hasFilters: function() {
+					return Object.keys(filters).length > 0
+				},
+				getFilterLabel(scope) {
+					return labelMap[scope.$i[0]]
+				},
+				getFilterValue(scope) {
+					return scope.$i[1]
+				}
 
 			},
 			events: {

@@ -42,14 +42,14 @@ $$.control.registerControl('synthCategories', {
                 },
                 getStyle: function (scope) {
                     let borderBottom = '1px solid #ddd'
-                    if (scope.catIdx == nbIncomeCat - 1) {
+                    if (scope.catIdx == nbIncomeCat) {
                         borderBottom = '2px solid black'
                     }
                     let color = 'black'
                     if (scope.$i.name.split(':').length == 1) {
                         color = 'blue'
                     }
-                    return { 'border-bottom': borderBottom, color }
+                    return { 'border-top': borderBottom, color }
                 },
                 isCategory: function(scope) {
                     return (scope.$i.name.split(':').length == 1)

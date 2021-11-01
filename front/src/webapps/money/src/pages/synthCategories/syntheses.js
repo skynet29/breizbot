@@ -34,7 +34,11 @@ $$.control.registerControl('synthCategories', {
                     if (scope.monthIdx == 0) {
                         //console.log('name', scope.$i.name)
                         const t = scope.$i.name.split(':')
-                        return (t.length == 2) ? t[1] : t[0]
+                        if (t.length == 1) {
+                            const nbSubCategories = getNbSubcategories(t[0])
+                            return  (nbSubCategories > 0) ? `${t[0]} (${nbSubCategories})` : t[0]
+                        }
+                        return t[1]
                     }
 
                     const value = scope.$i.value[scope.monthIdx]

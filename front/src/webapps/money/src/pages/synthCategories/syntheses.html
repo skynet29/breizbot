@@ -11,7 +11,7 @@
             </tr>
         </thead>
         <tbody bn-each="categories" bn-index="catIdx" bn-event="click.cell: onCellClick">
-            <tr bn-each="$scope.$i.value" bn-index="monthIdx" bn-iter="month" bn-style="getStyle">
+            <tr bn-each="$scope.$i.value" bn-index="monthIdx" bn-iter="month" bn-style="getStyle" bn-show="isCategory">
                 <td bn-text="formatAmount" bn-style="getCellStyle" class="cell"></td>
             </tr>
         </tbody>

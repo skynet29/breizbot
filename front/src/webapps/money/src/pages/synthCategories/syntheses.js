@@ -51,14 +51,27 @@ $$.control.registerControl('synthCategories', {
                     }
                     return { 'border-bottom': borderBottom, color }
                 },
+                isCategory: function(scope) {
+                    return (scope.$i.name.split(':').length == 1)
+                },
                 getCellStyle: function (scope) {
                     let paddingLeft = 8
+                    const ret =  {}
+
                     if (scope.monthIdx == 0) {
-                        if (scope.$i.name.split(':').length == 2) {
+
+                        const t = scope.$i.name.split(':')
+                        
+                        if (t.length == 2) {
                             paddingLeft += 15
                         }
+                        else if (getNbSubcategories(t[0])) {
+                            ret.cursor = 'pointer'
+                        }
                     }
-                    const ret = { 'padding-left': `${paddingLeft}px` }
+
+                    ret['padding-left'] = `${paddingLeft}px`
+                   
                     const value = scope.$i.value[scope.monthIdx]
                     if (value != 0 && scope.monthIdx < 13) {
                         ret.cursor = 'pointer'
@@ -76,12 +89,26 @@ $$.control.registerControl('synthCategories', {
                     ctrl.scope.scrollPanel.scrollTop(0)
                 },
                 onCellClick: async function () {
-                    let month = $(this).index()
-                    if (month > 0 && month < 13) {
-                        const idx = $(this).closest('tr').index()
-                        const { name, value } = ctrl.model.categories[idx]
+                    const elt = $(this)
+                    let month = elt.index()
+                    const idx = elt.closest('tr').index()            
+                    //console.log('onCellClick', month, idx)
+                    //console.log('info', ctrl.model.categories[idx])
+                    const { name, value } = ctrl.model.categories[idx]
+                    const t = name.split(':')
+                    if (month == 0 && t.length == 1)
+                    {
+                        const nbSubCategories = getNbSubcategories(name)
+                        //console.log('nbSubCategories', nbSubCategories)
+                        const $tr = elt.closest('tbody').find('tr')
+                        for (let i = 1; i <= nbSubCategories; i++) {
+                            $tr.eq(i + idx).toggle()
+                        }
+                    }
+                    else if (month > 0 && month < 13) {
+                        
                         if (value[month] !== 0) {
-                            const t = name.split(':')
+                            
                             const category = t[0]
                             const subcategory = t[1]
                             month--
@@ -106,6 +133,11 @@ $$.control.registerControl('synthCategories', {
             }
 
         })
+
+        function getNbSubcategories(category) {
+            category += ':'
+            return ctrl.model.categories.filter((cat) => cat.name.startsWith(category)).length
+        }
 
         function sortByName(a, b) {
             return a.name.localeCompare(b.name)

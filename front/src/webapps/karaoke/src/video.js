@@ -21,19 +21,35 @@ $$.control.registerControl('VidoCtrl', {
 			data: {
 				micGain: 0.5,
 				videoGain: 0.5,
-				url
+				url,
+				audioDevices: []
 			},
 			events: {
 				onMicGainChange: function(ev, data) {
-					console.log('onMicGainChange', data)
+					//console.log('onMicGainChange', data)
 					micGainNode.gain.value = data
 				},
 				onVideoGainChange: function(ev, data) {
-					console.log('onVideoGainChange', data)
+					//console.log('onVideoGainChange', data)
 					videoElt.volume = data
+				},
+				onAudioDeviceChange: async function() {
+					const deviceId = $(this).getValue()
+					//console.log('onAudioDeviceChange', deviceId)
+					await initNodes(buildContraints(deviceId))
 				}
 			}
 		})
+
+		function buildContraints(deviceId) {
+			return {
+				audio: {
+					deviceId: {
+						exact: deviceId
+					}
+				}
+			}
+		}
 
 		let stream = null
 
@@ -99,9 +115,19 @@ $$.control.registerControl('VidoCtrl', {
 
 		}
 
-		async function init() {
+		async function getAudioInputDevices() {
+			const audioDevices = await $$.media.getAudioInputDevices()
+			ctrl.setData({
+				audioDevices: audioDevices.map((i) => {
+					return { value: i.id, label: i.label }
+				})
+			})
+		}
+
+		async function initNodes(constraints) {
+			console.log('initNodes', constraints)
 			//try {
-				stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+				stream = await navigator.mediaDevices.getUserMedia(constraints)
 				const source = audioCtx.createMediaStreamSource(stream)
 				source.connect(micGainNode)
 
@@ -123,6 +149,11 @@ $$.control.registerControl('VidoCtrl', {
 			// {
 			// 	console.error(e)
 			// }
+		}
+
+		async function init() {
+			await getAudioInputDevices()			
+			await initNodes(buildContraints(ctrl.model.audioDevices[0].value))
 		}
 		
 		this.dispose = function() {

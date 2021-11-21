@@ -12,6 +12,13 @@
   padding: 10px;
   display: flex;
   flex-direction: column; }
+  .VidoCtrl .header {
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center; }
+    .VidoCtrl .header label {
+      margin-right: 10px; }
   .VidoCtrl .top {
     flex: 1;
     display: flex;

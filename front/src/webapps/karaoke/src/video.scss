@@ -3,11 +3,22 @@
 	display: flex;
 	flex-direction: column;
 
+	.header {
+		margin-bottom: 10px;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		label {
+			margin-right: 10px;
+		}
+	}
+
 	.top {
 		flex: 1;
 		display: flex;
 		flex-direction: row;
 		overflow: hidden;
+
 
 		.gain {
 			width: 100px;
@@ -26,6 +37,8 @@
 				
 			}
 		}
+	
+
 
 		.video {
 			flex: 1;

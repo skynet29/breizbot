@@ -1,0 +1,7 @@
+{	
+	"iconCls": "fa fa-compact-disc fa-2x",
+	"colorCls": "w3-orange",
+	"title": "Karaoké",
+	"styles": ["app.css"],
+	"description": "Dictaphone"
+}

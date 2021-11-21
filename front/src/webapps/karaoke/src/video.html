@@ -1,0 +1,21 @@
+<div class="top">
+	<div class="video">
+		<video bn-attr="{src: url}" controls="" controlsList=nodownload bn-bind="video"></video>
+	</div>
+	<div class="gain">
+		<div class="gainItem">
+			<label>Micro</label>
+			<div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step:0.1, orientation: 'vertical'}" bn-val="micGain" bn-event="input: onMicGainChange"></div>
+		</div>
+		<div class="gainItem">
+			<label>Video</label>
+			<div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step:0.1, orientation: 'vertical'}" bn-val="videoGain" bn-event="input: onVideoGainChange"></div>
+		</div>
+	</div>
+</div>
+
+
+<canvas class="visualizer" bn-bind="canvas"></canvas>
+
+
+

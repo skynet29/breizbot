@@ -1,50 +1,54 @@
-.rootPage {
+.FileChoice {
   padding: 10px; }
-  .rootPage .w3-bar {
+  .FileChoice .w3-bar {
     cursor: pointer; }
-  .rootPage .w3-bar-item {
+  .FileChoice .w3-bar-item {
     display: flex;
     align-items: center; }
-    .rootPage .w3-bar-item span {
+    .FileChoice .w3-bar-item span {
       margin-left: 20px; }
 
-.VidoCtrl {
+.rootPage {
   padding: 10px;
   display: flex;
   flex-direction: column; }
-  .VidoCtrl .header {
+  .rootPage .header {
     margin-bottom: 10px;
     display: flex;
-    flex-direction: row;
-    align-items: center; }
-    .VidoCtrl .header label {
-      margin-right: 10px; }
-  .VidoCtrl .top {
+    flex-direction: row; }
+    .rootPage .header .item {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      margin-left: 20px; }
+      .rootPage .header .item label {
+        margin-right: 10px; }
+  .rootPage .top {
     flex: 1;
     display: flex;
     flex-direction: row;
     overflow: hidden; }
-    .VidoCtrl .top .gain {
+    .rootPage .top .gain {
       width: 100px;
       display: flex;
       flex-direction: row;
       justify-content: space-around; }
-      .VidoCtrl .top .gain .gainItem {
+      .rootPage .top .gain .gainItem {
         display: flex;
         flex-direction: column;
         align-items: center; }
-        .VidoCtrl .top .gain .gainItem .brainjs-slider {
+        .rootPage .top .gain .gainItem .brainjs-slider {
           flex: 1;
           margin-top: 20px;
           margin-bottom: 20px; }
-    .VidoCtrl .top .video {
+    .rootPage .top .video {
       flex: 1;
       overflow: hidden;
       text-align: center; }
-      .VidoCtrl .top .video video {
+      .rootPage .top .video video {
         height: 100%;
         object-fit: scale-down; }
-  .VidoCtrl .visualizer {
+  .rootPage .visualizer {
     height: 100px;
     width: 100%;
     margin-top: 10px;

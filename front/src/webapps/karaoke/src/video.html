@@ -1,10 +1,23 @@
 <div class="header">
-	<label>Audio Input</label>
-	<div 
-	bn-control="brainjs.combobox" 
-	bn-data="{items: audioDevices}"
-	bn-event="comboboxchange: onAudioDeviceChange"
-	></div>
+	<div class="item">
+		<label>Audio Input</label>
+		<div 
+		bn-control="brainjs.combobox" 
+		bn-data="{items: audioDevices}"
+		bn-event="comboboxchange: onAudioDeviceChange"
+		></div>	
+	</div>
+	<div class="item">
+		<label>Analyser</label>
+		<div bn-control="brainjs.flipswitch" bn-event="flipswitchchange: onAnalyserChange" bn-val="showAnalyser"></div>
+	</div>
+	<div class="item">
+		<label>Status:</label>
+		<span bn-text="status"></span>
+	</div>
+	<div class="item">
+		<button class="w3-btn w3-blue" bn-icon="fa fa-folder-open" bn-event="click: onChooseFile" title="Choose video file"></button>
+	</div>
 		
 </div>
 <div class="top">
@@ -26,7 +39,7 @@
 </div>
 
 
-<canvas class="visualizer" bn-bind="canvas"></canvas>
+<canvas class="visualizer" bn-bind="canvas" bn-show="showAnalyser"></canvas>
 
 
 

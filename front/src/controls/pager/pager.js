@@ -72,19 +72,25 @@ $$.control.registerControl('breizbot.pager', {
 			const iface = curInfo.ctrl.iface()
 			//console.log('popPage', pageCtrl)
 			curInfo.ctrl.safeEmpty().remove()
-			if (isBack) {
-				if (typeof curInfo.onBack == 'function') {
-					curInfo.onBack.call(iface)
-				}
-			}
-			else if (typeof curInfo.onReturn == 'function') {
-				curInfo.onReturn.call(iface, data)
-			}
+
+			const { onBack, onReturn } = curInfo
 
 			curInfo = stack.pop()
 			curInfo.ctrl.show()
 			const { title, buttons } = curInfo
 			ctrl.setData({ showBack: stack.length > 0, title, buttons: $$.util.objToArray(buttons, 'name') })
+
+			if (isBack) {
+				//console.log('[pager] back', iface.name)
+				if (typeof onBack == 'function') {
+					console.log('[pager] onBack', iface.name)
+					onBack.call(iface)
+				}
+			}
+			else if (typeof onReturn == 'function') {
+				//console.log('[pager] onReturn', iface.name, data)
+				onReturn.call(iface, data)
+			}
 
 		}
 
@@ -93,7 +99,7 @@ $$.control.registerControl('breizbot.pager', {
 		}
 
 		this.pushPage = function (ctrlName, options) {
-			//console.log('[pager] pushPage', ctrlName, options)
+			console.log('[pager] pushPage', ctrlName)
 
 
 			if (curInfo != null) {

@@ -1,4 +1,4 @@
-.VidoCtrl {
+.rootPage {
 	padding: 10px;
 	display: flex;
 	flex-direction: column;
@@ -7,10 +7,18 @@
 		margin-bottom: 10px;
 		display: flex;
 		flex-direction: row;
-		align-items: center;
-		label {
-			margin-right: 10px;
+
+		.item {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			label {
+				margin-right: 10px;
+			}
+			margin-left: 20px;
+		
 		}
+
 	}
 
 	.top {

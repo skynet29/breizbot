@@ -1,42 +1,66 @@
 //@ts-check
-$$.control.registerControl('VidoCtrl', {
+$$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './video.html' },
 
-	deps: ['breizbot.files'],
+	deps: ['breizbot.files', "breizbot.pager"],
 
-	props: {
-		url: '#'
-	},
 
 	/**
 	 * 
 	 * @param {Breizbot.Services.Files.Interface} files 
+	 * @param {Breizbot.Services.Pager.Interface} pager
 	 */
-	init: function (elt, files) {
+	init: function (elt, files, pager) {
 
-		const {url} = this.props
+		let stream = null
+		let requestID = null
+		let analyser = null
+		let dataArray = null
+		let bufferLength = 0
+		let url = '#'
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				micGain: 0.5,
 				videoGain: 0.5,
 				url,
-				audioDevices: []
+				audioDevices: [],
+				showAnalyser: false,
+				status: 'KO'
 			},
 			events: {
-				onMicGainChange: function(ev, data) {
+				onMicGainChange: function (ev, data) {
 					//console.log('onMicGainChange', data)
 					micGainNode.gain.value = data
 				},
-				onVideoGainChange: function(ev, data) {
+				onVideoGainChange: function (ev, data) {
 					//console.log('onVideoGainChange', data)
 					videoElt.volume = data
 				},
-				onAudioDeviceChange: async function() {
+				onAudioDeviceChange: async function () {
 					const deviceId = $(this).getValue()
 					//console.log('onAudioDeviceChange', deviceId)
 					await initNodes(buildContraints(deviceId))
+				},
+				onAnalyserChange: function (ev, data) {
+					console.log('onAnalyserChange', data)
+					ctrl.setData({ showAnalyser: data })
+					if (data == false) {
+						cancelAnimationFrame(requestID)
+					}
+					else if (ctrl.model.status == 'OK') {
+						draw()
+					}
+				},
+				onChooseFile: function() {
+					pager.pushPage('FileChoice', {
+						title: 'Choose File',
+						onReturn: function(url) {
+							console.log('url', url)
+							ctrl.setData({url})
+						}
+					})
 				}
 			}
 		})
@@ -51,7 +75,7 @@ $$.control.registerControl('VidoCtrl', {
 			}
 		}
 
-		let stream = null
+
 
 		const canvas = ctrl.scope.canvas.get(0)
 		const canvasCtx = canvas.getContext('2d')
@@ -60,60 +84,48 @@ $$.control.registerControl('VidoCtrl', {
 		micGainNode.gain.value = ctrl.model.micGain
 		/**@type {HTMLVideoElement} */
 		const videoElt = ctrl.scope.video.get(0)
-		ctrl.setData({videoGain: videoElt.volume})
+		ctrl.setData({ videoGain: videoElt.volume })
 		const videoSource = audioCtx.createMediaElementSource(videoElt)
 
-		function visualize(source) {
-			const analyser = audioCtx.createAnalyser()
 
-			analyser.fftSize = 2048
+		function draw() {
+			const width = canvas.width
+			const height = canvas.height
 
-			const bufferLength = analyser.frequencyBinCount
-			const dataArray = new Uint8Array(bufferLength)
+			requestID = requestAnimationFrame(draw)
 
-			source.connect(analyser)
+			analyser.getByteTimeDomainData(dataArray)
 
-			draw()
+			canvasCtx.fillStyle = 'rgb(200, 200, 200)'
+			canvasCtx.fillRect(0, 0, width, height)
 
-			function draw() {
-				const width = canvas.width
-				const height = canvas.height
+			canvasCtx.lineWidth = 2
+			canvasCtx.strokeStyle = 'rgb(0, 0, 0)'
 
-				requestAnimationFrame(draw)
+			canvasCtx.beginPath()
 
-				analyser.getByteTimeDomainData(dataArray)
+			const sliceWidth = width / bufferLength
+			let x = 0
 
-				canvasCtx.fillStyle = 'rgb(200, 200, 200)'
-				canvasCtx.fillRect(0, 0, width, height)
+			for (let i = 0; i < bufferLength; i++) {
+				const v = dataArray[i] / 128.0
+				const y = v * height / 2
 
-				canvasCtx.lineWidth = 2
-				canvasCtx.strokeStyle = 'rgb(0, 0, 0)'
-
-				canvasCtx.beginPath()
-
-				const sliceWidth = width / bufferLength
-				let x = 0
-
-				for (let i = 0; i < bufferLength; i++) {
-					const v = dataArray[i] / 128.0
-					const y = v * height / 2
-
-					if (i == 0) {
-						canvasCtx.moveTo(x, y)
-					}
-					else {
-						canvasCtx.lineTo(x, y)
-					}
-
-					x += sliceWidth
-
+				if (i == 0) {
+					canvasCtx.moveTo(x, y)
+				}
+				else {
+					canvasCtx.lineTo(x, y)
 				}
 
-				canvasCtx.lineTo(width, height / 2)
-				canvasCtx.stroke()
+				x += sliceWidth
+
 			}
 
+			canvasCtx.lineTo(width, height / 2)
+			canvasCtx.stroke()
 		}
+
 
 		async function getAudioInputDevices() {
 			const audioDevices = await $$.media.getAudioInputDevices()
@@ -126,10 +138,19 @@ $$.control.registerControl('VidoCtrl', {
 
 		async function initNodes(constraints) {
 			console.log('initNodes', constraints)
-			//try {
+			try {
 				stream = await navigator.mediaDevices.getUserMedia(constraints)
-				const source = audioCtx.createMediaStreamSource(stream)
-				source.connect(micGainNode)
+				const audioSource = audioCtx.createMediaStreamSource(stream)
+
+				analyser = audioCtx.createAnalyser()
+				analyser.fftSize = 2048
+
+				bufferLength = analyser.frequencyBinCount
+				dataArray = new Uint8Array(bufferLength)
+
+				audioSource.connect(analyser)
+
+				audioSource.connect(micGainNode)
 
 				const splitter = audioCtx.createChannelSplitter()
 				videoSource.connect(splitter)
@@ -142,30 +163,33 @@ $$.control.registerControl('VidoCtrl', {
 
 
 				merger.connect(audioCtx.destination)
+				ctrl.setData({status: 'OK'})
 
-				visualize(source)	
-			// }	
-			// catch(e)	
-			// {
-			// 	console.error(e)
-			// }
+				if (ctrl.model.showAnalyser) {
+					draw()
+				}
+			}
+			catch (e) {
+				ctrl.setData({status: 'KO'})
+				console.error(e)
+			}
 		}
 
 		async function init() {
-			await getAudioInputDevices()			
+			await getAudioInputDevices()
 			await initNodes(buildContraints(ctrl.model.audioDevices[0].value))
 		}
-		
-		this.dispose = function() {
+
+		this.dispose = function () {
 			console.log('dispose')
 			if (stream) {
 				stream.getTracks().forEach(function (track) {
 					track.stop();
 				})
 				stream = null
-			}			
+			}
 		}
-		
+
 
 
 		init()

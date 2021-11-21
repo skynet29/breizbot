@@ -1,8 +1,8 @@
 //@ts-check
-$$.control.registerControl('rootPage', {
+$$.control.registerControl('FileChoice', {
 
 
-	template: {gulp_inject: './main.html'},
+	template: { gulp_inject: './main.html' },
 
 	deps: ['breizbot.pager', 'breizbot.files'],
 
@@ -11,7 +11,7 @@ $$.control.registerControl('rootPage', {
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {Breizbot.Services.Files.Interface} filesSrv
 	 */
-	init: function(elt, pager, filesSrv) {
+	init: function (elt, pager, filesSrv) {
 
 		/**
 		 * 
@@ -31,20 +31,18 @@ $$.control.registerControl('rootPage', {
 					 * 
 					 * @param {Breizbot.Controls.Files.EventData.FileClick} info 
 					 */
-					fileclick: function(ev, info) {
+					fileclick: function (ev, info) {
 						console.log('fileclick', info)
-						const {rootDir, fileName } = info
+						const { rootDir, fileName } = info
 						const url = filesSrv.fileUrl(rootDir + fileName, friendUser)
-						pager.pushPage('VidoCtrl', {
-							title: 'Video',
-							props: {
-								url
-							}
-						})
-	
+						pager.popPage(url)
+
 					}
-				}	
-			})				
+				},
+				onReturn: function (url) {
+					pager.popPage(url)
+				}
+			})
 
 		}
 
@@ -52,10 +50,10 @@ $$.control.registerControl('rootPage', {
 			data: {
 			},
 			events: {
-				onHome: function() {
+				onHome: function () {
 					openFilePage('Home files', '')
 				},
-				onShare: function() {
+				onShare: function () {
 					pager.pushPage('breizbot.friends', {
 						title: 'Shared files',
 						/**@type {Breizbot.Controls.Friends.Props} */
@@ -67,12 +65,15 @@ $$.control.registerControl('rootPage', {
 							 * 
 							 * @param {Breizbot.Controls.Friends.EventData.FriendClick} data 
 							 */
-							friendclick: function(ev, data) {
+							friendclick: function (ev, data) {
 								//console.log('onSelectFriend', data)
-								const {userName} = data
-								openFilePage(userName, userName)			
+								const { userName } = data
+								openFilePage(userName, userName)
 							}
-						}					
+						},
+						onReturn: function (url) {
+							pager.popPage(url)
+						}
 					})
 				}
 

@@ -1,0 +1,4 @@
+.rootPage {
+  display: flex; }
+  .rootPage .viewer {
+    flex: 1; }

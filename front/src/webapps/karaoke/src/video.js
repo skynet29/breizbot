@@ -3,33 +3,63 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './video.html' },
 
-	deps: ['breizbot.files', "breizbot.pager"],
+	deps: ['breizbot.files', "breizbot.pager", "breizbot.display"],
 
 
 	/**
 	 * 
 	 * @param {Breizbot.Services.Files.Interface} files 
 	 * @param {Breizbot.Services.Pager.Interface} pager
+	 * @param {Breizbot.Services.Display.Interface} display
 	 */
-	init: function (elt, files, pager) {
+	init: function (elt, files, pager, display) {
 
+		/**@type MediaStream */
 		let stream = null
 		let requestID = null
-		let analyser = null
-		let dataArray = null
-		let bufferLength = 0
-		let url = '#'
+
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				micGain: 0.5,
 				videoGain: 0.5,
-				url,
+				url: '#',
 				audioDevices: [],
 				showAnalyser: false,
-				status: 'KO'
+				status: 'KO',
+				recording: false,
+				showStartRecord: function () {
+					return this.status == 'OK' && !this.recording
+				},
+				isDisplayAvailable: false,
+				isDisplayStarted: false
 			},
 			events: {
+				onCast: async function() {
+					if (display.isStarted()) {
+						display.close()
+					}
+					else{
+						await display.start()
+					}
+				},
+				onSend: function() {
+					display.setUrl(ctrl.model.url)
+				},
+				onRecord: async function (ev) {
+					//console.log('onRecord')
+					videoElt.currentTime = 0
+					await videoElt.play()
+					ctrl.setData({ recording: true })
+					mediaRecorder.start()
+				},
+
+				onStop: function (ev) {
+					//console.log('onStop')
+					videoElt.pause()
+					ctrl.setData({ recording: false })
+					mediaRecorder.stop()
+				},
 				onMicGainChange: function (ev, data) {
 					//console.log('onMicGainChange', data)
 					micGainNode.gain.value = data
@@ -53,16 +83,30 @@ $$.control.registerControl('rootPage', {
 						draw()
 					}
 				},
-				onChooseFile: function() {
+				onChooseFile: function () {
 					pager.pushPage('FileChoice', {
 						title: 'Choose File',
-						onReturn: function(url) {
+						onReturn: function (url) {
 							console.log('url', url)
-							ctrl.setData({url})
+							ctrl.setData({ url })
+							videoElt.volume = ctrl.model.videoGain
 						}
 					})
 				}
 			}
+		})
+
+		display.on('availability', (isDisplayAvailable) => {
+			ctrl.setData({ isDisplayAvailable })
+		})
+
+		display.on('ready', () => {
+			ctrl.setData({isDisplayStarted: true})
+			display.setUrl(ctrl.model.url)
+		})
+
+		display.on('close', () => {
+			ctrl.setData({isDisplayStarted: false})
 		})
 
 		function buildContraints(deviceId) {
@@ -76,16 +120,30 @@ $$.control.registerControl('rootPage', {
 		}
 
 
-
+		/**@type {HTMLCanvasElement} */
 		const canvas = ctrl.scope.canvas.get(0)
-		const canvasCtx = canvas.getContext('2d')
-		const audioCtx = new AudioContext()
-		const micGainNode = audioCtx.createGain()
-		micGainNode.gain.value = ctrl.model.micGain
+
 		/**@type {HTMLVideoElement} */
 		const videoElt = ctrl.scope.video.get(0)
-		ctrl.setData({ videoGain: videoElt.volume })
+
+		const canvasCtx = canvas.getContext('2d')
+		const audioCtx = new AudioContext()
+
+		const micGainNode = audioCtx.createGain()
+		micGainNode.gain.value = ctrl.model.micGain
 		const videoSource = audioCtx.createMediaElementSource(videoElt)
+		const analyser = audioCtx.createAnalyser()
+		analyser.fftSize = 2048
+		const splitter = audioCtx.createChannelSplitter()
+		const merger = audioCtx.createChannelMerger()
+
+		const bufferLength = analyser.frequencyBinCount
+		const dataArray = new Uint8Array(bufferLength)
+
+		/**@type {MediaRecorder} */
+		let mediaRecorder = null
+
+		let chunks = []
 
 
 		function draw() {
@@ -141,36 +199,44 @@ $$.control.registerControl('rootPage', {
 			try {
 				stream = await navigator.mediaDevices.getUserMedia(constraints)
 				const audioSource = audioCtx.createMediaStreamSource(stream)
-
-				analyser = audioCtx.createAnalyser()
-				analyser.fftSize = 2048
-
-				bufferLength = analyser.frequencyBinCount
-				dataArray = new Uint8Array(bufferLength)
+				const dest = audioCtx.createMediaStreamDestination()
 
 				audioSource.connect(analyser)
-
 				audioSource.connect(micGainNode)
-
-				const splitter = audioCtx.createChannelSplitter()
-				videoSource.connect(splitter)
-
-				const merger = audioCtx.createChannelMerger()
 				micGainNode.connect(merger, 0, 0)
 				micGainNode.connect(merger, 0, 1)
+				videoSource.connect(splitter)
 				splitter.connect(merger, 0, 0)
 				splitter.connect(merger, 1, 1)
-
-
 				merger.connect(audioCtx.destination)
-				ctrl.setData({status: 'OK'})
+				merger.connect(dest)
+
+				mediaRecorder = new MediaRecorder(dest.stream)
+
+				mediaRecorder.ondataavailable = function (e) {
+					chunks.push(e.data)
+				}
+
+				mediaRecorder.onstop = async function (e) {
+					const name = await $$.ui.showPrompt({ title: 'Sound Clip Title', label: 'Enter a name:' })
+					if (name != null) {
+						console.log('clipName', name)
+						const blob = new Blob(chunks, { type: 'audio/ogg; codecs=opus' })
+						await files.saveFile(blob, name + '.ogg')
+
+					}
+					chunks = []
+
+				}
+
+				ctrl.setData({ status: 'OK' })
 
 				if (ctrl.model.showAnalyser) {
 					draw()
 				}
 			}
 			catch (e) {
-				ctrl.setData({status: 'KO'})
+				ctrl.setData({ status: 'KO' })
 				console.error(e)
 			}
 		}

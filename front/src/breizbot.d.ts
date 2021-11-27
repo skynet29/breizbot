@@ -2,6 +2,20 @@ declare namespace Breizbot {
 
     declare namespace Services {
 
+        declare namespace Display {
+
+            type EventName = 'availability' | 'connectionavailable' | 'ready' | 'close';
+
+            interface Interface {
+                on(event: EventName, callback: (data: any) => void): void;
+                start(): Promise<void>;
+                close();
+                setUrl(url: String): void;
+                isStarted(): boolean;
+
+            }
+        }
+
         declare namespace AppData {
 
             interface Interface {

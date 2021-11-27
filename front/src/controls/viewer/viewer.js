@@ -39,16 +39,13 @@ $$.control.registerControl('breizbot.viewer', {
 
 
 		this.setData = function(data) {
-			//console.log('[Viewer] setData', data)
+			console.log('[Viewer] setData', data)
 			if (data.url) {
 				ctrl.setData({url: data.url})
 			}
 		}
 
-	},
-	$iface: `
-		setData({url: string})
-		`
+	}
 
 });
 

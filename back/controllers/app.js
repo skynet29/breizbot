@@ -4,16 +4,29 @@ const path = require('path')
 
 const getBrainjsLib = require('../lib/brainjs')
 const apps = require('../lib/apps')
+const dbUsers = require('../db/users.js')
 
 module.exports = function (app) {
 	app.get('/apps/:app', async function (req, res) {
 		console.log('requestedApp', req.params, req.query)
+		const { app } = req.params
+		if (app == 'cast') {
+			const { id } = req.query
+
+			const userInfo = await dbUsers.getUserInfoFromId(id)
+			//console.log('userInfo', userInfo)
+			if (userInfo != null) {
+				req.session.connected = true
+				req.session.user = userInfo.username
+				req.session.userInfo = userInfo
+			}
+		}
 		if (req.session.connected) {
-			const { app } = req.params
 			const { userInfo } = req.session
 			const appPath = path.join('/webapps/', app)
 			req.query.$userName = req.session.user
 			req.query.$appName = app
+			req.query.$id = req.session.userInfo._id.toString()
 
 
 			const appInfo = await apps.getAppInfo(app)

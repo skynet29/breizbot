@@ -33,6 +33,12 @@ module.exports = {
 		return db.findOne({ username })
 	},
 
+	getUserInfoFromId: function (id) {
+
+		//console.log('getUserInfo', username)
+		return db.findOne(buildDbId(id))
+	},
+
 	getUserSettings: async function (username) {
 
 		//console.log('getUserInfo', username)

@@ -1,11 +1,8 @@
 <div class="header">
 	<div class="item">
 		<label>Audio Input</label>
-		<div 
-		bn-control="brainjs.combobox" 
-		bn-data="{items: audioDevices}"
-		bn-event="comboboxchange: onAudioDeviceChange"
-		></div>	
+		<div bn-control="brainjs.combobox" bn-data="{items: audioDevices}"
+			bn-event="comboboxchange: onAudioDeviceChange"></div>
 	</div>
 	<div class="item">
 		<label>Analyser</label>
@@ -16,9 +13,25 @@
 		<span bn-text="status"></span>
 	</div>
 	<div class="item">
-		<button class="w3-btn w3-blue" bn-icon="fa fa-folder-open" bn-event="click: onChooseFile" title="Choose video file"></button>
+		<button class="w3-btn w3-blue" bn-icon="fa fa-folder-open" bn-event="click: onChooseFile"
+			title="Choose video file"></button>
 	</div>
-		
+	<div class="item" bn-show="showStartRecord">
+		<button class="w3-btn w3-blue" bn-event="click: onRecord"  bn-icon="fas fa-circle" title="Start Record"></button>
+
+	</div>
+	<div class="item" bn-show="recording">
+		<button class="w3-btn w3-blue" bn-event="click: onStop" bn-icon="fa fa-stop" title="Stop Record"></button>
+	</div>
+	<div class="item" bn-show="isDisplayAvailable">
+		<button class="w3-btn w3-blue" bn-event="click: onCast" bn-icon="fab fa-chromecast" title="Cast"></button>
+	</div>
+	<div class="item" bn-show="isDisplayStarted">
+		<button class="w3-btn w3-blue" bn-event="click: onSend" bn-icon="fa fa-paper-plane" title="Cast"></button>
+	</div>
+
+	
+
 </div>
 <div class="top">
 	<div class="video">
@@ -27,19 +40,18 @@
 	<div class="gain">
 		<div class="gainItem">
 			<label>Micro</label>
-			<div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step:0.1, orientation: 'vertical'}" bn-val="micGain" bn-event="input: onMicGainChange"></div>
+			<div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step:0.1, orientation: 'vertical'}"
+				bn-val="micGain" bn-event="input: onMicGainChange"></div>
 		</div>
 		<div class="gainItem">
 			<label>Video</label>
-			<div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step:0.1, orientation: 'vertical'}" bn-val="videoGain" bn-event="input: onVideoGainChange"></div>
+			<div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step:0.1, orientation: 'vertical'}"
+				bn-val="videoGain" bn-event="input: onVideoGainChange"></div>
 		</div>
 	</div>
-	
-	</div>
+
+</div>
 </div>
 
 
 <canvas class="visualizer" bn-bind="canvas" bn-show="showAnalyser"></canvas>
-
-
-

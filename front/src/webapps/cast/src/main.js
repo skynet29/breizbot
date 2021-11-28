@@ -46,17 +46,6 @@ $$.control.registerControl('rootPage', {
 		const highPass = audioCtx.createBiquadFilter()
 		highPass.type = 'highpass'
 		highPass.frequency.value = 120
-
-		const processor = audioCtx.createScriptProcessor(2048, 2, 1)
-		processor.onaudioprocess = function (evt) {
-			const inputL = evt.inputBuffer.getChannelData(0)
-			const inputR = evt.inputBuffer.getChannelData(1)
-			const output = evt.outputBuffer.getChannelData(0)
-			for (let i = 0; i < inputL.length; i++) {
-				output[i] = inputL[i] - inputR[i]
-			}
-		}
-
 		const mix = audioCtx.createGain()
 		mix.gain.value = 0
 
@@ -67,10 +56,28 @@ $$.control.registerControl('rootPage', {
 		lowPass.connect(mix)
 
 		source.connect(highPass)
-		highPass.connect(processor)
-		processor.connect(mix)
 
-		mix.connect(audioCtx.destination)
+		audioCtx.audioWorklet.addModule('/webapps/cast/assets/karaoke-processor.js').then(() => {
+			console.log('audio module loaded')
+			const processor = new AudioWorkletNode(audioCtx, 'karaoke-processor', {numberOfInputs: 2, numberOfOutputs: 1})
+			highPass.connect(processor)
+			processor.connect(mix)
+
+			mix.connect(audioCtx.destination)
+		})
+
+
+
+		// const processor = audioCtx.createScriptProcessor(2048, 2, 1)
+		// processor.onaudioprocess = function (evt) {
+		// 	const inputL = evt.inputBuffer.getChannelData(0)
+		// 	const inputR = evt.inputBuffer.getChannelData(1)
+		// 	const output = evt.outputBuffer.getChannelData(0)
+		// 	for (let i = 0; i < inputL.length; i++) {
+		// 		output[i] = inputL[i] - inputR[i]
+		// 	}
+		// }
+
 
 		function enableKaraoke(enabled) {
 			mix.gain.value = (enabled) ? 1 : 0

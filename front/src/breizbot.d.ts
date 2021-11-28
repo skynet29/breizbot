@@ -4,14 +4,17 @@ declare namespace Breizbot {
 
         declare namespace Display {
 
-            type EventName = 'availability' | 'connectionavailable' | 'ready' | 'close';
+            type EventName = 'availability' | 'connectionavailable' | 'ready' | 'close' [ 'playing' | 'paused'];
 
             interface Interface {
                 on(event: EventName, callback: (data: any) => void): void;
                 start(): Promise<void>;
                 close();
                 setUrl(url: String): void;
+                setVolume(volume: number): void;
                 isStarted(): boolean;
+                play(): void;
+                pause(): void;
 
             }
         }

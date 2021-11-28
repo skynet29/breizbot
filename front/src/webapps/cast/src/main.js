@@ -15,16 +15,25 @@ $$.control.registerControl('rootPage', {
 	 */
 	init: function (elt, pager) {
 
+		let presentationConnection = null
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				logs: ['toto'],
-				url: '#',
-				type: 'video'
+				url: '#'
 			},
 			events: {
+				onPlaying: function() {
+					sendMsg({type: 'event', name: 'playing'})
+				},
+				onPaused: function() {
+					sendMsg({type: 'event', name: 'paused'})
+				}
+
 			}
 		})
+
+		/**@type {HTMLVideoElement} */
+		const videoElt = ctrl.scope.video.get(0)
 
 		navigator.presentation.receiver.connectionList
 			.then(list => {
@@ -37,10 +46,15 @@ $$.control.registerControl('rootPage', {
 				})
 			})
 
+		function sendMsg(msg) {
+			presentationConnection.send(JSON.stringify(msg))				
+		}
+
 		function addConnection(connection) {
 			console.log('addConnection', connection.state)
+			presentationConnection = connection
 
-			connection.send(JSON.stringify({type: 'ready'}))
+			sendMsg({type: 'ready'})
 
 			connection.addEventListener('message', function (event) {
 				const msg = JSON.parse(event.data)
@@ -48,6 +62,15 @@ $$.control.registerControl('rootPage', {
 				switch (msg.type) {
 					case 'url':
 						ctrl.setData({url: msg.url})
+						break
+					case 'volume':
+						videoElt.volume = msg.volume
+						break
+					case 'play':
+						videoElt.play()
+						break
+					case 'pause':
+						videoElt.pause()
 						break
 				}
 			})

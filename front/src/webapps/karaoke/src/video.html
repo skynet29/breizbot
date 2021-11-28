@@ -5,10 +5,6 @@
 			bn-event="comboboxchange: onAudioDeviceChange"></div>
 	</div>
 	<div class="item">
-		<label>Analyser</label>
-		<div bn-control="brainjs.flipswitch" bn-event="flipswitchchange: onAnalyserChange" bn-val="showAnalyser"></div>
-	</div>
-	<div class="item">
 		<label>Status:</label>
 		<span bn-text="status"></span>
 	</div>
@@ -16,21 +12,18 @@
 		<button class="w3-btn w3-blue" bn-icon="fa fa-folder-open" bn-event="click: onChooseFile"
 			title="Choose video file"></button>
 	</div>
-	<div class="item" bn-show="showStartRecord">
-		<button class="w3-btn w3-blue" bn-event="click: onRecord"  bn-icon="fas fa-circle" title="Start Record"></button>
-
-	</div>
-	<div class="item" bn-show="recording">
-		<button class="w3-btn w3-blue" bn-event="click: onStop" bn-icon="fa fa-stop" title="Stop Record"></button>
-	</div>
 	<div class="item" bn-show="isDisplayAvailable">
-		<button class="w3-btn w3-blue" bn-event="click: onCast" bn-icon="fab fa-chromecast" title="Cast"></button>
+		<button class="w3-btn w3-blue" bn-event="click: onCast" bn-icon="fab fa-chromecast" title="Open display"></button>
 	</div>
 	<div class="item" bn-show="isDisplayStarted">
 		<button class="w3-btn w3-blue" bn-event="click: onSend" bn-icon="fa fa-paper-plane" title="Cast"></button>
 	</div>
+	<div class="item" bn-show="isDisplayStarted">
+		<button class="w3-btn w3-blue" bn-event="click: onPlay" bn-icon="fa fa-play" title="Play" bn-show="!isPlaying"></button>
+		<button class="w3-btn w3-blue" bn-event="click: onPause" bn-icon="fa fa-pause" title="Play" bn-show="isPlaying"></button>
+	</div>
 
-	
+
 
 </div>
 <div class="top">
@@ -51,7 +44,3 @@
 	</div>
 
 </div>
-</div>
-
-
-<canvas class="visualizer" bn-bind="canvas" bn-show="showAnalyser"></canvas>

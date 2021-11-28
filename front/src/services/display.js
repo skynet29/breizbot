@@ -16,10 +16,14 @@ $$.service.registerService('breizbot.display', {
             presentationConnection = event.connection
 
             presentationConnection.addEventListener('message', function (event) {
-                console.log('message', event.data)
+                //console.log('message', event.data)
                 const msg = JSON.parse(event.data)
-                if (msg.type == 'ready') {
-                    events.emit('ready')
+                switch(msg.type) {
+                    case 'ready':
+                        events.emit('ready')
+                        break
+                    case 'event':
+                        events.emit(msg.name)
                 }
             })
 
@@ -50,9 +54,25 @@ $$.service.registerService('breizbot.display', {
             presentationConnection = null
         }
 
+        function sendMsg(msg) {
+            //console.log('sendMsg', msg)
+            presentationConnection.send(JSON.stringify(msg))
+        }
+
         function setUrl(url) {
-            console.log('setUrl', url)
-            presentationConnection.send(JSON.stringify({ type: 'url', url }))
+            sendMsg({ type: 'url', url })
+        }
+
+        function setVolume(volume) {
+            sendMsg({ type: 'volume', volume })
+        }
+
+        function play() {
+            sendMsg({type: 'play'})
+        }
+
+        function pause() {
+            sendMsg({type: 'pause'})
         }
 
         function isStarted() {
@@ -67,7 +87,10 @@ $$.service.registerService('breizbot.display', {
             start,
             close,
             isStarted,
-            setUrl
+            setUrl,
+            setVolume,
+            play,
+            pause
         }
     }
 });

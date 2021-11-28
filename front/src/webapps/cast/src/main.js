@@ -22,11 +22,11 @@ $$.control.registerControl('rootPage', {
 				url: '#'
 			},
 			events: {
-				onPlaying: function() {
-					sendMsg({type: 'event', name: 'playing'})
+				onPlaying: function () {
+					sendMsg({ type: 'event', name: 'playing' })
 				},
-				onPaused: function() {
-					sendMsg({type: 'event', name: 'paused'})
+				onPaused: function () {
+					sendMsg({ type: 'event', name: 'paused' })
 				}
 
 			}
@@ -34,6 +34,48 @@ $$.control.registerControl('rootPage', {
 
 		/**@type {HTMLVideoElement} */
 		const videoElt = ctrl.scope.video.get(0)
+
+		const audioCtx = new AudioContext()
+		const source = audioCtx.createMediaElementSource(videoElt)
+		const mix2 = audioCtx.createGain()
+		mix2.gain.value = 1
+		const lowPass = audioCtx.createBiquadFilter()
+		lowPass.type = 'lowpass'
+		lowPass.frequency.value = 120
+
+		const highPass = audioCtx.createBiquadFilter()
+		highPass.type = 'highpass'
+		highPass.frequency.value = 120
+
+		const processor = audioCtx.createScriptProcessor(2048, 2, 1)
+		processor.onaudioprocess = function (evt) {
+			const inputL = evt.inputBuffer.getChannelData(0)
+			const inputR = evt.inputBuffer.getChannelData(1)
+			const output = evt.outputBuffer.getChannelData(0)
+			for (let i = 0; i < inputL.length; i++) {
+				output[i] = inputL[i] - inputR[i]
+			}
+		}
+
+		const mix = audioCtx.createGain()
+		mix.gain.value = 0
+
+		source.connect(mix2)
+		mix2.connect(audioCtx.destination)
+
+		source.connect(lowPass)
+		lowPass.connect(mix)
+
+		source.connect(highPass)
+		highPass.connect(processor)
+		processor.connect(mix)
+
+		mix.connect(audioCtx.destination)
+
+		function enableKaraoke(enabled) {
+			mix.gain.value = (enabled) ? 1 : 0
+			mix2.gain.value = (enabled) ? 0 : 1
+		}
 
 		navigator.presentation.receiver.connectionList
 			.then(list => {
@@ -47,21 +89,21 @@ $$.control.registerControl('rootPage', {
 			})
 
 		function sendMsg(msg) {
-			presentationConnection.send(JSON.stringify(msg))				
+			presentationConnection.send(JSON.stringify(msg))
 		}
 
 		function addConnection(connection) {
 			console.log('addConnection', connection.state)
 			presentationConnection = connection
 
-			sendMsg({type: 'ready'})
+			sendMsg({ type: 'ready' })
 
 			connection.addEventListener('message', function (event) {
 				const msg = JSON.parse(event.data)
 				console.log('Message', msg)
 				switch (msg.type) {
 					case 'url':
-						ctrl.setData({url: msg.url})
+						ctrl.setData({ url: msg.url })
 						break
 					case 'volume':
 						videoElt.volume = msg.volume
@@ -71,6 +113,9 @@ $$.control.registerControl('rootPage', {
 						break
 					case 'pause':
 						videoElt.pause()
+						break
+					case 'enableKaraoke':
+						enableKaraoke(msg.enabled)
 						break
 				}
 			})

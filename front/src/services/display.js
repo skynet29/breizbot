@@ -79,6 +79,9 @@ $$.service.registerService('breizbot.display', {
             return (presentationConnection != null)
         }
 
+        function enableKaraoke(enabled) {
+            sendMsg({type: 'enableKaraoke', enabled})
+        }
 
         getAvailability()
 
@@ -90,7 +93,8 @@ $$.service.registerService('breizbot.display', {
             setUrl,
             setVolume,
             play,
-            pause
+            pause,
+            enableKaraoke
         }
     }
 });

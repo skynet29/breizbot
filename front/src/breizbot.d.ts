@@ -1,3 +1,4 @@
+
 declare namespace Breizbot {
 
     declare namespace Services {
@@ -15,6 +16,7 @@ declare namespace Breizbot {
                 isStarted(): boolean;
                 play(): void;
                 pause(): void;
+                enableKaraoke(enabled: boolean): void;
 
             }
         }

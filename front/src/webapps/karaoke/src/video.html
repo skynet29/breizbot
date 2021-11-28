@@ -22,7 +22,10 @@
 		<button class="w3-btn w3-blue" bn-event="click: onPlay" bn-icon="fa fa-play" title="Play" bn-show="!isPlaying"></button>
 		<button class="w3-btn w3-blue" bn-event="click: onPause" bn-icon="fa fa-pause" title="Play" bn-show="isPlaying"></button>
 	</div>
-
+	<div class="item" bn-show="isDisplayStarted">
+		<label>Karaoke</label>
+		<div bn-control="brainjs.flipswitch" bn-val="karaokeEnabled" bn-event="flipswitchchange: onKaraokeChange"></div>
+	</div>	
 
 
 </div>

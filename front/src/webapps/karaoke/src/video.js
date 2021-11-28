@@ -32,10 +32,15 @@ $$.control.registerControl('rootPage', {
 				},
 				isDisplayAvailable: false,
 				isDisplayStarted: false,
-				isPlaying: false
+				isPlaying: false,
+				karaokeEnabled: false
 
 			},
 			events: {
+				onKaraokeChange: function(evt, data) {
+					console.log('onKaraokeChange', data)
+					display.enableKaraoke(data)
+				},
 				onPlay: function() {
 					display.play()
 				},

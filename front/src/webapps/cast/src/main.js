@@ -22,6 +22,9 @@ $$.control.registerControl('rootPage', {
 				url: '#'
 			},
 			events: {
+				onTimeUpdate: function() {
+					sendMsg({type: 'event', name: 'timeUpdate', value: videoElt.currentTime})
+				},
 				onPlaying: function () {
 					sendMsg({ type: 'event', name: 'playing' })
 				},

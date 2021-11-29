@@ -26,9 +26,12 @@
 		<label>Karaoke</label>
 		<div bn-control="brainjs.flipswitch" bn-val="karaokeEnabled" bn-event="flipswitchchange: onKaraokeChange"></div>
 	</div>	
-
-
 </div>
+
+<div class="slider" bn-show="isDisplayStarted">
+	<div bn-control="brainjs.slider" bn-data="{max: duration}" bn-event="input: onSliderChange" bn-val="curTime"></div>
+</div>
+
 <div class="top">
 	<div class="video">
 		<video bn-attr="{src: url}" controls="" controlsList=nodownload bn-bind="video"></video>

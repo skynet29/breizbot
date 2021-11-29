@@ -23,6 +23,8 @@
       margin-left: 20px; }
       .rootPage .header .item label {
         margin-right: 10px; }
+  .rootPage > .slider {
+    padding: 10px; }
   .rootPage .top {
     flex: 1;
     display: flex;

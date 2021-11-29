@@ -33,7 +33,9 @@ $$.control.registerControl('rootPage', {
 				isDisplayAvailable: false,
 				isDisplayStarted: false,
 				isPlaying: false,
-				karaokeEnabled: false
+				karaokeEnabled: false,
+				duration: 0,
+				curTime: 0
 
 			},
 			events: {
@@ -57,6 +59,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onSend: function () {
 					display.setUrl(ctrl.model.url)
+					ctrl.setData({duration: videoElt.duration, isPlaying: false})
 				},
 				onMicGainChange: function (ev, data) {
 					//console.log('onMicGainChange', data)
@@ -95,9 +98,6 @@ $$.control.registerControl('rootPage', {
 
 		display.on('ready', () => {
 			ctrl.setData({ isDisplayStarted: true })
-			const { url, videoGain } = ctrl.model
-			display.setUrl(url)
-			display.setVolume(videoGain)
 		})
 
 		display.on('close', () => {
@@ -112,6 +112,10 @@ $$.control.registerControl('rootPage', {
 			ctrl.setData({ isPlaying: false })
 		})
 
+		display.on('timeUpdate', (value) => {
+			//console.log('timeUpdate', value)
+			ctrl.setData({curTime: value})
+		})
 
 		function buildContraints(deviceId) {
 			return {

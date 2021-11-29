@@ -23,7 +23,7 @@ $$.service.registerService('breizbot.display', {
                         events.emit('ready')
                         break
                     case 'event':
-                        events.emit(msg.name)
+                        events.emit(msg.name, msg.value)
                 }
             })
 

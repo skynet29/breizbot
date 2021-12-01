@@ -39,6 +39,10 @@ $$.service.registerService('breizbot.files', {
 				return $$.url.getUrlParams('/api/files/loadThumbnail', { fileName, size })
 			},
 
+			assetsUrl: function(fileName)  {
+				return  `/webapps/${params.$appName}/assets/${fileName}`
+			},
+
 			uploadFile: function (blob, saveAsfileName, destPath, onUploadProgress) {
 				console.log('[FileService] uploadFile', saveAsfileName, destPath)
 				if (!(blob instanceof Blob)) {

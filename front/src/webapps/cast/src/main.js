@@ -4,16 +4,16 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager'],
+	deps: ['breizbot.files'],
 
 	props: {
 	},
 
 	/**
 	 * 
-	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Files.Interface} files
 	 */
-	init: function (elt, pager) {
+	init: function (elt, files) {
 
 		let presentationConnection = null
 
@@ -60,7 +60,7 @@ $$.control.registerControl('rootPage', {
 
 		source.connect(highPass)
 
-		audioCtx.audioWorklet.addModule('/webapps/cast/assets/karaoke-processor.js').then(() => {
+		audioCtx.audioWorklet.addModule(files.assetsUrl('karaoke-processor.js')).then(() => {
 			console.log('audio module loaded')
 			const processor = new AudioWorkletNode(audioCtx, 'karaoke-processor', {numberOfInputs: 2, numberOfOutputs: 1})
 			highPass.connect(processor)

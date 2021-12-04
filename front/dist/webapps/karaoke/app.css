@@ -20,11 +20,18 @@
       display: flex;
       flex-direction: row;
       align-items: center;
-      margin-left: 20px; }
+      margin-left: 10px; }
       .rootPage .header .item label {
         margin-right: 10px; }
   .rootPage > .slider {
-    padding: 10px; }
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center; }
+    .rootPage > .slider label {
+      margin-right: 20px; }
+    .rootPage > .slider > .brainjs-slider {
+      flex: 1; }
   .rootPage .top {
     flex: 1;
     display: flex;

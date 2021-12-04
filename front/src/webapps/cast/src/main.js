@@ -118,7 +118,10 @@ $$.control.registerControl('rootPage', {
 					case 'volume':
 						videoElt.volume = msg.volume
 						break
-					case 'play':
+						case 'currentTime':
+							videoElt.currentTime = msg.currentTime
+							break
+						case 'play':
 						videoElt.play()
 						break
 					case 'pause':

@@ -13,23 +13,36 @@
 			title="Choose video file"></button>
 	</div>
 	<div class="item" bn-show="isDisplayAvailable">
-		<button class="w3-btn w3-blue" bn-event="click: onCast" bn-icon="fab fa-chromecast" title="Open display"></button>
+		<button class="w3-btn w3-blue" bn-event="click: onCast" bn-icon="fab fa-chromecast"
+			title="Open display"></button>
 	</div>
 	<div class="item" bn-show="isDisplayStarted">
 		<button class="w3-btn w3-blue" bn-event="click: onSend" bn-icon="fa fa-paper-plane" title="Cast"></button>
 	</div>
 	<div class="item" bn-show="isDisplayStarted">
-		<button class="w3-btn w3-blue" bn-event="click: onPlay" bn-icon="fa fa-play" title="Play" bn-show="!isPlaying"></button>
-		<button class="w3-btn w3-blue" bn-event="click: onPause" bn-icon="fa fa-pause" title="Play" bn-show="isPlaying"></button>
+		<button class="w3-btn w3-blue" bn-event="click: onPlay" bn-icon="fa fa-play" title="Play"
+			bn-show="!isPlaying"></button>
+		<button class="w3-btn w3-blue" bn-event="click: onPause" bn-icon="fa fa-pause" title="Play"
+			bn-show="isPlaying"></button>
+	</div>
+	<div class="item" bn-show="isDisplayStarted">
+		<button class="w3-btn w3-blue" bn-event="click: onSyncMainWithDisplay" bn-icon="fas fa-level-down-alt"
+			title="Sync main with display"></button>
+	</div>
+	<div class="item" bn-show="isDisplayStarted">
+		<button class="w3-btn w3-blue" bn-event="click: onSyncDisplayWithMain" bn-icon="fas fa-level-up-alt"
+			title="Sync display with main"></button>
 	</div>
 	<div class="item" bn-show="isDisplayStarted">
 		<label>Karaoke</label>
 		<div bn-control="brainjs.flipswitch" bn-val="karaokeEnabled" bn-event="flipswitchchange: onKaraokeChange"></div>
-	</div>	
+	</div>
 </div>
 
 <div class="slider" bn-show="isDisplayStarted">
-	<div bn-control="brainjs.slider" bn-data="{max: duration}" bn-event="input: onSliderChange" bn-val="curTime"></div>
+	<label bn-text="getDuration"></label>
+		<div bn-control="brainjs.slider" bn-data="{max: duration}" bn-event="input: onSliderChange" bn-val="curTime">
+		</div>
 </div>
 
 <div class="top">

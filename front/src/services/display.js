@@ -67,6 +67,10 @@ $$.service.registerService('breizbot.display', {
             sendMsg({ type: 'volume', volume })
         }
 
+        function setCurrentTime(currentTime) {
+            sendMsg({ type: 'currentTime', currentTime })
+        }
+
         function play() {
             sendMsg({type: 'play'})
         }
@@ -92,6 +96,7 @@ $$.service.registerService('breizbot.display', {
             isStarted,
             setUrl,
             setVolume,
+            setCurrentTime,
             play,
             pause,
             enableKaraoke

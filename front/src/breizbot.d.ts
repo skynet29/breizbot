@@ -13,6 +13,7 @@ declare namespace Breizbot {
                 close();
                 setUrl(url: String): void;
                 setVolume(volume: number): void;
+                setCurrentTime(currentTime: number): void;
                 isStarted(): boolean;
                 play(): void;
                 pause(): void;

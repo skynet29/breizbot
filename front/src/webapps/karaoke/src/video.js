@@ -17,6 +17,11 @@ $$.control.registerControl('rootPage', {
 		/**@type MediaStream */
 		let stream = null
 
+		function getTime(duration) {
+			const d = new Date(duration * 1000)
+			const v = d.getMinutes() + d.getSeconds() / 100
+			return v.toFixed(2).replace('.', ':')
+		}
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -35,10 +40,19 @@ $$.control.registerControl('rootPage', {
 				isPlaying: false,
 				karaokeEnabled: false,
 				duration: 0,
-				curTime: 0
+				curTime: 0,	
+				getDuration: function() {
+					return getTime(this.curTime) + ' / ' + getTime(this.duration)
+				}
 
 			},
 			events: {
+				onSyncMainWithDisplay: function() {
+					videoElt.currentTime = ctrl.model.curTime
+				},
+				onSyncDisplayWithMain: function() {
+					display.setCurrentTime(videoElt.currentTime)
+				},
 				onKaraokeChange: function(evt, data) {
 					console.log('onKaraokeChange', data)
 					display.enableKaraoke(data)
@@ -165,7 +179,9 @@ $$.control.registerControl('rootPage', {
 
 		async function init() {
 			await getAudioInputDevices()
-			await initNodes(buildContraints(ctrl.model.audioDevices[0].value))
+			if (ctrl.model.audioDevices.length > 0) {
+				await initNodes(buildContraints(ctrl.model.audioDevices[0].value))
+			}
 		}
 
 		this.dispose = function () {

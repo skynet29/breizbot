@@ -1,13 +1,3 @@
-.FileChoice {
-  padding: 10px; }
-  .FileChoice .w3-bar {
-    cursor: pointer; }
-  .FileChoice .w3-bar-item {
-    display: flex;
-    align-items: center; }
-    .FileChoice .w3-bar-item span {
-      margin-left: 20px; }
-
 .rootPage {
   padding: 10px;
   display: flex;

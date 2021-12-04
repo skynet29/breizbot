@@ -1,16 +1,65 @@
-<p>Select a file system</p>
-<ul class="w3-ul w3-border w3-white">
-	<li class="w3-bar" bn-event="click: onHome">
-		<div class="w3-bar-item">
-			<i class="fa fa-home fa-2x fa-fw w3-text-blue"></i>
-			<span>Your home files</span>
-		</div>
-	</li>
+<div class="header">
+	<div class="item">
+		<label>Audio Input</label>
+		<div bn-control="brainjs.combobox" bn-data="{items: audioDevices}"
+			bn-event="comboboxchange: onAudioDeviceChange"></div>
+	</div>
+	<div class="item">
+		<label>Status:</label>
+		<span bn-text="status"></span>
+	</div>
+	<div class="item">
+		<button class="w3-btn w3-blue" bn-icon="fa fa-folder-open" bn-event="click: onChooseFile"
+			title="Choose video file"></button>
+	</div>
+	<div class="item" bn-show="isDisplayAvailable">
+		<button class="w3-btn w3-blue" bn-event="click: onCast" bn-icon="fab fa-chromecast"
+			title="Open display"></button>
+	</div>
+	<div class="item" bn-show="isDisplayStarted">
+		<button class="w3-btn w3-blue" bn-event="click: onSend" bn-icon="fa fa-paper-plane" title="Cast"></button>
+	</div>
+	<div class="item" bn-show="isDisplayStarted">
+		<button class="w3-btn w3-blue" bn-event="click: onPlay" bn-icon="fa fa-play" title="Play"
+			bn-show="!isPlaying"></button>
+		<button class="w3-btn w3-blue" bn-event="click: onPause" bn-icon="fa fa-pause" title="Play"
+			bn-show="isPlaying"></button>
+	</div>
+	<div class="item" bn-show="isDisplayStarted">
+		<button class="w3-btn w3-blue" bn-event="click: onSyncMainWithDisplay" bn-icon="fas fa-level-down-alt"
+			title="Sync main with display"></button>
+	</div>
+	<div class="item" bn-show="isDisplayStarted">
+		<button class="w3-btn w3-blue" bn-event="click: onSyncDisplayWithMain" bn-icon="fas fa-level-up-alt"
+			title="Sync display with main"></button>
+	</div>
+	<div class="item" bn-show="isDisplayStarted">
+		<label>Karaoke</label>
+		<div bn-control="brainjs.flipswitch" bn-val="karaokeEnabled" bn-event="flipswitchchange: onKaraokeChange"></div>
+	</div>
+</div>
 
-	<li class="w3-bar" bn-event="click: onShare">
-		<div class="w3-bar-item">
-			<i class="fa fa-share-alt fa-2x fa-fw w3-text-blue"></i>
-			<span>Files shared by your friends</span>
+<div class="slider" bn-show="isDisplayStarted">
+	<label bn-text="getDuration"></label>
+		<div bn-control="brainjs.slider" bn-data="{max: duration}" bn-event="input: onSliderChange" bn-val="curTime">
 		</div>
-	</li>
-</ul>	
+</div>
+
+<div class="top">
+	<div class="video">
+		<video bn-attr="{src: url}" controls="" controlsList=nodownload bn-bind="video"></video>
+	</div>
+	<div class="gain">
+		<div class="gainItem">
+			<label>Micro</label>
+			<div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step:0.1, orientation: 'vertical'}"
+				bn-val="micGain" bn-event="input: onMicGainChange"></div>
+		</div>
+		<div class="gainItem">
+			<label>Video</label>
+			<div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step:0.1, orientation: 'vertical'}"
+				bn-val="videoGain" bn-event="input: onVideoGainChange"></div>
+		</div>
+	</div>
+
+</div>

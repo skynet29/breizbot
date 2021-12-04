@@ -1,0 +1,11 @@
+<form bn-event="submit: onSubmit">
+
+    <label>Genre</label>
+    <div bn-control="brainjs.combobox" bn-data="{items: genres}" bn-val="selectedGenre" bn-event="comboboxchange: onGenreChange" name="genre"></div>    
+
+    <label>Artist</label>
+    <div bn-control="brainjs.combobox" bn-data="{items: artists}" bn-val="selectedArtist" bn-update="comboboxchange" name="artist"></div>    
+
+
+    <input type="submit" hidden bn-bind="submit">
+</form>

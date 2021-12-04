@@ -1,7 +1,7 @@
 {	
-	"iconCls": "fa fa-compact-disc fa-2x",
+	"iconCls": "fa fa-microphone-alt fa-2x",
 	"colorCls": "w3-orange",
-	"title": "Karaoké",
+	"title": "Karaoke",
 	"styles": ["app.css"],
-	"description": "Dictaphone"
+	"description": "Karaoké"
 }

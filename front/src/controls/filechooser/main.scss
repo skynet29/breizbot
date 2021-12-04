@@ -1,0 +1,15 @@
+.breizbot-filechooser {
+	padding: 10px;
+
+	.w3-bar {
+		cursor: pointer;
+	}
+
+	.w3-bar-item {
+		display: flex;
+		align-items: center;
+		span {
+			margin-left: 20px;
+		}
+	}
+}

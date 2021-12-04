@@ -1,0 +1,59 @@
+.breizbot-audioplayer {
+	padding: 10px;
+
+	audio {
+		width: 100%;
+	}
+
+	.title {
+		display: flex;
+		> strong {
+			min-width: 60px;
+		}
+	}
+
+	.toolbar {
+		margin-top: 20px;
+		margin-bottom: 20px;
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+
+		button {
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 3rem;
+			height: 3rem;
+			margin: 10px;
+
+		}
+
+	}
+
+	.toolbar2 {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 20px;
+		align-items: center;
+
+		.brainjs-slider {
+			margin-top: 20px;
+			margin-bottom: 20px;
+		}
+
+	}		
+
+	.slider {
+		display: flex;
+		align-items: center;
+		.brainjs-slider {
+			margin-left: 20px;
+			flex: 1;
+		}
+	}
+
+
+}

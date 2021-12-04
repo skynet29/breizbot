@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fa fa-compact-disc fa-2x",
+	"colorCls": "w3-green",
+	"title": "DJ Mix",
+	"styles": ["app.css"]
+}

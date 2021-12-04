@@ -1,16 +1,21 @@
 .breizbot-audioplayer {
 	padding: 10px;
 
+	.info {
+		margin-top: 10px;
+		.title {
+			display: flex;
+			> strong {
+				min-width: 80px;
+			}
+		}
+	
+
+	}
 	audio {
 		width: 100%;
 	}
 
-	.title {
-		display: flex;
-		> strong {
-			min-width: 60px;
-		}
-	}
 
 	.toolbar {
 		margin-top: 20px;

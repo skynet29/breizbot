@@ -99,9 +99,9 @@ $$.control.registerControl('rootPage', {
 						props: {
 							filterExtension: 'mp4'
 						},
-						onReturn: function (url) {
-							console.log('url', url)
-							ctrl.setData({ url })
+						onReturn: function (data) {
+							//console.log('data', data)
+							ctrl.setData({ url: data.url })
 							videoElt.volume = ctrl.model.videoGain
 						}
 					})

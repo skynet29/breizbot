@@ -37,12 +37,14 @@
 
 .breizbot-audioplayer {
   padding: 10px; }
+  .breizbot-audioplayer .info {
+    margin-top: 10px; }
+    .breizbot-audioplayer .info .title {
+      display: flex; }
+      .breizbot-audioplayer .info .title > strong {
+        min-width: 80px; }
   .breizbot-audioplayer audio {
     width: 100%; }
-  .breizbot-audioplayer .title {
-    display: flex; }
-    .breizbot-audioplayer .title > strong {
-      min-width: 60px; }
   .breizbot-audioplayer .toolbar {
     margin-top: 20px;
     margin-bottom: 20px;

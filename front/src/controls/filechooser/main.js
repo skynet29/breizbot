@@ -62,10 +62,10 @@ $$.control.registerControl('breizbot.filechooser', {
 					 * @param {Breizbot.Controls.Files.EventData.FileClick} info 
 					 */
 					fileclick: function (ev, info) {
-						console.log('fileclick', info)
-						const { rootDir, fileName } = info
+						//console.log('fileclick', info)
+						const { rootDir, fileName, mp3 } = info
 						const url = filesSrv.fileUrl(rootDir + fileName, friendUser)
-						pager.popPage(url)
+						pager.popPage({url, mp3, fileName})
 
 					}
 				},
@@ -114,8 +114,8 @@ $$.control.registerControl('breizbot.filechooser', {
 								openFilePage(userName, userName)
 							}
 						},
-						onReturn: function (url) {
-							pager.popPage(url)
+						onReturn: function (data) {
+							pager.popPage(data)
 						}
 					})
 				}

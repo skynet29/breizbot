@@ -12,7 +12,7 @@
 
 		template: { gulp_inject: './player.html' },
 
-		deps: ['breizbot.files', 'breizbot.pager'],
+		deps: ['breizbot.pager'],
 
 		props: {
 			filterExtension: '',
@@ -21,10 +21,9 @@
 		},
 
 		/**
-		 * @param {Breizbot.Services.Files.Interface} files
 		 * @param {Breizbot.Services.Pager.Interface} pager
 		 */
-		init: function (elt, files, pager) {
+		init: function (elt, pager) {
 
 			console.log('props', this.props)
 
@@ -55,13 +54,16 @@
 								showMp3Filter
 							},
 							title: 'Choose File',
-							onReturn: async function (url) {
-								//console.log('url', url)
-								const {fileName, friendUser} = $$.url.parseUrlParams('http://www.netos.ovh' + url)
-								const info = await files.fileInfo(fileName, friendUser, {getMP3Info: true})
-								//console.log('info', info.mp3)
-								const {artist, title} = info.mp3
-								ctrl.setData({artist, title, url})
+							onReturn: async function (data) {
+								console.log('data', data)
+								const {fileName, url, mp3} = data
+								if (mp3 && mp3.title) {
+									const {artist, title} = mp3
+									ctrl.setData({artist, title, url})	
+								}
+								else { 
+									ctrl.setData({url, name: fileName})	
+								}
 							}
 						})
 	

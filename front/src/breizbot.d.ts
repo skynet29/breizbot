@@ -418,6 +418,7 @@ declare namespace Breizbot {
                     fileName: string;
                     rootDir:string;
                     isImage: boolean;
+                    mp3?: Services.Files.Mp3Info;
                 }
 
                 interface SelChange {

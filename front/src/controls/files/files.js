@@ -254,12 +254,14 @@
 					onFileClick: function (ev) {
 						const idx = $(this).closest('.thumbnail').index()
 						const info = ctrl.model.getFiles()[idx]
+						//console.log('info', info)
 
 						ev.stopPropagation()
 						const data = {
 							fileName: info.name,
 							rootDir: ctrl.model.rootDir,
-							isImage: info.isImage
+							isImage: info.isImage,
+							mp3: info.mp3
 						}
 
 						elt.trigger('fileclick', data)

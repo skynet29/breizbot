@@ -25,6 +25,14 @@ $$.control.registerControl('filteredTransactions', {
                 },
                 getAmountColor: function (scope) {
                     return (scope.$i.amount < 0) ? 'red' : 'black'
+                },
+                getInfo: function(scope) {
+                    const ret = []
+                    const {category, subcategory, memo} = scope.$i  
+                    ret.push(category)
+                    if (subcategory != '') ret.push(subcategory)
+                    if (memo != '') ret.push(memo)
+                    return ret
                 }
 
             }

@@ -270,7 +270,7 @@ module.exports = function (ctx) {
   }
 
   async function addMailbox(name, mailboxName) {
-    console.log('addMailbox', userName, name, mailboxName)
+    console.log('addMailbox', name, mailboxName)
 
     const account = await db.getMailAccount(name)
     const imap = Imap.create(account)

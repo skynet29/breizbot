@@ -16,11 +16,25 @@ $$.control.registerControl('rootPage', {
 
 		/**@type MediaStream */
 		let stream = null
+		
+		/**
+		 * 
+		 * @param {number} n 
+		 * @returns {string}
+		 */
+		function formatNumber(n) {
+			return (n / 100).toFixed(2).split('.')[1]
+		}
 
 		function getTime(duration) {
+			const offset = new Date(0).getHours()
 			const d = new Date(duration * 1000)
-			const v = d.getMinutes() + d.getSeconds() / 100
-			return v.toFixed(2).replace('.', ':')
+			const hours = d.getHours() - offset
+			if (hours != 0) {
+				return hours.toString() + ':' + formatNumber(d.getMinutes()) + ':' + formatNumber(d.getSeconds())
+			}
+
+			return d.getMinutes().toString() + ':' + formatNumber(d.getSeconds())
 		}
 
 		const ctrl = $$.viewController(elt, {

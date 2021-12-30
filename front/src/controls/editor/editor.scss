@@ -3,28 +3,50 @@
 	flex-direction: column;
 	overflow: hidden;
 
-	> .scrollPanel {
+	.bottom {
+		position: relative;
 		flex: 1;
-		overflow-y: auto;
-		border: 1px solid lightgray;
+		display: flex;
+		overflow: hidden;
 
-		.editor {
-			min-height: 100%;			
-			padding: 10px;
-			outline: none; 
-			font-family: Arial;
-			font-size: 12pt;
-
-			p {
-				margin: 0;			
-			}
-
-			a {
-				color: rgb(0, 0, 238)
-			}
+		.micro {
+			position: absolute;
+			top: 10px;
+			right: 20px;
+			cursor: pointer;
 		}
+
+		> .scrollPanel {
+			flex: 1;
+			overflow-y: auto;
+			border: 1px solid lightgray;
 	
+	
+	
+			.editor {
+				min-height: 100%;			
+				padding: 10px;
+				outline: none; 
+				font-family: Arial;
+				font-size: 12pt;
+	
+				p {
+					margin: 0;			
+				}
+	
+				a {
+					color: rgb(0, 0, 238)
+				}
+	
+				.interim {
+					color: gray;
+				}
+			}
+		
+		}		
 	}
+
+
 	
 	
 	> .toolbar {

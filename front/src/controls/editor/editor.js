@@ -80,6 +80,64 @@ $$.control.registerControl('breizbot.htmleditor', {
 		const colorItems = getColorItems()
 		const defaultColor = colorMap['black']
 
+		const speechRecoAvailable = ('webkitSpeechRecognition' in window)
+		let ignoreOnEnd = false
+		let recognition = null
+		let finalSpan = null
+		let interimSpan = null
+		let finalTranscript = ''
+
+		const two_line = /\n\n/g
+		const one_line = /\n/g
+		function linebreak(s)  {
+			return s.replace(two_line, '<p></p>').replace(one_line, '<br>')
+		}
+
+		const first_char = /\S/
+		function capitalize(s) {
+			return s.replace(first_char, m => m.toUpperCase())
+		}
+
+		if (speechRecoAvailable) {
+			recognition = new webkitSpeechRecognition();
+			recognition.continuous = true
+			recognition.interimResults = true
+			recognition.lang = 'fr-FR'
+
+			recognition.onstart = function () {
+				console.log('onStart')
+				ctrl.setData({ recognizing: true })
+
+			}
+
+			recognition.onerror = function (event) {
+				console.log('onError', event.error)
+			}
+
+			recognition.onend = function () {
+				console.log('onEnd')
+				ctrl.setData({ recognizing: false })
+			}
+
+			recognition.onresult = function (event) {
+				//console.log('onResult', event.results.length)
+				let interimTranscript = ''
+				for (let i = event.resultIndex; i < event.results.length; ++i) {
+					//console.log('results', event.results[i])
+					if (event.results[i].isFinal && event.results[i][0].confidence != 0) {
+						finalTranscript += event.results[i][0].transcript
+					} else {
+						interimTranscript += event.results[i][0].transcript
+					}
+				}
+				console.log('interimTranscript', interimTranscript)
+				console.log('finalTranscript', finalTranscript)
+				finalTranscript = capitalize(finalTranscript)
+				finalSpan.innerHTML = linebreak(finalTranscript)
+				interimSpan.innerHTML = linebreak(interimTranscript)
+			}
+		}
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				html: elt.val(),
@@ -95,9 +153,37 @@ $$.control.registerControl('breizbot.htmleditor', {
 				fontNameItems,
 				colorItems,
 				color: defaultColor,
-				headingItems: getHeadingItems()
+				headingItems: getHeadingItems(),
+				speechRecoAvailable,
+				recognizing: false,
+				getMicUrl: function () {
+					return this.recognizing ? '/assets/mic-animate.gif' : '/assets/mic.gif'
+				}
 			},
 			events: {
+				onMicro: function (ev) {
+					if (ctrl.model.recognizing) {
+						recognition.stop()
+						return
+					}
+					const selObj = window.getSelection()
+					//console.log('selObj', selObj)
+
+					if (!isEditable(selObj.anchorNode)) {
+						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
+						return
+					}
+
+					const range = selObj.getRangeAt(0)
+					finalSpan = document.createElement('span')
+					interimSpan = document.createElement('span')
+					interimSpan.className = 'interim'
+					range.insertNode(interimSpan)
+					range.insertNode(finalSpan)
+					finalTranscript = ''
+					recognition.start()
+					ignoreOnEnd = false
+				},
 				onInsertImage: function (ev) {
 					insertImage()
 				},
@@ -290,9 +376,6 @@ $$.control.registerControl('breizbot.htmleditor', {
 
 		}
 
-	},
-	$iface: `
-		html(htmlString): string;load(url)
-	`
+	}
 
 });

@@ -1,4 +1,5 @@
 <div bn-event="click.cmd: onCommand" class="toolbar">
+
 	<div class="group">
 		<button class="cmd w3-button" data-cmd="bold" title="Bold"><i class="fa fa-bold"></i></button>
 		<button class="cmd w3-button" data-cmd="italic" title="Italic"><i class="fa fa-italic"></i></button>
@@ -9,9 +10,7 @@
 
 	<div class="group">
 		<button class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onFontNameChange"
-			title="Font Name"
-			bn-html="getFontName"
-			bn-data="{
+			title="Font Name" bn-html="getFontName" bn-data="{
 				trigger: 'left',
 				items: fontNameItems
 			}">
@@ -20,9 +19,7 @@
 		</button>
 
 		<button class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onFontSizeChange"
-			title="Font Size"
-			bn-html="getFontSize"
-			bn-data="{
+			title="Font Size" bn-html="getFontSize" bn-data="{
 				trigger: 'left',
 				items: fontSizeItems
 			}">
@@ -31,8 +28,7 @@
 		</button>
 
 
-		<button class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onCommand"
-			title="Title"
+		<button class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onCommand" title="Title"
 			data-cmd="formatBlock" bn-data="{
 				trigger: 'left',
 				items: headingItems
@@ -41,7 +37,8 @@
 			<i class="fas fa-caret-down"></i>
 		</button>
 
-		<button title="Alignment" class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onCommand" bn-data="{
+		<button title="Alignment" class="w3-button" bn-control="brainjs.contextmenu"
+			bn-event="contextmenuchange: onCommand" bn-data="{
 			trigger: 'left',
 			items: {
 				justifyLeft: {name: 'Left', icon: 'fas fa-align-left'},
@@ -53,12 +50,10 @@
 			<i class="fas fa-caret-down"></i>
 		</button>
 
-		<button class="w3-button" title="Text color" bn-control="brainjs.contextmenu"
-			bn-data="{
+		<button class="w3-button" title="Text color" bn-control="brainjs.contextmenu" bn-data="{
 				items: colorItems,
 				trigger: 'left'
-			}"
-			bn-event="contextmenuchange: onColorMenuChange">
+			}" bn-event="contextmenuchange: onColorMenuChange">
 			<i class="fas fa-paint-brush" bn-style="{color}"></i>
 		</button>
 
@@ -66,7 +61,8 @@
 	</div>
 
 	<div class="group">
-		<button title="Indent" class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onCommand" bn-data="{
+		<button title="Indent" class="w3-button" bn-control="brainjs.contextmenu"
+			bn-event="contextmenuchange: onCommand" bn-data="{
 				trigger: 'left',
 				items: {
 					indent: {name: 'Indent', icon: 'fas fa-indent'},
@@ -78,7 +74,8 @@
 		</button>
 
 
-		<button title="List" class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onCommand" bn-data="{
+		<button title="List" class="w3-button" bn-control="brainjs.contextmenu" bn-event="contextmenuchange: onCommand"
+			bn-data="{
 				trigger: 'left',
 				items: {
 					insertUnorderedList: {name: 'Unordered', icon: 'fas fa-list-ul'},
@@ -94,8 +91,10 @@
 	</div>
 
 	<div class="group">
-		<button class="w3-button cmd" title="Horizontal Rule" data-cmd="insertHorizontalRule"><i class="fas fa-minus"></i></button>
-		<button class="w3-button" title="Insert Link" bn-event="click: onCreateLink"><i class="fas fa-link"></i></button>
+		<button class="w3-button cmd" title="Horizontal Rule" data-cmd="insertHorizontalRule"><i
+				class="fas fa-minus"></i></button>
+		<button class="w3-button" title="Insert Link" bn-event="click: onCreateLink"><i
+				class="fas fa-link"></i></button>
 		<button title="Insert image" bn-event="click: onInsertImage" class="w3-button">
 			<i class="fa fa-image"></i></button>
 
@@ -105,7 +104,9 @@
 </div>
 
 
-</div>
-<div class="scrollPanel" bn-event="click: onScrollClick">
-	<div contenteditable="true" bn-bind="editor" class="editor" bn-html="html"></div>
+<div class="bottom">
+	<img bn-attr="{src: getMicUrl}" class="micro" bn-event="click: onMicro" bn-show="speechRecoAvailable" title="Speech Recognition">
+	<div class="scrollPanel" bn-event="click: onScrollClick">
+		<div contenteditable="true" bn-bind="editor" class="editor" bn-html="html"></div>
+	</div>
 </div>

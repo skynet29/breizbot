@@ -120,20 +120,32 @@
   display: flex;
   flex-direction: column;
   overflow: hidden; }
-  .breizbot-htmleditor > .scrollPanel {
+  .breizbot-htmleditor .bottom {
+    position: relative;
     flex: 1;
-    overflow-y: auto;
-    border: 1px solid lightgray; }
-    .breizbot-htmleditor > .scrollPanel .editor {
-      min-height: 100%;
-      padding: 10px;
-      outline: none;
-      font-family: Arial;
-      font-size: 12pt; }
-      .breizbot-htmleditor > .scrollPanel .editor p {
-        margin: 0; }
-      .breizbot-htmleditor > .scrollPanel .editor a {
-        color: #0000ee; }
+    display: flex;
+    overflow: hidden; }
+    .breizbot-htmleditor .bottom .micro {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      cursor: pointer; }
+    .breizbot-htmleditor .bottom > .scrollPanel {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid lightgray; }
+      .breizbot-htmleditor .bottom > .scrollPanel .editor {
+        min-height: 100%;
+        padding: 10px;
+        outline: none;
+        font-family: Arial;
+        font-size: 12pt; }
+        .breizbot-htmleditor .bottom > .scrollPanel .editor p {
+          margin: 0; }
+        .breizbot-htmleditor .bottom > .scrollPanel .editor a {
+          color: #0000ee; }
+        .breizbot-htmleditor .bottom > .scrollPanel .editor .interim {
+          color: gray; }
   .breizbot-htmleditor > .toolbar {
     display: flex;
     flex-direction: row;

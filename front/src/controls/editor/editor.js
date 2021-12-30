@@ -81,6 +81,8 @@ $$.control.registerControl('breizbot.htmleditor', {
 		const defaultColor = colorMap['black']
 
 		const speechRecoAvailable = ('webkitSpeechRecognition' in window)
+		const isMobilDevice = /Android/i.test(navigator.userAgent)
+		console.log('isMobilDevice', isMobilDevice)
 		let ignoreOnEnd = false
 		let recognition = null
 		let finalSpan = null
@@ -118,8 +120,14 @@ $$.control.registerControl('breizbot.htmleditor', {
 
 			recognition.onend = function () {
 				console.log('onEnd')
-				ctrl.setData({ recognizing: false })
-				range.collapse()
+				if (isMobilDevice && ctrl.model.recognizing) {
+					range.collapse()
+					startRecognition()
+				}
+				else {
+					ctrl.setData({ recognizing: false })
+					range.collapse()	
+				}
 			}
 
 			recognition.onresult = function (event) {
@@ -133,12 +141,32 @@ $$.control.registerControl('breizbot.htmleditor', {
 						interimTranscript += event.results[i][0].transcript
 					}
 				}
-				console.log('interimTranscript', interimTranscript)
-				console.log('finalTranscript', finalTranscript)
+				//console.log('interimTranscript', interimTranscript)
+				//console.log('finalTranscript', finalTranscript)
 				finalTranscript = capitalize(finalTranscript)
 				finalSpan.innerHTML = linebreak(finalTranscript)
 				interimSpan.innerHTML = linebreak(interimTranscript)
 			}
+		}
+
+		function startRecognition() {
+			const selObj = window.getSelection()
+			//console.log('selObj', selObj)
+
+			if (!isEditable(selObj.anchorNode)) {
+				$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
+				return
+			}
+
+			range = selObj.getRangeAt(0)
+			finalSpan = document.createElement('span')
+			interimSpan = document.createElement('span')
+			interimSpan.className = 'interim'
+			range.insertNode(interimSpan)
+			range.insertNode(finalSpan)
+			finalTranscript = ''
+			recognition.start()
+			ignoreOnEnd = false			
 		}
 
 		const ctrl = $$.viewController(elt, {
@@ -164,28 +192,14 @@ $$.control.registerControl('breizbot.htmleditor', {
 				}
 			},
 			events: {
-				onMicro: function (ev) {
+				onMicro: function() {
 					if (ctrl.model.recognizing) {
+						ctrl.setData({recognizing: false})
 						recognition.stop()
-						return
 					}
-					const selObj = window.getSelection()
-					//console.log('selObj', selObj)
-
-					if (!isEditable(selObj.anchorNode)) {
-						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
-						return
+					else {
+						startRecognition()
 					}
-
-					range = selObj.getRangeAt(0)
-					finalSpan = document.createElement('span')
-					interimSpan = document.createElement('span')
-					interimSpan.className = 'interim'
-					range.insertNode(interimSpan)
-					range.insertNode(finalSpan)
-					finalTranscript = ''
-					recognition.start()
-					ignoreOnEnd = false
 				},
 				onInsertImage: function (ev) {
 					insertImage()

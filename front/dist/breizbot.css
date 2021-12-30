@@ -293,6 +293,23 @@
     flex: 1;
     overflow: hidden; }
 
+.breizbot-pdf {
+  display: flex;
+  flex-direction: column; }
+  .breizbot-pdf .brainjs-pdf {
+    flex: 1; }
+  .breizbot-pdf .toolbar {
+    padding: 0 10px 0 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between; }
+    .breizbot-pdf .toolbar .pages {
+      display: flex;
+      align-items: center; }
+    .breizbot-pdf .toolbar .loading {
+      padding: 8px 0 8px 0; }
+
 .breizbot-rtc {
   display: flex;
   flex-direction: column; }
@@ -324,23 +341,6 @@
     padding: 5px;
     border: none;
     outline: none; }
-
-.breizbot-pdf {
-  display: flex;
-  flex-direction: column; }
-  .breizbot-pdf .brainjs-pdf {
-    flex: 1; }
-  .breizbot-pdf .toolbar {
-    padding: 0 10px 0 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between; }
-    .breizbot-pdf .toolbar .pages {
-      display: flex;
-      align-items: center; }
-    .breizbot-pdf .toolbar .loading {
-      padding: 8px 0 8px 0; }
 
 .breizbot-addUser {
   margin: 10px;

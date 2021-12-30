@@ -86,6 +86,8 @@ $$.control.registerControl('breizbot.htmleditor', {
 		let finalSpan = null
 		let interimSpan = null
 		let finalTranscript = ''
+		/**@type {Range} */
+		let range = null
 
 		const two_line = /\n\n/g
 		const one_line = /\n/g
@@ -117,6 +119,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 			recognition.onend = function () {
 				console.log('onEnd')
 				ctrl.setData({ recognizing: false })
+				range.collapse()
 			}
 
 			recognition.onresult = function (event) {
@@ -174,7 +177,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 						return
 					}
 
-					const range = selObj.getRangeAt(0)
+					range = selObj.getRangeAt(0)
 					finalSpan = document.createElement('span')
 					interimSpan = document.createElement('span')
 					interimSpan.className = 'interim'

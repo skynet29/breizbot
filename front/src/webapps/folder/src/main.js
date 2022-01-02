@@ -542,7 +542,7 @@ $$.control.registerControl('rootPage', {
 				ctrl.updateNodeTree('downloads')
 				console.log('uploadFile', rootDir, file.name)
 
-				await srvFiles.uploadFile(file, file.name, rootDir, function (percentComplete) {
+				await srvFiles.uploadFile(file, file.name, rootDir, false, function (percentComplete) {
 					data.percentage = percentComplete
 					ctrl.updateNodeTree('downloads')
 				})

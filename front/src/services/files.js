@@ -4,6 +4,7 @@ $$.service.registerService('breizbot.files', {
 	deps: ['brainjs.resource', 'breizbot.params'],
 
 	init: function (config, resource, params) {
+		/**@type {Brainjs.Services.Http.Interface} */
 		const http = resource('/api/files')
 
 		const savingDlg = $$.ui.progressDialog()
@@ -43,36 +44,58 @@ $$.service.registerService('breizbot.files', {
 				return  `/webapps/${params.$appName}/assets/${fileName}`
 			},
 
-			uploadFile: function (blob, saveAsfileName, destPath, onUploadProgress) {
-				console.log('[FileService] uploadFile', saveAsfileName, destPath)
+			/**
+			 * 
+			 * @param {Blob} blob 
+			 * @param {string} saveAsfileName 
+			 * @param {string} destPath 
+			 * @param {boolean} checkExists
+			 * @param {*} onUploadProgress 
+			 * @returns 
+			 */
+			uploadFile: async function (blob, saveAsfileName, destPath, checkExists, onUploadProgress) {
+				console.log('[FileService] uploadFile', checkExists, saveAsfileName, destPath)
 				if (!(blob instanceof Blob)) {
 					console.warn('File format not supported')
 					return Promise.reject('File format not supported')
 				}
-				//console.log('blob', blob)
-				var fd = new FormData()
+				if (checkExists) {
+					try {
+						await this.fileInfo(destPath + '/' + saveAsfileName)
+						return Promise.reject('File already exists')
+					}
+					catch(e) {
+					}
+				}
+				const fd = new FormData()
 				fd.append('file', blob, saveAsfileName)
 				fd.append('destPath', destPath)
 				return http.postFormData('/save', fd, onUploadProgress)
+
+				//console.log('blob', blob)
+
 			},
 
-			saveFile: async function (blob, saveAsfileName, destPath) {
-				destPath = destPath || `/apps/${params.$appName}`
+			saveFile: async function (blob, saveAsfileName, checkExists = false) {
+				const destPath  = `/apps/${params.$appName}`
 				try {
 					savingDlg.setPercentage(0)
 					savingDlg.show()
-					const resp = await this.uploadFile(blob, saveAsfileName, destPath, (value) => {
+					const resp = await this.uploadFile(blob, saveAsfileName, destPath, checkExists, (value) => {
 						savingDlg.setPercentage(value)
 					})
 					await $$.util.wait(1000)
 					savingDlg.hide()
+					return true
 				}
 				catch (e) {
+					console.log('error', e)
 					savingDlg.hide()
 					$$.ui.showAlert({
 						title: 'Error',
-						content: e.responseText
+						content: e.responseText || e
 					})
+					return false
 				}
 
 			}

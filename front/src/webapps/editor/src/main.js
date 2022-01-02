@@ -14,8 +14,7 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				fileName: '',
-				rootDir: ''
+				fileName: ''
 			},
 			events: {
 				onNewFile: function (ev) {
@@ -25,16 +24,19 @@ $$.control.registerControl('rootPage', {
 				},
 				onSaveFile: async function (ev) {
 					//console.log('onSaveFile')
-					if (ctrl.model.fileName != '') {
-						saveFile()
+					let { fileName } = ctrl.model
+
+					if (fileName != '') {
+						await saveFile(fileName, false)
 						return
 					}
-					let fileName = await $$.ui.showPrompt({ title: 'Save File', label: "FileName:" })
+					fileName = await $$.ui.showPrompt({ title: 'Save File', label: "FileName:" })
 					//console.log('fileName', fileName)
 					if (fileName != null) {
-						fileName += '.hdoc'
-						ctrl.setData({ fileName, rootDir: '/apps/editor' })
-						saveFile()
+						fileName += '.hdoc'						
+						if (await saveFile(fileName, true)) {
+							ctrl.setData({ fileName })
+						}
 					}
 				},
 				onOpenFile: function (ev) {
@@ -62,12 +64,16 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		async function saveFile() {
+		/**
+		 * 
+		 * @param {string} fileName 
+		 * @param {boolean} checkExists 
+		 */
+		async function saveFile(fileName, checkExists) {
 			//console.log('saveFile')
-			const { fileName, rootDir } = ctrl.model
 			const htmlString = ctrl.scope.editor.html()
 			const blob = new Blob([htmlString], { type: 'text/html' })
-			await files.saveFile(blob, fileName, rootDir)
+			return files.saveFile(blob, fileName, checkExists)
 		}
 
 	}

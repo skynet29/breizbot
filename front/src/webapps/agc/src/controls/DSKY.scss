@@ -1,0 +1,122 @@
+@font-face {
+    font-family: seven;
+    src: url('./assets/digital-7-mono-italic.ttf')
+}
+
+.DSKY {
+    width: 420px;
+    background-color: #dddddd;
+    padding: 5px;
+
+
+    .top {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+    
+        .left {
+            display: flex;
+            flex-direction: row;
+            padding: 5px;
+            border: 1px solid black;
+
+            .col {
+                display: flex;
+                flex-direction: column;
+
+                div {            
+                    background-color: rgb(136,136,136);
+                    width: 60px;
+                    height: 30px;
+                    border: 1px solid black;
+                    text-align: center;
+                    font-size: 11px;
+                    font-family: sans-serif;
+                    line-height: 30px;
+                    margin: 3px;
+        
+                    > span {
+                        display: inline-block;
+                        vertical-align: middle;
+                        line-height: normal;
+                    }
+                }                
+
+            }
+    
+
+        }
+    
+        .right {
+    
+            background-color: black;
+            display: flex;
+            flex-direction: column;
+            padding: 5px;
+    
+            .line {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                margin-top: 5px;
+            }
+    
+                .label {
+                    background-color: #00FF00;
+                    font-size: 10px;
+                    height: 25px;
+                    width: 40px;
+                    line-height: 25px;
+                    text-align: center;
+                }
+                .digit {
+                    display: flex;
+                    background-color: #555555;
+                    color: #00FF00;
+                    width: 40px;
+                    height: 40px;
+                    font-size: 40px;
+                    font-family: seven;
+                    line-height: 40px;
+                }
+    
+                .big {
+                    width: 120px;
+                }
+    
+        }
+    
+    }
+
+    .bottom {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        margin-top: 10px;
+        .keyboard {
+            display: flex;
+            flex-direction: row;
+            border: 1px solid black;
+            > div {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+    
+            }
+    
+            button {
+                width: 50px;
+                height: 50px;
+                background-color: #555555;
+                color: white;
+                font-size: 20px;
+                margin: 3px;
+            }
+    
+            .label {
+                font-size: 12px;
+            }
+        }
+    
+    }
+}

@@ -8,7 +8,6 @@
 	<link rel="stylesheet" type="text/css" href="/breizbot.css">
 	<script src="/brainjs/brainjs.js"></script>
 	<script src="/breizbot.js"></script>
-	<script src="/webapps/<%= appName %>/app.js"></script>
 
     <% styles.forEach(function(style) {%>
         <link rel="stylesheet" type="text/css" href="<%= style %>">
@@ -17,6 +16,9 @@
     <% scripts.forEach(function(script) {%>
         <script src="<%= script %>"></script>
     <%}) %>      
+
+	<script src="/webapps/<%= appName %>/app.js"></script>
+
 </head>
 
 <style type="text/css">

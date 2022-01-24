@@ -1,0 +1,8 @@
+{	
+	"iconCls": "fa fa-space-shuttle fa-2x",
+	"colorCls": "w3-blue",
+	"title": "AGC",
+	"styles": ["app.css"],
+	"description": "Apollo guidance computer simulation",
+	"scripts": ["agc.js"]
+}

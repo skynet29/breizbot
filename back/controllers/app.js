@@ -35,6 +35,9 @@ module.exports = function (app) {
 				return (fileName.startsWith('/')) ? fileName : path.join(appPath, fileName)
 			})
 			let scripts = appInfo.scripts || []
+			scripts = scripts.map((fileName) => {
+				return (fileName.startsWith('/')) ? fileName : path.join(appPath, 'assets', fileName)
+			})
 
 			const brainjs = appInfo.brainjs || []
 			getBrainjsLib(brainjs, scripts, styles)

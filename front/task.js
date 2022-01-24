@@ -9,6 +9,8 @@ var uglify = require('gulp-uglify-es').default
 var rename = require("gulp-rename")
 const eslint = require('gulp-eslint')
 const browserify = require('gulp-browserify')
+const bro = require('gulp-bro')
+const babelify = require('babelify')
 
 sass.compiler = require('node-sass')
 
@@ -22,9 +24,10 @@ function source(dest, srcs, options) {
 	let stream = gulp.src(srcs)
 
 	if (options.browserify === true) {
-		stream = stream.pipe(browserify({
-		          insertGlobals : true,
-		          debug: true
+		stream = stream.pipe(bro({
+				  transform: [
+					  babelify.configure({presets: ['@babel/env']})
+					]
 		        }))		
 	}
 

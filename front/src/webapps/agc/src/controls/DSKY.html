@@ -2,23 +2,23 @@
 <div class="top">
     <div class="left">
         <div class="col">
-            <div><span>UPLINK ACTY</span></div>
-            <div>NO ATT</div>
-            <div>STBY</div>
-            <div>KEY REL</div>
-            <div>OPR ERR</div>
+            <div bn-style="uplink_acty"><span>UPLINK ACTY</span></div>
+            <div bn-style="no_att">NO ATT</div>
+            <div bn-style="stby">STBY</div>
+            <div bn-style="key_rel">KEY REL</div>
+            <div bn-style="opr_err">OPR ERR</div>
             <div></div>
             <div></div>
         </div>
 
         <div class="col">
-            <div>TEMP</div>
-            <div><span>GIMBALL LOCK</span></div>
-            <div>PROG</div>
+            <div bn-style="temp">TEMP</div>
+            <div bn-style="gimball_lock"><span>GIMBALL LOCK</span></div>
+            <div bn-style="prog">PROG</div>
             <div>RESTART</div>
-            <div>TRACKER</div>
-            <div>ALT</div>
-            <div>VEL</div>
+            <div bn-style="tracker">TRACKER</div>
+            <div bn-style="alt">ALT</div>
+            <div bn-style="vel">VEL</div>
         </div>
 
     
@@ -27,26 +27,26 @@
     
     <div class="right">
         <div class="line">
-            <div></div>
+            <div class="compActy" bn-style="comp_acty"><span>COMP ACTY</span></div>
             <div>
                 <div class="label">PROG</div>
-                <div class="digit">00</div>
+                <div class="digit" bn-html="prog00"></div>
             </div>
     
         </div>
         <div class="line">
             <div>
                 <div class="label">VERB</div>
-                <div class="digit">00</div>
+                <div class="digit" bn-html="verb00"></div>
             </div>
             <div>
                 <div class="label">NOUN</div>
-                <div class="digit">00</div>
+                <div class="digit" bn-html="noun00"></div>
             </div>
         </div>
-        <div class="digit big">+00000</div>
-        <div class="digit big">+00000</div>
-        <div class="digit big">+00000</div>
+        <div class="digit big" bn-html="r1"></div>
+        <div class="digit big" bn-html="r2"></div>
+        <div class="digit big" bn-html="r3"></div>
     
     </div>
 </div>
@@ -61,6 +61,11 @@
             <button class="key">+</button>
             <button class="key">-</button>
             <button class="key">0</button>
+        </div>
+        <div>
+            <button class="key">1</button>
+            <button class="key">4</button>
+            <button class="key">7</button>
         </div>
         <div>
             <button class="key">8</button>

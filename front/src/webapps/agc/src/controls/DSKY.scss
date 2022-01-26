@@ -54,6 +54,17 @@
             flex-direction: column;
             padding: 5px;
     
+            .compActy {
+                background-color: rgb(136,136,136);
+                width: 40px;
+                height: 30px;
+                border: 1px solid black;
+                text-align: center;
+                font-size: 11px;
+                font-family: sans-serif;
+                line-height: 15px;
+                margin: 5px;
+        }
             .line {
                 display: flex;
                 flex-direction: row;

@@ -3,70 +3,33 @@ $$.service.registerService('app.emuAgc', {
 
     deps: ['breizbot.files'],
 
-    /**
-     * 
-     * @param {*} config 
-     * @param {Breizbot.Services.Files.Interface} files 
-     * @returns 
-     */
-    init: function(config, files) {
+    init: function (config) {
 
         const set_fixed = Module.cwrap('set_fixed', null, ['number'])
-        /**@type {WebAssembly.Instance} */
-        let instance = null
+        const reset = Module.cwrap('cpu_reset')
+        const stepCpu = Module.cwrap('cpu_step', null, ['number'])
+        const packetRead = Module.cwrap('packet_read', 'number')
+        const writeIo = Module.cwrap('packet_write', null, ['number', 'number'])
 
-        /**@type {Uint8Array} */
-        let memArray = null
+        const events = new EventEmitter2()
 
-        async function initWasm() {
-			const wasmfs = new $$.WasmFs()
-
-			console.log('defaultBindings', $$.wasiBindings)
-
-			//const bindings = $$.WASI.defaultBindings
+        const cycleMs = 0.01172 // 11.72 microseconds per AGC instruction
 
 
-			const bindings = $$.wasiBindings.default
-
-			bindings.fs = wasmfs.fs
-
-			const wasi = new $$.WASI({
-				preopens: {
-					'/': '/',
-				},
-				bindings
-			})
-
-			const mem = new WebAssembly.Memory({ initial: 5 })
-            console.log('mem', mem)
-			memArray = new Uint8Array(mem.buffer)
-		
-
-			wasi.setMemory(mem)
-
-			const imports = { env: { memory: mem } }
-
-			const module = await WebAssembly.compileStreaming(fetch(files.assetsUrl('agc.wasm')))
-			console.log('module', module)
-			const { wasi_snapshot_preview1 } = wasi.getImports(module)
-			imports.wasi_snapshot_preview1 = wasi_snapshot_preview1
-
-			console.log('imports', imports)
-			instance = await WebAssembly.instantiate(module, imports)
-			console.log('instance', instance)
-		  
-
-		}
-
-        function writeIo(channel, data) {
-            instance.exports.packet_write(channel, data)
+        const state = {
+            channels: {},
+            lamps: 0
         }
 
+        let startTime = 0
+        let totalSteps = 0
+
+
         function readIo() {
-            const data = instance.exports.packet_read()
+            const data = packetRead()
             const channel = data >> 16
             const value = data & 0xffff
-            return {channel, value}
+            return [channel, value]
         }
 
         async function loadRom(url) {
@@ -77,22 +40,91 @@ $$.service.registerService('app.emuAgc', {
             console.log('romArray', romArray.length)
             const romPtr = Module._malloc(romArray.length * romArray.BYTES_PER_ELEMENT)
             console.log('romPtr', romPtr)
-        
+
             Module.HEAP8.set(romArray, romPtr)
             set_fixed(romPtr)
             Module._free(romPtr)
         }
 
-        function reset() {
-            instance.exports.cpu_reset()
-          }        
+        function start() {
+            startTime = performance.now()
+			totalSteps = 0
+
+        }
+
+        function loop() {
+            const targetSteps = Math.floor((performance.now() - startTime) / cycleMs)
+            const diffSteps = targetSteps - totalSteps
+            //console.log('diffSteps', diffSteps)
+            if (diffSteps < 0 || diffSteps > 100000) {
+                // No matter which cause, prevent hanging due to high step counts due to integer overflows.
+                startTime = performance.now()
+                totalSteps = 0
+                return
+            }
+            stepCpu(diffSteps)
+            totalSteps += diffSteps
+            readAllIo()            
+        }
+
+
+        function readAllIo() {
+            let channel
+            let value
+
+            do {
+                [channel, value] = readIo()
+                const previousValue = state.channels[channel]
+
+                if (previousValue != value) {
+                    state.channels[channel] = value
+                    //console.log('readIo', channel.toString(8), value)
+                    events.emit('channelUpdate', {channel, value})
+                }
+                if (channel === 0o11) {
+                    const bitmask = 0b110
+                    // Bit 2: COMP ACTY
+                    // Bit 3: UPLINK ACTY
+                    state.lamps = (state.lamps & (~bitmask >>> 0)) | (value & bitmask)
+                    events.emit('lightsUpdate', state.lamps)
+            
+                }
+                else if (channel === 0o163) {
+                    // Fictitious port for blinking lights - apparently an emulation of hardware square-wave
+                    // modulation of some signals, external to the AGC. yaAGC kindly supplies these signals to
+                    // us already modulated.
+                    // See https://www.ibiblio.org/apollo/developer.html
+                    const bitmask = 0b111111000;
+                    // Bit 1: AGC warning
+                    // Bit 4: TEMP lamp
+                    // Bit 5: KEY REL lamp
+                    // Bit 6: VERB/NOUN flash
+                    // Bit 7: OPER ERR lamp
+                    // Bit 8: RESTART lamp
+                    // Bit 9: STBY lamp
+                    // Bit 10: EL off
+                    // console.log('blinking lamps', this.state.lamps);
+                    state.lamps = (state.lamps & (~bitmask >>> 0)) | (value & bitmask);
+
+                    events.emit('lightsUpdate', state.lamps)
+                }
+
+
+            } while (channel || value)
+
+        }
+
+
 
         return {
-            initWasm,
             writeIo,
             readIo,
             loadRom,
-            reset
+            reset,
+            stepCpu,
+            on: events.on.bind(events),
+            start,
+            loop
         }
 
     }

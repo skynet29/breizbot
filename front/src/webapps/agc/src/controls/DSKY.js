@@ -4,7 +4,7 @@ $$.control.registerControl('DSKY', {
 
 	template: { gulp_inject: './DSKY.html' },
 
-	deps: ['breizbot.pager'],
+	deps: ['breizbot.pager', 'app.emuAgc'],
 
 	props: {
 	},
@@ -12,13 +12,13 @@ $$.control.registerControl('DSKY', {
 	/**
 	 * 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {AppAgc.Services.Interface} agc
 	 */
-	init: function (elt, pager) {
+	init: function (elt, pager, agc) {
 		
 		var floor = Math.floor
 		var round = Math.round
 	
-
 		const keyMapping = {
 			'VERB': 17,
 			'NOUN': 31,
@@ -61,7 +61,6 @@ $$.control.registerControl('DSKY', {
 		const space = '&nbsp;'
 		let phase = 0 		// a timer used for blinking Verb and Nouns
 		let phase0 = -1
-		let digits = '000000+00000+00000+00000'
 
 		function getColor(value) {
 			return { 'background-color': value ? '#ffc200' : '#888888' }
@@ -75,44 +74,43 @@ $$.control.registerControl('DSKY', {
 			data: {
 				lamps: 0,
 				status8: 0, // status bits of AGC output channel 010
-				status11: 0,
 				digits: '000000+00000+00000+00000',
 				on: 0,	// to simulate blinking (phase increases by 1 every 100 ms)
 				comp_acty: function () {
-					return getColor(this.lamps & 0x0002)
+					return getColor(this.lamps & agc.lampMask.COMP_ACTY)
 				},
 				uplink_acty: function () {
-					return getColor2(this.lamps & 0x0004)
+					return getColor2(this.lamps & agc.lampMask.UPLINK_ACTY)
 				},
 				temp: function () {
-					return getColor(this.lamps & 0x0008)
+					return getColor(this.lamps & agc.lampMask.TEMP)
 				},
 				key_rel: function () {
-					return getColor2(this.lamps & 0x0010)
+					return getColor2(this.lamps & agc.lampMask.KEY_REL)
 				},
 				opr_err: function () {
-					return getColor2(this.lamps & 0x0040)
+					return getColor2(this.lamps & agc.lampMask.OPER_ERR)
 				},
 				stby: function () {
-					return getColor2(this.status11 & 0x0200)
+					return getColor2(this.lamps & agc.lampMask.STBY)
 				},
 				vel: function () {
-					return getColor(this.status8 & 0x0004)
+					return getColor(this.status8 & agc.statusMask.VEL)
 				},
 				no_att: function () {
-					return getColor2(this.status8 & 0x0008)
+					return getColor2(this.status8 & agc.statusMask.NOT_ATT)
 				},
 				alt: function () {
-					return getColor(this.status8 & 0x0010)
+					return getColor(this.status8 & agc.statusMask.ALT)
 				},
 				gimball_lock: function () {
-					return getColor(this.status8 & 0x0020)
+					return getColor(this.status8 & agc.statusMask.GIMBAL_LOCK)
 				},
 				tracker: function () {
-					return getColor(this.status8 & 0x0080)
+					return getColor(this.status8 & agc.statusMask.TRACKER)
 				},
 				prog: function () {
-					return getColor(this.status8 & 0x0100)
+					return getColor(this.status8 & agc.statusMask.PROG)
 				},
 				r1: function () {
 					return this.digits.slice(6, 12).replace(/H/g, space)
@@ -127,7 +125,7 @@ $$.control.registerControl('DSKY', {
 					return this.digits.slice(18, 24).replace(/H/g, space)
 				},
 				verb00: function () {
-					if (!(this.lamps & 0x0020)) {
+					if (!(this.lamps & agc.lampMask.VERB_NOUN)) {
 						return this.digits.slice(2, 4).replace(/H/g, space)
 					}
 					else {
@@ -135,7 +133,7 @@ $$.control.registerControl('DSKY', {
 					}
 				},
 				noun00: function () {
-					if (!(this.lamps & 0x0020)) {
+					if (!(this.lamps & agc.lampMask.VERB_NOUN)) {
 						return this.digits.slice(4, 6).replace(/H/g, space)
 					}
 					else {
@@ -210,12 +208,10 @@ $$.control.registerControl('DSKY', {
 				const bb = (value >> 10) & 1
 				const cc = getDigit((value >> 5) & 0x1f)
 				const dd = getDigit(value & 0x1f)
-				//const s = digits.split('')
 				const s = ctrl.model.digits.split('')
 
 				switch (aa) {
 					case 12:
-						//status8 = value
 						ctrl.setData({status8: value})
 						break
 					case 11:
@@ -275,7 +271,7 @@ $$.control.registerControl('DSKY', {
 					s[12] = (sign2p && !sign2m ? '+' : (!sign2p && !sign2m ? 'H' : '-'));
 					s[18] = (sign3p && !sign3m ? '+' : (!sign3p && !sign3m ? 'H' : '-'));
 
-					digits = s.join('')
+					const digits = s.join('')
 					//console.log('s', digits)
 					ctrl.setData({digits})
 				}

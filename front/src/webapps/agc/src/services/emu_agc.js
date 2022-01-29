@@ -95,14 +95,6 @@ $$.service.registerService('app.emuAgc', {
                     // us already modulated.
                     // See https://www.ibiblio.org/apollo/developer.html
                     const bitmask = 0b111111000;
-                    // Bit 1: AGC warning
-                    // Bit 4: TEMP lamp
-                    // Bit 5: KEY REL lamp
-                    // Bit 6: VERB/NOUN flash
-                    // Bit 7: OPER ERR lamp
-                    // Bit 8: RESTART lamp
-                    // Bit 9: STBY lamp
-                    // Bit 10: EL off
                     // console.log('blinking lamps', this.state.lamps);
                     state.lamps = (state.lamps & (~bitmask >>> 0)) | (value & bitmask);
 
@@ -114,7 +106,31 @@ $$.service.registerService('app.emuAgc', {
 
         }
 
+        function bitMask(n) {
+            return 1 << (n-1)
+        }
 
+        const lampMask = {
+            COMP_ACTY   : bitMask(2),
+            UPLINK_ACTY : bitMask(3),
+            TEMP        : bitMask(4),
+            KEY_REL     : bitMask(5),
+            VERB_NOUN   : bitMask(6),
+            OPER_ERR    : bitMask(7),
+            RESTART     : bitMask(8),
+            STBY        : bitMask(9)
+        }
+
+        const statusMask = {
+            PRIO_DISP   : bitMask(1),
+            NO_DAP      : bitMask(2),
+            VEL         : bitMask(3),
+            NOT_ATT     : bitMask(4),
+            ALT         : bitMask(5),
+            GIMBAL_LOCK : bitMask(6),
+            TRACKER     : bitMask(8),
+            PROG        : bitMask(9)
+        }
 
         return {
             writeIo,
@@ -124,7 +140,9 @@ $$.service.registerService('app.emuAgc', {
             stepCpu,
             on: events.on.bind(events),
             start,
-            loop
+            loop,
+            lampMask,
+            statusMask
         }
 
     }

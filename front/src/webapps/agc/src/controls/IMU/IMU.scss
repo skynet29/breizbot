@@ -1,0 +1,69 @@
+.IMU {
+    padding: 10px;
+    background-color: #dddddd;
+    border: 1px solid black;
+
+    .light {
+        width: 60px;
+        height: 30px;
+        line-height: 30px;
+        border: solid black 1px;
+        text-align: center;	
+        vertical-align: middle;	
+        font-family: sans-serif;
+        font-size: 11px;
+        margin: 5px;
+        background-color: #888888;
+    }
+
+    .bottom {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+
+    }
+
+    .top {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        .right {
+            margin-left: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            button {
+                width: 100px;
+                margin-top: 5px;
+            }
+        }
+
+        .imuGroup {
+            display: flex;
+            flex-direction: row;
+            margin-top: 5px;
+    
+            .imu {
+                font-family: seven; 
+                font-size: 25px; 
+                color: #00FFFF; 
+                background-color: #555555; 
+                width: 75px; 
+                height: 25px;            
+                margin: 0px;
+                line-height: 25px;
+            }
+            .imuLabel {
+                font-family: monospace;
+                font-size: 16px; 
+                color: #0000FF; 
+                width: 80px;
+            }
+        
+        }
+    
+    }
+
+
+}

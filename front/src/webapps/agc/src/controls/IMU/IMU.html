@@ -1,0 +1,39 @@
+<div class="top">
+    <div class="left">
+        <div class="imuGroup">
+            <label class="imuLabel">OGA</label>
+            <div class="imu" bn-html="imux"></div>
+        </div>
+        <div class="imuGroup">
+            <label class="imuLabel">IGA</label>
+            <div class="imu" bn-html="imuy"></div>
+        </div>
+        <div class="imuGroup">
+            <label class="imuLabel">MGA</label>
+            <div class="imu" bn-html="imuz"></div>
+        </div>
+        <div class="imuGroup">
+            <label class="imuLabel">ROLL</label>
+            <div class="imu" bn-html="roll"></div>
+        </div>
+        <div class="imuGroup">
+            <label class="imuLabel">PITCH</label>
+            <div class="imu" bn-html="pitch"></div>
+        </div>
+        <div class="imuGroup">
+            <label class="imuLabel">YAW</label>
+            <div class="imu" bn-html="yaw"></div>
+        </div>
+    </div>
+
+    <div class="right">
+        <button bn-event="click: enableIMU">Enable IMU</button>
+        <button bn-event="click: launch">Launch</button>
+        <div class="light">S-IC</div>
+        <div class="light">S-II</div>
+        <div class="light">S-IVB</div>
+    </div>
+</div>
+<div class="bottom">
+    <canvas width="200" height="200" bn-bind="fdai"></canvas>
+</div>

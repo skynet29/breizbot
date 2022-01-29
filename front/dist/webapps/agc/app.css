@@ -1,3 +1,9 @@
+.rootPage {
+  display: flex;
+  flex-direction: row;
+  padding: 5px; }
+  .rootPage .DSKY {
+    margin-right: 20px; }
 
 @font-face {
   font-family: seven;
@@ -6,7 +12,8 @@
 .DSKY {
   width: 420px;
   background-color: #dddddd;
-  padding: 5px; }
+  padding: 5px;
+  border: 1px solid black; }
   .DSKY .top {
     display: flex;
     flex-direction: row;
@@ -93,3 +100,53 @@
         margin: 3px; }
       .DSKY .bottom .keyboard .label {
         font-size: 12px; }
+
+.IMU {
+  padding: 10px;
+  background-color: #dddddd;
+  border: 1px solid black; }
+  .IMU .light {
+    width: 60px;
+    height: 30px;
+    line-height: 30px;
+    border: solid black 1px;
+    text-align: center;
+    vertical-align: middle;
+    font-family: sans-serif;
+    font-size: 11px;
+    margin: 5px;
+    background-color: #888888; }
+  .IMU .bottom {
+    display: flex;
+    flex-direction: row;
+    justify-content: center; }
+  .IMU .top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between; }
+    .IMU .top .right {
+      margin-left: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end; }
+      .IMU .top .right button {
+        width: 100px;
+        margin-top: 5px; }
+    .IMU .top .imuGroup {
+      display: flex;
+      flex-direction: row;
+      margin-top: 5px; }
+      .IMU .top .imuGroup .imu {
+        font-family: seven;
+        font-size: 25px;
+        color: #00FFFF;
+        background-color: #555555;
+        width: 75px;
+        height: 25px;
+        margin: 0px;
+        line-height: 25px; }
+      .IMU .top .imuGroup .imuLabel {
+        font-family: monospace;
+        font-size: 16px;
+        color: #0000FF;
+        width: 80px; }

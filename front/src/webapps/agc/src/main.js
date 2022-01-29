@@ -36,6 +36,9 @@ $$.control.registerControl('rootPage', {
 		/**@type {AppAgc.Controls.DSKY.Interface} */
 		const dsky = ctrl.scope.dsky
 
+		/**@type {AppAgc.Controls.IMU.Interface} */
+		const imu = ctrl.scope.imu
+
 
 		let cpu_time = 0   // in seconds
 
@@ -45,6 +48,7 @@ $$.control.registerControl('rootPage', {
 			await agc.loadRom(files.assetsUrl('Comanche055.bin'))
 			agc.reset()
 			agc.on('channelUpdate', (ev) => {
+				//console.log('channelUpdate', ev)
 				const { channel, value } = ev
 				switch (channel) {
 					case 8:
@@ -52,12 +56,27 @@ $$.control.registerControl('rootPage', {
 					case 11:
 						dsky.process(channel, value)
 						break
+					case 10:
+						if (value & 0x0010) {
+							imu.zero();
+						}
+						break;
+					case 124:           // 0174
+					case 125:           // 0175
+					case 126:           // 0176
+						imu.gyro_coarse_align(channel, value);
+						break;
+					case 127:           // 0177
+						imu.gyro_fine_align(channel, value);
+						break;
+
 				}
 			})
 			agc.on('lightsUpdate', (lamps) => {
 				dsky.processLights(lamps)
 			})
 			agc.start()
+
 
 
 			setInterval(function () {
@@ -67,9 +86,11 @@ $$.control.registerControl('rootPage', {
 
 				agc.loop()
 
-			}, 1000/60)
+			}, 1000 / 60)
 
 		}
+
+		imu.update()
 
 		init()
 

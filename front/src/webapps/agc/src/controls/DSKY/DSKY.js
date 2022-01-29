@@ -98,7 +98,7 @@ $$.control.registerControl('DSKY', {
 					return getColor(this.status8 & agc.statusMask.VEL)
 				},
 				no_att: function () {
-					return getColor2(this.status8 & agc.statusMask.NOT_ATT)
+					return getColor2(this.status8 & agc.statusMask.NO_ATT)
 				},
 				alt: function () {
 					return getColor(this.status8 & agc.statusMask.ALT)

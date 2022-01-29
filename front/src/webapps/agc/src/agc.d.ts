@@ -12,6 +12,7 @@ declare namespace AppAgc {
             on(eventName: EventName, cbk: (ev: any) => void): void;
             start():void;
             loop():void;
+            getErasable():Uint16Array;
             lampMask : {
                 COMP_ACTY,
                 UPLINK_ACTY,
@@ -27,7 +28,7 @@ declare namespace AppAgc {
                 PRIO_DISP,
                 NO_DAP,
                 VEL,
-                NOT_ATT,
+                NO_ATT,
                 ALT,
                 GIMBAL_LOCK,
                 TRACKER,
@@ -45,6 +46,15 @@ declare namespace AppAgc {
                 process(channel: number, value: number): void;
 		        processLights(value: number):void;
                 tick():void;
+            }
+        }
+
+        declare namespace IMU {
+            interface Interface {
+                update():void;
+                zero():void;
+                gyro_coarse_align(chan: number, val: number):void;
+                gyro_fine_align(chan: number, val: number):void;
             }
         }
     }

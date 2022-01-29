@@ -10,6 +10,7 @@ $$.service.registerService('app.emuAgc', {
         const stepCpu = Module.cwrap('cpu_step', null, ['number'])
         const packetRead = Module.cwrap('packet_read', 'number')
         const writeIo = Module.cwrap('packet_write', null, ['number', 'number'])
+        const get_erasable_ptr = Module.cwrap('get_erasable_ptr', 'number')
 
         const events = new EventEmitter2()
 
@@ -23,13 +24,21 @@ $$.service.registerService('app.emuAgc', {
 
         let startTime = 0
         let totalSteps = 0
+        let erasableArray = null
+
+        function getErasable() {
+            if (!erasableArray) {
+                const ptr = get_erasable_ptr()
+                console.log('getErable', ptr)
+                erasableArray = new Uint16Array(Module.HEAP8.buffer, ptr, 2048)
+            }
+            return erasableArray
+        }
 
 
-        function readIo() {
-            const data = packetRead()
-            const channel = data >> 16
-            const value = data & 0xffff
-            return [channel, value]
+        function readIo(channel) {
+            console.log('io', state.channels)
+            return state.channels[channel]
         }
 
         async function loadRom(url) {
@@ -73,7 +82,9 @@ $$.service.registerService('app.emuAgc', {
             let value
 
             do {
-                [channel, value] = readIo()
+                const data = packetRead()
+                const channel = data >> 16
+                const value = data & 0xffff                
                 const previousValue = state.channels[channel]
 
                 if (previousValue != value) {
@@ -125,7 +136,7 @@ $$.service.registerService('app.emuAgc', {
             PRIO_DISP   : bitMask(1),
             NO_DAP      : bitMask(2),
             VEL         : bitMask(3),
-            NOT_ATT     : bitMask(4),
+            NO_ATT     : bitMask(4),
             ALT         : bitMask(5),
             GIMBAL_LOCK : bitMask(6),
             TRACKER     : bitMask(8),
@@ -141,6 +152,7 @@ $$.service.registerService('app.emuAgc', {
             on: events.on.bind(events),
             start,
             loop,
+            getErasable,
             lampMask,
             statusMask
         }

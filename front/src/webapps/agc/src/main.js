@@ -38,6 +38,7 @@ $$.control.registerControl('rootPage', {
 
 		/**@type {AppAgc.Controls.IMU.Interface} */
 		const imu = ctrl.scope.imu
+		console.log('imu', imu)
 
 
 		let cpu_time = 0   // in seconds
@@ -81,7 +82,7 @@ $$.control.registerControl('rootPage', {
 
 			setInterval(function () {
 
-				dsky.tick()
+				//dsky.tick()
 				cpu_time += 0.1
 
 				agc.loop()

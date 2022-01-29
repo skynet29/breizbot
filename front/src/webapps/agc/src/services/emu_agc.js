@@ -36,9 +36,11 @@ $$.service.registerService('app.emuAgc', {
         }
 
 
-        function readIo(channel) {
-            console.log('io', state.channels)
-            return state.channels[channel]
+        function readIo() {
+            const data = packetRead()
+            const channel = data >> 16
+            const value = data & 0xffff
+            return [channel, value]
         }
 
         async function loadRom(url) {
@@ -82,9 +84,8 @@ $$.service.registerService('app.emuAgc', {
             let value
 
             do {
-                const data = packetRead()
-                const channel = data >> 16
-                const value = data & 0xffff                
+                [channel, value] = readIo()
+                             
                 const previousValue = state.channels[channel]
 
                 if (previousValue != value) {

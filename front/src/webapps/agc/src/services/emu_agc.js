@@ -36,13 +36,6 @@ $$.service.registerService('app.emuAgc', {
         }
 
 
-        function readIo() {
-            const data = packetRead()
-            const channel = data >> 16
-            const value = data & 0xffff
-            return [channel, value]
-        }
-
         async function loadRom(url) {
             const response = await fetch(url)
             const binary = await response.arrayBuffer()
@@ -80,12 +73,13 @@ $$.service.registerService('app.emuAgc', {
 
 
         function readAllIo() {
-            let channel
-            let value
+            let data
 
             do {
-                [channel, value] = readIo()
-                             
+                data = packetRead()
+                const channel = data >> 16
+                const value = data & 0xffff
+                                 
                 const previousValue = state.channels[channel]
 
                 if (previousValue != value) {
@@ -114,7 +108,7 @@ $$.service.registerService('app.emuAgc', {
                 }
 
 
-            } while (channel || value)
+            } while (data)
 
         }
 
@@ -137,7 +131,7 @@ $$.service.registerService('app.emuAgc', {
             PRIO_DISP   : bitMask(1),
             NO_DAP      : bitMask(2),
             VEL         : bitMask(3),
-            NO_ATT     : bitMask(4),
+            NO_ATT      : bitMask(4),
             ALT         : bitMask(5),
             GIMBAL_LOCK : bitMask(6),
             TRACKER     : bitMask(8),
@@ -146,7 +140,6 @@ $$.service.registerService('app.emuAgc', {
 
         return {
             writeIo,
-            readIo,
             loadRom,
             reset,
             stepCpu,

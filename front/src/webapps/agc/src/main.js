@@ -1,6 +1,7 @@
 // @ts-check
 
 
+
 $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
@@ -86,6 +87,7 @@ $$.control.registerControl('rootPage', {
 				cpu_time += 0.1
 
 				agc.loop()
+				//console.log(agc.peek(0o10).toString(8))
 
 			}, 1000 / 60)
 

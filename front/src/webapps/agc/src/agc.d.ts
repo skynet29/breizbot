@@ -11,7 +11,8 @@ declare namespace AppAgc {
             on(eventName: EventName, cbk: (ev: any) => void): void;
             start():void;
             loop():void;
-            getErasable():Uint16Array;
+            peek(offset: number): number
+            poke(offset: number, value: number):void;
             lampMask : {
                 COMP_ACTY,
                 UPLINK_ACTY,

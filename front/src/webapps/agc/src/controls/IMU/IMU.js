@@ -212,6 +212,7 @@ $$.control.registerControl('IMU', {
 
 		function move_fdai_marker() {
 
+			//console.log('move_fdai_marker', {imu_angle, euler})
 			ctrl.setData({ imu_angle, euler })
 
 			if (abs(sum) > 0.01) {
@@ -276,11 +277,10 @@ $$.control.registerControl('IMU', {
 					const n = floor(abs(dx) / ANGLE_INCR);
 					pimu[axis] = adjust(pimu[axis] + sign * ANGLE_INCR * n, 0, 2 * PI);
 
-					let cdu = agc.getErasable[26 + axis];                        // read CDU counter (26 = 0x32 = CDUX)
+					let cdu = agc.peek(26 + axis);                        // read CDU counter (26 = 0x32 = CDUX)
 					cdu = cdu & 0x4000 ? -(cdu ^ 0x7FFF) : cdu;     // converts from ones-complement to twos-complement
 					cdu += sign * n;                                // adds the number of pulses 
-					//poke(26 + axis, cdu < 0 ? (-cdu) ^ 0x7FFF : cdu);   // converts back to ones-complement and writes the counter
-					agc.getErasable[26 + axis] = cdu < 0 ? (-cdu) ^ 0x7FFF : cdu
+					agc.poke(26 + axis, cdu < 0 ? (-cdu) ^ 0x7FFF : cdu);   // converts back to ones-complement and writes the counter
 					//for(;n>0; n--){                
 					//    sendPort(0x9A+axis, sign>0 ? PCDU : MCDU, 0xFFFF);  // 0x9A = 0232 = 0200 + 032 
 					//}                  
@@ -297,7 +297,7 @@ $$.control.registerControl('IMU', {
 		//**** Function: Gyro Coarse Align (will be called in case of Channel 0174; 0175; 0176 output) ***
 		//************************************************************************************************
 		function gyro_coarse_align(chan, val) {
-			console.log('gyro_coarse_align', chan, val)
+			console.log('gyro_coarse_align', {chan, val})
 			const sign = val & 0x4000 ? -1 : +1;
 			const cdu_pulses = sign * (val & 0x3FFF);
 
@@ -402,11 +402,10 @@ $$.control.registerControl('IMU', {
 					sendPort(0x9F+axis, MINC, 0xFFFF);
 				}
 				*/
-				let p = agc.getErasable()[31 + axis];                      // read PIPA counter (31 = 0x37 = PIPAX)
+				let p = agc.peek(31 + axis);                      // read PIPA counter (31 = 0x37 = PIPAX)
 				p = p & 0x4000 ? -(p ^ 0x7FFF) : p;         // converts from ones-complement to twos-complement                
 				p += counts;                                // adds the number of pulses                 
-				//poke(31 + axis, p < 0 ? (-p) ^ 0x7FFF : p);
-				agc.getErasable()[31 + axis] = p < 0 ? (-p) ^ 0x7FFF : p
+				agc.poke(31 + axis, p < 0 ? (-p) ^ 0x7FFF : p);
 			}
 		}
 

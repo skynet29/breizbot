@@ -24,17 +24,19 @@ $$.service.registerService('app.emuAgc', {
 
         let startTime = 0
         let totalSteps = 0
-        let erasableArray = null
+        let erasablePtr = null
 
-        function getErasable() {
-            if (!erasableArray) {
-                const ptr = get_erasable_ptr()
-                console.log('getErable', ptr)
-                erasableArray = new Uint16Array(Module.HEAP8.buffer, ptr, 2048)
-            }
-            return erasableArray
+
+        function peek(offset) {
+            const ret = Module.getValue(erasablePtr + offset * 2, 'i16')
+            console.log('peek', {offset, ret})
+            return ret
         }
 
+        function poke(offset, value) {
+            console.log('poke', {offset, value})
+            Module.setValue(erasablePtr + offset * 2, value & 0x7fff, 'i16')
+        }
 
         async function loadRom(url) {
             const response = await fetch(url)
@@ -48,6 +50,8 @@ $$.service.registerService('app.emuAgc', {
             Module.HEAP8.set(romArray, romPtr)
             set_fixed(romPtr)
             Module._free(romPtr)
+            erasablePtr = get_erasable_ptr()
+            console.log('erasablePtr', erasablePtr)
         }
 
         function start() {
@@ -146,9 +150,10 @@ $$.service.registerService('app.emuAgc', {
             on: events.on.bind(events),
             start,
             loop,
-            getErasable,
+            peek,
+            poke,
             lampMask,
-            statusMask
+            statusMask,
         }
 
     }

@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "ytdl-core": "^4.9.1"
+    "ytdl-core": "^4.10.0"
   }
 }

@@ -136,6 +136,15 @@
       display: flex;
       flex-direction: row;
       margin-top: 5px; }
+      .IMU .top .imuGroup .clock {
+        font-family: seven;
+        font-size: 25px;
+        color: #00FFFF;
+        background-color: #555555;
+        width: 100px;
+        height: 25px;
+        margin: 0px;
+        line-height: 25px; }
       .IMU .top .imuGroup .imu {
         font-family: seven;
         font-size: 25px;

@@ -6,7 +6,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.files', 'app.emuAgc'],
+	deps: ['breizbot.files', 'app.emuAgc', 'brainjs.http'],
 
 	props: {
 	},
@@ -15,8 +15,9 @@ $$.control.registerControl('rootPage', {
 	 * 
 	 * @param {Breizbot.Services.Files.Interface} files
 	 * @param {AppAgc.Services.Interface} agc
+	 * @param {Brainjs.Services.Http.Interface} http
 	 */
-	init: function (elt, files, agc) {
+	init: function (elt, files, agc, http) {
 
 
 		const ctrl = $$.viewController(elt, {
@@ -29,6 +30,15 @@ $$.control.registerControl('rootPage', {
 					if (!isNaN(val)) {
 						agc.writeIo(0o15, val)
 					}
+				},
+				onLaunch: function () {
+					console.log('onLaunch')
+					if (cutoff || liftoff) return
+					agc.writeIo(24, 0, 0x10)
+					phase0 = phase
+					imu.setReactor(0)
+
+					liftoff = true
 				}
 			}
 		})
@@ -39,15 +49,22 @@ $$.control.registerControl('rootPage', {
 
 		/**@type {AppAgc.Controls.IMU.Interface} */
 		const imu = ctrl.scope.imu
-		console.log('imu', imu)
 
+		const DEG_TO_RAD = (Math.PI / 180)
 
-		let cpu_time = 0   // in seconds
+		let profile = null
+		let phase = 0
+		let phase0 = -1
+		let cutoff = false
+		let liftoff = false
 
 
 		async function init() {
 
-			await agc.loadRom(files.assetsUrl('Comanche055.bin'))
+			profile = await http.get(files.assetsUrl('profile.json'))
+			//console.log('profile', profile)
+			await agc.loadRom(files.assetsUrl('agc.data'))
+			//await agc.loadRom(files.assetsUrl('Comanche055.bin'))
 			agc.reset()
 			agc.on('channelUpdate', (ev) => {
 				//console.log('channelUpdate', ev)
@@ -80,16 +97,58 @@ $$.control.registerControl('rootPage', {
 			agc.start()
 
 
+			let start = performance.now()
+
+	
 
 			setInterval(function () {
 
-				//dsky.tick()
-				cpu_time += 0.1
-
 				agc.loop()
-				//console.log(agc.peek(0o10).toString(8))
+				if (performance.now() - start >= 100) {
+					start = performance.now()
+					let t
+
+					if (phase % 10 === 0) {
+						imu.setSt(Math.round(phase / 10))
+
+						if (phase0 >= 0) {
+							t = Math.round((phase - phase0)/10) // mission elapsed time
+							imu.setMet(t)
+						}
+					}
+					phase++;
+					if (liftoff) {
+						if (cutoff || t >= profile.length) {
+							cutoff = true;
+							liftoff = false;
+							return;
+						}
+						imu.accelerate([
+							1.08 * profile[t][2],
+							0,
+							0
+						]);
+						imu.rotate([
+							-profile[t][3] / 10 * DEG_TO_RAD,
+							-profile[t][1] / 10 * DEG_TO_RAD,
+							0
+						]);
+						if (!(phase % 10)) {
+							imu.update();
+						}
+						if (profile[t][4]) {
+							const c = Math.round(profile[t][4])
+							imu.setReactor(c)
+						}
+					}
+
+				}
+
 
 			}, 1000 / 60)
+
+			// setInterval(()=> {
+			// }, 100)
 
 		}
 

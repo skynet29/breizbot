@@ -37,8 +37,10 @@ $$.control.registerControl('IMU', {
 
 		const PINC = 0;
 		const PCDU = 1;
+		const PCDU_FAST = 0o21
 		const MINC = 2;
 		const MCDU = 3;
+		const MCDU_FAST = 0o23
 
 		let error;
 		let imu_angle;
@@ -81,9 +83,37 @@ $$.control.registerControl('IMU', {
 			return (val * RAD_TO_DEG).toFixed(1)
 		}
 
+		function formatTime(t) {
+			const hh = floor(t / 3600);
+			const mm = floor(t / 60) % 60;
+			const ss = t % 60;
+			return (hh<10 ? '0'+hh : hh)+':'+(mm<10 ? '0'+mm : mm)+':'+(ss<10 ? '0'+ss : ss);
+		}
+
+		function getColor(val) {
+			return {'background-color': val ? '#ffc200' : '#888888'}
+		}
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				st: 0,
+				met: 0,
+				c: -1,
+				sic: function() {
+					return getColor(this.c == 0)
+				},
+				sii: function() {
+					return getColor(this.c == 1)
+				},
+				sivb: function() {
+					return getColor(this.c == 2)
+				},
+				getSt: function() {
+					return formatTime(this.st)
+				},
+				getMet: function() {
+					return formatTime(this.met)
+				},
 				imu_angle: [0, 0, 0],
 				euler: [0, 0, 0],
 				imux: function () {
@@ -109,11 +139,11 @@ $$.control.registerControl('IMU', {
 			events: {
 				enableIMU: function(ev) {
 					console.log('enableIMU')
-					agc.writeIo(24+256, 0x2000)
-					agc.writeIo(24, 0)
+					agc.writeIo(24, 0, 0x2000) // bit 14: ISS Turn-On Request
 				},
-				launch: function() {
-					console.log('launch')
+				launch: function(ev) {
+					ev.stopPropagation()
+					elt.trigger('launch')
 				}
 			}
 			
@@ -274,16 +304,16 @@ $$.control.registerControl('IMU', {
 
 					// ---- Feed yaAGC with the new Angular Delta ----
 					const sign = dx > 0 ? +1 : -1;
-					const n = floor(abs(dx) / ANGLE_INCR);
+					let n = floor(abs(dx) / ANGLE_INCR);
 					pimu[axis] = adjust(pimu[axis] + sign * ANGLE_INCR * n, 0, 2 * PI);
 
 					let cdu = agc.peek(26 + axis);                        // read CDU counter (26 = 0x32 = CDUX)
 					cdu = cdu & 0x4000 ? -(cdu ^ 0x7FFF) : cdu;     // converts from ones-complement to twos-complement
 					cdu += sign * n;                                // adds the number of pulses 
 					agc.poke(26 + axis, cdu < 0 ? (-cdu) ^ 0x7FFF : cdu);   // converts back to ones-complement and writes the counter
-					//for(;n>0; n--){                
-					//    sendPort(0x9A+axis, sign>0 ? PCDU : MCDU, 0xFFFF);  // 0x9A = 0232 = 0200 + 032 
-					//}                  
+					// for(;n>0; n--){                
+					//    agc.writeIo(0x9A+axis, sign>0 ? PCDU_FAST : MCDU_FAST, );  // 0x9A = 0232 = 0200 + 032 
+					// }                  
 				}
 			}
 			/*
@@ -297,7 +327,7 @@ $$.control.registerControl('IMU', {
 		//**** Function: Gyro Coarse Align (will be called in case of Channel 0174; 0175; 0176 output) ***
 		//************************************************************************************************
 		function gyro_coarse_align(chan, val) {
-			console.log('gyro_coarse_align', {chan, val})
+			//console.log('gyro_coarse_align', {chan, val})
 			const sign = val & 0x4000 ? -1 : +1;
 			const cdu_pulses = sign * (val & 0x3FFF);
 
@@ -325,7 +355,7 @@ $$.control.registerControl('IMU', {
 		//*** Function: Gyro Fine Align (will be called in case of Channel 0177 output)           ***
 		//*******************************************************************************************
 		function gyro_fine_align(chan, val) {
-			console.log('gyro_fine_align', chan, val)
+			//console.log('gyro_fine_align', chan, val)
 
 
 			const gyro_sign_minus = val & 0x4000;
@@ -352,6 +382,7 @@ $$.control.registerControl('IMU', {
 		//*** Function: Transform angular deltas in Body Axes into Stable Member angular deltas       ***
 		//***********************************************************************************************
 		function rotate(delta) {
+			//console.log('rotate', delta)
 			// based on Transform_BodyAxes_StableMember {dp dq dr}  
 
 			const MPI = sin(imu_angle[2]);
@@ -374,6 +405,8 @@ $$.control.registerControl('IMU', {
 		//*** Function: Modify PIPA Values to match simulated Speed                                   ****
 		//************************************************************************************************
 		function accelerate(delta) {
+			//console.log('accelerate', delta)
+
 			// based on proc modify_pipaXYZ 
 
 			const sinOG = sin(imu_angle[0]);
@@ -409,10 +442,21 @@ $$.control.registerControl('IMU', {
 			}
 		}
 
+		this.rotate = rotate
+		this.accelerate = accelerate
 		this.update = move_fdai_marker
 		this.gyro_coarse_align = gyro_coarse_align
 		this.zero = zero
 		this.gyro_fine_align = gyro_fine_align
+		this.setSt = function(st) {
+			ctrl.setData({st})
+		}
+		this.setMet = function(met) {
+			ctrl.setData({met})
+		}
+		this.setReactor = function(c) {
+			ctrl.setData({c})
+		}
 	}
 
 

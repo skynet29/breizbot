@@ -497,7 +497,7 @@ uint64_t /* unsigned long long */ DedaWhen;
 int DownlinkListBuffer[MAX_DOWNLINK_LIST];
 int DownlinkListCount = 0, DownlinkListExpected = 0, DownlinkListZero = -1;
 ProcessDownlinkList_t *ProcessDownlinkList = NULL;
-int CmOrLm = 0;	// Default is 0 (LM); other choice is 1 (CM)
+int CmOrLm = 1;	// Default is 0 (LM); other choice is 1 (CM)
 char Sbuffer[SHEIGHT][SWIDTH + 1];
 int Sheight = DEFAULT_SHEIGHT, Swidth = DEFAULT_SWIDTH;
 int LastRhcPitch = 0, LastRhcYaw = 0, LastRhcRoll = 0;

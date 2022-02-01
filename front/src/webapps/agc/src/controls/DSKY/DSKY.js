@@ -59,8 +59,6 @@ $$.control.registerControl('DSKY', {
 
 
 		const space = '&nbsp;'
-		let phase = 0 		// a timer used for blinking Verb and Nouns
-		let phase0 = -1
 
 		function getColor(value) {
 			return { 'background-color': value ? '#ffc200' : '#888888' }

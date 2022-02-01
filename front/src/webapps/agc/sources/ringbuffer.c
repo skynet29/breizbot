@@ -25,7 +25,7 @@
 #include "ringbuffer.h"
 
 #include <string.h>
-
+#include <emscripten.h>
 /*
  * Initialize the ringbuffer; make it empty.
  */
@@ -41,8 +41,10 @@ int ringbuffer_put (ringbuffer* buf,
                        unsigned char element[RINGBUFFER_ELEMENT_SIZE])
 {
   int i = (buf->head + RINGBUFFER_ELEMENT_SIZE) & (RINGBUFFER_CAPACITY - 1);
-  if (i == buf->tail)
+  if (i == buf->tail) {
+    emscripten_run_script("console.log('RINGBUFFER FULL')");
     return 0; // full
+  }
 
   memcpy (buf->data + buf->head, element, RINGBUFFER_ELEMENT_SIZE);
   buf->head = i;

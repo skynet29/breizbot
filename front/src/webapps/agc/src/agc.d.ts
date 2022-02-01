@@ -7,7 +7,7 @@ declare namespace AppAgc {
         interface Interface {
             loadRom(url: string):Promise<void>;
             reset():void;
-            writeIo(channel: number, data: number):void;
+            writeIo(channel: number, data: number, mask?: number):void;
             on(eventName: EventName, cbk: (ev: any) => void): void;
             start():void;
             loop():void;
@@ -55,6 +55,12 @@ declare namespace AppAgc {
                 zero():void;
                 gyro_coarse_align(chan: number, val: number):void;
                 gyro_fine_align(chan: number, val: number):void;
+                setSt(st:number):void;
+                setMet(met:number):void;
+                accelerate(delta: Array<number>):void;
+                rotate(delta: Array<number>):void;
+                setReactor(c: number):void;
+
             }
         }
     }

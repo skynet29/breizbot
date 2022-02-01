@@ -9,7 +9,7 @@ $$.service.registerService('app.emuAgc', {
         const reset = Module.cwrap('cpu_reset')
         const stepCpu = Module.cwrap('cpu_step', null, ['number'])
         const packetRead = Module.cwrap('packet_read', 'number')
-        const writeIo = Module.cwrap('packet_write', null, ['number', 'number'])
+        const packetWrite = Module.cwrap('packet_write', null, ['number', 'number'])
         const get_erasable_ptr = Module.cwrap('get_erasable_ptr', 'number')
 
         const events = new EventEmitter2()
@@ -26,16 +26,22 @@ $$.service.registerService('app.emuAgc', {
         let totalSteps = 0
         let erasablePtr = null
 
+        function writeIo(channel, value, mask) {
+            if (mask != undefined) {
+                packetWrite(channel + 256, mask) // set mask bit 15
+            }
+            packetWrite(channel, value)
+        }
 
         function peek(offset) {
-            const ret = Module.getValue(erasablePtr + offset * 2, 'i16')
-            console.log('peek', {offset, ret})
+            const ret = Module.getValue(erasablePtr + offset * 2, 'i16') & 0x7fff
+            //console.log('peek', {offset, ret})
             return ret
         }
 
         function poke(offset, value) {
-            console.log('poke', {offset, value})
-            Module.setValue(erasablePtr + offset * 2, value & 0x7fff, 'i16')
+            //console.log('poke', {offset, value})
+            Module.setValue(erasablePtr + offset * 2, value, 'i16')
         }
 
         async function loadRom(url) {
@@ -86,11 +92,13 @@ $$.service.registerService('app.emuAgc', {
                                  
                 const previousValue = state.channels[channel]
 
-                if (previousValue != value) {
-                    state.channels[channel] = value
-                    //console.log('readIo', channel.toString(8), value)
-                    events.emit('channelUpdate', {channel, value})
-                }
+                events.emit('channelUpdate', {channel, value})
+
+                // if (previousValue != value) {
+                //     state.channels[channel] = value
+                //     //console.log('readIo', channel.toString(8), value)
+                //     events.emit('channelUpdate', {channel, value})
+                // }
                 if (channel === 0o11) {
                     const bitmask = 0b110
                     // Bit 2: COMP ACTY

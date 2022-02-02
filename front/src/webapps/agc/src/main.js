@@ -34,7 +34,7 @@ $$.control.registerControl('rootPage', {
 				onLaunch: function () {
 					console.log('onLaunch')
 					if (cutoff || liftoff) return
-					agc.writeIo(24, 0, 0x10)
+					agc.writeIo(0o30, 0, agc.inputsMask.LIFTOFF)
 					phase0 = phase
 					imu.setReactor(0)
 
@@ -63,29 +63,27 @@ $$.control.registerControl('rootPage', {
 
 			profile = await http.get(files.assetsUrl('profile.json'))
 			//console.log('profile', profile)
-			await agc.loadRom(files.assetsUrl('agc.data'))
-			//await agc.loadRom(files.assetsUrl('Comanche055.bin'))
+			await agc.loadRom(files.assetsUrl('Comanche055.bin'))
 			agc.reset()
 			agc.on('channelUpdate', (ev) => {
 				//console.log('channelUpdate', ev)
+				// see https://www.ibiblio.org/apollo/developer.html#Table_of_IO_Channels
 				const { channel, value } = ev
 				switch (channel) {
-					case 8:
-					case 9:
-					case 11:
+					case 0o10:
 						dsky.process(channel, value)
 						break
-					case 10:
-						if (value & 0x0010) {
+					case 0o12:
+						if (value & agc.outputsMask.ZERO_IMU) {
 							imu.zero();
 						}
 						break;
-					case 124:           // 0174
-					case 125:           // 0175
-					case 126:           // 0176
+					case 0o174:
+					case 0o175:
+					case 0o176:
 						imu.gyro_coarse_align(channel, value);
 						break;
-					case 127:           // 0177
+					case 0o177:
 						imu.gyro_fine_align(channel, value);
 						break;
 
@@ -97,58 +95,51 @@ $$.control.registerControl('rootPage', {
 			agc.start()
 
 
-			let start = performance.now()
-
-	
-
-			setInterval(function () {
-
+			setInterval(() => {
+				imu.setSt(Math.round(phase/10))
 				agc.loop()
-				if (performance.now() - start >= 100) {
-					start = performance.now()
-					let t
 
-					if (phase % 10 === 0) {
-						imu.setSt(Math.round(phase / 10))
-
-						if (phase0 >= 0) {
-							t = Math.round((phase - phase0)/10) // mission elapsed time
-							imu.setMet(t)
-						}
+				if (liftoff) {
+					const t = Math.round((phase - phase0)/10)
+					imu.setMet(t)
+					if (cutoff || t >= profile.length) {
+						cutoff = true;
+						liftoff = false;
+						return;
 					}
-					phase++;
-					if (liftoff) {
-						if (cutoff || t >= profile.length) {
-							cutoff = true;
-							liftoff = false;
-							return;
-						}
-						imu.accelerate([
-							1.08 * profile[t][2],
-							0,
-							0
-						]);
-						imu.rotate([
-							-profile[t][3] / 10 * DEG_TO_RAD,
-							-profile[t][1] / 10 * DEG_TO_RAD,
-							0
-						]);
-						if (!(phase % 10)) {
-							imu.update();
-						}
-						if (profile[t][4]) {
-							const c = Math.round(profile[t][4])
-							imu.setReactor(c)
-						}
+					//console.log('t', t)
+					imu.accelerate([
+						1.08 * profile[t][2],
+						0,
+						0
+					]);
+					imu.rotate([
+						-profile[t][3] / 10 * DEG_TO_RAD,
+						-profile[t][1] / 10 * DEG_TO_RAD,
+						0
+					]);
+				
+					if ((phase % 10) == 0) {
+						imu.update();
 					}
 
+					if (profile[t][4]) {
+						const c = Math.round(profile[t][4])
+						imu.setReactor(c)
+					}
 				}
+				phase++
+				agc.readAllIo()
+
+			}, 100)
+
+			// setInterval(function () {
+
+			// 	agc.loop()
 
 
-			}, 1000 / 60)
+			// }, 1000 / 60)
 
-			// setInterval(()=> {
-			// }, 100)
 
 		}
 

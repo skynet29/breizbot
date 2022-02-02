@@ -11,6 +11,7 @@ declare namespace AppAgc {
             on(eventName: EventName, cbk: (ev: any) => void): void;
             start():void;
             loop():void;
+            readAllIo():void;
             peek(offset: number): number
             poke(offset: number, value: number):void;
             lampMask : {
@@ -33,7 +34,16 @@ declare namespace AppAgc {
                 GIMBAL_LOCK,
                 TRACKER,
                 PROG
-            }
+            };
+            inputsMask: {
+                LIFTOFF,
+                ISS_TURN_ON,
+                PROCEED
+            };
+            outputsMask: {
+                ZERO_IMU
+            };
+    
 
         }
     
@@ -45,7 +55,6 @@ declare namespace AppAgc {
             interface Interface {
                 process(channel: number, value: number): void;
 		        processLights(value: number):void;
-                tick():void;
             }
         }
 

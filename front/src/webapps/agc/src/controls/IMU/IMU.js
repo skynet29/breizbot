@@ -139,7 +139,7 @@ $$.control.registerControl('IMU', {
 			events: {
 				enableIMU: function(ev) {
 					console.log('enableIMU')
-					agc.writeIo(24, 0, 0x2000) // bit 14: ISS Turn-On Request
+					agc.writeIo(0o30, 0, agc.inputsMask.ISS_TURN_ON) 
 				},
 				launch: function(ev) {
 					ev.stopPropagation()

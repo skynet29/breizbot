@@ -15,10 +15,10 @@ $$.control.registerControl('DSKY', {
 	 * @param {AppAgc.Services.Interface} agc
 	 */
 	init: function (elt, pager, agc) {
-		
+
 		var floor = Math.floor
 		var round = Math.round
-	
+
 		const keyMapping = {
 			'VERB': 17,
 			'NOUN': 31,
@@ -127,7 +127,7 @@ $$.control.registerControl('DSKY', {
 						return this.digits.slice(2, 4).replace(/H/g, space)
 					}
 					else {
-						return space+space;
+						return space + space;
 					}
 				},
 				noun00: function () {
@@ -135,7 +135,7 @@ $$.control.registerControl('DSKY', {
 						return this.digits.slice(4, 6).replace(/H/g, space)
 					}
 					else {
-						return space+space;
+						return space + space;
 					}
 				}
 			},
@@ -154,129 +154,104 @@ $$.control.registerControl('DSKY', {
 		})
 
 
-        this.tick = function name(params) {
-			
-            var s, t, hh, mm, ss;
 
-            if(phase % 10 === 0){
-                t = round(phase/10);
-                hh = floor(t / 3600);
-                mm = floor(t / 60) % 60;
-                ss = t % 60;
-                s = (hh<10 ? '0'+hh : hh)+':'+(mm<10 ? '0'+mm : mm)+':'+(ss<10 ? '0'+ss : ss);
-                $('#st').html(s);
-
-                if(phase0 >= 0){         
-                    t = round((phase - phase0)/10);           
-                    hh = floor(t / 3600);
-                    mm = floor(t / 60) % 60;
-                    ss = t % 60;
-                    s = (hh<10 ? '0'+hh : hh)+':'+(mm<10 ? '0'+mm : mm)+':'+(ss<10 ? '0'+ss : ss);
-                    $('#met').html(s);
-                }
-            }
-            return phase++; 
-        }		
-
-
-		this.processLights = function(value) {
+		this.processLights = function (value) {
 			//console.log('processLights', value.toString(2))
-			ctrl.setData({lamps: value})		
+			ctrl.setData({ lamps: value })
 		}
 
 		this.process = function (channel, value) {
 			if (value == 0) return
-			if (channel == 0o10) {
-				/*
-					The 15-bit code output in i/o channel 10 (octal) can be represented in bit-fields as AAAABCCCCCDDDDD where
-					AAAA indicates the digit-pair
-						11: PROG
-						10: VERB
-						9 : NOUN
-						8(D), 7, 6: REG1 (5 digits)
-						5, 4, 3(C): REG2
-						3(D), 2, 1: REG3
+			/*
+				The 15-bit code output in i/o channel 10 (octal) can be represented in bit-fields as AAAABCCCCCDDDDD where
+				AAAA indicates the digit-pair
+					11: PROG
+					10: VERB
+					9 : NOUN
+					8(D), 7, 6: REG1 (5 digits)
+					5, 4, 3(C): REG2
+					3(D), 2, 1: REG3
 	
 	
-					B sets or resets a +/- sign, 
-					CCCCC is the value for the left-hand digit of the pair, 
-					DDDDD is the value for the right-hand digit of the pair.
-				*/
-				const aa = value >> 11
-				const bb = (value >> 10) & 1
-				const cc = getDigit((value >> 5) & 0x1f)
-				const dd = getDigit(value & 0x1f)
-				const s = ctrl.model.digits.split('')
+				B sets or resets a +/- sign, 
+				CCCCC is the value for the left-hand digit of the pair, 
+				DDDDD is the value for the right-hand digit of the pair.
+			*/
+			const aa = value >> 11
+			const bb = (value >> 10) & 1
+			const cc = getDigit((value >> 5) & 0x1f)
+			const dd = getDigit(value & 0x1f)
+			const s = ctrl.model.digits.split('')
 
-				switch (aa) {
-					case 12:
-						ctrl.setData({status8: value})
-						break
-					case 11:
-						s[0] = cc
-						s[1] = dd
-						break
-					case 10:
-						s[2] = cc
-						s[3] = dd
-						break
-					case 9:
-						s[4] = cc
-						s[5] = dd
-						break
-					case 8:
-						s[7] = dd
-						break
-					case 7:
-						s[8] = cc
-						s[9] = dd
-						sign1p = bb
-						break
-					case 6:
-						s[10] = cc
-						s[11] = dd
-						sign1m = bb
-						break
-					case 5:
-						s[13] = cc
-						s[14] = dd
-						sign2p = bb
-						break
-					case 4:
-						s[15] = cc
-						s[16] = dd
-						sign2m = bb
-						break
-					case 3:
-						s[17] = cc
-						s[19] = dd
-						break
-					case 2:
-						s[20] = cc
-						s[21] = dd
-						sign3p = bb
-						break
-					case 1:
-						s[22] = cc
-						s[23] = dd
-						sign3m = bb
-						break
+			switch (aa) {
+				case 12:
+					ctrl.setData({ status8: value })
+					break
+				case 11:
+					s[0] = cc
+					s[1] = dd
+					break
+				case 10:
+					s[2] = cc
+					s[3] = dd
+					break
+				case 9:
+					s[4] = cc
+					s[5] = dd
+					break
+				case 8:
+					s[7] = dd
+					break
+				case 7:
+					s[8] = cc
+					s[9] = dd
+					sign1p = bb
+					break
+				case 6:
+					s[10] = cc
+					s[11] = dd
+					sign1m = bb
+					break
+				case 5:
+					s[13] = cc
+					s[14] = dd
+					sign2p = bb
+					break
+				case 4:
+					s[15] = cc
+					s[16] = dd
+					sign2m = bb
+					break
+				case 3:
+					s[17] = cc
+					s[19] = dd
+					break
+				case 2:
+					s[20] = cc
+					s[21] = dd
+					sign3p = bb
+					break
+				case 1:
+					s[22] = cc
+					s[23] = dd
+					sign3m = bb
+					break
 
-				}
-				if (aa != 12) {
-					//console.log({ aa, bb, cc, dd })
-					s[6] = (sign1p && !sign1m ? '+' : (!sign1p && !sign1m ? 'H' : '-'));
-					s[12] = (sign2p && !sign2m ? '+' : (!sign2p && !sign2m ? 'H' : '-'));
-					s[18] = (sign3p && !sign3m ? '+' : (!sign3p && !sign3m ? 'H' : '-'));
-
-					const digits = s.join('')
-					//console.log('s', digits)
-					ctrl.setData({digits})
-				}
-				else {
-					//console.log('channel', channel, 'value', value.toString(16))
-				}
 			}
+			if (aa != 12) {
+				//console.log({ aa, bb, cc, dd })
+				s[6] = (sign1p && !sign1m ? '+' : (!sign1p && !sign1m ? 'H' : '-'));
+				s[12] = (sign2p && !sign2m ? '+' : (!sign2p && !sign2m ? 'H' : '-'));
+				s[18] = (sign3p && !sign3m ? '+' : (!sign3p && !sign3m ? 'H' : '-'));
+
+				const digits = s.join('')
+				//console.log('s', digits)
+				ctrl.setData({ digits })
+			}
+			else {
+				//console.log('channel', channel, 'value', value.toString(16))
+			}
+
 			// else if (channel == 0o11) {
 			// 	console.log('status9', value.toString(16))
 			// }

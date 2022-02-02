@@ -78,7 +78,7 @@ $$.service.registerService('app.emuAgc', {
             }
             stepCpu(diffSteps)
             totalSteps += diffSteps
-            readAllIo()            
+            //readAllIo()            
         }
 
 
@@ -150,6 +150,16 @@ $$.service.registerService('app.emuAgc', {
             PROG        : bitMask(9)
         }
 
+        const inputsMask = {
+            LIFTOFF     : bitMask(5),
+            ISS_TURN_ON : bitMask(14),
+            PROCEED     : bitMask(14)
+        }
+
+        const outputsMask = {
+            ZERO_IMU    : bitMask(5)
+        }
+
         return {
             writeIo,
             loadRom,
@@ -158,10 +168,13 @@ $$.service.registerService('app.emuAgc', {
             on: events.on.bind(events),
             start,
             loop,
+            readAllIo,
             peek,
             poke,
             lampMask,
             statusMask,
+            inputsMask,
+            outputsMask
         }
 
     }

@@ -12,6 +12,7 @@ $$.control.registerControl('breizbot.viewer', {
 
 		//@ts-ignore
 		let {type, url} = this.props
+		//console.log('props', this.props)
 
 		const ctrl = $$.viewController(elt, {
 			data: {

@@ -99,7 +99,7 @@ $$.control.registerControl('breizbot.pager', {
 		}
 
 		this.pushPage = function (ctrlName, options) {
-			console.log('[pager] pushPage', ctrlName)
+			//console.log('[pager] pushPage', ctrlName)
 
 
 			if (curInfo != null) {

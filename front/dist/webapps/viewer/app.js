@@ -1,0 +1,1 @@
+$$.control.registerControl("rootPage",{template:'<div bn-control="breizbot.viewer" bn-data="{type, url}"></div>',deps:["breizbot.params"],props:{},init:function(t,e){const{type:r,url:o}=e;$$.viewController(t,{data:{type:r,url:o},events:{}})}});

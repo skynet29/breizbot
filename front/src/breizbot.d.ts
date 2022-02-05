@@ -177,7 +177,7 @@ declare namespace Breizbot {
         declare namespace Scheduler {
     
             interface Interface {
-                openApp(appName: string, appParams: any): void;
+                openApp(appName: string, appParams: any, newTabTitle?: string): void;
                 logout(): Promise<void>;
             }
         }

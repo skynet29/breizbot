@@ -205,8 +205,8 @@ $$.control.registerControl('breizbot.home', {
 			//console.log('[home] message', ev.data)
 			const { type, data } = ev.data
 			if (type == 'openApp') {
-				const { appName, appParams } = data
-				openApp(appName, appParams)
+				const { appName, appParams, newTabTitle } = data
+				openApp(appName, appParams, newTabTitle)
 			}
 			if (type == 'reload') {
 				location.reload()
@@ -240,20 +240,23 @@ $$.control.registerControl('breizbot.home', {
 		})
 
 
-		function openApp(appName, params) {
+		function openApp(appName, params, newTabTitle) {
 			const appInfo = ctrl.model.apps.find((a) => a.appName == appName)
-			const title = appInfo.props.title
-			//console.log('openApp', appName, params)
+			let title = appInfo.props.title
+			//console.log('openApp', appName, params, newTabTitle)
 			let idx = tabs.getTabIndexFromTitle(title)
 			const appUrl = $$.url.getUrlParams(`/apps/${appName}`, params)
-			if (idx < 0) { // apps not already run
-				idx = tabs.addTab(title, {
-					removable: true,
-					control: 'breizbot.appTab',
-					props: {
-						appUrl
-					}
-				})
+			const addNewTab = typeof newTabTitle == 'string'
+			if (addNewTab || idx < 0) { // apps not already run
+				idx = tabs.addTab(
+					(!addNewTab) ? title : `${title}[${newTabTitle}]`,
+					{
+						removable: true,
+						control: 'breizbot.appTab',
+						props: {
+							appUrl
+						}
+					})
 			}
 			else {
 				const info = tabs.getTabInfo(idx)

@@ -230,40 +230,39 @@
   .breizbot-files > .loading {
     margin-left: 10px; }
 
-@media (hover: none) {
-  .w3-button:hover {
-    background-color: inherit !important;
-    color: inherit !important; } }
-
-.breizbot-home {
-  height: 100%;
+.breizbot-rtc {
   display: flex;
   flex-direction: column; }
-  .breizbot-home .header {
+  .breizbot-rtc .toolbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #075E54;
+    background-color: #128C7E;
     color: white; }
-    .breizbot-home .header .state {
-      padding: 8px 16px 8px 16px; }
-    .breizbot-home .header .notification {
-      position: relative; }
-    .breizbot-home .header .notification .w3-badge {
-      position: relative;
-      left: -15px; }
-  .breizbot-home .content {
+    .breizbot-rtc .toolbar > .status {
+      margin-left: 5px; }
+    .breizbot-rtc .toolbar p {
+      margin: 0px; }
+  .breizbot-rtc .panel {
     flex: 1;
-    overflow: hidden;
-    padding: 0; }
-    .breizbot-home .content .ui-tabs-nav {
-      padding: 0; }
-      .breizbot-home .content .ui-tabs-nav .ui-tabs-tab {
-        border-radius: 0;
-        margin: 0; }
-        .breizbot-home .content .ui-tabs-nav .ui-tabs-tab a {
-          outline: none;
-          user-select: none; }
+    overflow: hidden; }
+
+.breizbot-pdf {
+  display: flex;
+  flex-direction: column; }
+  .breizbot-pdf .brainjs-pdf {
+    flex: 1; }
+  .breizbot-pdf .toolbar {
+    padding: 0 10px 0 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between; }
+    .breizbot-pdf .toolbar .pages {
+      display: flex;
+      align-items: center; }
+    .breizbot-pdf .toolbar .loading {
+      padding: 8px 0 8px 0; }
 
 .breizbot-pager {
   display: flex;
@@ -290,40 +289,6 @@
         overflow: hidden;
         text-overflow: ellipsis; }
   .breizbot-pager > .content {
-    flex: 1;
-    overflow: hidden; }
-
-.breizbot-pdf {
-  display: flex;
-  flex-direction: column; }
-  .breizbot-pdf .brainjs-pdf {
-    flex: 1; }
-  .breizbot-pdf .toolbar {
-    padding: 0 10px 0 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between; }
-    .breizbot-pdf .toolbar .pages {
-      display: flex;
-      align-items: center; }
-    .breizbot-pdf .toolbar .loading {
-      padding: 8px 0 8px 0; }
-
-.breizbot-rtc {
-  display: flex;
-  flex-direction: column; }
-  .breizbot-rtc .toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #128C7E;
-    color: white; }
-    .breizbot-rtc .toolbar > .status {
-      margin-left: 5px; }
-    .breizbot-rtc .toolbar p {
-      margin: 0px; }
-  .breizbot-rtc .panel {
     flex: 1;
     overflow: hidden; }
 
@@ -384,3 +349,38 @@
     overflow-y: auto; }
     .breizbot-viewer .doc .scrollPanel .html {
       padding: 10px; }
+
+@media (hover: none) {
+  .w3-button:hover {
+    background-color: inherit !important;
+    color: inherit !important; } }
+
+.breizbot-home {
+  height: 100%;
+  display: flex;
+  flex-direction: column; }
+  .breizbot-home .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #075E54;
+    color: white; }
+    .breizbot-home .header .state {
+      padding: 8px 16px 8px 16px; }
+    .breizbot-home .header .notification {
+      position: relative; }
+    .breizbot-home .header .notification .w3-badge {
+      position: relative;
+      left: -15px; }
+  .breizbot-home .content {
+    flex: 1;
+    overflow: hidden;
+    padding: 0; }
+    .breizbot-home .content .ui-tabs-nav {
+      padding: 0; }
+      .breizbot-home .content .ui-tabs-nav .ui-tabs-tab {
+        border-radius: 0;
+        margin: 0; }
+        .breizbot-home .content .ui-tabs-nav .ui-tabs-tab a {
+          outline: none;
+          user-select: none; }

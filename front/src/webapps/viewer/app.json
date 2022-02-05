@@ -1,0 +1,8 @@
+{	
+	"iconCls": "fa fa-question fa-2x",
+	"colorCls": "w3-green",
+	"title": "Viewer",
+	"styles": ["app.css"],
+	"brainjs": ["map", "pdf"],
+	"visible": false
+}

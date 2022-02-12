@@ -23,6 +23,14 @@ $$.control.registerControl('breizbot.pdf', {
 				}
 			},
 			events: {
+				onZoomIn: async function() {
+					//console.log('onZoomIn')
+					await pdf.zoomIn()
+				},
+				onZoomOut: async function() {
+					//console.log('onZoomOut')
+					await pdf.zoomOut()
+				},
 				onGotoPage: async function() {
 					const pageNo = await $$.ui.showPrompt({
 						title: 'Go to Page',

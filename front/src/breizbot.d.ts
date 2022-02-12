@@ -5,7 +5,7 @@ declare namespace Breizbot {
 
         declare namespace Display {
 
-            type EventName = 'availability' | 'connectionavailable' | 'ready' | 'close' [ 'playing' | 'paused'];
+            type EventName = 'availability' | 'connectionavailable' | 'ready' | 'close' | 'playing' | 'paused';
 
             interface Interface {
                 on(event: EventName, callback: (data: any) => void): void;

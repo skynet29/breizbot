@@ -23,6 +23,14 @@ $$.control.registerControl('breizbot.pdf', {
 				}
 			},
 			events: {
+				onRotateRight: async function() {
+					//console.log('onRotateRight')
+					await pdf.rotateRight()
+				},
+				onRotateLeft: async function() {
+					//console.log('onRotateLeft')
+					await pdf.rotateLeft()
+				},
 				onZoomIn: async function() {
 					//console.log('onZoomIn')
 					await pdf.zoomIn()

@@ -310,21 +310,6 @@
     .breizbot-pdf .toolbar .loading {
       padding: 8px 0 8px 0; }
 
-.breizbot-searchbar > form {
-  display: flex;
-  flex-direction: row;
-  border: 2px solid #eeeeee;
-  border-radius: 20px;
-  padding-left: 10px;
-  padding-right: 10px; }
-  .breizbot-searchbar > form input:-webkit-autofill {
-    transition: background-color 5000s ease-in-out 0s; }
-  .breizbot-searchbar > form input {
-    flex: 1;
-    padding: 5px;
-    border: none;
-    outline: none; }
-
 .breizbot-rtc {
   display: flex;
   flex-direction: column; }
@@ -341,6 +326,21 @@
   .breizbot-rtc .panel {
     flex: 1;
     overflow: hidden; }
+
+.breizbot-searchbar > form {
+  display: flex;
+  flex-direction: row;
+  border: 2px solid #eeeeee;
+  border-radius: 20px;
+  padding-left: 10px;
+  padding-right: 10px; }
+  .breizbot-searchbar > form input:-webkit-autofill {
+    transition: background-color 5000s ease-in-out 0s; }
+  .breizbot-searchbar > form input {
+    flex: 1;
+    padding: 5px;
+    border: none;
+    outline: none; }
 
 .breizbot-addUser {
   margin: 10px;

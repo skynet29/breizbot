@@ -23,6 +23,9 @@ $$.control.registerControl('breizbot.pdf', {
 				}
 			},
 			events: {
+				onRefresh: async function() {
+					await pdf.refresh()
+				},
 				onRotateRight: async function() {
 					//console.log('onRotateRight')
 					await pdf.rotateRight()

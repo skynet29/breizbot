@@ -12,6 +12,9 @@ $$.control.registerControl('breizbot.pdf', {
 		//@ts-ignore
 		const { url } = this.props
 
+		const progressDlg = $$.ui.progressDialog('Processing...')
+
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				numPages: 0,
@@ -57,8 +60,15 @@ $$.control.registerControl('breizbot.pdf', {
 					const currentPage =  await pdf.setPage(pageNo)
 					ctrl.setData({ currentPage, wait: false })
 				},
-				onPrint: function() {
-					pdf.print()
+				onPrint: async function() {
+					progressDlg.setPercentage(0)
+					progressDlg.show()
+					await pdf.print({
+						onProgress: function(data) {
+							progressDlg.setPercentage(data.page / ctrl.model.numPages)						
+						}
+					})
+					progressDlg.hide()
 				},
 				onNextPage: async function (ev) {
 					//console.log('onNextPage')

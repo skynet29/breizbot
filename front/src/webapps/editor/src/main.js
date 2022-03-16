@@ -3,14 +3,16 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.files', 'breizbot.pager'],
+	deps: ['breizbot.files', 'breizbot.pager', 'breizbot.params'],
 
 	/**
 	 * 
 	 * @param {Breizbot.Services.Files.Interface} files 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 */
-	init: function (elt, files, pager) {
+	init: function (elt, files, pager, params) {
+
+		console.log('params', params)
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -53,16 +55,28 @@ $$.control.registerControl('rootPage', {
 						},
 						onReturn: function (data) {
 							//console.log('onReturn', data)
-							const { fileName, rootDir } = data
-							const url = files.fileUrl(rootDir + fileName)
-
-							ctrl.setData({ fileName, rootDir })
-							ctrl.scope.editor.load(url)
+							loadFileName(data)
 						}
 					})
 				}
 			}
 		})
+
+		if (params.fileName) {
+			loadFileName(params)
+		}
+
+		/**
+		 * 
+		 * @param {{fileName: string, rootDir: string}} data 
+		 */
+		function loadFileName(data) {
+			const { fileName, rootDir } = data
+			const url = files.fileUrl(rootDir + fileName)
+
+			ctrl.setData({ fileName, rootDir })
+			ctrl.scope.editor.load(url)
+		}
 
 		/**
 		 * 

@@ -78,9 +78,15 @@ $$.control.registerControl('rootPage', {
 						}
 						if (!folder) {
 
-							if (getViewerType(name)) {
+							const type = getViewerType(name)
+							if (type) {
 								ret.open = { name: 'Open in viewer', icon: 'fas fa-search' }
 							}
+
+							if (type == 'hdoc') {
+								ret.edit = { name: 'Open in editor', icon: 'fas fa-edit' }
+							}
+
 
 							ret.download = { name: 'Download', icon: 'fas fa-upload' }
 
@@ -175,6 +181,12 @@ $$.control.registerControl('rootPage', {
 								type: getViewerType(name),
 								url: srvFiles.fileUrl(rootDir + name),
 							}, name)
+							break
+						case 'edit':
+							scheduler.openApp('editor', {
+								rootDir,
+								fileName: name
+							})
 							break
 					}
 

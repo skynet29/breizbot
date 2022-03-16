@@ -76,12 +76,12 @@ $$.service.registerService('breizbot.files', {
 
 			},
 
-			saveFile: async function (blob, saveAsfileName, checkExists = false) {
-				const destPath  = `/apps/${params.$appName}`
+			saveFile: async function (blob, saveAsfileName, options) {
+				const destPath  = options.destPath || `/apps/${params.$appName}`
 				try {
 					savingDlg.setPercentage(0)
 					savingDlg.show()
-					const resp = await this.uploadFile(blob, saveAsfileName, destPath, checkExists, (value) => {
+					const resp = await this.uploadFile(blob, saveAsfileName, destPath, options.checkExists, (value) => {
 						savingDlg.setPercentage(value)
 					})
 					await $$.util.wait(1000)

@@ -24,17 +24,17 @@ $$.control.registerControl('rootPage', {
 				},
 				onSaveFile: async function (ev) {
 					//console.log('onSaveFile')
-					let { fileName } = ctrl.model
+					let { fileName, rootDir } = ctrl.model
 
 					if (fileName != '') {
-						await saveFile(fileName, false)
+						await saveFile(fileName, {checkExists: false, destPath: rootDir})
 						return
 					}
 					fileName = await $$.ui.showPrompt({ title: 'Save File', label: "FileName:" })
 					//console.log('fileName', fileName)
 					if (fileName != null) {
 						fileName += '.hdoc'						
-						if (await saveFile(fileName, true)) {
+						if (await saveFile(fileName, {checkExists: true})) {
 							ctrl.setData({ fileName })
 						}
 					}
@@ -67,13 +67,13 @@ $$.control.registerControl('rootPage', {
 		/**
 		 * 
 		 * @param {string} fileName 
-		 * @param {boolean} checkExists 
+		 * @param {{checkExists?: boolean, destPath?: string}} options 
 		 */
-		async function saveFile(fileName, checkExists) {
+		async function saveFile(fileName, options) {
 			//console.log('saveFile')
 			const htmlString = ctrl.scope.editor.html()
 			const blob = new Blob([htmlString], { type: 'text/html' })
-			return files.saveFile(blob, fileName, checkExists)
+			return files.saveFile(blob, fileName, options)
 		}
 
 	}

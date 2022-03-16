@@ -111,7 +111,7 @@ declare namespace Breizbot {
                 fileAppUrl(fileName: string): string;
                 fileAppThumbnailUrl(fileName: string, size: string): string;
                 uploadFile(blob: Blob, saveAsfileName: string, destPath: string, checkExists: boolean, onUploadProgress: (percentComplete: number) => void): Promise<void>;
-                saveFile(blob: Blob, saveAsfileName: string, checkExists: boolean = false): Promise<boolean>;
+                saveFile(blob: Blob, saveAsfileName: string, options?: {checkExists?: boolean, destPath?: string}): Promise<boolean>;
                 assetsUrl(fileName: string): string;
             }
     

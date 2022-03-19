@@ -133,9 +133,15 @@ async function getFileInfo(filePath, options) {
 	}
 
 	if (ret.isImage) {
-		const dimension = await imageSize(filePath)
-		//console.log('dimension', dimension)
-		ret.dimension = dimension
+		try {
+			const dimension = await imageSize(filePath)
+			//console.log('dimension', dimension)
+			ret.dimension = dimension	
+		}
+		catch(e) {
+			console.error('getFileInfo', e)
+			ret.isImage = false
+		}
 	}
 
 	//console.log('ret', ret)

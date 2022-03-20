@@ -101,6 +101,13 @@
       .DSKY .bottom .keyboard .label {
         font-size: 12px; }
 
+.FDAI svg {
+  background-color: lightgrey; }
+
+.FDAI text {
+  font-size: 11px;
+  text-anchor: middle; }
+
 .IMU {
   padding: 10px;
   background-color: #dddddd;
@@ -132,6 +139,8 @@
       .IMU .top .right button {
         width: 100px;
         margin-top: 5px; }
+    .IMU .top .middle {
+      margin-left: 20px; }
     .IMU .top .imuGroup {
       display: flex;
       flex-direction: row;

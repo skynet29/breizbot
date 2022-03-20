@@ -143,8 +143,6 @@ $$.control.registerControl('rootPage', {
 
 		}
 
-		imu.update()
-
 		init()
 
 	}

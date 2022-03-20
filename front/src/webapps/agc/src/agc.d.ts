@@ -58,6 +58,12 @@ declare namespace AppAgc {
             }
         }
 
+        declare namespace FDAI {
+            interface Interface {
+                update(imu_angle: Array<number>): void;
+            }
+        }
+
         declare namespace IMU {
             interface Interface {
                 update():void;

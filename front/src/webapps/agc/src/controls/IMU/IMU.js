@@ -65,8 +65,13 @@ $$.control.registerControl('IMU', {
 			gimbalLock = false
 			sum = 1.0
 
-			move_fdai_marker()
+			update()
 
+		}
+
+		function update() {
+			fdai.update(imu_angle)
+			ctrl.setData({imu_angle})
 		}
 
 		function adjust(x, a, b) {
@@ -80,8 +85,10 @@ $$.control.registerControl('IMU', {
 		}
 
 		function formatValue2(val) {
-			return (val * RAD_TO_DEG).toFixed(1)
+			return val.toFixed(1)
 		}
+
+
 
 		function formatTime(t) {
 			const hh = floor(t / 3600);
@@ -137,6 +144,10 @@ $$.control.registerControl('IMU', {
 
 			},
 			events: {
+				onData: function(ev, data) {
+					//console.log('onData', data)
+					ctrl.setData({euler: data.fdai})
+				},
 				enableIMU: function(ev) {
 					console.log('enableIMU')
 					agc.writeIo(0o30, 0, agc.inputsMask.ISS_TURN_ON) 
@@ -149,142 +160,10 @@ $$.control.registerControl('IMU', {
 			
 		})
 
-		/**@type {HTMLCanvasElement} */
-		const canvas = ctrl.scope.fdai.get(0)
-
-		const ctx = canvas.getContext('2d')
-
-		zero()
-
-		// Paints the 8-ball based on the euler angles calculated by calcEuler
-		function paint8ball() {
-			let roll = euler[0];
-			let pitch = euler[1];
-			let yaw = euler[2];
-
-			ctx.fillStyle = '#888888';
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-			ctx.setTransform(1, 0, 0, 1, canvas.width / 2, canvas.height / 2);
-
-			ctx.strokeStyle = '#FFFFFF';
-			ctx.lineWidth = 2;
-			for (let i = 0; i < 36; i++) {
-				const angle = (i * 10) * DEG_TO_RAD;
-				const l = (i % 3 ? 10 : 15);
-				ctx.beginPath();
-				ctx.moveTo((radius + 2) * cos(angle), (radius + 2) * sin(angle));
-				ctx.lineTo((radius + l) * cos(angle), (radius + l) * sin(angle));
-				ctx.stroke();
-			}
-
-			let s = 1.0;
-			ctx.rotate(-roll);
-
-			ctx.strokeStyle = '#000';
-			ctx.lineWidth = 4;
-
-			ctx.beginPath();
-			ctx.fillStyle = '#FFFFFF';
-			ctx.lineWidth = 1;
-			ctx.arc(0, 0, radius, 0, 2 * PI, true);
-			ctx.fill();
-			ctx.stroke();
-
-			ctx.save();
-			ctx.beginPath();
-			ctx.lineWidth = 4;
-			ctx.fillStyle = '#000000';
-
-			if (cos(pitch) < 0) {
-				pitch += PI;
-				ctx.arc(0, 0, radius, 0, PI, true);
-			} else {
-				ctx.arc(0, 0, radius, 0, PI, false);
-			}
-			s = sin(pitch);
-			if (abs(s) < 0.001) {
-				ctx.moveTo(-radius, 0);
-				ctx.lineTo(radius, 0);
-			} else {
-				ctx.scale(1, s);
-				ctx.arc(0, 0, radius, PI, 0, true);
-			}
-			ctx.fill();
-			ctx.restore();
-
-			ctx.save();
-			ctx.beginPath();
-			ctx.strokeStyle = '#aaa';
-			if (cos(yaw) < 0) {
-				yaw += PI;
-			}
-			yaw = adjust(yaw, -PI, PI);
-			s = -sin(yaw);
-			if (abs(s) < 0.01) {
-				ctx.lineWidth = 1;
-				ctx.moveTo(0, -radius);
-				ctx.lineTo(0, radius);
-			}
-			else {
-				ctx.lineWidth = 4;
-				ctx.scale(s, 1);
-				ctx.arc(0, 0, radius, -PI / 2, PI / 2, true);
-			}
-			ctx.stroke();
-			ctx.restore();
-
-			ctx.beginPath();
-			ctx.strokeStyle = '#F00';
-			ctx.lineWidth = 2;
-			ctx.arc(0, 0, 10, 0, 2 * PI, false);
-			ctx.stroke();
-		}
-
-		function move_fdai_marker() {
-
-			//console.log('move_fdai_marker', {imu_angle, euler})
-			ctrl.setData({ imu_angle, euler })
-
-			if (abs(sum) > 0.01) {
-				calcEuler();
-				paint8ball();
-				sum = 0;
-			}
-		}
-
-		// calculates the Euler angles based on the imu reading
-		function calcEuler() {
-			const sinOG = sin(imu_angle[0]);
-			const sinIG = sin(imu_angle[1]);
-			const sinMG = sin(imu_angle[2]);
-			const cosOG = cos(imu_angle[0]);
-			const cosIG = cos(imu_angle[1]);
-			const cosMG = cos(imu_angle[2]);
-
-			// Extract Attitude Euler angles out of the rotation matrix Stable Member into Navigation Base ----
-			// const t11 = cosIG*cosMG;
-			const t12 = sinMG;
-			// const t13 = -sinIG$cosMG;
-			// const t21 = -cosIG*sinMG*cosOG + sinIG*sinOG;
-			const t22 = cosMG * cosOG;
-			const t23 = sinIG * sinMG * cosOG + cosIG * sinOG;
-			const t31 = cosIG * sinMG * sinOG + sinIG * cosOG;
-			const t32 = -cosMG * sinOG;
-			const t33 = -sinIG * sinMG * sinOG + cosIG * cosOG;
-
-			euler[0] = asin(t32);
-			euler[1] = atan2(t31, t33);
-			euler[2] = atan2(t12, t22);
+		/**@type {AppAgc.Controls.FDAI.Interface} */
+		const fdai = ctrl.scope.fdai
 
 
-			for (let axis = 0; axis < 3; axis++) {
-				if (euler[axis] < -2 * PI) {
-					euler[axis] += 2 * PI;
-				} else if (euler[axis] >= 2 * PI) {
-					euler[axis] -= 2 * PI;
-				}
-			}
-		}
 
 		//************************************************************************************************
 		//*** Function: Modify a specific IMU Delta Gimbal-Angle par1=X; par2=Y; par3=Z               ****
@@ -304,7 +183,8 @@ $$.control.registerControl('IMU', {
 
 					// ---- Feed yaAGC with the new Angular Delta ----
 					const sign = dx > 0 ? +1 : -1;
-					let n = floor(abs(dx) / ANGLE_INCR);
+					let n = floor(abs(dx) / ANGLE_INCR)
+					//console.log('n', n)
 					pimu[axis] = adjust(pimu[axis] + sign * ANGLE_INCR * n, 0, 2 * PI);
 
 					let cdu = agc.peek(26 + axis);                        // read CDU counter (26 = 0x32 = CDUX)
@@ -343,7 +223,7 @@ $$.control.registerControl('IMU', {
 					modify_gimbal_angle([0, 0, cdu_pulses * CA_ANGLE]);
 				}
 
-				move_fdai_marker();
+				update()
 			} else {
 				// ---- Error Needles ----
 				error[chan - 124] += cdu_pulses;
@@ -375,7 +255,7 @@ $$.control.registerControl('IMU', {
 				modify_gimbal_angle([0, 0, gyro_pulses * FA_ANGLE]);
 			}
 
-			move_fdai_marker();
+			update()
 		}
 
 		//***********************************************************************************************
@@ -383,7 +263,8 @@ $$.control.registerControl('IMU', {
 		//***********************************************************************************************
 		function rotate(delta) {
 			//console.log('rotate', delta)
-			// based on Transform_BodyAxes_StableMember {dp dq dr}  
+			// based on Transform_BodyAxes_StableMember {dp dq dr} 
+
 
 			const MPI = sin(imu_angle[2]);
 			const MQI = cos(imu_angle[2]) * cos(imu_angle[0]);
@@ -408,7 +289,6 @@ $$.control.registerControl('IMU', {
 			//console.log('accelerate', delta)
 
 			// based on proc modify_pipaXYZ 
-
 			const sinOG = sin(imu_angle[0]);
 			const sinIG = sin(imu_angle[1]);
 			const sinMG = sin(imu_angle[2]);
@@ -416,11 +296,13 @@ $$.control.registerControl('IMU', {
 			const cosIG = cos(imu_angle[1]);
 			const cosMG = cos(imu_angle[2]);
 
-			const dv = [
-				cosMG * cosIG * delta[0] + (-cosOG * sinMG * cosIG + sinOG * sinIG) * delta[1] + (sinOG * sinMG * cosIG + cosOG * sinIG) * delta[2],
-				sinMG * delta[0] + cosOG * cosMG * delta[1] - sinOG * cosMG * delta[2],
-				-cosMG * sinIG * delta[0] + (cosOG * sinMG * sinIG + sinOG * cosIG) * delta[1] + (-sinOG * sinMG * sinIG + cosOG * cosIG) * delta[2]
-			];
+			const deltaVX = cosMG * cosIG * delta[0] + (-cosOG * sinMG * cosIG + sinOG * sinIG) * delta[1] + (sinOG * sinMG * cosIG + cosOG * sinIG) * delta[2]
+
+			const deltaVY = sinMG * delta[0] + cosOG * cosMG * delta[1] - sinOG * cosMG * delta[2]
+
+			const deltaVZ = -cosMG * sinIG * delta[0] + (cosOG * sinMG * sinIG + sinOG * cosIG) * delta[1] + (-sinOG * sinMG * sinIG + cosOG * cosIG) * delta[2]
+
+			const dv = [deltaVX, deltaVY, deltaVZ]
 
 			for (let axis = 0; axis < 3; axis++) {
 				velocity[axis] += dv[axis];
@@ -443,8 +325,8 @@ $$.control.registerControl('IMU', {
 		}
 
 		this.rotate = rotate
+		this.update = update
 		this.accelerate = accelerate
-		this.update = move_fdai_marker
 		this.gyro_coarse_align = gyro_coarse_align
 		this.zero = zero
 		this.gyro_fine_align = gyro_fine_align

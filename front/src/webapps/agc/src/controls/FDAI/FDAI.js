@@ -258,6 +258,7 @@ $$.control.registerControl('FDAI', {
 			const ROLL  = adjust(Math.atan2(t12, t22))
 			const PITCH = adjust(Math.atan2(t31, t33))
 			const YAW   = adjust(Math.asin(t32))
+			console.log({ROLL, PITCH, YAW})
 		
 			// ---- Calculate FDAI Angles ----
 			const FDAIZ_RAD = ROLL
@@ -266,7 +267,7 @@ $$.control.registerControl('FDAI', {
 		
 			const FDAIX_ANGLE = -1 * YAW * RAD_TO_DEG
 			const FDAIY_ANGLE = PITCH * RAD_TO_DEG
-			const FDAIZ_ANGLE = ROLL * RAD_TO_DEG
+			const FDAIZ_ANGLE = ROLL * RAD_TO_DEG			
 		
 			const fdaix = (FDAIX_ANGLE > 0) ? -FDAIX_ANGLE + 360 : Math.abs(FDAIX_ANGLE)
 			const fdaiy = (FDAIY_ANGLE < 0) ? FDAIY_ANGLE + 360 : FDAIY_ANGLE
@@ -300,7 +301,7 @@ $$.control.registerControl('FDAI', {
 			const y1 = offsetY + r * Math.cos(FDAIZ_RAD + Math.PI)
 			const y2 = offsetY + (r+1) * Math.cos(FDAIZ_RAD + Math.PI)
 		
-			setAttrs(widgtM.RollMarker, {x1, y1, x2, y2})
+			setLine('RollMarker', x1, y1, x2, y2)
 		
 		
 			/**
@@ -338,7 +339,7 @@ $$.control.registerControl('FDAI', {
 		
 			// -------------------- Move YAW-Axis (LM-X-Axis) ---------------------
 		
-			const tempXAngle = (FDAIX_ANGLE > 180) ? FDAIX_ANGLE - 180 : FDAIX_ANGLE
+			const tempXAngle = (FDAIX_ANGLE > 180) ? FDAIX_ANGLE - 360 : FDAIX_ANGLE
 			const xpLM1 = -280 + tempXAngle
 			const ypLM1 = 0
 			const xpLM2 = 280 + tempXAngle

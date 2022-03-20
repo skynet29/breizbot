@@ -132,13 +132,13 @@ $$.control.registerControl('IMU', {
 				imuz: function () {
 					return formatValue(this.imu_angle[2])
 				},
-				roll: function () {
+				yaw: function () {
 					return formatValue2(this.euler[0])
 				},
 				pitch: function () {
 					return formatValue2(this.euler[1])
 				},
-				yaw: function () {
+				roll: function () {
 					return formatValue2(this.euler[2])
 				}
 

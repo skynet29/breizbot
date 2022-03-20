@@ -30,6 +30,12 @@ $$.control.registerControl('rootPage', {
 					if (!isNaN(val)) {
 						agc.writeIo(0o15, val)
 					}
+					else { // PRO key
+						agc.writeIo(0o32, 0, agc.inputsMask.PROCEED)
+						setTimeout(() => {
+							agc.writeIo(0o32, agc.inputsMask.PROCEED, agc.inputsMask.PROCEED)
+						}, 200)
+					}
 				},
 				onLaunch: function () {
 					console.log('onLaunch')

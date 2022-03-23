@@ -1,39 +1,63 @@
 <div>
     <fieldset>
-        <div>
+        <div class="data">
             <label>SIMULATION TIME:</label>
-            <span bn-text="Simulation_Timer_text"></span>
+            <div>
+                <span bn-text="Simulation_Timer_text"></span>
+                <span class="unit">SEC</span>    
+            </div>
         </div>
-        <div>
+        <div class="data">
             <label>LM WEIGHT:</label>
-            <span bn-text="LM_Weight_KG_text"></span>
+            <div>
+                <span bn-text="LM_Weight_KG_text"></span>
+                <span class="unit">KG</span>    
+            </div>
         </div>
 
     </fieldset>
     <fieldset>
         <legend>DESCENT</legend>
-        <div>
+        <div class="data">
             <label>THRUST:</label>
-            <span bn-text="Descent_Thrust_Procent_text"></span>
+            <div>
+                <span bn-text="Descent_Thrust_Procent_text"></span>
+                <span class="unit"></span>
+            </div>
         </div>
-        <div>
+        <div class="data">
             <label>PROPELLANT:</label>
-            <span bn-text="Descent_Propellant_Mass_KG_text"></span>
+            <div>
+                <span bn-text="Descent_Propellant_Mass_KG_text"></span>
+                <span class="unit">KG</span>
+            </div>
         </div>
-        <div>
+        <div class="data">
             <label>FUEL FLOW:</label>
-            <span bn-text="Descent_Fuel_Flow_SEC_text"></span>
+            <div>
+                <span bn-text="Descent_Fuel_Flow_SEC_text"></span>
+                <span class="unit">KG/S</span>
+            </div>
         </div>
-        <div>
+        <div class="data">
             <label>ACCELERATION:</label>
-            <span bn-text="Descent_Acceleration_text"></span>
+            <div>
+                <span bn-text="Descent_Acceleration_text"></span>
+                <span class="unit">M/S²</span>
+            </div>
         </div>
         <div bn-show="!isSeparated">
             <div>
                 <input type="checkbox" bn-val="DESCENT_ENGINE_FLAG" bn-update="click">
                 <label>ENGINE ON/OFF</label>
             </div>
-            <div>Thrust [N]</div>
+            <div class="data">
+                <label>Thrust</label>
+                <div>
+                    <span bn-text="Descent_Propulsion_N"></span>
+                    <span class="unit">N</span>
+                </div>
+            </div>
             <div bn-control="brainjs.slider" bn-data="{min: Descent_Propulsion_Min_N, max: Descent_Propulsion_Max_N }"
                 bn-update="input" bn-val="Descent_Propulsion_N"></div>
         </div>
@@ -44,17 +68,26 @@
     </fieldset>
     <fieldset>
         <legend>ASCENT</legend>
-        <div>
+        <div class="data">
             <label>PROPELLANT:</label>
-            <span bn-text="Ascent_Propellant_Mass_KG_text"></span>
+            <div>
+                <span bn-text="Ascent_Propellant_Mass_KG_text"></span>
+                <span class="unit">KG</span>
+            </div>
         </div>
-        <div>
+        <div class="data">
             <label>FUEL FLOW:</label>
-            <span bn-text="Ascent_Fuel_Flow_SEC_text"></span>
+            <div>
+                <span bn-text="Ascent_Fuel_Flow_SEC_text"></span>
+                <span class="unit">KG/S</span>
+            </div>
         </div>
-        <div>
+        <div class="data">
             <label>ACCELERATION:</label>
-            <span bn-text="Ascent_Acceleration_text"></span>
+            <div>
+                <span bn-text="Ascent_Acceleration_text"></span>
+                <span class="unit">M/S²</span>
+            </div>
         </div>
         <div bn-show="isSeparated">
             <input type="checkbox" bn-val="ASCENT_ENGINE_FLAG" bn-update="click">
@@ -63,9 +96,12 @@
     </fieldset>
     <fieldset>
         <legend>RCS</legend>
-        <div>
+        <div class="data">
             <label>PROPELLANT:</label>
-            <span bn-text="RCS_Propellant_Mass_KG_text"></span>
+            <div>
+                <span bn-text="RCS_Propellant_Mass_KG_text"></span>
+                <span class="unit">KG</span>
+            </div>
         </div>
 
     </fieldset>

@@ -47,8 +47,14 @@ $$.control.registerControl('rootPage', {
 
 					liftoff = true
 				},
-				onSimuData: function(ev, data) {
-					console.log('onSimuData', data)
+				onSimuRotate: function(ev, data) {
+					console.log('onSimuRotate', data)
+					imu.rotate(data)
+				},
+
+				onSimuAccelerate: function(ev, data) {
+					console.log('onSimuAccelerate', data)
+					imu.accelerate(data)
 				}
 			}
 		})

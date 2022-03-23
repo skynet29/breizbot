@@ -153,34 +153,34 @@ $$.control.registerControl('SIMU', {
 
 
 				Simulation_Timer_text: function () {
-					return this.Simulation_Timer.toFixed(1) + ' SEC'
+					return this.Simulation_Timer.toFixed(1)
 				},
 				Descent_Thrust_Procent_text: function () {
 					return this.Descent_Thrust_Procent.toFixed(1)
 				},
 				LM_Weight_KG_text: function () {
-					return this.LM_Weight_KG.toFixed(0) + ' KG'
+					return this.LM_Weight_KG.toFixed(0)
 				},
 				Descent_Propellant_Mass_KG_text: function () {
-					return this.Descent_Propellant_Mass_KG.toFixed(0) + ' KG'
+					return this.Descent_Propellant_Mass_KG.toFixed(0)
 				},
 				Descent_Fuel_Flow_SEC_text: function () {
-					return this.Descent_Fuel_Flow_SEC.toFixed(2) + ' KG/S'
+					return this.Descent_Fuel_Flow_SEC.toFixed(2)
 				},
 				Descent_Acceleration_text: function () {
-					return this.Descent_Acceleration.toFixed(3) + ' M/S²'
+					return this.Descent_Acceleration.toFixed(3)
 				},
 				RCS_Propellant_Mass_KG_text: function () {
-					return this.RCS_Propellant_Mass_KG.toFixed(1) + ' KG'
+					return this.RCS_Propellant_Mass_KG.toFixed(1)
 				},
 				Ascent_Propellant_Mass_KG_text: function () {
-					return this.Ascent_Propellant_Mass_KG.toFixed(0) + ' KG'
+					return this.Ascent_Propellant_Mass_KG.toFixed(0)
 				},
 				Ascent_Fuel_Flow_SEC_text: function () {
-					return this.Ascent_Fuel_Flow_SEC.toFixed(1) + ' KG/S'
+					return this.Ascent_Fuel_Flow_SEC.toFixed(1)
 				},
 				Ascent_Acceleration_text: function () {
-					return this.Ascent_Acceleration.toFixed(3) + ' M/S²'
+					return this.Ascent_Acceleration.toFixed(3)
 				},
 
 				isSeparated: function() {
@@ -203,11 +203,11 @@ $$.control.registerControl('SIMU', {
 		window.simu = ctrl
 
 		function modify_pipaXYZ(yawDeltaV, PitchDeltaV, RollDeltaV) {
-			elt.trigger('data', { pipaXYZ: [yawDeltaV, PitchDeltaV, RollDeltaV] })
+			elt.trigger('accelerate', [yawDeltaV, PitchDeltaV, RollDeltaV])
 		}
 
 		function Transform_BodyAxes_StableMember(dp, dq, dr) {
-
+			elt.trigger('rorate', [dp, dq, dr])
 		}
 
 		// Main Engine Simulation

@@ -3,6 +3,7 @@
     background-color: #dddddd;
     border: 1px solid black;
     margin-left: 10px;
+    width: 350px;
 
     label {
         font-family: monospace;
@@ -13,5 +14,23 @@
     .brainjs-slider {
         margin: 10px;
     }
+
+    span {
+        font-family: monospace;
+        font-size: 16px; 
+    }
+
+    .data {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+
+    .unit {
+        width: 50px;
+        text-align: right;
+        display: inline-block;
+    }
+
 
 }

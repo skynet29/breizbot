@@ -19,6 +19,7 @@ $$.control.registerControl('rootPage', {
 	 */
 	init: function (elt, files, agc, http) {
 
+		window.agc = agc
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -45,6 +46,9 @@ $$.control.registerControl('rootPage', {
 					imu.setReactor(0)
 
 					liftoff = true
+				},
+				onSimuData: function(ev, data) {
+					console.log('onSimuData', data)
 				}
 			}
 		})
@@ -55,6 +59,9 @@ $$.control.registerControl('rootPage', {
 
 		/**@type {AppAgc.Controls.IMU.Interface} */
 		const imu = ctrl.scope.imu
+
+		/**@type {AppAgc.Controls.SIMU.Interface} */
+		const simu = ctrl.scope.simu
 
 		const DEG_TO_RAD = (Math.PI / 180)
 
@@ -80,6 +87,7 @@ $$.control.registerControl('rootPage', {
 						dsky.process(channel, value)
 						break
 					case 0o12:
+						console.log('channelUpdate', channel.toString(8), value.toString(2).padStart(15, 0))
 						if (value & agc.outputsMask.ZERO_IMU) {
 							imu.zero();
 						}
@@ -102,11 +110,11 @@ $$.control.registerControl('rootPage', {
 
 
 			setInterval(() => {
-				imu.setSt(Math.round(phase/10))
+				imu.setSt(Math.round(phase / 10))
 				agc.loop()
 
 				if (liftoff) {
-					const t = Math.round((phase - phase0)/10)
+					const t = Math.round((phase - phase0) / 10)
 					imu.setMet(t)
 					if (cutoff || t >= profile.length) {
 						cutoff = true;
@@ -124,7 +132,7 @@ $$.control.registerControl('rootPage', {
 						-profile[t][1] / 10 * DEG_TO_RAD,
 						0
 					]);
-				
+
 					if ((phase % 10) == 0) {
 						imu.update();
 					}
@@ -150,6 +158,7 @@ $$.control.registerControl('rootPage', {
 		}
 
 		init()
+		simu.dynamic_simulation()
 
 	}
 

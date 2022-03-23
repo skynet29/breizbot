@@ -70,7 +70,7 @@ $$.control.registerControl('IMU', {
 		}
 
 		function update() {
-			fdai.update(imu_angle)
+			fdai.update(imu_angle, error)
 			ctrl.setData({imu_angle})
 		}
 
@@ -212,7 +212,7 @@ $$.control.registerControl('IMU', {
 			const cdu_pulses = sign * (val & 0x3FFF);
 
 			// ---- Coarse Align Enable ----
-			if (1) {    // {$bo(12,4) == 1}
+			if (agc.getChannelBitState(0o12, 4) == 1) {    // {$bo(12,4) == 1}
 				if (chan === 124) {  // 0174
 					modify_gimbal_angle([cdu_pulses * CA_ANGLE, 0, 0]);
 				}

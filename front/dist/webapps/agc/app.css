@@ -168,3 +168,15 @@
         font-size: 16px;
         color: #0000FF;
         width: 80px; }
+
+.SIMU {
+  padding: 10px;
+  background-color: #dddddd;
+  border: 1px solid black;
+  margin-left: 10px; }
+  .SIMU label {
+    font-family: monospace;
+    font-size: 16px;
+    color: #0000FF; }
+  .SIMU .brainjs-slider {
+    margin: 10px; }

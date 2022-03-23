@@ -14,6 +14,8 @@ declare namespace AppAgc {
             readAllIo():void;
             peek(offset: number): number
             poke(offset: number, value: number):void;
+            getChannelState(channel: number): number;
+            getChannelBitState(channel: number, nbit: number): 0 | 1;
             lampMask : {
                 COMP_ACTY,
                 UPLINK_ACTY,
@@ -60,7 +62,14 @@ declare namespace AppAgc {
 
         declare namespace FDAI {
             interface Interface {
-                update(imu_angle: Array<number>): void;
+                update(imu_angle: Array<number>, error: Array<number>): void;
+            }
+        }
+
+        declare namespace SIMU {
+            interface Interface {
+                dynamic_simulation(): void;
+                update_RCS(): void;
             }
         }
 

@@ -1,0 +1,73 @@
+<div>
+    <fieldset>
+        <div>
+            <label>SIMULATION TIME:</label>
+            <span bn-text="Simulation_Timer_text"></span>
+        </div>
+        <div>
+            <label>LM WEIGHT:</label>
+            <span bn-text="LM_Weight_KG_text"></span>
+        </div>
+
+    </fieldset>
+    <fieldset>
+        <legend>DESCENT</legend>
+        <div>
+            <label>THRUST:</label>
+            <span bn-text="Descent_Thrust_Procent_text"></span>
+        </div>
+        <div>
+            <label>PROPELLANT:</label>
+            <span bn-text="Descent_Propellant_Mass_KG_text"></span>
+        </div>
+        <div>
+            <label>FUEL FLOW:</label>
+            <span bn-text="Descent_Fuel_Flow_SEC_text"></span>
+        </div>
+        <div>
+            <label>ACCELERATION:</label>
+            <span bn-text="Descent_Acceleration_text"></span>
+        </div>
+        <div bn-show="!isSeparated">
+            <div>
+                <input type="checkbox" bn-val="DESCENT_ENGINE_FLAG" bn-update="click">
+                <label>ENGINE ON/OFF</label>
+            </div>
+            <div>Thrust [N]</div>
+            <div bn-control="brainjs.slider" bn-data="{min: Descent_Propulsion_Min_N, max: Descent_Propulsion_Max_N }"
+                bn-update="input" bn-val="Descent_Propulsion_N"></div>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>Stage</legend>
+        <button bn-event="click: onSeperateStage" bn-prop="{disabled: isSeparated}">SEPARATE STAGE</button>
+    </fieldset>
+    <fieldset>
+        <legend>ASCENT</legend>
+        <div>
+            <label>PROPELLANT:</label>
+            <span bn-text="Ascent_Propellant_Mass_KG_text"></span>
+        </div>
+        <div>
+            <label>FUEL FLOW:</label>
+            <span bn-text="Ascent_Fuel_Flow_SEC_text"></span>
+        </div>
+        <div>
+            <label>ACCELERATION:</label>
+            <span bn-text="Ascent_Acceleration_text"></span>
+        </div>
+        <div bn-show="isSeparated">
+            <input type="checkbox" bn-val="ASCENT_ENGINE_FLAG" bn-update="click">
+            <label>ENGINE ON/OFF</label>
+        </div>
+    </fieldset>
+    <fieldset>
+        <legend>RCS</legend>
+        <div>
+            <label>PROPELLANT:</label>
+            <span bn-text="RCS_Propellant_Mass_KG_text"></span>
+        </div>
+
+    </fieldset>
+
+</div>

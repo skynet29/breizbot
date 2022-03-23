@@ -81,6 +81,18 @@ $$.service.registerService('app.emuAgc', {
             //readAllIo()            
         }
 
+        function bit(val, n) {
+            n--
+            return (val >> n) & 1
+        }
+
+        function getChannelState(channel) {
+            return state.channels[channel]
+        }
+
+        function getChannelBitState(channel, nbit) {
+            return bit(state.channels[channel], nbit)
+        }
 
         function readAllIo() {
             let data
@@ -90,7 +102,7 @@ $$.service.registerService('app.emuAgc', {
                 const channel = data >> 16
                 const value = data & 0xffff
                                  
-                const previousValue = state.channels[channel]
+                state.channels[channel] = value
 
                 events.emit('channelUpdate', {channel, value})
 
@@ -171,6 +183,8 @@ $$.service.registerService('app.emuAgc', {
             readAllIo,
             peek,
             poke,
+            getChannelState,
+            getChannelBitState,
             lampMask,
             statusMask,
             inputsMask,

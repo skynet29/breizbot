@@ -84,17 +84,17 @@
                 <input type="checkbox" bn-data="{channel: 30, bit: 10}" class="check">
                 <label>AGC HAS CONTROL OF LM<br>(NOT AGS)</label>
             </div>
-            <div bn-control="brainjs.radiogroup">
+            <div bn-control="brainjs.radiogroup" bn-event="change: onDapModeChange" bn-val="DAP_MODE">
                 <div class="data">
-                    <input type="radio">
+                    <input type="radio" value="OFF">
                     <label>DAP OFF</label>
                 </div>
                 <div class="data">
-                    <input type="radio">
+                    <input type="radio" value="HOLD">
                     <label>ATTITUDE HOLD MODE ON</label>
                 </div>
                 <div class="data">
-                    <input type="radio">
+                    <input type="radio" value="AUTO">
                     <label>AUTO STABILIZATION<br>OF ATTITUDE ON</label>
                 </div>
 
@@ -161,37 +161,37 @@
 
         <fieldset>
             <legend>THC</legend>
-            <div bn-control="brainjs.radiogroup" class="THC">
+            <div bn-control="brainjs.radiogroup" class="THC" bn-event="change: onThcChange" bn-val="THC">
                 <div class="data">
-                    <input type="radio">
+                    <input type="radio" value="NEUTRAL">
                     <label>NEUTRAL</label>
                 </div>
                 <div class="XYZ">
                     <div>
                         <div class="data">
-                            <input type="radio">
+                            <input type="radio" value="+X">
                             <label>+X</label>
                         </div>
                         <div class="data">
-                            <input type="radio">
+                            <input type="radio" value="+Y">
                             <label>+Y</label>
                         </div>
                         <div class="data">
-                            <input type="radio">
+                            <input type="radio" value="+Z">
                             <label>+Z</label>
                         </div>
                     </div>
                     <div>
                         <div class="data">
-                            <input type="radio">
+                            <input type="radio" value="-X">
                             <label>-X</label>
                         </div>
                         <div class="data">
-                            <input type="radio">
+                            <input type="radio" value="-Y">
                             <label>-Y</label>
                         </div>
                         <div class="data">
-                            <input type="radio">
+                            <input type="radio" value="-Z">
                             <label>-Z</label>
                         </div>
                     </div>

@@ -5,7 +5,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.files', 'app.emuAgc', 'brainjs.http'],
+	deps: ['breizbot.files', 'app.emuAgc', 'app.imu', 'brainjs.http'],
 
 	props: {
 	},
@@ -13,12 +13,15 @@ $$.control.registerControl('rootPage', {
 	/**
 	 * 
 	 * @param {Breizbot.Services.Files.Interface} files
-	 * @param {AppAgc.Services.Interface} agc
+	 * @param {AppAgc.Services.AGC.Interface} agc
+	 * @param {AppAgc.Services.IMU.Interface} imu
 	 * @param {Brainjs.Services.Http.Interface} http
 	 */
-	init: function (elt, files, agc, http) {
+	init: function (elt, files, agc, imu, http) {
 
 		window.agc = agc
+
+		const bit = agc.bit
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -37,15 +40,6 @@ $$.control.registerControl('rootPage', {
 						}, 200)
 					}
 				},
-				onLaunch: function () {
-					console.log('onLaunch')
-					if (cutoff || liftoff) return
-					agc.writeIo(0o30, 0, agc.inputsMask.LIFTOFF)
-					phase0 = phase
-					imu.setReactor(0)
-
-					liftoff = true
-				},
 				onSimuData: function (ev, data) {
 					//console.log('onSimuData', data)
 					const {rotate, accelerate, omega} = data
@@ -57,11 +51,11 @@ $$.control.registerControl('rootPage', {
 					}
 					
 				},
-
-				onSimuAccelerate: function (ev, data) {
-					console.log('onSimuAccelerate', data)
-					imu.accelerate(data)
+				onFdaiData: function(ev, data) {
+					//console.log('FDAI DATA', data)
+					simu.setData(data)
 				}
+
 			}
 		})
 
@@ -69,26 +63,24 @@ $$.control.registerControl('rootPage', {
 		/**@type {AppAgc.Controls.DSKY.Interface} */
 		const dsky = ctrl.scope.dsky
 
-		/**@type {AppAgc.Controls.IMU.Interface} */
-		const imu = ctrl.scope.imu
-
 		/**@type {AppAgc.Controls.SIMU.Interface} */
 		const simu = ctrl.scope.simu
 
-		const DEG_TO_RAD = (Math.PI / 180)
+		/**@type {AppAgc.Controls.FDAI.Interface} */
+		const fdai = ctrl.scope.fdai
 
-		let profile = null
-		let phase = 0
-		let phase0 = -1
-		let cutoff = false
-		let liftoff = false
+		imu.on('data', (data) => {
+			//console.log('imuData', data)
+			const {imu_angle, error} = data
+			fdai.update(imu_angle, error)
+		})
 
 
 		async function init() {
 
-			profile = await http.get(files.assetsUrl('profile.json'))
+			//profile = await http.get(files.assetsUrl('profile.json'))
 			//console.log('profile', profile)
-			await agc.loadRom(files.assetsUrl('Comanche055.bin'))
+			await agc.loadRom(files.assetsUrl('Luminary099.bin'))
 			agc.start()
 
 			let Delta_Time2 = 0
@@ -99,6 +91,7 @@ $$.control.registerControl('rootPage', {
 			let zeit = 0
 			let JET_FLAG = 0
 			let flash_flag = false
+			let zero = false
 
 			setInterval(() => {
 				agc.run()
@@ -117,9 +110,13 @@ $$.control.registerControl('rootPage', {
 							dsky.process(channel, value)
 							break
 						case 0o12:
-							console.log('channelUpdate', channel.toString(8), value.toString(2).padStart(15, '0'))
-							if (value & agc.outputsMask.ZERO_IMU) {
-								imu.zero();
+							//console.log('channelUpdate', channel.toString(8), value.toString(2).padStart(15, '0'))
+							if (bit(value, 5) && !zero) {
+								imu.zero()
+								zero = true
+							}
+							else if (!bit(value, 5) && zero) {
+								zero = false
 							}
 							break;
 						case 0o174:
@@ -173,54 +170,13 @@ $$.control.registerControl('rootPage', {
 
 			loop()
 
-			/*
 
-
-			setInterval(() => {
-				imu.setSt(Math.round(phase / 10))
-				agc.loop()
-
-				if (liftoff) {
-					const t = Math.round((phase - phase0) / 10)
-					imu.setMet(t)
-					if (cutoff || t >= profile.length) {
-						cutoff = true;
-						liftoff = false;
-						return;
-					}
-					//console.log('t', t)
-					imu.accelerate([
-						1.08 * profile[t][2],
-						0,
-						0
-					]);
-					imu.rotate([
-						-profile[t][3] / 10 * DEG_TO_RAD,
-						-profile[t][1] / 10 * DEG_TO_RAD,
-						0
-					]);
-
-					if ((phase % 10) == 0) {
-						imu.update();
-					}
-
-					if (profile[t][4]) {
-						const c = Math.round(profile[t][4])
-						imu.setReactor(c)
-					}
-				}
-				phase++
-				agc.readAllIo()
-
-			}, 100)
-			*/
 
 
 
 		}
 
 		init()
-		//simu.dynamic_simulation()
 
 	}
 

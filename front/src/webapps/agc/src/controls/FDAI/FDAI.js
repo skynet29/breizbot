@@ -273,7 +273,7 @@ $$.control.registerControl('FDAI', {
 			const fdaix = (FDAIX_ANGLE > 0) ? -FDAIX_ANGLE + 360 : Math.abs(FDAIX_ANGLE)
 			const fdaiy = (FDAIY_ANGLE < 0) ? FDAIY_ANGLE + 360 : FDAIY_ANGLE
 			const fdaiz = (FDAIZ_ANGLE < 0) ? FDAIZ_ANGLE + 360 : FDAIZ_ANGLE
-			elt.trigger('data', {fdai: [fdaix, fdaiy, fdaiz]})
+			elt.trigger('data', {euler: [fdaix, fdaiy, fdaiz]})
 			
 			// ------------------- Move Yaw Rate Marker ----------------------------------------			 	
 			setX('YawRateMarker', offsetX - 10 * minMax(Omega_Yaw, -5, 5))

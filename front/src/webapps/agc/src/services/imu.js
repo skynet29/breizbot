@@ -1,55 +1,39 @@
-// @ts-check
 
-$$.control.registerControl('IMU', {
+$$.service.registerService('app.imu', {
 
-	template: { gulp_inject: './IMU.html' },
+    deps: ['app.emuAgc'],
 
-	deps: ['breizbot.pager', 'app.emuAgc'],
+    /**
+     * 
+     * @param {*} config 
+     * @param {AppAgc.Services.AGC.Interface} agc 
+     * @returns 
+     */
+    init: function (config, agc) {
 
-	props: {
-	},
-
-	/**
-	 * 
-	 * @param {Breizbot.Services.Pager.Interface} pager 
-	 * @param {AppAgc.Services.Interface} agc
-	 */
-	init: function (elt, pager, agc) {
+        const event = new EventEmitter2()
 
 		const abs = Math.abs;
 		const floor = Math.floor;
-		const round = Math.round;
-		const sqrt = Math.sqrt;
 		const sin = Math.sin;
 		const cos = Math.cos;
-		const atan2 = Math.atan2;
-		const asin = Math.asin;
 		const PI = Math.PI;
 		const DEG_TO_RAD = (PI / 180);
-		const RAD_TO_DEG = (180 / PI);
 
 		const CA_ANGLE = 0.043948 * DEG_TO_RAD;
 		const FA_ANGLE = 0.617981 / 3600.0 * DEG_TO_RAD;
 		const ANGLE_INCR = 360.0 / 32768 * DEG_TO_RAD;
 		const PIPA_INCR = 0.0585; // m/s per each PIPA pulse
 
-		const PINC = 0;
-		const PCDU = 1;
-		const PCDU_FAST = 0o21
-		const MINC = 2;
-		const MCDU = 3;
-		const MCDU_FAST = 0o23
 
 		let error;
 		let imu_angle;
-		let euler;
 		let pimu;
 		let omega;
 		let pipa;
 		let velocity;
 		let gimbalLock;
 
-		let sum = 0;
 
 		function zero() {
 			console.log('zero')
@@ -61,107 +45,18 @@ $$.control.registerControl('IMU', {
 			velocity = [0, 0, 0]
 			pipa = [0, 0, 0]
 			gimbalLock = false
-			sum = 1.0
 
 			update()
 
 		}
 
 		function update() {
-			fdai.update(imu_angle, error)
-			ctrl.setData({imu_angle})
+            event.emit('data', {imu_angle, error})
 		}
 
 		function adjust(x, a, b) {
 			return x - (b - a) * floor((x - a) / (b - a));
 		}
-
-		function formatValue(val) {
-			let s = (val * RAD_TO_DEG).toFixed(2)
-			s = '000'.substr(0, 6 - s.length) + s
-			return s
-		}
-
-		function formatValue2(val) {
-			return val.toFixed(1)
-		}
-
-
-
-		function formatTime(t) {
-			const hh = floor(t / 3600);
-			const mm = floor(t / 60) % 60;
-			const ss = t % 60;
-			return (hh<10 ? '0'+hh : hh)+':'+(mm<10 ? '0'+mm : mm)+':'+(ss<10 ? '0'+ss : ss);
-		}
-
-		function getColor(val) {
-			return {'background-color': val ? '#ffc200' : '#888888'}
-		}
-
-		const ctrl = $$.viewController(elt, {
-			data: {
-				st: 0,
-				met: 0,
-				c: -1,
-				sic: function() {
-					return getColor(this.c == 0)
-				},
-				sii: function() {
-					return getColor(this.c == 1)
-				},
-				sivb: function() {
-					return getColor(this.c == 2)
-				},
-				getSt: function() {
-					return formatTime(this.st)
-				},
-				getMet: function() {
-					return formatTime(this.met)
-				},
-				imu_angle: [0, 0, 0],
-				euler: [0, 0, 0],
-				imux: function () {
-					return formatValue(this.imu_angle[0])
-				},
-				imuy: function () {
-					return formatValue(this.imu_angle[1])
-				},
-				imuz: function () {
-					return formatValue(this.imu_angle[2])
-				},
-				yaw: function () {
-					return formatValue2(this.euler[0])
-				},
-				pitch: function () {
-					return formatValue2(this.euler[1])
-				},
-				roll: function () {
-					return formatValue2(this.euler[2])
-				}
-
-			},
-			events: {
-				onData: function(ev, data) {
-					//console.log('onData', data)
-					ctrl.setData({euler: data.fdai})
-				},
-				enableIMU: function(ev) {
-					console.log('enableIMU')
-					agc.writeIoBit(0o30, 14, 0) 
-				},
-				launch: function(ev) {
-					ev.stopPropagation()
-					elt.trigger('launch')
-				}
-			}
-			
-		})
-
-		/**@type {AppAgc.Controls.FDAI.Interface} */
-		const fdai = ctrl.scope.fdai
-
-
 
 		//************************************************************************************************
 		//*** Function: Modify a specific IMU Delta Gimbal-Angle par1=X; par2=Y; par3=Z               ****
@@ -177,7 +72,6 @@ $$.control.registerControl('IMU', {
 
 					// ---- Calculate Delta between the new Angle and already feeded IMU Angle ----
 					const dx = adjust(imu_angle[axis] - pimu[axis], -PI, PI);
-					sum += abs(dx);
 
 					// ---- Feed yaAGC with the new Angular Delta ----
 					const sign = dx > 0 ? +1 : -1;
@@ -322,28 +216,16 @@ $$.control.registerControl('IMU', {
 			}
 		}
 
-		this.rotate = rotate
-		this.update = update
-		this.accelerate = accelerate
-		this.gyro_coarse_align = gyro_coarse_align
-		this.zero = zero
-		this.gyro_fine_align = gyro_fine_align
-		this.setSt = function(st) {
-			ctrl.setData({st})
-		}
-		this.setMet = function(met) {
-			ctrl.setData({met})
-		}
-		this.setReactor = function(c) {
-			ctrl.setData({c})
-		}
+        zero()
 
-		zero()
-	}
-
-
+        return {
+            rotate,
+            update,
+            accelerate,
+            gyro_coarse_align,
+            zero,
+            gyro_fine_align,
+            on: event.on.bind(event)            
+        }
+    }
 });
-
-
-
-

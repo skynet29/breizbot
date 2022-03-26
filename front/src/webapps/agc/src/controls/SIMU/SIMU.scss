@@ -1,9 +1,13 @@
 .SIMU {
-    padding: 10px;
-    background-color: #dddddd;
-    border: 1px solid black;
-    margin-left: 10px;
-    width: 350px;
+
+    > div {
+        padding: 10px;
+        background-color: #dddddd;
+        border: 1px solid black;
+        margin-left: 10px;
+        width: 350px;
+    }
+
 
     label {
         font-family: monospace;
@@ -24,6 +28,8 @@
         display: flex;
         justify-content: space-between;
         margin-bottom: 5px;
+        line-height: 1em;
+
     }
 
     .unit {

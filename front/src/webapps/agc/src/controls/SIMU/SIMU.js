@@ -117,6 +117,16 @@ $$.control.registerControl('SIMU', {
 				DESCENT_ENGINE_FLAG,
 				ASCENT_ENGINE_FLAG,
 				LM_CONFIG,
+				euler: [0, 0, 0],
+				yaw: function() {
+					return this.euler[0].toFixed(2)
+				},
+				pitch: function() {
+					return this.euler[1].toFixed(2)
+				},
+				roll: function() {
+					return this.euler[2].toFixed(2)
+				},
 
 
 				Simulation_Timer_text: function () {

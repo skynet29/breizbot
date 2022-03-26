@@ -27,23 +27,46 @@ $$.service.registerService('app.emuAgc', {
         }
 
         function writeIo(channel, value, mask) {
+            //console.log('writeIo', channel.toString(8), value, mask)
             if (mask != undefined) {
                 packetWrite(channel + 256, mask) // set mask bit 15
             }
             packetWrite(channel, value)
         }
 
-        function writeIoBit(channel, nbit, value) {
-            console.log('writeIoBit', channel.toString(8), nbit, value)
+        function setBit(varia, nbit, value) {
             const mask = bitMask(nbit)
-            if( value == 0) {
-                channels[channel] &= ~mask
+            if (value == 0) {
+                varia &= ~mask
             }
             else {
-                channels[channel] |= mask
+                varia |= mask
             }
-            writeIo(channel, (value == 0) ? 0 : mask, mask)
-        }        
+            return varia
+
+        }
+
+        function writeIoBits(channel, bits) {
+            let mask = 0
+            let value = 0
+            console.log('writeIoBits', channel.toString(8), bits)
+            Object.entries(bits).forEach(([nbit, val]) => {
+                mask = setBit(mask, nbit, 1)
+                value = setBit(value, nbit, val)
+                channels[channel] = setBit(channels[channel], nbit, val)
+            })
+            // console.log('mask ', mask.toString(2).padStart(15, '0'))
+            // console.log('value', value.toString(2).padStart(15, '0'))
+
+            writeIo(channel, value, mask)
+
+        }
+
+        function writeIoBit(channel, nbit, value) {
+            const data = {}
+            data[nbit] = value
+            writeIoBits(channel, data)
+        }
 
         function peek(offset) {
             const ret = Module.getValue(erasablePtr + offset * 2, 'i16') & 0x7fff
@@ -78,7 +101,7 @@ $$.service.registerService('app.emuAgc', {
                 channels[chan] = 0
             })
             startTime = performance.now()
-			totalSteps = 0
+            totalSteps = 0
 
         }
 
@@ -125,18 +148,18 @@ $$.service.registerService('app.emuAgc', {
             let ret = null
             const data = packetRead()
             if (data) {
-                const channel = data >> 16 
+                const channel = data >> 16
                 const value = data & 0xffff
 
                 channels[channel] = value
-                ret = {channel, value}
+                ret = { channel, value }
             }
             return ret
         }
 
 
         function bitMask(n) {
-            return 1 << (n-1)
+            return 1 << (n - 1)
         }
 
         function bit(val, n) {
@@ -144,19 +167,10 @@ $$.service.registerService('app.emuAgc', {
             return ((val >> n) & 1) == 1
         }
 
-        const inputsMask = {
-            LIFTOFF     : bitMask(5),
-            ISS_TURN_ON : bitMask(14),
-            PROCEED     : bitMask(14)
-        }
-
-        const outputsMask = {
-            ZERO_IMU    : bitMask(5)
-        }
-
         return {
             writeIo,
             writeIoBit,
+            writeIoBits,
             loadRom,
             start,
             run,
@@ -168,9 +182,7 @@ $$.service.registerService('app.emuAgc', {
             bitMask,
             bit,
             logChannelState,
-            logAllChannelState,
-            inputsMask,
-            outputsMask
+            logAllChannelState
         }
 
     }

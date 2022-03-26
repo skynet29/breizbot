@@ -209,8 +209,9 @@ $$.control.registerControl('SIMU', {
 			ASCENT_ENGINE_FLAG = ctrl.model.ASCENT_ENGINE_FLAG
 
 			//console.log('Descent_Propulsion_N', ctrl.model.Descent_Propulsion_N)
+			Descent_Propulsion_N = ctrl.model.Descent_Propulsion_N
 
-			Descent_Thrust_Procent = ctrl.model.Descent_Propulsion_N / Descent_Propulsion_Max_N
+			Descent_Thrust_Procent =  Descent_Propulsion_N / Descent_Propulsion_Max_N
 
 			if (DESCENT_ENGINE_FLAG && Descent_Propellant_Mass_KG > 0) {
 

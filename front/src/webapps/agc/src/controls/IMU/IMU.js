@@ -28,8 +28,6 @@ $$.control.registerControl('IMU', {
 		const DEG_TO_RAD = (PI / 180);
 		const RAD_TO_DEG = (180 / PI);
 
-		const radius = 75
-
 		const CA_ANGLE = 0.043948 * DEG_TO_RAD;
 		const FA_ANGLE = 0.617981 / 3600.0 * DEG_TO_RAD;
 		const ANGLE_INCR = 360.0 / 32768 * DEG_TO_RAD;
@@ -150,7 +148,7 @@ $$.control.registerControl('IMU', {
 				},
 				enableIMU: function(ev) {
 					console.log('enableIMU')
-					agc.writeIo(0o30, 0, agc.inputsMask.ISS_TURN_ON) 
+					agc.writeIoBit(0o30, 14, 0) 
 				},
 				launch: function(ev) {
 					ev.stopPropagation()
@@ -339,6 +337,8 @@ $$.control.registerControl('IMU', {
 		this.setReactor = function(c) {
 			ctrl.setData({c})
 		}
+
+		zero()
 	}
 
 

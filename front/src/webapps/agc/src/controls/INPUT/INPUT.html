@@ -1,0 +1,204 @@
+<div bn-event="click.check: onCheckbox">
+    <div>
+        <fieldset>
+            <legend>ENGINE</legend>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 30, bit: 3}" class="check">
+                <label>ENGINE ARMES SIGNAL</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 30, bit: 5}" class="check">
+                <label>AUTO THROTTLE<br>COMPUTER CONTROL OF DESCENT</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 32, bit: 9}" class="check">
+                <label>DESCENT ENGINE<br>DISABLED BY CREW</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 32, bit: 10}" class="check">
+                <label>APPARENT DESCENT ENGINE<br>GIMBAL FAILURE</label>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>THRUSTERS</legend>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 32, bit: 1}" class="check">
+                <label>THRUSTERS 2&4 DISABLED</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 32, bit: 2}" class="check">
+                <label>THRUSTERS 5&8 DISABLED</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 32, bit: 3}" class="check">
+                <label>THRUSTERS 1&3 DISABLED</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 32, bit: 4}" class="check">
+                <label>THRUSTERS 6&7 DISABLED</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 32, bit: 5}" class="check">
+                <label>THRUSTERS 14&16 DISABLED</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 32, bit: 6}" class="check">
+                <label>THRUSTERS 13&15 DISABLED</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 32, bit: 7}" class="check">
+                <label>THRUSTERS 9&12 DISABLED</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 32, bit: 8}" class="check">
+                <label>THRUSTERS 10&11 DISABLED</label>
+            </div>
+        </fieldset>
+    </div>
+    <div>
+        <fieldset>
+            <legend>RADAR</legend>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 33, bit: 2}" class="check">
+                <label>RR AUTO-POWER ON</label>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>IMU</legend>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 30, bit: 14}" class="check">
+                <label>ISS TURN ON REQUESTED</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 30, bit: 11}" class="check">
+                <label>IMU CAGE COMMAND TO DRIVE<br>IMU GIMBAL ANGLES TO 0</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 30, bit: 6}" class="check">
+                <label>DISPLAY INERTIAL DATA</label>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>DAP/ATTITUDE MODE</legend>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 30, bit: 10}" class="check">
+                <label>AGC HAS CONTROL OF LM<br>(NOT AGS)</label>
+            </div>
+            <div bn-control="brainjs.radiogroup">
+                <div class="data">
+                    <input type="radio">
+                    <label>DAP OFF</label>
+                </div>
+                <div class="data">
+                    <input type="radio">
+                    <label>ATTITUDE HOLD MODE ON</label>
+                </div>
+                <div class="data">
+                    <input type="radio">
+                    <label>AUTO STABILIZATION<br>OF ATTITUDE ON</label>
+                </div>
+
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>AOT BUTTONS</legend>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 16, bit: 3}" class="check">
+                <label>X-AXIS MARK</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 16, bit: 4}" class="check">
+                <label>Y-AXIS MARK</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 16, bit: 5}" class="check">
+                <label>MARK REJECT</label>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>DESCENT CONTROL</legend>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 16, bit: 6}" class="check">
+                <label>DESCENT+</label>
+            </div>
+            <div class="data">
+                <input type="checkbox" bn-data="{channel: 16, bit: 7}" class="check">
+                <label>DESCENT-</label>
+            </div>
+        </fieldset>
+    </div>
+
+    <div>
+        <fieldset>
+            <legend>RHC/ACA</legend>
+            <div class="slider">
+                <div class="sliderValue">
+                    <label>Roll</label>
+                    <span bn-text="roll"></span>
+                </div>
+                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="roll"></div>
+            </div>
+            <div class="slider">
+                <div class="sliderValue">
+                    <label>Pitch</label>
+                    <span bn-text="pitch"></span>
+                </div>
+                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="pitch"></div>
+            </div>
+            <div class="slider">
+                <div class="sliderValue">
+                    <label>Yaw</label>
+                    <span bn-text="yaw"></span>
+                </div>
+                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="yaw"></div>
+            </div>
+            <div>
+                <button bn-event="click: onDetent">DETENT</button>
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend>THC</legend>
+            <div bn-control="brainjs.radiogroup" class="THC">
+                <div class="data">
+                    <input type="radio">
+                    <label>NEUTRAL</label>
+                </div>
+                <div class="XYZ">
+                    <div>
+                        <div class="data">
+                            <input type="radio">
+                            <label>+X</label>
+                        </div>
+                        <div class="data">
+                            <input type="radio">
+                            <label>+Y</label>
+                        </div>
+                        <div class="data">
+                            <input type="radio">
+                            <label>+Z</label>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="data">
+                            <input type="radio">
+                            <label>-X</label>
+                        </div>
+                        <div class="data">
+                            <input type="radio">
+                            <label>-Y</label>
+                        </div>
+                        <div class="data">
+                            <input type="radio">
+                            <label>-Z</label>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </fieldset>
+    </div>
+</div>

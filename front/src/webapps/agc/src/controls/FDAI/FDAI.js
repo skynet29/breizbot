@@ -237,7 +237,7 @@ $$.control.registerControl('FDAI', {
 		
 		function move_fdai_marker(imu_angle, error) {
 
-			//console.log('move_fdai_marker', imu_angle)
+			//console.log('move_fdai_marker', {imu_angle, error})
 			const [OGA, IGA, MGA] = imu_angle
 			const [error_x, error_y, error_z] = error
 				

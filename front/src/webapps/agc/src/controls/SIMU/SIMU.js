@@ -54,7 +54,7 @@ $$.control.registerControl('SIMU', {
 		let ASCENT_SEPARATION = 0
 
 		// Parameter to calculate Moment of Inertia
-		let LM_CONFIG = 0
+		let LM_CONFIG = 'DESCENT'
 
 		let Alpha_Yaw = 0
 		let Alpha_Pitch = 0
@@ -63,47 +63,19 @@ $$.control.registerControl('SIMU', {
 		let Omega_Pitch = 0
 		let Omega_Yaw = 0
 
-
-		const a = []
-		const b = []
-		const c = []
-		for (let i = 0; i < 2; i++) {
-			a[i] = []
-			b[i] = []
-			c[i] = []
+		const Moment ={
+			'ASCENT': {
+				a: [0.0065443852, 0.0035784354, 0.0056946631],
+				b: [0.000032, 0.162862, 0.009312],
+				c: [-0.006923, 0.002588, -0.023608]
+			},
+			'DESCENT': {
+				a: [0.0059347674, 0.0014979264, 0.0010451889],
+				b: [0.002989, 0.018791, -0.068163],
+				c: [0.008721, -0.068163, -0.066027]
+			}
 		}
 
-		// LM Ascent Configuration
-		// YAW		
-		a[0][0] = 0.0065443852
-		b[0][0] = 0.000032
-		c[0][0] = -0.006923
-
-		// PITCH
-		a[0][1] = 0.0035784354
-		b[0][1] = 0.162862
-		c[0][1] = 0.002588
-
-		// ROLL
-		a[0][2] = 0.0056946631
-		b[0][2] = 0.009312
-		c[0][2] = -0.023608
-
-		// LM Descent Configuration
-		// YAW		
-		a[1][0] = 0.0059347674
-		b[1][0] = 0.002989
-		c[1][0] = 0.008721
-
-		// PITCH
-		a[1][1] = 0.0014979264
-		b[1][1] = 0.018791
-		c[1][1] = -0.068163
-
-		// ROLL
-		a[1][2] = 0.0010451889
-		b[1][2] = 0.021345
-		c[1][2] = -0.066027
 
 		// Set RCS Thruster to 0
 		let Q4U = 0
@@ -126,15 +98,10 @@ $$.control.registerControl('SIMU', {
 		let Q1L = 0
 		let Q1U = 0
 
-		let Simulation_Timer_Init = Date.now()
-		let Simulation_Timer = 0
-		let Delta_Time = 0
-		let Delta_Time2 = 0
-		let Delta_Time3 = 0
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				Simulation_Timer,
+				Simulation_Timer: 0,
 				Descent_Thrust_Procent,
 				LM_Weight_KG,
 				Descent_Propellant_Mass_KG,
@@ -184,14 +151,14 @@ $$.control.registerControl('SIMU', {
 				},
 
 				isSeparated: function() {
-					return this.LM_CONFIG == 1
+					return this.LM_CONFIG == 'ASCENT'
 				}
 
 			},
 			events: {
 				onSeperateStage: function() {
 					console.log('onSeperateStage')
-					LM_CONFIG = 1
+					LM_CONFIG = 'ASCENT'
 					Descent_Propellant_Mass_KG = 0
 					LM_Weight_Descent_KG = 0
 					ctrl.setData({LM_CONFIG, Descent_Propellant_Mass_KG, LM_Weight_Descent_KG})
@@ -203,21 +170,20 @@ $$.control.registerControl('SIMU', {
 		window.simu = ctrl
 
 		function modify_pipaXYZ(yawDeltaV, PitchDeltaV, RollDeltaV) {
-			elt.trigger('accelerate', [yawDeltaV, PitchDeltaV, RollDeltaV])
+			elt.trigger('data', {accelerate: [yawDeltaV, PitchDeltaV, RollDeltaV]})
 		}
 
 		function Transform_BodyAxes_StableMember(dp, dq, dr) {
-			elt.trigger('rorate', [dp, dq, dr])
+			elt.trigger('data', {rotate: [dp, dq, dr]})
 		}
 
 		// Main Engine Simulation
-		function dynamic_simulation() {
-			console.log('dynamic_simulation')
+		function dynamic_simulation(Delta_Time2) {
+			//console.log('dynamic_simulation', Delta_Time2)
 
 			LM_Weight_KG = LM_Weight_Ascent_KG + LM_Weight_Descent_KG
 
 			ctrl.setData({
-				Simulation_Timer,
 				Descent_Thrust_Procent,
 				LM_Weight_KG,
 				Descent_Propellant_Mass_KG,
@@ -232,13 +198,15 @@ $$.control.registerControl('SIMU', {
 			DESCENT_ENGINE_FLAG = ctrl.model.DESCENT_ENGINE_FLAG
 			ASCENT_ENGINE_FLAG = ctrl.model.ASCENT_ENGINE_FLAG
 
+			//console.log('Descent_Propulsion_N', ctrl.model.Descent_Propulsion_N)
+
 			Descent_Thrust_Procent = ctrl.model.Descent_Propulsion_N / Descent_Propulsion_Max_N
 
 			if (DESCENT_ENGINE_FLAG && Descent_Propellant_Mass_KG > 0) {
 
 				Descent_Fuel_Flow_SEC = Descent_Propulsion_N / Descent_Specific_Impulse_MS
 
-				const Descent_Fuel_Flow = Descent_Fuel_Flow_SEC / Delta_Time2
+				const Descent_Fuel_Flow = Descent_Fuel_Flow_SEC * Delta_Time2
 
 				Descent_Propellant_Mass_KG -= Descent_Fuel_Flow
 
@@ -281,9 +249,9 @@ $$.control.registerControl('SIMU', {
 			// Calculate Single Jet Accelleration / Moment of Inertia depend on LM weight
 
 			const m = LM_Weight_KG / 65535
-			const [a_yaw, a_pitch, a_roll] = a[LM_CONFIG]
-			const [b_yaw, b_pitch, b_roll] = b[LM_CONFIG]
-			const [c_yaw, c_pitch, c_roll] = c[LM_CONFIG]
+			const [a_yaw, a_pitch, a_roll] = Moment[LM_CONFIG].a
+			const [b_yaw, b_pitch, b_roll] = Moment[LM_CONFIG].b
+			const [c_yaw, c_pitch, c_roll] = Moment[LM_CONFIG].c
 
 			Alpha_Yaw = RAD_TO_DEG_PI4 * (b_yaw + a_yaw / (m + c_yaw))
 			Alpha_Pitch = RAD_TO_DEG_PI4 * (b_pitch + a_pitch / (m + c_pitch))
@@ -294,7 +262,8 @@ $$.control.registerControl('SIMU', {
 		}
 
 		// Check AGC Thruster Status and fire dedicated RCS Thruster
-		function update_RCS() {
+		function update_RCS(Delta_Time) {
+			console.log('update_RCS', Delta_Time)
 			const nv1 = (Q2D == 1 || Q4U == 1) ? Q2D + Q4U : 0
 			const nv2 = (Q2U == 1 || Q4D == 1) ? -(Q2U + Q4D) : 0
 
@@ -368,6 +337,8 @@ $$.control.registerControl('SIMU', {
 				Omega_Pitch += Delta_Omega_Pitch
 				Omega_Roll += Delta_Omega_Roll
 
+				elt.trigger('data', {omega: [Omega_Yaw, Omega_Pitch, Omega_Roll]})
+
 				const RCS_Fuel_Flow = (abs(nv1) + abs(nv2) + abs(nu1) + abs(nu2) + abs(np1) + abs(np2)) * RCS_Thrust_N / RCS_Specific_Impulse_MS * Delta_Time
 				LM_Weight_Ascent_KG -= RCS_Fuel_Flow
 				RCS_Propellant_Mass_KG -= RCS_Fuel_Flow
@@ -376,6 +347,10 @@ $$.control.registerControl('SIMU', {
 
 		this.dynamic_simulation = dynamic_simulation
 		this.update_RCS = update_RCS
+		this.setData = function(data) {
+			//console.log('setData', data)
+			ctrl.setData(data)
+		}
 	}
 
 

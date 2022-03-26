@@ -75,7 +75,7 @@
         height: 40px;
         font-size: 40px;
         font-family: seven;
-        line-height: 40px; }
+        line-height: 30px; }
       .DSKY .top .right .big {
         width: 120px; }
   .DSKY .bottom {
@@ -169,6 +169,52 @@
         color: #0000FF;
         width: 80px; }
 
+.INPUT > div {
+  padding: 10px;
+  background-color: #dddddd;
+  border: 1px solid black;
+  margin-left: 10px;
+  width: 800px;
+  display: flex;
+  flex-direction: row; }
+  .INPUT > div > div {
+    margin-left: 10px; }
+
+.INPUT label {
+  font-family: monospace;
+  font-size: 14px;
+  color: #0000FF;
+  display: block;
+  margin-left: 10px;
+  line-height: 1em; }
+
+.INPUT .data {
+  display: flex;
+  margin-bottom: 10px;
+  align-items: center; }
+
+.INPUT button {
+  margin-top: 10px; }
+
+.INPUT .slider {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px; }
+  .INPUT .slider .sliderValue {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px; }
+  .INPUT .slider .brainjs-slider {
+    width: 150px; }
+
+.INPUT .XYZ {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between; }
+
 .SIMU {
   padding: 10px;
   background-color: #dddddd;
@@ -177,7 +223,7 @@
   width: 350px; }
   .SIMU label {
     font-family: monospace;
-    font-size: 16px;
+    font-size: 14px;
     color: #0000FF; }
   .SIMU .brainjs-slider {
     margin: 10px; }

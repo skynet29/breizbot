@@ -31,6 +31,7 @@ $$.control.registerControl('DSKY', {
 			'RSET': 18
 		}
 
+		const bit = agc.bit
 
 		function getDigit(c) {
 			var d = 'E';
@@ -70,45 +71,46 @@ $$.control.registerControl('DSKY', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				lamps: 0,
-				status8: 0, // status bits of AGC output channel 010
+				flash_flag: false,
+				status11: 0,
+				status13: 0,
+				status10: 0, // status bits of AGC output channel 010
 				digits: '000000+00000+00000+00000',
-				on: 0,	// to simulate blinking (phase increases by 1 every 100 ms)
 				comp_acty: function () {
-					return getColor(this.lamps & agc.lampMask.COMP_ACTY)
+					return getColor(bit(this.status11, 2))
 				},
 				uplink_acty: function () {
-					return getColor2(this.lamps & agc.lampMask.UPLINK_ACTY)
+					return getColor2(bit(this.status11, 3))
 				},
 				temp: function () {
-					return getColor(this.lamps & agc.lampMask.TEMP)
+					return getColor(bit(this.status11, 4))
 				},
 				key_rel: function () {
-					return getColor2(this.lamps & agc.lampMask.KEY_REL)
+					return getColor2(bit(this.status11, 5) && this.flash_flag)
 				},
 				opr_err: function () {
-					return getColor2(this.lamps & agc.lampMask.OPER_ERR)
+					return getColor2(bit(this.status11, 7) && this.flash_flag)
 				},
 				stby: function () {
-					return getColor2(this.lamps & agc.lampMask.STBY)
+					return getColor2(bit(this.status13, 11))
 				},
 				vel: function () {
-					return getColor(this.status8 & agc.statusMask.VEL)
+					return getColor(bit(this.status10, 3))
 				},
 				no_att: function () {
-					return getColor2(this.status8 & agc.statusMask.NO_ATT)
+					return getColor2(bit(this.status10, 4))
 				},
 				alt: function () {
-					return getColor(this.status8 & agc.statusMask.ALT)
+					return getColor(bit(this.status10, 5))
 				},
 				gimball_lock: function () {
-					return getColor(this.status8 & agc.statusMask.GIMBAL_LOCK)
+					return getColor(bit(this.status10, 6))
 				},
 				tracker: function () {
-					return getColor(this.status8 & agc.statusMask.TRACKER)
+					return getColor(bit(this.status10, 8))
 				},
 				prog: function () {
-					return getColor(this.status8 & agc.statusMask.PROG)
+					return getColor(bit(this.status10, 9))
 				},
 				r1: function () {
 					return this.digits.slice(6, 12).replace(/H/g, space)
@@ -123,20 +125,21 @@ $$.control.registerControl('DSKY', {
 					return this.digits.slice(18, 24).replace(/H/g, space)
 				},
 				verb00: function () {
-					if (!(this.lamps & agc.lampMask.VERB_NOUN)) {
-						return this.digits.slice(2, 4).replace(/H/g, space)
+					if (bit(this.status11, 6) && !this.flash_flag) {
+						return space + space;
 					}
 					else {
-						return space + space;
+						return this.digits.slice(2, 4).replace(/H/g, space)
 					}
 				},
 				noun00: function () {
-					if (!(this.lamps & agc.lampMask.VERB_NOUN)) {
-						return this.digits.slice(4, 6).replace(/H/g, space)
-					}
-					else {
+					if (bit(this.status11, 6) && !this.flash_flag) {
 						return space + space;
 					}
+					else {
+						return this.digits.slice(4, 6).replace(/H/g, space)
+					}
+
 				}
 			},
 			events: {
@@ -160,8 +163,29 @@ $$.control.registerControl('DSKY', {
 			ctrl.setData({ lamps: value })
 		}
 
+		this.setData = function(data) {
+			//console.log('setData', data)
+			ctrl.setData(data)
+		}
+
 		this.process = function (channel, value) {
-			if (value == 0) return
+			if (channel == 0o10 && value == 0) {
+				return
+			}
+
+			//console.log('process', channel.toString(8), value)
+
+			if (channel == 0o11) {
+				ctrl.setData({status11: value})
+				return
+			}
+
+
+			if (channel == 0o13) {
+				ctrl.setData({status11: value})
+				return
+			}
+
 			/*
 				The 15-bit code output in i/o channel 10 (octal) can be represented in bit-fields as AAAABCCCCCDDDDD where
 				AAAA indicates the digit-pair
@@ -185,7 +209,7 @@ $$.control.registerControl('DSKY', {
 
 			switch (aa) {
 				case 12:
-					ctrl.setData({ status8: value })
+					ctrl.setData({ status10: value })
 					break
 				case 11:
 					s[0] = cc
@@ -252,13 +276,7 @@ $$.control.registerControl('DSKY', {
 				//console.log('channel', channel, 'value', value.toString(16))
 			}
 
-			// else if (channel == 0o11) {
-			// 	console.log('status9', value.toString(16))
-			// }
-			// else if (channel == 0o13) {
-			// 	//status11 = value & 0x0200
-			// 	ctrl.setData({status11: value & 0x0200})
-			// }
+
 		}
 
 	}

@@ -12,19 +12,19 @@ $$.service.registerService('app.emuAgc', {
         const packetWrite = Module.cwrap('packet_write', null, ['number', 'number'])
         const get_erasable_ptr = Module.cwrap('get_erasable_ptr', 'number')
 
-        const events = new EventEmitter2()
-
         const cycleMs = 0.01172 // 11.72 microseconds per AGC instruction
 
-
-        const state = {
-            channels: {},
-            lamps: 0
-        }
 
         let startTime = 0
         let totalSteps = 0
         let erasablePtr = null
+
+        const channels = {
+            0o30: 0b011110011011001,
+            0o31: 0b111111111111111,
+            0o32: 0b010001111111111,
+            0o33: 0b111111111111110
+        }
 
         function writeIo(channel, value, mask) {
             if (mask != undefined) {
@@ -32,6 +32,18 @@ $$.service.registerService('app.emuAgc', {
             }
             packetWrite(channel, value)
         }
+
+        function writeIoBit(channel, nbit, value) {
+            console.log('writeIoBit', channel.toString(8), nbit, value)
+            const mask = bitMask(nbit)
+            if( value == 0) {
+                channels[channel] &= ~mask
+            }
+            else {
+                channels[channel] |= mask
+            }
+            writeIo(channel, (value == 0) ? 0 : mask, mask)
+        }        
 
         function peek(offset) {
             const ret = Module.getValue(erasablePtr + offset * 2, 'i16') & 0x7fff
@@ -61,12 +73,16 @@ $$.service.registerService('app.emuAgc', {
         }
 
         function start() {
+            reset();
+            [5, 6].forEach((chan) => {
+                channels[chan] = 0
+            })
             startTime = performance.now()
 			totalSteps = 0
 
         }
 
-        function loop() {
+        function run() {
             const targetSteps = Math.floor((performance.now() - startTime) / cycleMs)
             const diffSteps = targetSteps - totalSteps
             //console.log('diffSteps', diffSteps)
@@ -87,79 +103,45 @@ $$.service.registerService('app.emuAgc', {
         }
 
         function getChannelState(channel) {
-            return state.channels[channel]
+            return channels[channel]
+        }
+
+        function logChannelState(channel) {
+            const channelOctal = parseInt(channel).toString(8).padStart('3', '0')
+            console.log(`channel[${channelOctal}] = ` + channels[channel].toString(2).padStart(15, '0'))
+        }
+
+        function logAllChannelState() {
+            Object.keys(channels).forEach((channel) => {
+                logChannelState(channel)
+            })
         }
 
         function getChannelBitState(channel, nbit) {
-            return bit(state.channels[channel], nbit)
+            return bit(channels[channel], nbit)
         }
 
-        function readAllIo() {
-            let data
-
-            do {
-                data = packetRead()
-                const channel = data >> 16
+        function readIo() {
+            let ret = null
+            const data = packetRead()
+            if (data) {
+                const channel = data >> 16 
                 const value = data & 0xffff
-                                 
-                state.channels[channel] = value
 
-                events.emit('channelUpdate', {channel, value})
-
-                // if (previousValue != value) {
-                //     state.channels[channel] = value
-                //     //console.log('readIo', channel.toString(8), value)
-                //     events.emit('channelUpdate', {channel, value})
-                // }
-                if (channel === 0o11) {
-                    const bitmask = 0b110
-                    // Bit 2: COMP ACTY
-                    // Bit 3: UPLINK ACTY
-                    state.lamps = (state.lamps & (~bitmask >>> 0)) | (value & bitmask)
-                    events.emit('lightsUpdate', state.lamps)
-            
-                }
-                else if (channel === 0o163) {
-                    // Fictitious port for blinking lights - apparently an emulation of hardware square-wave
-                    // modulation of some signals, external to the AGC. yaAGC kindly supplies these signals to
-                    // us already modulated.
-                    // See https://www.ibiblio.org/apollo/developer.html
-                    const bitmask = 0b111111000;
-                    // console.log('blinking lamps', this.state.lamps);
-                    state.lamps = (state.lamps & (~bitmask >>> 0)) | (value & bitmask);
-
-                    events.emit('lightsUpdate', state.lamps)
-                }
-
-
-            } while (data)
-
+                channels[channel] = value
+                ret = {channel, value}
+            }
+            return ret
         }
+
 
         function bitMask(n) {
             return 1 << (n-1)
         }
 
-        const lampMask = {
-            COMP_ACTY   : bitMask(2),
-            UPLINK_ACTY : bitMask(3),
-            TEMP        : bitMask(4),
-            KEY_REL     : bitMask(5),
-            VERB_NOUN   : bitMask(6),
-            OPER_ERR    : bitMask(7),
-            RESTART     : bitMask(8),
-            STBY        : bitMask(9)
-        }
-
-        const statusMask = {
-            PRIO_DISP   : bitMask(1),
-            NO_DAP      : bitMask(2),
-            VEL         : bitMask(3),
-            NO_ATT      : bitMask(4),
-            ALT         : bitMask(5),
-            GIMBAL_LOCK : bitMask(6),
-            TRACKER     : bitMask(8),
-            PROG        : bitMask(9)
+        function bit(val, n) {
+            n--
+            return ((val >> n) & 1) == 1
         }
 
         const inputsMask = {
@@ -174,19 +156,19 @@ $$.service.registerService('app.emuAgc', {
 
         return {
             writeIo,
+            writeIoBit,
             loadRom,
-            reset,
-            stepCpu,
-            on: events.on.bind(events),
             start,
-            loop,
-            readAllIo,
+            run,
+            readIo,
             peek,
             poke,
             getChannelState,
             getChannelBitState,
-            lampMask,
-            statusMask,
+            bitMask,
+            bit,
+            logChannelState,
+            logAllChannelState,
             inputsMask,
             outputsMask
         }

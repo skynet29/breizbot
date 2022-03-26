@@ -2,41 +2,20 @@ declare namespace AppAgc {
 
     declare namespace Services {
 
-        type EventName = 'channelUpdate' | 'lightsUpdate';
-
         interface Interface {
             loadRom(url: string):Promise<void>;
-            reset():void;
             writeIo(channel: number, data: number, mask?: number):void;
-            on(eventName: EventName, cbk: (ev: any) => void): void;
+            writeIoBit(channel: number, nbit: number, value: 0 |1): void;
             start():void;
-            loop():void;
-            readAllIo():void;
+            run():void;
+            readIo():null | {channel: number, value: number};
             peek(offset: number): number
             poke(offset: number, value: number):void;
             getChannelState(channel: number): number;
             getChannelBitState(channel: number, nbit: number): 0 | 1;
-            lampMask : {
-                COMP_ACTY,
-                UPLINK_ACTY,
-                TEMP,
-                KEY_REL,
-                VERB_NOUN,
-                OPER_ERR,
-                RESTART,
-                STBY
-                    
-            };
-            statusMask: {
-                PRIO_DISP,
-                NO_DAP,
-                VEL,
-                NO_ATT,
-                ALT,
-                GIMBAL_LOCK,
-                TRACKER,
-                PROG
-            };
+            bitMask(n: number): number;
+            bit(val: number, n: number): boolean;
+    
             inputsMask: {
                 LIFTOFF,
                 ISS_TURN_ON,
@@ -68,8 +47,8 @@ declare namespace AppAgc {
 
         declare namespace SIMU {
             interface Interface {
-                dynamic_simulation(): void;
-                update_RCS(): void;
+                dynamic_simulation(Delta_Time: number): void;
+                update_RCS(Delta_Time: number): void;
             }
         }
 

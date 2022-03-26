@@ -1,0 +1,57 @@
+.INPUT {
+    > div {
+        padding: 10px;
+        background-color: #dddddd;
+        border: 1px solid black;
+        margin-left: 10px;
+        width: 800px;
+        display: flex;
+        flex-direction: row;
+        > div {
+            margin-left: 10px;
+        }
+    }
+
+
+    label {
+        font-family: monospace;
+        font-size: 14px; 
+        color: #0000FF; 
+        display: block;
+        margin-left: 10px;
+        line-height: 1em;
+    }
+
+    .data {
+        display: flex;
+        margin-bottom: 10px;
+        align-items: center;
+    }
+
+    button {
+        margin-top: 10px;
+    }
+
+    .slider {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 10px;
+        .sliderValue {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .brainjs-slider {
+            width: 150px;
+        }
+    }
+
+    .XYZ {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

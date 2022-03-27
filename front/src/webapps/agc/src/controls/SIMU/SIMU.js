@@ -4,7 +4,7 @@ $$.control.registerControl('SIMU', {
 
 	template: { gulp_inject: './SIMU.html' },
 
-	deps: ['breizbot.pager'],
+	deps: ['breizbot.pager', 'app.emuAgc'],
 
 	props: {
 	},
@@ -12,8 +12,9 @@ $$.control.registerControl('SIMU', {
 	/**
 	 * 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {AppAgc.Services.AGC.Interface} agc
 	 */
-	init: function (elt, pager) {
+	init: function (elt, pager, agc) {
 
 		const PI = Math.PI
 		const PI4 = PI / 4
@@ -76,27 +77,6 @@ $$.control.registerControl('SIMU', {
 			}
 		}
 
-
-		// Set RCS Thruster to 0
-		let Q4U = 0
-		let Q4D = 0
-		let Q4F = 0
-		let Q4R = 0
-
-		let Q3U = 0
-		let Q3D = 0
-		let Q3A = 0
-		let Q3R = 0
-
-		let Q2U = 0
-		let Q2D = 0
-		let Q2A = 0
-		let Q2L = 0
-
-		let Q1D = 0
-		let Q1F = 0
-		let Q1L = 0
-		let Q1U = 0
 
 
 		const ctrl = $$.viewController(elt, {
@@ -275,6 +255,25 @@ $$.control.registerControl('SIMU', {
 		// Check AGC Thruster Status and fire dedicated RCS Thruster
 		function update_RCS(Delta_Time) {
 			console.log('update_RCS', Delta_Time)
+			
+			const Q4U = agc.getChannelBitState(0o5, 1)
+			const Q4D = agc.getChannelBitState(0o5, 2)
+			const Q3U = agc.getChannelBitState(0o5, 3)
+			const Q3D = agc.getChannelBitState(0o5, 4)
+			const Q2U = agc.getChannelBitState(0o5, 5)
+			const Q2D = agc.getChannelBitState(0o5, 6)
+			const Q1U = agc.getChannelBitState(0o5, 7)
+			const Q1D = agc.getChannelBitState(0o5, 8)
+
+			const Q3A = agc.getChannelBitState(0o6, 1)
+			const Q4F = agc.getChannelBitState(0o6, 2)
+			const Q1F = agc.getChannelBitState(0o6, 3)
+			const Q2A = agc.getChannelBitState(0o6, 4)
+			const Q2L = agc.getChannelBitState(0o6, 5)
+			const Q3R = agc.getChannelBitState(0o6, 6)
+			const Q4R = agc.getChannelBitState(0o6, 7)
+			const Q1L = agc.getChannelBitState(0o6, 8)
+
 			const nv1 = (Q2D == 1 || Q4U == 1) ? Q2D + Q4U : 0
 			const nv2 = (Q2U == 1 || Q4D == 1) ? -(Q2U + Q4D) : 0
 

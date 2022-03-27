@@ -68,5 +68,11 @@ declare namespace AppAgc {
             }
         }
 
+        declare namespace OUTPUT {
+            interface Interface {
+                update():void;
+            }
+        }
+
     }
 }

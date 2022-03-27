@@ -12,12 +12,9 @@ $$.control.registerControl('DSKY', {
 	/**
 	 * 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
-	 * @param {AppAgc.Services.Interface} agc
+	 * @param {AppAgc.Services.AGC.Interface} agc
 	 */
 	init: function (elt, pager, agc) {
-
-		var floor = Math.floor
-		var round = Math.round
 
 		const keyMapping = {
 			'VERB': 17,
@@ -182,7 +179,7 @@ $$.control.registerControl('DSKY', {
 
 
 			if (channel == 0o13) {
-				ctrl.setData({status11: value})
+				ctrl.setData({status13: value})
 				return
 			}
 

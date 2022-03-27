@@ -3,7 +3,7 @@
         <fieldset>
             <legend>ENGINE</legend>
             <div class="data">
-                <input type="checkbox" bn-data="{channel: 30, bit: 3}" class="check">
+                <input type="checkbox" bn-data="{channel: 30, bit: 3}" class="check" checked>
                 <label>ENGINE ARMES SIGNAL</label>
             </div>
             <div class="data">
@@ -74,14 +74,14 @@
                 <label>IMU CAGE COMMAND TO DRIVE<br>IMU GIMBAL ANGLES TO 0</label>
             </div>
             <div class="data">
-                <input type="checkbox" bn-data="{channel: 30, bit: 6}" class="check">
+                <input type="checkbox" bn-data="{channel: 30, bit: 6}" class="check" checked>
                 <label>DISPLAY INERTIAL DATA</label>
             </div>
         </fieldset>
         <fieldset>
             <legend>DAP/ATTITUDE MODE</legend>
             <div class="data">
-                <input type="checkbox" bn-data="{channel: 30, bit: 10}" class="check">
+                <input type="checkbox" bn-data="{channel: 30, bit: 10}" class="check" checked>
                 <label>AGC HAS CONTROL OF LM<br>(NOT AGS)</label>
             </div>
             <div bn-control="brainjs.radiogroup" bn-event="change: onDapModeChange" bn-val="DAP_MODE">
@@ -138,21 +138,21 @@
                     <label>Roll</label>
                     <span bn-text="roll"></span>
                 </div>
-                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="roll"></div>
+                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="roll" bn-event="sliderchange: onRollChange"></div>
             </div>
             <div class="slider">
                 <div class="sliderValue">
                     <label>Pitch</label>
                     <span bn-text="pitch"></span>
                 </div>
-                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="pitch"></div>
+                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="pitch" bn-event="input: onPitchChange"></div>
             </div>
             <div class="slider">
                 <div class="sliderValue">
                     <label>Yaw</label>
                     <span bn-text="yaw"></span>
                 </div>
-                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="yaw"></div>
+                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="yaw" bn-event="input: onYawChange"></div>
             </div>
             <div>
                 <button bn-event="click: onDetent">DETENT</button>

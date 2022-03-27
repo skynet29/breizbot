@@ -19,15 +19,23 @@ $$.service.registerService('app.emuAgc', {
         let totalSteps = 0
         let erasablePtr = null
 
+        const masks = {
+            0o30: 0b111111111111111,
+            0o31: 0b111111111111111,
+            0o32: 0b010001111111111,
+            0o33: 0b111111111111110
+
+        }
+
         const channels = {
             0o30: 0b011110011011001,
             0o31: 0b111111111111111,
             0o32: 0b010001111111111,
-            0o33: 0b111111111111110
+            0o33: 0b101111111111110
         }
 
         function writeIo(channel, value, mask) {
-            //console.log('writeIo', channel.toString(8), value, mask)
+            console.log('writeIo', channel.toString(8), value, mask)
             if (mask != undefined) {
                 packetWrite(channel + 256, mask) // set mask bit 15
             }
@@ -100,6 +108,10 @@ $$.service.registerService('app.emuAgc', {
             [5, 6].forEach((chan) => {
                 channels[chan] = 0
             })
+            Object.entries(channels).forEach(([chan, val]) => {
+                const mask = masks[chan]
+                writeIo(chan, val, mask)
+            })
             startTime = performance.now()
             totalSteps = 0
 
@@ -122,7 +134,7 @@ $$.service.registerService('app.emuAgc', {
 
         function bit(val, n) {
             n--
-            return (val >> n) & 1
+            return ((val >> n) & 1) == 1
         }
 
         function getChannelState(channel) {

@@ -33,6 +33,11 @@ $$.control.registerControl('INPUT', {
 				onDetent: function (ev) {
 					//console.log('onDetent')
 					ctrl.setData({ roll: 0, pitch: 0, yaw: 0 })
+					agc.writeIo(0o166, 0)
+					agc.writeIo(0o167, 0)
+					agc.writeIo(0o170, 0)
+					agc.writeIoBit(0o31, 15, 1)
+					reset_rhc()
 				},
 				onCheckbox: function () {
 					const check = $(this)
@@ -82,10 +87,59 @@ $$.control.registerControl('INPUT', {
 							agc.writeIoBits(0o31, { 7: 1, 8: 1, 9: 1, 10: 1, 11: 1, 12: 0 })
 							break
 					}
-
+				},
+				onRollChange: function() {
+					console.log('onRollChange', ctrl.model.roll)
+					write_rhc(ctrl.model.roll, 0o170, 5, 6)
+				},
+				onPitchChange: function() {
+					console.log('onPitchChange', ctrl.model.pitch)
+					write_rhc(ctrl.model.pitch, 0o166, 1, 2)
+				},
+				onYawChange: function() {
+					console.log('onYawChange', ctrl.model.yaw)
+					write_rhc(ctrl.model.yaw, 0o167, 3, 4)
 				}
+
 			}
 		})
+
+		function write_rhc(val, chan, bit1, bit2) {
+			const bit15 = agc.getChannelBitState(0o31, 15)
+			let bits = {}
+			if(val < 0) {
+				if (bit15 == 1) {
+					bits[bit1] = 1
+					bits[bit2] = 0
+					setTimeout(reset_rhc, 100)
+				}
+				//bits[15] = 0
+				val = (-val) ^0x7FFF // converts to ones-complement
+			}
+			else if (val > 0) {
+				if (bit15 == 1) {
+					bits[bit1] = 0
+					bits[bit2] = 1
+					setTimeout(reset_rhc, 100)
+				}
+				//bits[15] = 0
+			}
+
+			//console.log('bits', bits)
+			agc.writeIoBits(0o31, bits)
+			agc.writeIo(chan, val)
+
+			const {roll, pitch, yaw} = ctrl.model
+			if (roll == 0 && pitch == 0 && yaw == 0 && bit15 == 0) {
+				agc.writeIoBit(0o31, 15, 1)
+			}
+
+		}
+
+		function reset_rhc() {
+			console.log('reset_rhc')
+			agc.writeIoBits(0o31, {1: 1, 2: 1, 3: 1, 4: 1, 5: 1, 6: 1})
+		}
 
 	}
 

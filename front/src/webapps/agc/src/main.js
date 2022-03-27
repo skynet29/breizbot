@@ -69,10 +69,14 @@ $$.control.registerControl('rootPage', {
 		/**@type {AppAgc.Controls.FDAI.Interface} */
 		const fdai = ctrl.scope.fdai
 
+		/**@type {AppAgc.Controls.OUTPUT.Interface} */
+		const output = ctrl.scope.output
+
+		let imuData = null
+
 		imu.on('data', (data) => {
 			//console.log('imuData', data)
-			const {imu_angle, error} = data
-			fdai.update(imu_angle, error)
+			imuData = data
 		})
 
 
@@ -89,7 +93,7 @@ $$.control.registerControl('rootPage', {
 			let Simulation_Timer_Init = Date.now()
 			let Simulation_Timer = 0
 			let zeit = 0
-			let JET_FLAG = 0
+			let JET_FLAG = false
 			let flash_flag = false
 			let zero = false
 
@@ -106,7 +110,7 @@ $$.control.registerControl('rootPage', {
 					switch (channel) {
 						case 0o10:
 						case 0o11:
-						case 0x13:
+						case 0o13:
 							dsky.process(channel, value)
 							break
 						case 0o12:
@@ -129,7 +133,11 @@ $$.control.registerControl('rootPage', {
 							break;
 						case 0o5:
 						case 0o6:
-
+							if (value != 0) {
+								console.log('JET', channel.toString(8), value.toString(2).padStart(15, '0'))
+							}
+							processJetFiring(channel)
+							output.update()
 							break
 					}
 					loop()
@@ -144,7 +152,7 @@ $$.control.registerControl('rootPage', {
 					Simulation_Timer_Init = t
 					//console.log({ Delta_Time2, Delta_Time4 })
 					zeit = 10
-					if (JET_FLAG == 1) {
+					if (JET_FLAG) {
 						simu.update_RCS(Delta_Time / 1000)
 						zeit = 5
 					}
@@ -156,7 +164,10 @@ $$.control.registerControl('rootPage', {
 						Delta_Time2 = 0
 					}
 					if (Delta_Time4 > 100) {
-						imu.update()
+						if (imuData != null) {
+							const {imu_angle, error} = imuData
+							fdai.update(imu_angle, error)				
+						}
 						Delta_Time4 = 0
 					}
 					if (Delta_Time3 > 300) {
@@ -170,7 +181,17 @@ $$.control.registerControl('rootPage', {
 
 			loop()
 
-
+			function processJetFiring(channel){
+				let sum = 0
+				for(let i = 1; i <= 8; i++) {
+					sum += agc.getChannelBitState(0o5, i)
+				}
+				for(let i = 1; i <= 8; i++) {
+					sum += agc.getChannelBitState(0o6, i)
+				}
+				JET_FLAG = (sum > 0)
+				//console.log('processJetFiring', channel.toString(8), sum, JET_FLAG)
+			}
 
 
 

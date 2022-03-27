@@ -4,6 +4,8 @@
   padding: 5px; }
   .rootPage .DSKY {
     margin-right: 20px; }
+  .rootPage .OUTPUT {
+    margin-top: 10px; }
 
 @font-face {
   font-family: seven;
@@ -153,6 +155,55 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between; }
+
+.OUTPUT > div {
+  padding: 10px;
+  background-color: #dddddd;
+  border: 1px solid black;
+  margin-left: 10px;
+  width: 800px;
+  display: flex;
+  flex-direction: row; }
+  .OUTPUT > div > div {
+    margin-left: 10px; }
+
+.OUTPUT fieldset > div {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px; }
+
+.OUTPUT label {
+  font-family: monospace;
+  font-size: 14px;
+  color: #0000FF;
+  display: block;
+  line-height: 1em; }
+
+.OUTPUT .quad {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  margin-right: 10px; }
+  .OUTPUT .quad > * {
+    text-align: center; }
+  .OUTPUT .quad label {
+    grid-column: 1 / 3;
+    grid-row: 1; }
+
+.OUTPUT .one {
+  grid-column: 1;
+  grid-row: 2; }
+
+.OUTPUT .two {
+  grid-column: 2;
+  grid-row: 2; }
+
+.OUTPUT .three {
+  grid-column: 1;
+  grid-row: 3; }
+
+.OUTPUT .four {
+  grid-column: 2;
+  grid-row: 3; }
 
 .SIMU > div {
   padding: 10px;

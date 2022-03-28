@@ -63,4 +63,11 @@
         grid-row: 3;
     }
 
+    .cdu {
+        display: flex;
+        flex-direction: column;
+        span {
+            margin-bottom: 5px;
+        }
+    }
 }

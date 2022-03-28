@@ -113,7 +113,7 @@ $$.control.registerControl('INPUT', {
 					bits[bit2] = 0
 					setTimeout(reset_rhc, 100)
 				}
-				//bits[15] = 0
+				bits[15] = 0
 				val = (-val) ^0x7FFF // converts to ones-complement
 			}
 			else if (val > 0) {
@@ -122,7 +122,7 @@ $$.control.registerControl('INPUT', {
 					bits[bit2] = 1
 					setTimeout(reset_rhc, 100)
 				}
-				//bits[15] = 0
+				bits[15] = 0
 			}
 
 			//console.log('bits', bits)

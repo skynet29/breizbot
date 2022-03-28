@@ -42,16 +42,16 @@ $$.control.registerControl('rootPage', {
 				},
 				onSimuData: function (ev, data) {
 					//console.log('onSimuData', data)
-					const {rotate, accelerate, omega} = data
+					const { rotate, accelerate, omega } = data
 					if (rotate) {
 						imu.rotate(rotate)
 					}
 					if (accelerate) {
 						imu.accelerate(accelerate)
 					}
-					
+
 				},
-				onFdaiData: function(ev, data) {
+				onFdaiData: function (ev, data) {
 					//console.log('FDAI DATA', data)
 					simu.setData(data)
 				}
@@ -84,7 +84,7 @@ $$.control.registerControl('rootPage', {
 
 			//profile = await http.get(files.assetsUrl('profile.json'))
 			//console.log('profile', profile)
-			await agc.loadRom(files.assetsUrl('Luminary099.bin'))
+			await agc.loadRom(files.assetsUrl('LMY99R0.bin'))
 			agc.start()
 
 			let Delta_Time2 = 0
@@ -139,6 +139,10 @@ $$.control.registerControl('rootPage', {
 							processJetFiring(channel)
 							output.update()
 							break
+						case 0o14:
+							//console.log('CDU', value.toString(2).padStart(15, '0'))
+							output.update()
+							break;
 					}
 					loop()
 				}
@@ -158,21 +162,21 @@ $$.control.registerControl('rootPage', {
 					}
 
 					if (Delta_Time2 > 25) {
-						simu.setData({Simulation_Timer: Simulation_Timer/1000})
+						simu.setData({ Simulation_Timer: Simulation_Timer / 1000 })
 
 						simu.dynamic_simulation(Delta_Time2 / 1000)
 						Delta_Time2 = 0
 					}
 					if (Delta_Time4 > 100) {
 						if (imuData != null) {
-							const {imu_angle, error} = imuData
-							fdai.update(imu_angle, error)				
+							const { imu_angle, error } = imuData
+							fdai.update(imu_angle, error)
 						}
 						Delta_Time4 = 0
 					}
 					if (Delta_Time3 > 300) {
 						flash_flag = !flash_flag
-						dsky.setData({flash_flag})
+						dsky.setData({ flash_flag })
 						Delta_Time3 = 0
 					}
 					setTimeout(loop, zeit)
@@ -181,12 +185,12 @@ $$.control.registerControl('rootPage', {
 
 			loop()
 
-			function processJetFiring(channel){
+			function processJetFiring(channel) {
 				let sum = 0
-				for(let i = 1; i <= 8; i++) {
+				for (let i = 1; i <= 8; i++) {
 					sum += agc.getChannelBitState(0o5, i)
 				}
-				for(let i = 1; i <= 8; i++) {
+				for (let i = 1; i <= 8; i++) {
 					sum += agc.getChannelBitState(0o6, i)
 				}
 				JET_FLAG = (sum > 0)

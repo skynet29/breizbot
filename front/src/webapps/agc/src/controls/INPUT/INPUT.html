@@ -145,14 +145,14 @@
                     <label>Pitch</label>
                     <span bn-text="pitch"></span>
                 </div>
-                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="pitch" bn-event="input: onPitchChange"></div>
+                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="pitch" bn-event="sliderchange: onPitchChange"></div>
             </div>
             <div class="slider">
                 <div class="sliderValue">
                     <label>Yaw</label>
                     <span bn-text="yaw"></span>
                 </div>
-                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="yaw" bn-event="input: onYawChange"></div>
+                <div bn-control="brainjs.slider" bn-data="rhcRange" bn-update="input" bn-val="yaw" bn-event="sliderchange: onYawChange"></div>
             </div>
             <div>
                 <button bn-event="click: onDetent">DETENT</button>

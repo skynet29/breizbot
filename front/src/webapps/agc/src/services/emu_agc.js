@@ -35,7 +35,14 @@ $$.service.registerService('app.emuAgc', {
         }
 
         function writeIo(channel, value, mask) {
-            console.log('writeIo', channel.toString(8), value, mask)
+            channel = parseInt(channel)
+            if (mask) {
+                console.log('writeIo', channel.toString(8), value.toString(2).padStart(15, '0'),
+                 mask.toString(2).padStart(15, '0'))
+            }
+            else {
+                console.log('writeIo', channel.toString(8), value)
+            }
             if (mask != undefined) {
                 packetWrite(channel + 256, mask) // set mask bit 15
             }
@@ -104,14 +111,21 @@ $$.service.registerService('app.emuAgc', {
         }
 
         function start() {
+            console.log('start')
             reset();
-            [5, 6].forEach((chan) => {
-                channels[chan] = 0
-            })
-            Object.entries(channels).forEach(([chan, val]) => {
-                const mask = masks[chan]
-                writeIo(chan, val, mask)
-            })
+
+            setTimeout(()=>{
+                Object.entries(channels).forEach(([chan, val]) => {
+                    const mask = masks[chan]
+                    writeIo(chan, val, mask)
+                })
+                
+                const sets = [0o5, 0o6, 0o14]
+                sets.forEach((chan) => {
+                    channels[chan] = 0
+                })
+    
+            }, 100)
             startTime = performance.now()
             totalSteps = 0
 

@@ -205,10 +205,10 @@
   grid-column: 2;
   grid-row: 3; }
 
-.OUTPUT .cdu {
+.OUTPUT .field {
   display: flex;
   flex-direction: column; }
-  .OUTPUT .cdu span {
+  .OUTPUT .field span {
     margin-bottom: 5px; }
 
 .SIMU > div {

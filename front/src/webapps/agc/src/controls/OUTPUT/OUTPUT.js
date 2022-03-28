@@ -15,89 +15,93 @@ $$.control.registerControl('OUTPUT', {
 	 */
 	init: function (elt, agc) {
 
+		const bit = agc.bit
+
 		function getColor(value) {
 			return { 'background-color': value ? '#ffffff' : 'transparent' }
 		}
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				quad: new Array(16).fill(0),
-				cdu: new Array(3).fill(0),
+				channel5: 0,
+				channel6: 0,
+				channel14: 0,
+				channel13: 0,
 				CDUZ: function () {
-					return getColor(this.cdu[0])
+					return getColor(bit(this.channel14, 13))
 				},
 				CDUY: function () {
-					return getColor(this.cdu[1])
+					return getColor(bit(this.channel14, 14))
 				},
 				CDUX: function () {
-					return getColor(this.cdu[2])
+					return getColor(bit(this.channel14, 15))
 				},
 				Q4U: function () {
-					return getColor(this.quad[0])
+					return getColor(bit(this.channel5, 1))
 				},
 				Q4D: function () {
-					return getColor(this.quad[1])
+					return getColor(bit(this.channel5, 2))
 				},
 				Q3U: function () {
-					return getColor(this.quad[2])
+					return getColor(bit(this.channel5, 3))
 				},
 				Q3D: function () {
-					return getColor(this.quad[3])
+					return getColor(bit(this.channel5, 4))
 				},
 				Q2U: function () {
-					return getColor(this.quad[4])
+					return getColor(bit(this.channel5, 5))
 				},
 				Q2D: function () {
-					return getColor(this.quad[5])
+					return getColor(bit(this.channel5, 6))
 				},
 				Q1U: function () {
-					return getColor(this.quad[6])
+					return getColor(bit(this.channel5, 7))
 				},
 				Q1D: function () {
-					return getColor(this.quad[7])
+					return getColor(bit(this.channel5, 8))
 				},
 				Q3A: function () {
-					return getColor(this.quad[8])
+					return getColor(bit(this.channel6, 1))
 				},
 				Q4F: function () {
-					return getColor(this.quad[9])
+					return getColor(bit(this.channel6, 2))
 				},
 				Q1F: function () {
-					return getColor(this.quad[10])
+					return getColor(bit(this.channel6, 3))
 				},
 				Q2A: function () {
-					return getColor(this.quad[11])
+					return getColor(bit(this.channel6, 4))
 				},
 				Q2L: function () {
-					return getColor(this.quad[12])
+					return getColor(bit(this.channel6, 5))
 				},
 				Q3R: function () {
-					return getColor(this.quad[13])
+					return getColor(bit(this.channel6, 6))
 				},
 				Q4R: function () {
-					return getColor(this.quad[14])
+					return getColor(bit(this.channel6, 7))
 				},
 				Q1L: function () {
-					return getColor(this.quad[15])
+					return getColor(bit(this.channel6, 8))
 				},
+				RHC_COUNTER_EANBLE: function() {
+					return getColor(bit(this.channel13, 8))
+				},
+				START_RHC_READ: function() {
+					return getColor(bit(this.channel13, 9))
+				}
 			},
 			events: {
 			}
 		})
 
 		this.update = function () {
-			const quad = []
-			for (let i = 1; i <= 8; i++) {
-				quad.push(agc.getChannelBitState(0o5, i))
-			}
-			for (let i = 1; i <= 8; i++) {
-				quad.push(agc.getChannelBitState(0o6, i))
-			}
-			const cdu = []
-			for (let i = 0; i < 3; i++) {
-				cdu.push(agc.getChannelBitState(0o14, i + 13))
-			}
-			ctrl.setData({ quad, cdu })
+			ctrl.setData({
+				channel5: agc.getChannelState(0o5),
+				channel6: agc.getChannelState(0o6),
+				channel13: agc.getChannelState(0o13),
+				channel14: agc.getChannelState(0o14)
+			 })
 		}
 
 	}

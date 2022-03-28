@@ -107,6 +107,10 @@ $$.control.registerControl('rootPage', {
 				if (data != null) {
 					const { channel, value } = data
 
+					if ([0o13, 0o14].includes(channel)) {
+						output.update()
+					}
+
 					switch (channel) {
 						case 0o10:
 						case 0o11:
@@ -139,10 +143,6 @@ $$.control.registerControl('rootPage', {
 							processJetFiring(channel)
 							output.update()
 							break
-						case 0o14:
-							//console.log('CDU', value.toString(2).padStart(15, '0'))
-							output.update()
-							break;
 					}
 					loop()
 				}

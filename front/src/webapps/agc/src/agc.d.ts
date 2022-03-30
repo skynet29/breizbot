@@ -8,8 +8,8 @@ declare namespace AppAgc {
                 zero():void;
                 gyro_coarse_align(chan: number, val: number):void;
                 gyro_fine_align(chan: number, val: number):void;
-                accelerate(delta: Array<number>):void;
-                rotate(delta: Array<number>):void;
+                modify_pipaXYZ(delta: Array<number>):void;
+                Transform_BodyAxes_StableMember(delta: Array<number>):void;
                 on(event: string, cbk: (data: {imu_angle: Array<number>, error: Array<number>}) => void): void;
             }
         }
@@ -57,14 +57,14 @@ declare namespace AppAgc {
 
         declare namespace FDAI {
             interface Interface {
-                update(imu_angle: Array<number>, error: Array<number>): void;
+                update(imu_angle: Array<number>, error: Array<number>, omega: Array<number>): void;
             }
         }
 
         declare namespace SIMU {
             interface Interface {
                 dynamic_simulation(Delta_Time: number): void;
-                update_RCS(Delta_Time: number): void;
+                update_RCS(jetFiring: Array<number>, Delta_Time: number): void;
             }
         }
 

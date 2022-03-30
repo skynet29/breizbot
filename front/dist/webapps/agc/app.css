@@ -156,6 +156,11 @@
   align-items: center;
   justify-content: space-between; }
 
+.INPUT legend {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: bold; }
+
 .OUTPUT > div {
   padding: 10px;
   background-color: #dddddd;
@@ -205,11 +210,20 @@
   grid-column: 2;
   grid-row: 3; }
 
+.OUTPUT legend {
+  font-family: monospace;
+  font-size: 14px;
+  font-weight: bold; }
+
 .OUTPUT .field {
   display: flex;
   flex-direction: column; }
   .OUTPUT .field span {
-    margin-bottom: 5px; }
+    margin-bottom: 5px;
+    font-family: monospace;
+    font-size: 14px;
+    line-height: 1em;
+    padding: 4px; }
 
 .SIMU > div {
   padding: 10px;
@@ -240,3 +254,7 @@
   width: 50px;
   text-align: right;
   display: inline-block; }
+
+.SIMU legend {
+  font-family: monospace;
+  font-size: 14px; }

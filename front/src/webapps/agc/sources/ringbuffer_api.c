@@ -43,6 +43,7 @@
 #include "yaAGC.h"
 #include "agc_engine.h"
 #include "ringbuffer.h"
+#include <emscripten.h>
 
 static int CurrentChannelValues[256] = { 0 };
 static int ChannelMasks[256] = { 077777 };
@@ -83,6 +84,7 @@ ChannelOutput (agc_t* State, int Channel, int Value)
     }
 
   // Stick data into the RHCCTR registers, if bits 8,9 of channel 013 are set.
+
   if (Channel == 013 && 0600 == (0600 & Value) && !CmOrLm)
     {
       State->Erasable[0][042] = LastRhcPitch;

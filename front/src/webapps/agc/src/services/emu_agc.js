@@ -36,13 +36,13 @@ $$.service.registerService('app.emuAgc', {
 
         function writeIo(channel, value, mask) {
             channel = parseInt(channel)
-            if (mask) {
-                console.log('writeIo', channel.toString(8), value.toString(2).padStart(15, '0'),
-                 mask.toString(2).padStart(15, '0'))
-            }
-            else {
-                console.log('writeIo', channel.toString(8), value)
-            }
+            // if (mask) {
+            //     console.log('writeIo', channel.toString(8), value.toString(2).padStart(15, '0'),
+            //      mask.toString(2).padStart(15, '0'))
+            // }
+            // else {
+            //     console.log('writeIo', channel.toString(8), value)
+            // }
             if (mask != undefined) {
                 packetWrite(channel + 256, mask) // set mask bit 15
             }
@@ -64,7 +64,8 @@ $$.service.registerService('app.emuAgc', {
         function writeIoBits(channel, bits) {
             let mask = 0
             let value = 0
-            console.log('writeIoBits', channel.toString(8), bits)
+            if (Object.keys(bits).length == 0) return
+            //console.log('writeIoBits', channel.toString(8), bits)
             Object.entries(bits).forEach(([nbit, val]) => {
                 mask = setBit(mask, nbit, 1)
                 value = setBit(value, nbit, val)
@@ -72,6 +73,7 @@ $$.service.registerService('app.emuAgc', {
             })
             // console.log('mask ', mask.toString(2).padStart(15, '0'))
             // console.log('value', value.toString(2).padStart(15, '0'))
+            console.log(`chan[${channel.toString(8).padStart(3, '0')}]=` + channels[channel].toString(2).padStart(15, '0'))
 
             writeIo(channel, value, mask)
 
@@ -147,8 +149,7 @@ $$.service.registerService('app.emuAgc', {
         }
 
         function bit(val, n) {
-            n--
-            return ((val >> n) & 1) == 1
+            return (val >> (n-1)) & 1
         }
 
         function getChannelState(channel) {
@@ -186,11 +187,6 @@ $$.service.registerService('app.emuAgc', {
 
         function bitMask(n) {
             return 1 << (n - 1)
-        }
-
-        function bit(val, n) {
-            n--
-            return ((val >> n) & 1) == 1
         }
 
         return {

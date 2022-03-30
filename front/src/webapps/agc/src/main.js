@@ -42,12 +42,16 @@ $$.control.registerControl('rootPage', {
 				},
 				onSimuData: function (ev, data) {
 					//console.log('onSimuData', data)
-					const { rotate, accelerate, omega } = data
+					const { rotate, accelerate } = data
 					if (rotate) {
-						imu.rotate(rotate)
+						imu.Transform_BodyAxes_StableMember(rotate)
 					}
 					if (accelerate) {
-						imu.accelerate(accelerate)
+						imu.modify_pipaXYZ(accelerate)
+					}
+
+					if (data.omega) {
+						omega = data.omega
 					}
 
 				},
@@ -73,6 +77,7 @@ $$.control.registerControl('rootPage', {
 		const output = ctrl.scope.output
 
 		let imuData = null
+		let omega = [0, 0, 0]
 
 		imu.on('data', (data) => {
 			//console.log('imuData', data)
@@ -96,6 +101,7 @@ $$.control.registerControl('rootPage', {
 			let JET_FLAG = false
 			let flash_flag = false
 			let zero = false
+			let jetFiring = new Array(16).fill(0)
 
 			setInterval(() => {
 				agc.run()
@@ -137,11 +143,10 @@ $$.control.registerControl('rootPage', {
 							break;
 						case 0o5:
 						case 0o6:
-							if (value != 0) {
-								console.log('JET', channel.toString(8), value.toString(2).padStart(15, '0'))
-							}
-							processJetFiring(channel)
 							output.update()
+							jetFiring = getJetFiring()
+							JET_FLAG = jetFiring.includes(1)
+
 							break
 					}
 					loop()
@@ -157,7 +162,7 @@ $$.control.registerControl('rootPage', {
 					//console.log({ Delta_Time2, Delta_Time4 })
 					zeit = 10
 					if (JET_FLAG) {
-						simu.update_RCS(Delta_Time / 1000)
+						simu.update_RCS(jetFiring, Delta_Time / 1000)
 						zeit = 5
 					}
 
@@ -170,7 +175,7 @@ $$.control.registerControl('rootPage', {
 					if (Delta_Time4 > 100) {
 						if (imuData != null) {
 							const { imu_angle, error } = imuData
-							fdai.update(imu_angle, error)
+							fdai.update(imu_angle, error, omega)
 						}
 						Delta_Time4 = 0
 					}
@@ -185,16 +190,15 @@ $$.control.registerControl('rootPage', {
 
 			loop()
 
-			function processJetFiring(channel) {
-				let sum = 0
+			function getJetFiring() {
+				const ret = []
 				for (let i = 1; i <= 8; i++) {
-					sum += agc.getChannelBitState(0o5, i)
+					ret.push(agc.getChannelBitState(0o5, i))
 				}
 				for (let i = 1; i <= 8; i++) {
-					sum += agc.getChannelBitState(0o6, i)
+					ret.push(agc.getChannelBitState(0o6, i))
 				}
-				JET_FLAG = (sum > 0)
-				//console.log('processJetFiring', channel.toString(8), sum, JET_FLAG)
+				return ret
 			}
 
 

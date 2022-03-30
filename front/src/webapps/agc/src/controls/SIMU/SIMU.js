@@ -4,22 +4,19 @@ $$.control.registerControl('SIMU', {
 
 	template: { gulp_inject: './SIMU.html' },
 
-	deps: ['breizbot.pager', 'app.emuAgc'],
-
 	props: {
 	},
 
 	/**
 	 * 
-	 * @param {Breizbot.Services.Pager.Interface} pager 
-	 * @param {AppAgc.Services.AGC.Interface} agc
 	 */
-	init: function (elt, pager, agc) {
+	init: function (elt) {
 
 		const PI = Math.PI
 		const PI4 = PI / 4
 		const RAD_TO_DEG_PI4 = 180 / PI * PI4
 		const abs = Math.abs
+		const DEG_TO_RAD = PI / 180
 
 		// Simulation Start Values
 
@@ -64,16 +61,16 @@ $$.control.registerControl('SIMU', {
 		let Omega_Pitch = 0
 		let Omega_Yaw = 0
 
-		const Moment ={
+		const Moment = {
 			'ASCENT': {
 				a: [0.0065443852, 0.0035784354, 0.0056946631],
-				b: [0.000032, 0.162862, 0.009312],
-				c: [-0.006923, 0.002588, -0.023608]
+				b: [0.000032,     0.162862,     0.009312],
+				c: [-0.006923,    0.002588,    -0.023608]
 			},
 			'DESCENT': {
 				a: [0.0059347674, 0.0014979264, 0.0010451889],
-				b: [0.002989, 0.018791, -0.068163],
-				c: [0.008721, -0.068163, -0.066027]
+				b: [0.002989,     0.018791,     0.021345],
+				c: [0.008721,    -0.068163,    -0.066027]
 			}
 		}
 
@@ -160,11 +157,12 @@ $$.control.registerControl('SIMU', {
 		window.simu = ctrl
 
 		function modify_pipaXYZ(yawDeltaV, PitchDeltaV, RollDeltaV) {
+			//console.log('modify_pipaXYZ', {yawDeltaV, PitchDeltaV, RollDeltaV})
 			elt.trigger('data', {accelerate: [yawDeltaV, PitchDeltaV, RollDeltaV]})
 		}
 
 		function Transform_BodyAxes_StableMember(dp, dq, dr) {
-			elt.trigger('data', {rotate: [dp, dq, dr]})
+			elt.trigger('data', {rotate: [dp, dq, dr]})	
 		}
 
 		// Main Engine Simulation
@@ -244,35 +242,35 @@ $$.control.registerControl('SIMU', {
 			const [b_yaw, b_pitch, b_roll] = Moment[LM_CONFIG].b
 			const [c_yaw, c_pitch, c_roll] = Moment[LM_CONFIG].c
 
-			Alpha_Yaw = RAD_TO_DEG_PI4 * (b_yaw + a_yaw / (m + c_yaw))
+			Alpha_Yaw   = RAD_TO_DEG_PI4 * (b_yaw   + a_yaw   / (m + c_yaw))
 			Alpha_Pitch = RAD_TO_DEG_PI4 * (b_pitch + a_pitch / (m + c_pitch))
-			Alpha_Roll = RAD_TO_DEG_PI4 * (b_roll + a_roll / (m + c_roll))
+			Alpha_Roll  = RAD_TO_DEG_PI4 * (b_roll  + a_roll  / (m + c_roll))
 
 			// Feed Angular Changes (Delta Time * Omega) into the IMU
 			Transform_BodyAxes_StableMember(Omega_Yaw * Delta_Time2, Omega_Pitch * Delta_Time2, Omega_Roll * Delta_Time2)
 		}
 
 		// Check AGC Thruster Status and fire dedicated RCS Thruster
-		function update_RCS(Delta_Time) {
-			console.log('update_RCS', Delta_Time)
+		function update_RCS(jetFiring, Delta_Time) {
+			//console.log('update_RCS', Delta_Time)
 			
-			const Q4U = agc.getChannelBitState(0o5, 1)
-			const Q4D = agc.getChannelBitState(0o5, 2)
-			const Q3U = agc.getChannelBitState(0o5, 3)
-			const Q3D = agc.getChannelBitState(0o5, 4)
-			const Q2U = agc.getChannelBitState(0o5, 5)
-			const Q2D = agc.getChannelBitState(0o5, 6)
-			const Q1U = agc.getChannelBitState(0o5, 7)
-			const Q1D = agc.getChannelBitState(0o5, 8)
+			const Q4U = jetFiring[0]
+			const Q4D = jetFiring[1]
+			const Q3U = jetFiring[2]
+			const Q3D = jetFiring[3]
+			const Q2U = jetFiring[4]
+			const Q2D = jetFiring[5]
+			const Q1U = jetFiring[6]
+			const Q1D = jetFiring[7]
 
-			const Q3A = agc.getChannelBitState(0o6, 1)
-			const Q4F = agc.getChannelBitState(0o6, 2)
-			const Q1F = agc.getChannelBitState(0o6, 3)
-			const Q2A = agc.getChannelBitState(0o6, 4)
-			const Q2L = agc.getChannelBitState(0o6, 5)
-			const Q3R = agc.getChannelBitState(0o6, 6)
-			const Q4R = agc.getChannelBitState(0o6, 7)
-			const Q1L = agc.getChannelBitState(0o6, 8)
+			const Q3A = jetFiring[8]
+			const Q4F = jetFiring[9]
+			const Q1F = jetFiring[10]
+			const Q2A = jetFiring[11]
+			const Q2L = jetFiring[12]
+			const Q3R = jetFiring[13]
+			const Q4R = jetFiring[14]
+			const Q1L = jetFiring[15]
 
 			const nv1 = (Q2D == 1 || Q4U == 1) ? Q2D + Q4U : 0
 			const nv2 = (Q2U == 1 || Q4D == 1) ? -(Q2U + Q4D) : 0
@@ -286,6 +284,8 @@ $$.control.registerControl('SIMU', {
 			const nv = nv1 + nv2
 			const nu = nu1 + nu2
 			const np = np1 + np2
+
+			//console.log({nv1, nv2, nu1, nu2, np1, np2})
 
 			// Check for translational commands to calculate change in LM's speed along the pilot axis
 
@@ -342,6 +342,7 @@ $$.control.registerControl('SIMU', {
 				const Delta_Omega_Yaw = Alpha_Yaw * Delta_Time * np
 				const Delta_Omega_Pitch = Alpha_Pitch * Delta_Time * (nu - nv)
 				const Delta_Omega_Roll = Alpha_Roll * Delta_Time * (nu + nv)
+				//console.log({Delta_Omega_Yaw, Delta_Omega_Pitch, Delta_Omega_Roll})
 
 				Omega_Yaw += Delta_Omega_Yaw
 				Omega_Pitch += Delta_Omega_Pitch

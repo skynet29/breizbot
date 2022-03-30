@@ -63,11 +63,22 @@
         grid-row: 3;
     }
 
+    legend {
+        font-family: monospace;
+        font-size: 14px;
+        font-weight: bold;
+
+    }
+
     .field {
         display: flex;
         flex-direction: column;
         span {
             margin-bottom: 5px;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1em;
+            padding: 4px;
         }
     }
 }

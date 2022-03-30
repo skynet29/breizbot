@@ -18,11 +18,13 @@ $$.service.registerService('app.imu', {
 		const sin = Math.sin;
 		const cos = Math.cos;
 		const PI = Math.PI;
-		const DEG_TO_RAD = (PI / 180);
+		const PI2 = (2 * PI)
+		const DEG_TO_RAD = (PI / 180)
+		const RAD_TO_DEG = (180 / PI)
 
-		const CA_ANGLE = 0.043948 * DEG_TO_RAD;
-		const FA_ANGLE = 0.617981 / 3600.0 * DEG_TO_RAD;
-		const ANGLE_INCR = 360.0 / 32768 * DEG_TO_RAD;
+		const CA_ANGLE = 0.043948
+		const FA_ANGLE = 0.617981 / 3600.0
+		const ANGLE_INCR = 360.0 / 32768
 		const PIPA_INCR = 0.0585; // m/s per each PIPA pulse
 
 
@@ -54,9 +56,27 @@ $$.service.registerService('app.imu', {
             event.emit('data', {imu_angle, error})
 		}
 
-		function adjust(x, a, b) {
-			return x - (b - a) * floor((x - a) / (b - a));
+		function adjust(x) {
+			let ret = x
+			if (x < 0) x += 360
+			if (x >= 360) x -=360
+			return x
 		}
+
+		function adjust2(x) {
+			let ret = x
+			if (x < -180) x += 360
+			if (x > 180) x -=360
+			return x
+		}
+
+		function adjust3(x) {
+			let ret = x
+			if (x < -PI2) x += PI2
+			if (x >= PI2) x -= PI2
+			return x
+		}
+
 
 		//************************************************************************************************
 		//*** Function: Modify a specific IMU Delta Gimbal-Angle par1=X; par2=Y; par3=Z               ****
@@ -68,16 +88,16 @@ $$.service.registerService('app.imu', {
 			for (let axis = 0; axis < 3; axis++) {
 				if (delta[axis]) {
 					// ---- Calculate New Angle ----
-					imu_angle[axis] = adjust(imu_angle[axis] + delta[axis], 0, 2 * PI);
+					imu_angle[axis] = adjust(delta[axis] + imu_angle[axis])
 
 					// ---- Calculate Delta between the new Angle and already feeded IMU Angle ----
-					const dx = adjust(imu_angle[axis] - pimu[axis], -PI, PI);
+					const dx = adjust2(imu_angle[axis] - pimu[axis])
 
 					// ---- Feed yaAGC with the new Angular Delta ----
 					const sign = dx > 0 ? +1 : -1;
 					let n = floor(abs(dx) / ANGLE_INCR)
 					//console.log('n', n)
-					pimu[axis] = adjust(pimu[axis] + sign * ANGLE_INCR * n, 0, 2 * PI);
+					pimu[axis] = adjust(pimu[axis] + sign * ANGLE_INCR * n);
 
 					let cdu = agc.peek(26 + axis);                        // read CDU counter (26 = 0x32 = CDUX)
 					cdu = cdu & 0x4000 ? -(cdu ^ 0x7FFF) : cdu;     // converts from ones-complement to twos-complement
@@ -153,40 +173,51 @@ $$.service.registerService('app.imu', {
 		//***********************************************************************************************
 		//*** Function: Transform angular deltas in Body Axes into Stable Member angular deltas       ***
 		//***********************************************************************************************
-		function rotate(delta) {
+		function Transform_BodyAxes_StableMember(delta) {
 			//console.log('rotate', delta)
-			// based on Transform_BodyAxes_StableMember {dp dq dr} 
 
+			const dp = delta[0] * DEG_TO_RAD
+			const dq = delta[1] * DEG_TO_RAD
+			const dr = delta[2] * DEG_TO_RAD
 
-			const MPI = sin(imu_angle[2]);
-			const MQI = cos(imu_angle[2]) * cos(imu_angle[0]);
-			const MQM = sin(imu_angle[0]);
-			const MRI = -cos(imu_angle[2]) * sin(imu_angle[0]);
-			const MRM = cos(imu_angle[0]);
+			const IMUX_ANGLE_b = imu_angle[0] * DEG_TO_RAD
+			const IMUY_ANGLE_b = imu_angle[1] * DEG_TO_RAD
+			const IMUZ_ANGLE_b = imu_angle[2] * DEG_TO_RAD			
+
+			const MPI = sin(IMUZ_ANGLE_b);
+			const MQI = cos(IMUZ_ANGLE_b) * cos(IMUX_ANGLE_b);
+			const MQM = sin(IMUX_ANGLE_b);
+			const MRI = -cos(IMUZ_ANGLE_b) * sin(IMUX_ANGLE_b);
+			const MRM = cos(IMUX_ANGLE_b);
 			const nenner = MRM * MQI - MRI * MQM;
 
 			//---- Calculate Angular Change ----
-			const do_b = adjust(delta[0] - (delta[1] * MRM * MPI - delta[2] * MQM * MPI) / nenner, -PI, PI);
-			const di_b = adjust((delta[1] * MRM - delta[2] * MQM) / nenner, -PI, PI);
-			const dm_b = adjust((delta[2] * MQI - delta[1] * MRI) / nenner, -PI, PI);
+			const do_b = adjust3(dp - (dq * MRM * MPI - dr * MQM * MPI) / nenner);
+			const di_b = adjust3((dq * MRM - dr * MQM) / nenner);
+			const dm_b = adjust3((dr * MQI - dq * MRI) / nenner, -PI, PI);
 
 			//--- Rad to Deg and call of Gimbal Angle Modification ----
-			modify_gimbal_angle([do_b, di_b, dm_b]);
+			modify_gimbal_angle([do_b * RAD_TO_DEG, di_b * RAD_TO_DEG, dm_b * RAD_TO_DEG]);
 		}
 
 		//************************************************************************************************
 		//*** Function: Modify PIPA Values to match simulated Speed                                   ****
 		//************************************************************************************************
-		function accelerate(delta) {
+		function modify_pipaXYZ(delta) {
 			//console.log('accelerate', delta)
 
+			const OGA = imu_angle[0] * DEG_TO_RAD
+			const IGA = imu_angle[1] * DEG_TO_RAD
+			const MGA = imu_angle[2] * DEG_TO_RAD
+
+
 			// based on proc modify_pipaXYZ 
-			const sinOG = sin(imu_angle[0]);
-			const sinIG = sin(imu_angle[1]);
-			const sinMG = sin(imu_angle[2]);
-			const cosOG = cos(imu_angle[0]);
-			const cosIG = cos(imu_angle[1]);
-			const cosMG = cos(imu_angle[2]);
+			const sinOG = sin(OGA);
+			const sinIG = sin(IGA);
+			const sinMG = sin(MGA);
+			const cosOG = cos(OGA);
+			const cosIG = cos(IGA);
+			const cosMG = cos(MGA);
 
 			const deltaVX = cosMG * cosIG * delta[0] + (-cosOG * sinMG * cosIG + sinOG * sinIG) * delta[1] + (sinOG * sinMG * cosIG + cosOG * sinIG) * delta[2]
 
@@ -219,9 +250,9 @@ $$.service.registerService('app.imu', {
         zero()
 
         return {
-            rotate,
+            Transform_BodyAxes_StableMember,
             update,
-            accelerate,
+            modify_pipaXYZ,
             gyro_coarse_align,
             zero,
             gyro_fine_align,

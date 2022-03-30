@@ -32,6 +32,7 @@ $$.control.registerControl('FDAI', {
 		const offsetX = 150
 		const offsetY = 180
 		const RAD_TO_DEG = (180 / Math.PI)
+		const DEG_TO_RAD = (Math.PI / 180)
 		
 		const NEEDLE_SCALE = 42.1875 / 384.0
 		
@@ -39,9 +40,9 @@ $$.control.registerControl('FDAI', {
 		// let error_x = 0
 		// let error_y = 0
 		// let error_z = 0
-		let Omega_Roll = 0
-		let Omega_Pitch = 0
-		let Omega_Yaw = 0
+		// let Omega_Roll = 0
+		// let Omega_Pitch = 0
+		// let Omega_Yaw = 0
 				
 		function setAttrs(obj, attrs) {
 			Object.keys(attrs).forEach((attrName) => {
@@ -235,10 +236,14 @@ $$.control.registerControl('FDAI', {
 			return Math.max(Math.min(max, v), min)
 		}
 		
-		function move_fdai_marker(imu_angle, error) {
+		function move_fdai_marker(imu_angle, error, omega) {
 
-			//console.log('move_fdai_marker', {imu_angle, error})
-			const [OGA, IGA, MGA] = imu_angle
+			//console.log('move_fdai_marker', {imu_angle, error, omega})
+			const [Omega_Yaw, Omega_Pitch, Omega_Roll] = omega
+			const OGA = imu_angle[0] * DEG_TO_RAD
+			const IGA = imu_angle[1] * DEG_TO_RAD
+			const MGA = imu_angle[2] * DEG_TO_RAD
+
 			const [error_x, error_y, error_z] = error
 				
 			const sinOG = Math.sin(OGA)
@@ -371,7 +376,7 @@ $$.control.registerControl('FDAI', {
 		
 		}
 		
-		move_fdai_marker([0, 0, 0], [0, 0, 0])	
+		move_fdai_marker([0, 0, 0], [0, 0, 0], [0, 0, 0])	
 		
 		this.update = move_fdai_marker
 

@@ -44,10 +44,10 @@ $$.control.registerControl('rootPage', {
 					//console.log('onSimuData', data)
 					const { rotate, accelerate } = data
 					if (rotate) {
-						imu.Transform_BodyAxes_StableMember(rotate)
+						imu.rotate(rotate)
 					}
 					if (accelerate) {
-						imu.modify_pipaXYZ(accelerate)
+						imu.accelerate(accelerate)
 					}
 
 					if (data.omega) {
@@ -136,10 +136,10 @@ $$.control.registerControl('rootPage', {
 						case 0o174:
 						case 0o175:
 						case 0o176:
-							imu.gyro_coarse_align(channel, value);
+							imu.gyroCoarseAlign(channel, value);
 							break;
 						case 0o177:
-							imu.gyro_fine_align(channel, value);
+							imu.gyroFineAlign(channel, value);
 							break;
 						case 0o5:
 						case 0o6:

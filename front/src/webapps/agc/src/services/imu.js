@@ -31,7 +31,6 @@ $$.service.registerService('app.imu', {
 		let error;
 		let imu_angle;
 		let pimu;
-		let omega;
 		let pipa;
 		let velocity;
 		let gimbalLock;
@@ -81,7 +80,7 @@ $$.service.registerService('app.imu', {
 		//************************************************************************************************
 		//*** Function: Modify a specific IMU Delta Gimbal-Angle par1=X; par2=Y; par3=Z               ****
 		//************************************************************************************************
-		function modify_gimbal_angle(delta) {
+		function modifyGimbalAngle(delta) {
 			if (gimbalLock) return;
 			let ang_delta = 0;
 
@@ -118,7 +117,7 @@ $$.service.registerService('app.imu', {
 		//************************************************************************************************
 		//**** Function: Gyro Coarse Align (will be called in case of Channel 0174; 0175; 0176 output) ***
 		//************************************************************************************************
-		function gyro_coarse_align(chan, val) {
+		function gyroCoarseAlign(chan, val) {
 			//console.log('gyro_coarse_align', {chan, val})
 			const sign = val & 0x4000 ? -1 : +1;
 			const cdu_pulses = sign * (val & 0x3FFF);
@@ -126,13 +125,13 @@ $$.service.registerService('app.imu', {
 			// ---- Coarse Align Enable ----
 			if (agc.getChannelBitState(0o12, 4) == 1) {    // {$bo(12,4) == 1}
 				if (chan === 124) {  // 0174
-					modify_gimbal_angle([cdu_pulses * CA_ANGLE, 0, 0]);
+					modifyGimbalAngle([cdu_pulses * CA_ANGLE, 0, 0]);
 				}
 				else if (chan === 125) {  // 0175
-					modify_gimbal_angle([0, cdu_pulses * CA_ANGLE, 0]);
+					modifyGimbalAngle([0, cdu_pulses * CA_ANGLE, 0]);
 				}
 				else if (chan === 126) {  // 0176
-					modify_gimbal_angle([0, 0, cdu_pulses * CA_ANGLE]);
+					modifyGimbalAngle([0, 0, cdu_pulses * CA_ANGLE]);
 				}
 
 				update()
@@ -146,7 +145,7 @@ $$.service.registerService('app.imu', {
 		//*******************************************************************************************
 		//*** Function: Gyro Fine Align (will be called in case of Channel 0177 output)           ***
 		//*******************************************************************************************
-		function gyro_fine_align(chan, val) {
+		function gyroFineAlign(chan, val) {
 			//console.log('gyro_fine_align', chan, val)
 
 
@@ -158,13 +157,13 @@ $$.service.registerService('app.imu', {
 			const gyro_pulses = sign * (val & 0x07FF);
 
 			if (!gyro_selection_a && gyro_selection_b) {
-				modify_gimbal_angle([gyro_pulses * FA_ANGLE, 0, 0]);
+				modifyGimbalAngle([gyro_pulses * FA_ANGLE, 0, 0]);
 			}
 			if (gyro_selection_a && !gyro_selection_b) {
-				modify_gimbal_angle([0, gyro_pulses * FA_ANGLE, 0]);
+				modifyGimbalAngle([0, gyro_pulses * FA_ANGLE, 0]);
 			}
 			if (gyro_selection_a && gyro_selection_b) {
-				modify_gimbal_angle([0, 0, gyro_pulses * FA_ANGLE]);
+				modifyGimbalAngle([0, 0, gyro_pulses * FA_ANGLE]);
 			}
 
 			update()
@@ -173,7 +172,7 @@ $$.service.registerService('app.imu', {
 		//***********************************************************************************************
 		//*** Function: Transform angular deltas in Body Axes into Stable Member angular deltas       ***
 		//***********************************************************************************************
-		function Transform_BodyAxes_StableMember(delta) {
+		function rotate(delta) {
 			//console.log('rotate', delta)
 
 			const dp = delta[0] * DEG_TO_RAD
@@ -197,13 +196,13 @@ $$.service.registerService('app.imu', {
 			const dm_b = adjust3((dr * MQI - dq * MRI) / nenner, -PI, PI);
 
 			//--- Rad to Deg and call of Gimbal Angle Modification ----
-			modify_gimbal_angle([do_b * RAD_TO_DEG, di_b * RAD_TO_DEG, dm_b * RAD_TO_DEG]);
+			modifyGimbalAngle([do_b * RAD_TO_DEG, di_b * RAD_TO_DEG, dm_b * RAD_TO_DEG]);
 		}
 
 		//************************************************************************************************
 		//*** Function: Modify PIPA Values to match simulated Speed                                   ****
 		//************************************************************************************************
-		function modify_pipaXYZ(delta) {
+		function accelerate(delta) {
 			//console.log('accelerate', delta)
 
 			const OGA = imu_angle[0] * DEG_TO_RAD
@@ -250,12 +249,11 @@ $$.service.registerService('app.imu', {
         zero()
 
         return {
-            Transform_BodyAxes_StableMember,
-            update,
-            modify_pipaXYZ,
-            gyro_coarse_align,
+            rotate,
+            accelerate,
+            gyroCoarseAlign,
             zero,
-            gyro_fine_align,
+            gyroFineAlign,
             on: event.on.bind(event)            
         }
     }

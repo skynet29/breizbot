@@ -4,12 +4,11 @@ declare namespace AppAgc {
 
         declare namespace IMU {
             interface Interface {
-                update():void;
                 zero():void;
-                gyro_coarse_align(chan: number, val: number):void;
-                gyro_fine_align(chan: number, val: number):void;
-                modify_pipaXYZ(delta: Array<number>):void;
-                Transform_BodyAxes_StableMember(delta: Array<number>):void;
+                gyroCoarseAlign(chan: number, val: number):void;
+                gyroFineAlign(chan: number, val: number):void;
+                accelerate(delta: Array<number>):void;
+                rotate(delta: Array<number>):void;
                 on(event: string, cbk: (data: {imu_angle: Array<number>, error: Array<number>}) => void): void;
             }
         }

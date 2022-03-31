@@ -33,11 +33,11 @@ $$.control.registerControl('INPUT', {
 				onDetent: function (ev) {
 					//console.log('onDetent')
 					ctrl.setData({ roll: 0, pitch: 0, yaw: 0 })
-					// agc.writeIo(0o166, 0)
-					// agc.writeIo(0o167, 0)
-					// agc.writeIo(0o170, 0)
-					// agc.writeIoBit(0o31, 15, 1)
-					// reset_rhc()
+					agc.writeIo(0o166, 0)
+					agc.writeIo(0o167, 0)
+					agc.writeIo(0o170, 0)
+					agc.writeIoBit(0o31, 15, 1)
+					reset_rhc()
 				},
 				onCheckbox: function () {
 					const check = $(this)

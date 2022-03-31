@@ -16,7 +16,6 @@ $$.control.registerControl('SIMU', {
 		const PI4 = PI / 4
 		const RAD_TO_DEG_PI4 = 180 / PI * PI4
 		const abs = Math.abs
-		const DEG_TO_RAD = PI / 180
 
 		// Simulation Start Values
 
@@ -49,7 +48,6 @@ $$.control.registerControl('SIMU', {
 		let Ascent_Fuel_Flow_SEC = 0
 		let Ascent_Acceleration = 0
 		let ASCENT_ENGINE_FLAG = false
-		let ASCENT_SEPARATION = 0
 
 		// Parameter to calculate Moment of Inertia
 		let LM_CONFIG = 'DESCENT'
@@ -253,25 +251,9 @@ $$.control.registerControl('SIMU', {
 		// Check AGC Thruster Status and fire dedicated RCS Thruster
 		function update_RCS(jetFiring, Delta_Time) {
 			//console.log('update_RCS', Delta_Time)
+
+			const [Q4U, Q4D, Q3U, Q3D, Q2U, Q2D, Q1U, Q1D, Q3A, Q4F, Q1F, Q2A, Q2L, Q3R, Q4R, Q1L] = jetFiring
 			
-			const Q4U = jetFiring[0]
-			const Q4D = jetFiring[1]
-			const Q3U = jetFiring[2]
-			const Q3D = jetFiring[3]
-			const Q2U = jetFiring[4]
-			const Q2D = jetFiring[5]
-			const Q1U = jetFiring[6]
-			const Q1D = jetFiring[7]
-
-			const Q3A = jetFiring[8]
-			const Q4F = jetFiring[9]
-			const Q1F = jetFiring[10]
-			const Q2A = jetFiring[11]
-			const Q2L = jetFiring[12]
-			const Q3R = jetFiring[13]
-			const Q4R = jetFiring[14]
-			const Q1L = jetFiring[15]
-
 			const nv1 = (Q2D == 1 || Q4U == 1) ? Q2D + Q4U : 0
 			const nv2 = (Q2U == 1 || Q4D == 1) ? -(Q2U + Q4D) : 0
 

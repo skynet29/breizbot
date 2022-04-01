@@ -77,6 +77,7 @@ $$.service.registerService('breizbot.files', {
 			},
 
 			saveFile: async function (blob, saveAsfileName, options) {
+				options = options || {}
 				const destPath  = options.destPath || `/apps/${params.$appName}`
 				try {
 					savingDlg.setPercentage(0)

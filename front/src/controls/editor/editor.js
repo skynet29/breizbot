@@ -93,7 +93,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 
 		const two_line = /\n\n/g
 		const one_line = /\n/g
-		function linebreak(s)  {
+		function linebreak(s) {
 			return s.replace(two_line, '<p></p>').replace(one_line, '<br>')
 		}
 
@@ -126,7 +126,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 				}
 				else {
 					ctrl.setData({ recognizing: false })
-					range.collapse()	
+					range.collapse()
 				}
 			}
 
@@ -150,15 +150,14 @@ $$.control.registerControl('breizbot.htmleditor', {
 		}
 
 		function startRecognition() {
-			const selObj = window.getSelection()
 			//console.log('selObj', selObj)
 
-			if (!isEditable(selObj.anchorNode)) {
+			if (!isEditable()) {
 				$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
 				return
 			}
 
-			range = selObj.getRangeAt(0)
+			range = getRange()
 			finalSpan = document.createElement('span')
 			interimSpan = document.createElement('span')
 			interimSpan.className = 'interim'
@@ -166,7 +165,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 			range.insertNode(finalSpan)
 			finalTranscript = ''
 			recognition.start()
-			ignoreOnEnd = false			
+			ignoreOnEnd = false
 		}
 
 		const ctrl = $$.viewController(elt, {
@@ -192,9 +191,9 @@ $$.control.registerControl('breizbot.htmleditor', {
 				}
 			},
 			events: {
-				onMicro: function() {
+				onMicro: function () {
 					if (ctrl.model.recognizing) {
-						ctrl.setData({recognizing: false})
+						ctrl.setData({ recognizing: false })
 						recognition.stop()
 					}
 					else {
@@ -215,26 +214,15 @@ $$.control.registerControl('breizbot.htmleditor', {
 					document.execCommand('fontSize', false, data.cmd)
 				},
 				onCreateLink: async function () {
-					const selObj = window.getSelection()
 
-					if (!isEditable(selObj.anchorNode)) {
-						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
-						return
-					}
-					const range = selObj.getRangeAt(0)
-
-					const href = await $$.ui.showPrompt({
-						title: 'Insert Link',
-						label: 'Link Target',
-						attrs: { type: 'url' }
+					addLink(async () => {
+						return await $$.ui.showPrompt({
+							title: 'Insert Link',
+							label: 'Link Target',
+							attrs: { type: 'url' }
+						})
+									
 					})
-					//console.log('href', href)
-					if (href != null) {
-						selObj.removeAllRanges()
-						selObj.addRange(range)
-
-						document.execCommand('createLink', false, href)
-					}
 
 				},
 				onScrollClick: function () {
@@ -283,7 +271,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 			const selObj = window.getSelection()
 			//console.log('selObj', selObj)
 
-			if (!isEditable(selObj.anchorNode)) {
+			if (!isEditable()) {
 				return
 			}
 
@@ -316,7 +304,48 @@ $$.control.registerControl('breizbot.htmleditor', {
 
 		})
 
-		function isEditable(node) {
+
+		/**
+		 * 
+		 * @param {() => Promise<string>} cbk 
+		 * @returns 
+		 */
+		async function addLink(cbk) {
+			const selObj = window.getSelection()
+
+			if (!isEditable()) {
+				$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
+				return
+			}
+			const range = getRange()
+			if (typeof cbk == 'function' && cbk.constructor.name === 'AsyncFunction') {
+				const href = await cbk()
+				console.log('href', href)
+				if (href != null) {
+					selObj.removeAllRanges()
+					selObj.addRange(range)
+	
+					document.execCommand('createLink', false, href)
+				}
+			}
+
+			//console.log('href', href)
+
+
+		}
+
+		function getRange() {
+			const selObj = window.getSelection()
+			return selObj.getRangeAt(0)
+		}
+		/**
+		 * 
+		 * @returns {boolean}
+		 */
+		function isEditable() {
+
+			const selObj = window.getSelection()
+			let node = selObj.anchorNode
 
 			const editable = ctrl.scope.editor.get(0)
 
@@ -328,6 +357,10 @@ $$.control.registerControl('breizbot.htmleditor', {
 			}
 			return false
 		}
+
+		this.addLink = addLink
+
+		this.isEditable = isEditable
 
 		this.html = function (htmlString) {
 			if (htmlString == undefined) {
@@ -359,7 +392,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 			const selObj = window.getSelection()
 			//console.log('selObj', selObj)
 
-			if (!isEditable(selObj.anchorNode)) {
+			if (!isEditable()) {
 				$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
 				return
 			}

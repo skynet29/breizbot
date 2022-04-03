@@ -1,14 +1,16 @@
 <div class="titlebar"><strong bn-text="fileName"></strong></div>
 <div class="toolbar">
 	<div class="group">
-		<button title="New File" bn-event="click: onNewFile" class="w3-button">
-			<i class="fa fa-file"></i></button>
-		<button title="Save File" bn-event="click: onSaveFile" class="w3-button">
-			<i class="fa fa-save"></i></button>
-		<button title="Open File" bn-event="click: onOpenFile" class="w3-button">
-			<i class="fa fa-folder-open"></i></button>
+		<button title="New File" bn-event="click: onNewFile" class="w3-button" bn-icon="fa fa-file"></button>
+		<button title="Save File" bn-event="click: onSaveFile" class="w3-button" bn-icon="fa fa-save"></button>
+		<button title="Open File" bn-event="click: onOpenFile" class="w3-button" bn-icon="fa fa-folder-open"></button>		
+		<span class="separator"></span>
+	</div>
+	<div class="group">
+		<button title="Add Anchor" bn-event="click: onAddAnchor" class="w3-button" bn-icon="fas fa-anchor">
+		<button title="Add Anchor Link" bn-event="click: onAddAnchorLink" class="w3-button" bn-icon="fas fa-link">
 
 	</div>
 
 </div>
-<div bn-control="breizbot.htmleditor" bn-iface="editor" bn-data="{useDataUrlForImg: true}"></div>
+<div bn-control="breizbot.htmleditor" bn-bind="editor" bn-data="{useDataUrlForImg: true}"></div>

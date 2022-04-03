@@ -4,18 +4,37 @@ $$.control.registerControl('INPUT', {
 
 	template: { gulp_inject: './INPUT.html' },
 
-	deps: ['breizbot.pager', 'app.emuAgc'],
+	deps: ['breizbot.gamepad', 'app.emuAgc'],
 
 	props: {
 	},
 
 	/**
 	 * 
-	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
 	 * @param {AppAgc.Services.AGC.Interface} agc
 	 */
-	init: function (elt, pager, agc) {
+	init: function (elt, gamepad, agc) {
 
+
+		gamepad.on('connected', (ev) => {
+			console.log('connected', ev)
+			checkGamePadStatus()
+		})
+
+		function checkGamePadStatus() {
+			const info = gamepad.getGamepads()[0]
+			if (info) {
+				const {axes} = info
+				//console.log('axes', axes)
+				const roll = Math.ceil(axes[0] * 57)
+				const pitch = Math.ceil(axes[1] * 57)
+				ctrl.setData({roll, pitch})
+				setTimeout(checkGamePadStatus, 50)
+			}
+		}
+
+		
 
 		const ctrl = $$.viewController(elt, {
 			data: {

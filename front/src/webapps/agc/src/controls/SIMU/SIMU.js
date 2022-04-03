@@ -321,14 +321,14 @@ $$.control.registerControl('SIMU', {
 
 			// Calculate Delta Omega, Omega and LM weight change
 			if (RCS_Propellant_Mass_KG > 0) {
-				const Delta_Omega_Yaw = Alpha_Yaw * Delta_Time * np
+				const Delta_Omega_Yaw   = Alpha_Yaw   * Delta_Time * np
 				const Delta_Omega_Pitch = Alpha_Pitch * Delta_Time * (nu - nv)
-				const Delta_Omega_Roll = Alpha_Roll * Delta_Time * (nu + nv)
+				const Delta_Omega_Roll  = Alpha_Roll  * Delta_Time * (nu + nv)
 				//console.log({Delta_Omega_Yaw, Delta_Omega_Pitch, Delta_Omega_Roll})
 
-				Omega_Yaw += Delta_Omega_Yaw
+				Omega_Yaw   += Delta_Omega_Yaw
 				Omega_Pitch += Delta_Omega_Pitch
-				Omega_Roll += Delta_Omega_Roll
+				Omega_Roll  += Delta_Omega_Roll
 
 				elt.trigger('data', {omega: [Omega_Yaw, Omega_Pitch, Omega_Roll]})
 

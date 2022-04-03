@@ -37,6 +37,18 @@ $$.control.registerControl('breizbot.viewer', {
 			}
 		})
 
+		async function readHtml() {
+			const ret = await fetch(url)			
+			const htmlDoc = await ret.text()
+			//console.log('htmlDoc', htmlDoc)
+			const htmlElt = ctrl.scope.doc.find('.html')
+			htmlElt.html(htmlDoc)
+			htmlElt.find('a[href^=http]').attr('target', '_blank') // open external link in new navigator tab
+		}
+
+		if (type == 'hdoc') {
+			readHtml()
+		}
 
 
 		this.setData = function(data) {

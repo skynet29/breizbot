@@ -30,8 +30,8 @@
 	<video bn-attr="{src: url}" controls="" controlsList=nodownload></video>
 </div>
 
-<div bn-if="isDoc" class="doc">
+<div bn-if="isDoc" class="doc" bn-bind="doc">
 	<div class="scrollPanel">
-		<div bn-load="url" class="html"></div>
+		<div class="html"></div>
 	</div>
 </div>

@@ -14,14 +14,60 @@ $$.control.registerControl('rootPage', {
 
 		console.log('params', params)
 
+		const addLinkDlg = $$.formDialogController({
+			title: 'Add Anchor Link',
+			template: {gulp_inject: './addLink.html'},
+			data: {
+				items: []
+			}
+		})
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				fileName: ''
 			},
 			events: {
+				onAddAnchorLink: async function() {
+					console.log('onAddAnchor')
+					const anchorList = getAnchorList()
+					console.log('anchorList', anchorList)
+					if (anchorList.length == 0) {
+						$$.ui.showAlert({content: 'No anchor available !'})
+						return
+					}
+					addLinkDlg.setData({items: anchorList})
+					editor.addLink(async () => {
+						const ret = await addLinkDlg.show()
+						console.log('ret', ret)
+						if (ret != null) {
+							return '#' + ret.value
+						}
+						return ret
+					})
+					
+				},
+				onAddAnchor: async function(ev) {
+					console.log('onAddAnchor')
+					
+					//console.log('selObj', selObj)
+					const selObj = window.getSelection()
+		
+					if (!editor.isEditable()) {
+						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
+						return
+					}
+
+					const parent = selObj.anchorNode.parentElement
+
+					const anchorName = await $$.ui.showPrompt({title: 'Add Anchor', label: 'Anchor name:'})
+					if (anchorName != null) {
+						console.log('anchorName', anchorName)
+						parent.id = 'tag-' + anchorName			
+					}
+				},
 				onNewFile: function (ev) {
 					//console.log('onNewFile')
-					ctrl.scope.editor.html('')
+					editor.html('')
 					ctrl.setData({ fileName: '' })
 				},
 				onSaveFile: async function (ev) {
@@ -62,6 +108,23 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
+		/**@type {JQuery<HTMLElement>} */
+		const editorElt = ctrl.scope.editor
+
+		/**@type {Breizbot.Controls.Editor.Interface} */
+		const editor = editorElt.iface()
+
+		function getAnchorList() {
+			const ret = []
+			editorElt.find('[id^=tag-]').each(function() {
+				ret.push({
+					label: $(this).text(),
+					value: $(this).attr(('id'))
+				})
+			})
+			return ret
+		}
+
 		if (params.fileName) {
 			loadFileName(params)
 		}
@@ -75,7 +138,7 @@ $$.control.registerControl('rootPage', {
 			const url = files.fileUrl(rootDir + fileName)
 
 			ctrl.setData({ fileName, rootDir })
-			ctrl.scope.editor.load(url)
+			editor.load(url)
 		}
 
 		/**
@@ -85,7 +148,7 @@ $$.control.registerControl('rootPage', {
 		 */
 		async function saveFile(fileName, options) {
 			//console.log('saveFile')
-			const htmlString = ctrl.scope.editor.html()
+			const htmlString = editor.html()
 			const blob = new Blob([htmlString], { type: 'text/html' })
 			return files.saveFile(blob, fileName, options)
 		}

@@ -3,6 +3,22 @@ declare namespace Breizbot {
 
     declare namespace Services {
 
+        declare namespace Gamepad {
+            type EventName = 'connected' | 'disconnected'
+
+            interface Info {
+                index: number;
+                id: number;
+                axes: Array<number>;
+                buttons: Array<{presses: boolean}>;
+            }
+
+            interface Interface {
+                on(event: EventName, callback: (ev: Info) => void): void;
+                getGamepads(): Array<Info>;
+            }
+        }
+
         declare namespace Display {
 
             type EventName = 'availability' | 'connectionavailable' | 'ready' | 'close' | 'playing' | 'paused';
@@ -350,6 +366,18 @@ declare namespace Breizbot {
 
 
     declare namespace Controls {
+
+        declare namespace Editor {
+            declare interface Interface {
+                html(htmlString?: string): string;       
+                load (url: string): void;       
+                getValue(): string;        
+                setValue(value: string): void;        
+                focus():void;
+                isEditable():boolean;
+                addLink(cbk :() => Promise<string> | Promise<string>):void;
+            }
+        }
 
         declare namespace Contacts {
 

@@ -233,7 +233,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 					else {
 						if (parent.parentElement.childElementCount == 1) {
 							parent.removeChild(node)
-							parent.parentElement.textContent = text
+							parent.parentElement.textContent = parent.parentElement.textContent + text
 						}
 						else {
 							$(parent).replaceWith(div(text, tagName))

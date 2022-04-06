@@ -414,6 +414,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 		this.html = function (htmlString) {
 			if (htmlString == undefined) {
 				ctrl.scope.editor.find('span').remove('.interim')
+				ctrl.scope.editor.find('span').removeAttr('style')
 				return ctrl.scope.editor.html()
 			}
 

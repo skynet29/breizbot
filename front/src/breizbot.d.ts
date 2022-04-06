@@ -370,7 +370,7 @@ declare namespace Breizbot {
         declare namespace Editor {
             declare interface Interface {
                 html(htmlString?: string): string;       
-                load (url: string): void;       
+                load (url: string, cbk?: () => void): void;       
                 getValue(): string;        
                 setValue(value: string): void;        
                 focus():void;

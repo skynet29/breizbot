@@ -371,8 +371,8 @@ $$.control.registerControl('breizbot.htmleditor', {
 			ctrl.scope.editor.html(htmlString)
 		}
 
-		this.load = function (url) {
-			return ctrl.scope.editor.load(url)
+		this.load = function (url, cbk) {
+			return ctrl.scope.editor.load(url, cbk)
 		}
 
 		this.getValue = function () {

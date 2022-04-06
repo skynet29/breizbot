@@ -19,6 +19,18 @@ $$.control.registerControl('rootPage', {
 			template: {gulp_inject: './addLink.html'},
 			data: {
 				items: []
+			},
+			events: {
+				onRemoveAnchor: function() {
+					const {value} = addLinkDlg.getFormData()
+					console.log('onRemoveAnchor', value)
+					editorElt.find(`[id=${value}]`).removeAttr('id')
+					addLinkDlg.setData({items: getAnchorList()})
+					const elt = editorElt.find(`a[href="#${value}"]`)
+					const text = elt.text()
+					elt.replaceWith(`<div>${text}</div>`)
+
+				}
 			}
 		})
 
@@ -58,6 +70,10 @@ $$.control.registerControl('rootPage', {
 					}
 
 					const parent = selObj.anchorNode.parentElement
+					if ($(parent).hasClass('editor')) {
+						$$.ui.showAlert({ title: 'Error', content: 'Acnhor text must be a title' })
+						return
+					}
 
 					const anchorName = await $$.ui.showPrompt({title: 'Add Anchor', label: 'Anchor name:'})
 					if (anchorName != null) {
@@ -139,7 +155,9 @@ $$.control.registerControl('rootPage', {
 			const url = files.fileUrl(rootDir + fileName)
 
 			ctrl.setData({ fileName, rootDir })
-			editor.load(url)
+			editor.load(url, () => {
+				console.log('file loaded')
+			})
 		}
 
 		/**

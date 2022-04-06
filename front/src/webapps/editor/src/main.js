@@ -117,9 +117,10 @@ $$.control.registerControl('rootPage', {
 		function getAnchorList() {
 			const ret = []
 			editorElt.find('[id^=tag-]').each(function() {
+				const id = $(this).attr(('id'))
 				ret.push({
-					label: $(this).text(),
-					value: $(this).attr(('id'))
+					label: id.substr(4),
+					value: id
 				})
 			})
 			return ret

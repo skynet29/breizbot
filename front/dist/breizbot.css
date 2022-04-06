@@ -140,6 +140,11 @@
         outline: none;
         font-family: Arial;
         font-size: 12pt; }
+        .breizbot-htmleditor .bottom > .scrollPanel .editor [id^=tag-]:before {
+          content: '\2693';
+          font-size: 8px;
+          vertical-align: top;
+          margin-right: 5px; }
         .breizbot-htmleditor .bottom > .scrollPanel .editor p {
           margin: 0; }
         .breizbot-htmleditor .bottom > .scrollPanel .editor a {

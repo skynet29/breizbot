@@ -29,6 +29,13 @@
 				outline: none; 
 				font-family: Arial;
 				font-size: 12pt;
+
+				[id^=tag-]:before {
+					content: '\2693';
+					font-size: 8px;
+					vertical-align: top;
+					margin-right: 5px;
+				}
 	
 				p {
 					margin: 0;			

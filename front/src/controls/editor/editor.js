@@ -168,6 +168,18 @@ $$.control.registerControl('breizbot.htmleditor', {
 			ignoreOnEnd = false
 		}
 
+		/**
+		 * 
+		 * @param {string} text 
+		 * @param {string} tagName
+		 * @returns {JQuery<HTMLElement>}
+		 */
+		function div(text, tagName) {
+			//console.log('div', tagName, text)
+			const elt =  ['I', 'B', 'U', 'FONT'].includes(tagName) ? 'span': 'div'
+			return $(`<${elt}>`).text(text)
+		}
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				html: elt.val(),
@@ -191,6 +203,43 @@ $$.control.registerControl('breizbot.htmleditor', {
 				}
 			},
 			events: {
+				onRemoveFormat: function(ev) {
+					ev.stopPropagation()
+					//console.log('onRemoveFormat')
+					const selObj = window.getSelection()
+
+					if (!isEditable()) {
+						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
+						return
+					}
+					
+					const node = selObj.anchorNode
+					if (node.nodeType != node.TEXT_NODE) {
+						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
+						return
+
+					}
+					const text = node.textContent
+					//console.log({text})
+					const parent = node.parentElement
+					const tagName = parent.tagName
+					
+					if ($(parent).hasClass('editor')) {
+						if (node.previousSibling != null) {
+							div(text, tagName).insertAfter(node.previousSibling)
+							parent.removeChild(node)
+						}
+					}
+					else {
+						if (parent.parentElement.childElementCount == 1) {
+							parent.removeChild(node)
+							parent.parentElement.textContent = text
+						}
+						else {
+							$(parent).replaceWith(div(text, tagName))
+						}
+					}
+				},
 				onMicro: function () {
 					if (ctrl.model.recognizing) {
 						ctrl.setData({ recognizing: false })

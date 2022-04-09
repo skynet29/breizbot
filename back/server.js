@@ -114,9 +114,7 @@ function dbReady() {
 		store,
 		resave: true,
 		saveUninitialized: true,
-		// cookie: {
-		// 	maxAge: 1000 * 60 * 60 * 24 * 7 // 1 week
-		// }
+		cookie: {maxAge: null}
 	}))
 
 	app.use(bodyParser.urlencoded({ extended: false }))

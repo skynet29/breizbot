@@ -384,8 +384,24 @@
     margin: 10px; }
     .breizbot-viewer .audio audio {
       width: 100%; }
-  .breizbot-viewer .doc .scrollPanel {
-    height: 100%;
-    overflow-y: auto; }
-    .breizbot-viewer .doc .scrollPanel .html {
-      padding: 10px; }
+  .breizbot-viewer .doc {
+    position: relative; }
+    .breizbot-viewer .doc .top {
+      position: absolute;
+      bottom: 20px;
+      right: 30px;
+      cursor: pointer;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0;
+      background-color: lightgray; }
+    .breizbot-viewer .doc .scrollPanel {
+      height: 100%;
+      overflow-y: auto; }
+      .breizbot-viewer .doc .scrollPanel .html {
+        padding: 10px; }

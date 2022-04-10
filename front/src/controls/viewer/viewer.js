@@ -34,6 +34,12 @@ $$.control.registerControl('breizbot.viewer', {
 					return this.type == 'hdoc'
 				}
 
+			},
+			events: {
+				onTop: function() {
+					console.log('onTop')
+					ctrl.scope.doc.find('.scrollPanel').get(0).scroll(0, 0)
+				}
 			}
 		})
 

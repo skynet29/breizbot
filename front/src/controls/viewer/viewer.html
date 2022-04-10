@@ -30,7 +30,8 @@
 	<video bn-attr="{src: url}" controls="" controlsList=nodownload></video>
 </div>
 
-<div bn-if="isDoc" class="doc" bn-bind="doc">
+<div bn-if="isDoc" class="doc" bn-bind="doc" bn-event="click.top: onTop">
+	<button bn-icon="fas fa-angle-up" class="top" title="Top" ></button>
 	<div class="scrollPanel">
 		<div class="html"></div>
 	</div>

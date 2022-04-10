@@ -23,6 +23,23 @@
 	}
 
 	.doc {
+		position: relative;
+		.top {
+			position: absolute;
+			bottom: 20px;
+			right: 30px;
+			cursor: pointer;
+			width: 30px;
+			height: 30px;
+			border-radius: 50%;
+			border: none;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			padding: 0;
+			background-color: lightgray;
+		}
+
 		.scrollPanel {
 			height: 100%;
 			overflow-y: auto;

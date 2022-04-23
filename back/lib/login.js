@@ -14,6 +14,8 @@ function renderLogin(res, options) {
 		redirect_uri: ''
 	}, options)
 
+	options.currentYear = new Date().getFullYear()
+
 	console.log('render login', options)
 	res.render('login', options)
 }

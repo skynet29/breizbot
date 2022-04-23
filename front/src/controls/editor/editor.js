@@ -234,7 +234,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 						})
 						table.remove()
 						range.deleteContents()
-						for(const text of data) {
+						for(const text of data.reverse()) {
 							const div = document.createElement('div')
 							div.textContent = text
 							range.insertNode(div)

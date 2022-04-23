@@ -552,6 +552,7 @@ $$.control.registerControl('rootPage', {
 		}
 
 		async function rename(data) {
+			console.log(data)
 			const { rootDir, name, idx } = data
 
 			const oldFileName = name

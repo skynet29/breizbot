@@ -1,6 +1,11 @@
 <div bn-event="click.cmd: onCommand" class="toolbar">
 
 	<div class="group">
+		<button class="cmd w3-button"  
+			bn-icon="fas fa-microphone" 
+			title="Toogle Micro" 
+			bn-event="click: onToogleMicro" 
+			bn-show="speechRecoAvailable"></button>
 		<button class="cmd w3-button"  bn-icon="fas fa-remove-format" title="Remove Format" bn-event="click: onRemoveFormat"></button>
 		<span class="separator"></span>
 
@@ -120,6 +125,7 @@
 		<button class="w3-button cmd" title="Horizontal Rule" data-cmd="insertHorizontalRule"bn-icon="fas fa-minus"></button>
 		<button class="w3-button" title="Insert Link" bn-event="click: onCreateLink" bn-icon="fas fa-link"></button>		
 		<button title="Insert image" bn-event="click: onInsertImage" class="w3-button" bn-icon="fa fa-image"></button>
+		<button title="Insert Table from selection" bn-event="click: onInsertTable" class="w3-button" bn-icon="fa fa-th"></button>
 
 	</div>
 
@@ -128,7 +134,7 @@
 
 
 <div class="bottom">
-	<img bn-attr="{src: getMicUrl}" class="micro" bn-event="click: onMicro" bn-show="speechRecoAvailable" title="Speech Recognition">
+	<img bn-attr="{src: getMicUrl}" class="micro" bn-event="click: onMicro" bn-show="isMicroVisible" title="Speech Recognition">
 	<div class="scrollPanel" bn-event="click: onScrollClick">
 		<div contenteditable="true" bn-bind="editor" class="editor" bn-html="html"></div>
 	</div>

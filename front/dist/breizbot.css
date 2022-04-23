@@ -151,6 +151,11 @@
           color: #0000ee; }
         .breizbot-htmleditor .bottom > .scrollPanel .editor .interim {
           color: gray; }
+        .breizbot-htmleditor .bottom > .scrollPanel .editor table, .breizbot-htmleditor .bottom > .scrollPanel .editor th, .breizbot-htmleditor .bottom > .scrollPanel .editor td {
+          border: 1px solid black;
+          border-collapse: collapse; }
+        .breizbot-htmleditor .bottom > .scrollPanel .editor td, .breizbot-htmleditor .bottom > .scrollPanel .editor th {
+          padding: 5px; }
   .breizbot-htmleditor > .toolbar {
     display: flex;
     flex-direction: row;

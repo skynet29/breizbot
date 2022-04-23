@@ -196,6 +196,10 @@ $$.control.registerControl('breizbot.htmleditor', {
 				colorItems,
 				color: defaultColor,
 				headingItems: getHeadingItems(),
+				showMicro: false,
+				isMicroVisible: function() {
+					return this.showMicro && this.speechRecoAvailable
+				},
 				speechRecoAvailable,
 				recognizing: false,
 				getMicUrl: function () {
@@ -203,6 +207,64 @@ $$.control.registerControl('breizbot.htmleditor', {
 				}
 			},
 			events: {
+				onToogleMicro: function() {
+					ctrl.setData({showMicro: !ctrl.model.showMicro})
+				},
+				onInsertTable: function() {
+					//console.log('onInsertTable')
+					if (!isEditable()) {
+						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
+						return
+					}
+
+					const selObj = window.getSelection()
+					const range = selObj.getRangeAt(0)
+					if (['TD', 'TH'].includes(range.startContainer.parentElement.tagName)) {
+						const table = $(range.startContainer.parentElement).closest('table')
+						const tr = table.find('tr')
+						const data = []
+						tr.each(function() {
+							const td = $(this).find('td,th')
+							const text = []
+							td.each(function() {
+								text.push($(this).text())
+							})
+							data.push(text.join(';'))
+
+						})
+						table.remove()
+						range.deleteContents()
+						for(const text of data) {
+							const div = document.createElement('div')
+							div.textContent = text
+							range.insertNode(div)
+						}
+						selObj.removeAllRanges()
+						return
+					}
+					const selRangeText = getTextNodesBetween(range.commonAncestorContainer, range.startContainer, range.endContainer)					
+					if (selRangeText.length == 0) {
+						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
+						return
+					}
+					//document.execCommand('delete', false)
+					range.deleteContents()
+
+					console.log(selRangeText)
+					const table = document.createElement('table')
+					for(const row of selRangeText) {
+						const tr = document.createElement('tr')
+						table.appendChild(tr)
+						for(const text of row.split(';')) {
+							const td = document.createElement('td')
+							tr.appendChild(td)
+							td.textContent = text
+						}
+					}
+					range.insertNode(table)
+					selObj.removeAllRanges()
+
+				},
 				onRemoveFormat: function(ev) {
 					ev.stopPropagation()
 					//console.log('onRemoveFormat')
@@ -353,6 +415,57 @@ $$.control.registerControl('breizbot.htmleditor', {
 
 		})
 
+		/**
+		 * 
+		 * @param {Node} node 
+		 * @returns 
+		 */
+		function hasTextChildNode(node) {
+			return Array.from(node.childNodes).filter(entry => entry.nodeType == Node.TEXT_NODE).length != 0
+		}
+
+		function getTextNodesBetween(rootNode, startNode, endNode) {
+			let pastStartNode = false
+			let reachedEndNode = false
+			const textNodes = []
+		
+			function getTextNodes(node) {
+				if (node == startNode) {
+					pastStartNode = true
+				} 
+		
+				if (node.nodeType == Node.TEXT_NODE) {
+					if (pastStartNode && !reachedEndNode) {   
+     
+						if (node.parentElement.tagName == 'SPAN' && node.parentElement.parentElement.tagName == 'DIV' && hasTextChildNode(node.parentElement.parentElement)) {
+							const length = textNodes.length
+							if (length > 0)
+								textNodes[length-1] += node.textContent                        
+								
+						}
+						else {
+							textNodes.push(node.textContent)
+						}
+					}
+				} else {
+					for (let i = 0, len = node.childNodes.length; !reachedEndNode && i < len; ++i) {
+						getTextNodes(node.childNodes[i])
+					}
+				}
+
+				if (node == endNode) {
+					reachedEndNode = true
+				}
+			}
+		
+			getTextNodes(rootNode)
+			return textNodes
+		}
+
+		function getSelRangeText() {
+			const range = getRange()
+			return getTextNodesBetween(range.commonAncestorContainer, range.startContainer, range.endContainer)
+		}
 
 		/**
 		 * 

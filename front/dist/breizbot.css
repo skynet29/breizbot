@@ -410,3 +410,8 @@
       overflow-y: auto; }
       .breizbot-viewer .doc .scrollPanel .html {
         padding: 10px; }
+        .breizbot-viewer .doc .scrollPanel .html table, .breizbot-viewer .doc .scrollPanel .html td, .breizbot-viewer .doc .scrollPanel .html th {
+          border: 1px solid black;
+          border-collapse: collapse; }
+        .breizbot-viewer .doc .scrollPanel .html td, .breizbot-viewer .doc .scrollPanel .html th {
+          padding: 5px; }

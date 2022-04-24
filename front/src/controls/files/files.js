@@ -9,22 +9,22 @@
 	function getIconClass(name) {
 		name = name.toLowerCase()
 		if (name.endsWith('.pdf')) {
-			return 'fa-file-pdf'
+			return 'fa-file-pdf w3-text-red'
 		}
 		if (name.endsWith('.hdoc')) {
-			return 'fa-file-word'
+			return 'fa-file-word w3-text-blue'
 		}
 		if (name.endsWith('.ogg') || name.endsWith('.mp3')) {
-			return 'fa-file-audio'
+			return 'fa-file-audio w3-text-purple'
 		}
 		if (name.endsWith('.mp4') || name.endsWith('.webm') || name.endsWith('.3gp')) {
-			return 'fa-file-video'
+			return 'fa-file-video w3-text-orange'
 		}
 		if (name.endsWith('.zip')) {
-			return 'fa-file-archive'
+			return 'fa-file-archive w3-text-amber'
 		}
 
-		return 'fa-file'
+		return 'fa-file w3-text-blue-grey'
 	}
 
 	/**
@@ -193,7 +193,7 @@
 						return !scope.f.folder && scope.f.isImage
 					},
 					class1: function (scope) {
-						return `fa fa-4x w3-text-blue-grey ${getIconClass(scope.f.name)}`
+						return `fa fa-4x ${getIconClass(scope.f.name)}`
 					},
 					getSize: function (scope) {
 						let size = scope.f.size

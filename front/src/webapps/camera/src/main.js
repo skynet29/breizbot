@@ -12,7 +12,7 @@ $$.control.registerControl('rootPage', {
 	 */
 	init: function (elt, srvFiles, pager) {
 
-		const audio = new Audio('/webapps/camera/assets/camera_shutter.mp3')
+		const audio = new Audio(srvFiles.assetsUrl('camera_shutter.mp3'))
 
 		async function saveImage(blob) {
 			const fileName = 'SNAP' + Date.now() + '.png'
@@ -94,6 +94,7 @@ $$.control.registerControl('rootPage', {
 
 		/**@type {Brainjs.Controls.Camera.Interface} */
 		const camera = ctrl.scope.camera
+
 
 		async function getVideoDevices() {
 			const videoDevices = await $$.media.getVideoDevices()

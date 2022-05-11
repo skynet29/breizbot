@@ -378,10 +378,10 @@ $$.control.registerControl('rootPage', {
 					setPower(idx, 0)
 					break
 				case 'forward':
-					setPower(idx, 50)
+					setPower(idx, 100)
 					break
 				case 'backward':
-					setPower(idx, -50)
+					setPower(idx, -100)
 					break
 			}
 

@@ -1,0 +1,45 @@
+<div>
+    <button class="w3-blue w3-button" 
+        bn-event="click: onConnect"
+        bn-show="!connected"
+    >Connect to HUB</button>
+
+    <button class="w3-blue w3-button" 
+        bn-event="click: onShutdown"
+        bn-show="connected"
+    >Shutdown</button>
+
+
+    <button class="w3-blue w3-button" 
+        bn-event="click: onSendMsg"
+        bn-show="connected"
+    >Send Msg</button>
+</div>
+<div bn-show="connected">
+    <h1>External Devices</h1>
+    <table class="w3-table-all">
+        <thead>
+            <tr>
+                <th>Port</th>
+                <th>Device Type</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody bn-each="externalDevices" bn-event="click.w3-button: onAction">
+            <tr>
+                <td bn-text="$scope.$i.port"></td>
+                <td bn-text="$scope.$i.device"></td>
+                <td>
+                    <button class="w3-button w3-green" data-action="forward">FORWARD</button>
+                    <button class="w3-button w3-green" data-action="backward">BACKWARD</button>
+                    <button class="w3-button w3-red" data-action="off">OFF</button>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <h1>Internal Devices</h1>
+    <ul bn-each="internalDevices">
+        <li bn-text="$scope.$i"></li>
+    </ul>
+</div>

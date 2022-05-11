@@ -1,0 +1,6 @@
+{	
+	"iconCls": "fab fa-bluetooth-b fa-2x",
+	"colorCls": "w3-blue",
+	"title": "Powerup Hub",
+	"styles": ["app.css"]
+}

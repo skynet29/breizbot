@@ -25,14 +25,13 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody bn-each="externalDevices" bn-event="click.w3-button: onAction">
+        <tbody bn-each="externalDevices" bn-event="mousedown.w3-button: onMouseUp, mouseup.w3-button:onMouseDown">
             <tr>
-                <td bn-text="$scope.$i.port"></td>
-                <td bn-text="$scope.$i.device"></td>
+                <td bn-text="$scope.$i.portName"></td>
+                <td bn-text="$scope.$i.deviceTypeName"></td>
                 <td>
                     <button class="w3-button w3-green" data-action="forward">FORWARD</button>
                     <button class="w3-button w3-green" data-action="backward">BACKWARD</button>
-                    <button class="w3-button w3-red" data-action="off">OFF</button>
                 </td>
             </tr>
 

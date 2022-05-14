@@ -15,7 +15,8 @@
         bn-show="connected"
     >Send Msg</button>
 </div>
-<div bn-show="connected">
+
+<div bn-show="connected" class="scrollBar">
     <h1>External Devices</h1>
     <table class="w3-table-all">
         <thead>
@@ -25,20 +26,34 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody bn-each="externalDevices" bn-event="mousedown.w3-button: onMouseUp, mouseup.w3-button:onMouseDown">
+        <tbody bn-each="externalDevices" bn-event="mousedown.action: onMouseUp, mouseup.action:onMouseDown, click.portInfo: onInfo2">
             <tr>
                 <td bn-text="$scope.$i.portName"></td>
                 <td bn-text="$scope.$i.deviceTypeName"></td>
                 <td>
-                    <button class="w3-button w3-green" data-action="forward">FORWARD</button>
-                    <button class="w3-button w3-green" data-action="backward">BACKWARD</button>
+                    <button class="w3-button w3-green action" data-action="forward">FWD</button>
+                    <button class="w3-button w3-green action" data-action="backward">BKWD</button>
+                    <button class="w3-button w3-blue portInfo">INFO</button>
                 </td>
             </tr>
 
         </tbody>
     </table>
     <h1>Internal Devices</h1>
-    <ul bn-each="internalDevices">
-        <li bn-text="$scope.$i"></li>
-    </ul>
-</div>
+    <table class="w3-table-all">
+        <thead>
+            <tr>
+                <th>Device Type</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody bn-each="internalDevices" bn-event="click.w3-button: onInfo">
+            <tr>
+                <td bn-text="$scope.$i.deviceTypeName"></td>
+                <td>
+                    <button class="w3-button w3-blue">INFO</button>
+                </td>
+            </tr>
+
+        </tbody>
+    </table></div>

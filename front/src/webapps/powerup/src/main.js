@@ -34,7 +34,7 @@ $$.control.registerControl('rootPage', {
 				ctrl.model.externalDevices.sort((a, b) => a.portId - b.portId)
 			}
 			else {
-				ctrl.model.internalDevices.push(deviceTypeName)
+				ctrl.model.internalDevices.push({deviceTypeName, portId})
 			}
 			ctrl.update()
 		})
@@ -48,14 +48,33 @@ $$.control.registerControl('rootPage', {
 			ctrl.update()
 		})
 
+		hub.on('rotate', (data) => {
+			console.log('rotate', data)
+		})
+
+
 		/**
 		 * 
 		 * @param {JQuery<HTMLElement>} elt 
 		 */
-		function getPortId(elt) {
+		function getExternalPortId(elt) {
 			const idx = elt.closest('tr').index()
 			return ctrl.model.externalDevices[idx].portId
 
+		}
+
+		/**
+		 * 
+		 * @param {number} portId 
+		 * @param {string} deviceTypeName
+		 */
+		function openInfoPage(portId, deviceTypeName) {
+			pager.pushPage('info', {
+				title: deviceTypeName,
+				props: {
+					portId
+				}
+			})
 		}
 
 		const ctrl = $$.viewController(elt, {
@@ -68,7 +87,7 @@ $$.control.registerControl('rootPage', {
 				onMouseUp: function() {
 					//console.log('onMouseUp')
 					const action = $(this).data('action')
-					const portId = getPortId($(this))
+					const portId = getExternalPortId($(this))
 					switch (action) {
 						case 'off':
 							hub.motor.setPower(portId, 0)
@@ -83,18 +102,30 @@ $$.control.registerControl('rootPage', {
 				},
 				onMouseDown: function() {
 					//console.log('onMouseDown')
-					const portId = getPortId($(this))
+					const portId = getExternalPortId($(this))
 					hub.motor.setPower(portId, 0)
 				},
 				onConnect: async function () {
 					await hub.connect()
 					ctrl.setData({ connected: true })
+					await hub.subscribe(hub.PortMap.B, hub.DeviceMode.ROTATION)
 				},
 				onSendMsg: async function () {
 					await hub.led.setColor(hub.Color.PURPLE)
 				},
 				onShutdown: async function () {
 					await hub.shutdown()
+				},
+				onInfo: function() {
+					const idx = $(this).closest('tr').index()
+					const {portId, deviceTypeName} = ctrl.model.internalDevices[idx]
+					openInfoPage(portId, deviceTypeName)
+
+				},
+				onInfo2: function() {
+					const idx = $(this).closest('tr').index()
+					const {portId, deviceTypeName} = ctrl.model.externalDevices[idx]
+					openInfoPage(portId, deviceTypeName)
 				}
 			}
 		})

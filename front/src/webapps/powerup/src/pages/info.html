@@ -1,0 +1,34 @@
+<div>
+    <div>
+        Capabilities: <span bn-text="capabilities"></span>
+    </div>
+    <table class="w3-table-all">
+        <thead>
+            <tr>
+                <th>NAME</th>
+                <th>UNIT</th>
+                <th>RAW</th>
+                <th>PCT</th>
+                <th>SI</th>
+            </tr>
+        </thead>
+        <tbody bn-each="modes">
+            <tr>
+                <td bn-text="$scope.$i.name"></td>
+                <td bn-text="$scope.$i.unit"></td>
+                <td>
+                    <span bn-text="$scope.$i.RAW.min"></span><br>
+                    <span bn-text="$scope.$i.RAW.max"></span>
+                </td>
+                <td>
+                    <span bn-text="$scope.$i.PCT.min"></span><br>
+                    <span bn-text="$scope.$i.PCT.max"></span>
+                </td>
+                <td>
+                    <span bn-text="$scope.$i.SI.min"></span><br>
+                    <span bn-text="$scope.$i.SI.max"></span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

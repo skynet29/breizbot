@@ -29,7 +29,7 @@ $$.control.registerControl('info', {
 
 		async function init() {
 			const portInfo = await hub.getPortInformation(portId)
-			//console.log('portInfo', portInfo)	
+			console.log('portInfo', portInfo)	
 			const { modes, capabilities } = portInfo
 			ctrl.setData({ modes, capabilities })
 		}

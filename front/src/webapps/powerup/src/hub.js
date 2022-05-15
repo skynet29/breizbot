@@ -5,10 +5,11 @@ $$.service.registerService('hub', {
     init: function () {
 
         let charac = null
-        let hubDevices = {}
+        const hubDevices = {}
         const event = new EventEmitter2()
-        let debug = false
+        const debug = false
         const callback = {}
+        const deviceModes = {}
 
 
         const log = function (...data) {
@@ -383,9 +384,11 @@ $$.service.registerService('hub', {
             await charac.writeValueWithoutResponse(buffer)
         }
 
-        function subscribe(portId, mode) {
-            return sendMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
+        async function subscribe(portId, mode) {
+            await sendMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
                 portId, mode, 0x01, 0x00, 0x00, 0x00, 0x01)
+            
+            deviceModes[portId] = mode
         }
 
         function createVirtualPort(portId1, portId2) {
@@ -425,6 +428,9 @@ $$.service.registerService('hub', {
                     data[ret.type] = { min: ret.min, max: ret.max }
                     ret = await getPortModeInformationRequest(portId, mode, ModeInformationType.SYMBOL)
                     data.unit = ret.symbol
+                    ret = await getPortModeInformationRequest(portId, mode, ModeInformationType.VALUE_FORMAT)
+                    const {numValues, dataType, totalFigures, decimals} = ret
+                    data[ret.type] = {numValues, dataType, totalFigures, decimals}
                 }
                 modes.push(data)
             }

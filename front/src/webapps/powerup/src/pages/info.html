@@ -10,6 +10,7 @@
                 <th>RAW</th>
                 <th>PCT</th>
                 <th>SI</th>
+                <th>VALUE FORMAT</th>
             </tr>
         </thead>
         <tbody bn-each="modes">
@@ -27,6 +28,10 @@
                 <td>
                     <span bn-text="$scope.$i.SI.min"></span><br>
                     <span bn-text="$scope.$i.SI.max"></span>
+                </td>
+                <td>
+                    dataType: <span bn-text="$scope.$i.VALUE_FORMAT.dataType"></span><br>
+                    numValues: <span bn-text="$scope.$i.VALUE_FORMAT.numValues"></span>
                 </td>
             </tr>
         </tbody>

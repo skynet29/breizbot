@@ -7,7 +7,7 @@ $$.service.registerService('hub', {
         let charac = null
         let hubDevices = {}
         const event = new EventEmitter2()
-        const debug = true
+        const debug = false
         const callback = {}
         const deviceModes = {}
 
@@ -480,15 +480,9 @@ $$.service.registerService('hub', {
         }
 
         const portMsgQueue = {}
-        /**
-         * 
-         * @param {number} portId 
-         * @param {number} mode 
-         * @param  {...any} data 
-         * @returns 
-         */
-        async function writeDirect(portId, mode, ...data) {
-            const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, 0x51, mode, data)
+
+        async function writePortCommand(portId, ...data) {
+            const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, data)
             if (portMsgQueue[portId] == undefined) {
                 portMsgQueue[portId] = []
             }
@@ -500,8 +494,17 @@ $$.service.registerService('hub', {
             else {
                 log('Message mis en attente')
                 portMsgQueue[portId].push(buffer)
-            }
-
+            }            
+        }
+        /**
+         * 
+         * @param {number} portId 
+         * @param {number} mode 
+         * @param  {...any} data 
+         * @returns 
+         */
+        async function writeDirect(portId, mode, ...data) {
+            await writePortCommand(portId, 0x51, mode, data)
         }
 
         function setPower(portId, power) {

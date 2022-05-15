@@ -89,7 +89,7 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onMouseUp: function() {
-					//console.log('onMouseUp')
+					console.log('onMouseUp')
 					const action = $(this).data('action')
 					const portId = getExternalPortId($(this))
 					switch (action) {
@@ -105,20 +105,21 @@ $$.control.registerControl('rootPage', {
 					}					
 				},
 				onMouseDown: function() {
-					//console.log('onMouseDown')
+					console.log('onMouseDown')
 					const portId = getExternalPortId($(this))
 					hub.motor.setPower(portId, 0)
 				},
 				onConnect: async function () {
 					await hub.connect()
 					ctrl.setData({ connected: true })
-					await hub.subscribe(hub.PortMap.B, hub.DeviceMode.ROTATION)
+					//await hub.subscribe(hub.PortMap.B, hub.DeviceMode.ROTATION)
 				},
 				onSendMsg: async function () {
 					console.log('onSendMsg')
 					//await hub.led.setColor(hub.Color.RED)
-					await hub.led.setRGBColor(0, 0, 255)
+					//await hub.led.setRGBColor(0, 0, 255)
 					//await hub.motor.resetZero(hub.PortMap.B)
+					hub.createVirtualPort(hub.PortMap.C, hub.PortMap.D)
 				},
 				onShutdown: async function () {
 					await hub.shutdown()

@@ -214,14 +214,14 @@ $$.service.registerService('hub', {
          */
         function handleMotorValue(msg) {
             const portId = msg.getUint8(3)
-            const mode = deviceModes[portId] 
+            const mode = deviceModes[portId]
             if (mode == DeviceMode.ABSOLUTE) {
                 const degrees = msg.getInt16(4, true)
-                event.emit('rotate', {portId, degrees, mode})
+                event.emit('rotate', { portId, degrees, mode })
             }
             else if (mode == DeviceMode.ROTATION) {
                 const degrees = msg.getInt32(4, true)
-                event.emit('rotate', {portId, degrees, mode})
+                event.emit('rotate', { portId, degrees, mode })
             }
         }
         /**
@@ -231,8 +231,8 @@ $$.service.registerService('hub', {
         function handlePortValueSingle(msg) {
             log('msg', msg)
             const portId = msg.getUint8(3)
-            const device = hubDevices[portId]           
-            log('handlePortValueSingle', {portId, device})
+            const device = hubDevices[portId]
+            log('handlePortValueSingle', { portId, device })
             const fn = mapValue[device]
             if (typeof fn == 'function') {
                 fn(msg)
@@ -301,7 +301,7 @@ $$.service.registerService('hub', {
                 input modes ${input}, output modes ${output}`)
             const availableCaps = 'output,input,logical combinable, logical synchronisable'.split(',')
             let cap = []
-            for(let i = 0; i < 4; i++) {
+            for (let i = 0; i < 4; i++) {
                 if ((capabilities >> i) & 1) {
                     cap.push(availableCaps[i])
                 }
@@ -346,6 +346,12 @@ $$.service.registerService('hub', {
                 const portId = msg.getUint8(offset)
                 const feedback = msg.getUint8(offset + 1)
                 log({ portId, feedback })
+                portMsgQueue[portId].shift()
+                const buffer = portMsgQueue[portId][0] // verifie si il y a d'autre message a envoyer
+                if (buffer) {
+                    log('envoie message mis en attente', buffer)
+                    sendMsg(buffer)
+                }
             }
         }
         /**
@@ -370,9 +376,12 @@ $$.service.registerService('hub', {
                 event.emit('detach', { portId })
             }
             else if (eventType == Event.ATTACHED_VIRTUAL_IO) {
-                const portIdA = msg.getUint8(7)
-                const portIdB = msg.getUint8(8)
+                const portIdA = PortMapNames[msg.getUint8(7)]
+                const portIdB = PortMapNames[msg.getUint8(8)]
+                PortMapNames[portId] = `${portIdA}-${portIdB}`
+
                 log({ portIdA, portIdB })
+                event.emit('attach', { portId, deviceTypeName: 'Virtual Port' })
             }
 
         }
@@ -395,52 +404,56 @@ $$.service.registerService('hub', {
 
         /**
          * 
-         * @param {number} type 
          * @param  {...any} data 
+         * @returns {ArrayBuffer}
          */
-        async function sendMsg(type, ...data) {
-            log('sendMsg', { type, data })
+        function formatMsg(...data) {
             const buff = data.flat()
-            const msgLen = buff.length + 3
+            const msgLen = buff.length + 2
             const buffer = new ArrayBuffer(msgLen)
             const uint8Buffer = new Uint8Array(buffer)
             uint8Buffer[0] = msgLen
             uint8Buffer[1] = 0
-            uint8Buffer[2] = type
-            uint8Buffer.set(buff, 3)
-            log(uint8Buffer)
-
+            uint8Buffer.set(buff, 2)
+            return buffer
+        }
+        /**
+         * 
+         * @param  {ArrayBuffer} buffer 
+         */
+        async function sendMsg(buffer) {
+            log('sendMsg', buffer)
             await charac.writeValueWithoutResponse(buffer)
         }
 
         async function subscribe(portId, mode) {
-            await sendMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
-                portId, mode, 0x01, 0x00, 0x00, 0x00, 0x01)
-            
+            await sendMsg(formatMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
+                portId, mode, 0x01, 0x00, 0x00, 0x00, 0x01))
+
             deviceModes[portId] = mode
         }
 
         function createVirtualPort(portId1, portId2) {
-            return sendMsg(MessageType.VIRTUAL_PORT_SETUP, 0x01, portId1, portId2)
+            return sendMsg(formatMsg(MessageType.VIRTUAL_PORT_SETUP, 0x01, portId1, portId2))
         }
 
         function getPortInformationRequest(portId) {
             return new Promise(async (resolve) => {
-                await sendMsg(MessageType.PORT_INFORMATION_REQUEST, portId, 0x01)
+                await sendMsg(formatMsg(MessageType.PORT_INFORMATION_REQUEST, portId, 0x01))
                 callback[portId] = resolve
             })
         }
 
         function getPortModeInformationRequest(portId, mode, type) {
             return new Promise(async (resolve) => {
-                await sendMsg(MessageType.PORT_MODE_INFORMATION_REQUEST, portId, mode, type)
+                await sendMsg(formatMsg(MessageType.PORT_MODE_INFORMATION_REQUEST, portId, mode, type))
                 callback[portId] = resolve
             })
         }
 
         async function getPortInformation(portId) {
             const portInfo = await getPortInformationRequest(portId)
-            const {capabilities, count, output, input} = portInfo
+            const { capabilities, count, output, input } = portInfo
             const bitSet = Math.max(input, output)
             const modes = []
             for (let mode = 0; mode < count; mode++) {
@@ -458,13 +471,15 @@ $$.service.registerService('hub', {
                     ret = await getPortModeInformationRequest(portId, mode, ModeInformationType.SYMBOL)
                     data.unit = ret.symbol
                     ret = await getPortModeInformationRequest(portId, mode, ModeInformationType.VALUE_FORMAT)
-                    const {numValues, dataType, totalFigures, decimals} = ret
-                    data[ret.type] = {numValues, dataType, totalFigures, decimals}
+                    const { numValues, dataType, totalFigures, decimals } = ret
+                    data[ret.type] = { numValues, dataType, totalFigures, decimals }
                 }
                 modes.push(data)
             }
-            return {modes, capabilities}
+            return { modes, capabilities }
         }
+
+        const portMsgQueue = {}
         /**
          * 
          * @param {number} portId 
@@ -472,8 +487,21 @@ $$.service.registerService('hub', {
          * @param  {...any} data 
          * @returns 
          */
-        function writeDirect(portId, mode, ...data) {
-            return sendMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, 0x51, mode, data)
+        async function writeDirect(portId, mode, ...data) {
+            const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, 0x51, mode, data)
+            if (portMsgQueue[portId] == undefined) {
+                portMsgQueue[portId] = []
+            }
+
+            if (portMsgQueue[portId].length == 0) { // la queue de msg est vide
+                portMsgQueue[portId].push(buffer)
+                await sendMsg(buffer)
+            }
+            else {
+                log('Message mis en attente')
+                portMsgQueue[portId].push(buffer)
+            }
+
         }
 
         function setPower(portId, power) {
@@ -506,7 +534,7 @@ $$.service.registerService('hub', {
         }
 
         function shutdown() {
-            return sendMsg(MessageType.HUB_ACTIONS, 0x01)
+            return sendMsg(formatMsg(MessageType.HUB_ACTIONS, 0x01))
         }
 
         function getDeviceType(portId) {

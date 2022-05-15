@@ -52,6 +52,10 @@ $$.control.registerControl('rootPage', {
 			console.log('rotate', data)
 		})
 
+		hub.on('error', (data) => {
+			console.log(data)
+		})
+
 
 		/**
 		 * 
@@ -111,7 +115,10 @@ $$.control.registerControl('rootPage', {
 					await hub.subscribe(hub.PortMap.B, hub.DeviceMode.ROTATION)
 				},
 				onSendMsg: async function () {
-					await hub.led.setColor(hub.Color.PURPLE)
+					console.log('onSendMsg')
+					//await hub.led.setColor(hub.Color.RED)
+					await hub.led.setRGBColor(0, 0, 255)
+					//await hub.motor.resetZero(hub.PortMap.B)
 				},
 				onShutdown: async function () {
 					await hub.shutdown()

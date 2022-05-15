@@ -1,6 +1,6 @@
 declare namespace HUB {
 
-    type EventName = 'disconnected' | 'attach' | 'detach' | 'batteryLevel' | 'rotate'
+    type EventName = 'disconnected' | 'attach' | 'detach' | 'batteryLevel' | 'rotate' | 'error'
 
     interface Range {
         min: number;
@@ -35,6 +35,7 @@ declare namespace HUB {
 
     declare namespace led {
         function setColor(color: Color): Promise<void>;
+        function setRGBColor(red: number, green: number, blue: number): Promise<void>;
     }
 
     enum Color {
@@ -80,6 +81,10 @@ declare namespace HUB {
 
     enum DeviceMode {
         ROTATION,
-        ABSOLUTE
+        ABSOLUTE,
+        POWER,
+        SPEED,
+        COLOR,
+        RGB
     }
 }

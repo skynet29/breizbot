@@ -5,9 +5,9 @@ $$.service.registerService('hub', {
     init: function () {
 
         let charac = null
-        const hubDevices = {}
+        let hubDevices = {}
         const event = new EventEmitter2()
-        const debug = false
+        const debug = true
         const callback = {}
         const deviceModes = {}
 
@@ -184,8 +184,12 @@ $$.service.registerService('hub', {
         }
 
         const DeviceMode = {
+            POWER: 0x00,
+            SPEED: 0x01,
             ROTATION: 0x02,
-            ABSOLUTE: 0x03
+            ABSOLUTE: 0x03,
+            COLOR: 0x00,
+            RGB: 0x01
         }
 
         const PortMapNames = getEnumName(PortMap)
@@ -199,6 +203,27 @@ $$.service.registerService('hub', {
         mapFcn[MessageType.PORT_MODE_INFORMATION] = handlePortModeInformation
         mapFcn[MessageType.PORT_VALUE_SINGLE] = handlePortValueSingle
 
+
+        const mapValue = {}
+        mapValue[DeviceType.TECHNIC_LARGE_LINEAR_MOTOR] = handleMotorValue
+        mapValue[DeviceType.TECHNIC_LARGE_ANGULAR_MOTOR_GREY] = handleMotorValue
+
+        /**
+         * 
+         * @param {DataView} msg 
+         */
+        function handleMotorValue(msg) {
+            const portId = msg.getUint8(3)
+            const mode = deviceModes[portId] 
+            if (mode == DeviceMode.ABSOLUTE) {
+                const degrees = msg.getInt16(4, true)
+                event.emit('rotate', {portId, degrees, mode})
+            }
+            else if (mode == DeviceMode.ROTATION) {
+                const degrees = msg.getInt32(4, true)
+                event.emit('rotate', {portId, degrees, mode})
+            }
+        }
         /**
          * 
          * @param {DataView} msg 
@@ -206,10 +231,12 @@ $$.service.registerService('hub', {
         function handlePortValueSingle(msg) {
             log('msg', msg)
             const portId = msg.getUint8(3)
-            const degrees = msg.getInt32(4, true)
-            log('handlePortValueSingle', {portId, degrees})
-            event.emit('rotate', {portId, degrees})
-
+            const device = hubDevices[portId]           
+            log('handlePortValueSingle', {portId, device})
+            const fn = mapValue[device]
+            if (typeof fn == 'function') {
+                fn(msg)
+            }
         }
 
         /**
@@ -307,6 +334,7 @@ $$.service.registerService('hub', {
             const cmdType = msg.getUint8(3)
             const errorCode = msg.getUint8(4)
             log({ cmdType, errorCode: ErrorCodeNames[errorCode] })
+            event.emit('error', { cmdType, errorCode: ErrorCodeNames[errorCode] })
         }
 
         /**
@@ -372,13 +400,14 @@ $$.service.registerService('hub', {
          */
         async function sendMsg(type, ...data) {
             log('sendMsg', { type, data })
-            const msgLen = data.length + 3
+            const buff = data.flat()
+            const msgLen = buff.length + 3
             const buffer = new ArrayBuffer(msgLen)
             const uint8Buffer = new Uint8Array(buffer)
             uint8Buffer[0] = msgLen
             uint8Buffer[1] = 0
             uint8Buffer[2] = type
-            uint8Buffer.set(data, 3)
+            uint8Buffer.set(buff, 3)
             log(uint8Buffer)
 
             await charac.writeValueWithoutResponse(buffer)
@@ -448,15 +477,21 @@ $$.service.registerService('hub', {
         }
 
         function setPower(portId, power) {
-            return writeDirect(portId, 0x00, power)
+            return writeDirect(portId, DeviceMode.POWER, power)
         }
 
         function resetZero(portId) {
-            return writeDirect(portId, 0x02, 0x00, 0x00, 0x00, 0x00)
+            return writeDirect(portId, DeviceMode.ROTATION, 0x00, 0x00, 0x00, 0x00)
         }
 
-        function setColor(color) {
-            return writeDirect(PortMap.HUB_LED, 0x00, color)
+        async function setColor(color) {
+            await subscribe(PortMap.HUB_LED, DeviceMode.COLOR)
+            return writeDirect(PortMap.HUB_LED, DeviceMode.COLOR, color)
+        }
+
+        async function setRGBColor(r, g, b) {
+            await subscribe(PortMap.HUB_LED, DeviceMode.RGB)
+            return writeDirect(PortMap.HUB_LED, DeviceMode.RGB, r, g, b)
         }
 
         function onCharacteristicValueChanged(event) {
@@ -509,7 +544,8 @@ $$.service.registerService('hub', {
                 resetZero
             },
             led: {
-                setColor
+                setColor,
+                setRGBColor
             },
             Color,
             PortMap,

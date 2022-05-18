@@ -192,6 +192,12 @@ $$.service.registerService('hub', {
             RGB: 0x01
         }
 
+        const BrakingStyle = {
+            FLOAT: 0,
+            HOLD: 126,
+            BRAKE: 127
+        }
+
         const PortMapNames = getEnumName(PortMap)
 
         const mapFcn = {}
@@ -222,6 +228,10 @@ $$.service.registerService('hub', {
             else if (mode == DeviceMode.ROTATION) {
                 const degrees = msg.getInt32(4, true)
                 event.emit('rotate', { portId, degrees, mode })
+            }
+            else if (mode == DeviceMode.SPEED) {
+                const speed = msg.getInt8(4)
+                event.emit('speed', { portId, speed, mode })
             }
         }
         /**
@@ -346,6 +356,13 @@ $$.service.registerService('hub', {
                 const portId = msg.getUint8(offset)
                 const feedback = msg.getUint8(offset + 1)
                 log({ portId, feedback })
+                if (feedback == 10) {
+                    const cbk = callback[portId]
+                    if (typeof cbk == 'function') {
+                        cbk()
+                        delete callback[portId]
+                    }
+                }
                 portMsgQueue[portId].shift()
                 const buffer = portMsgQueue[portId][0] // verifie si il y a d'autre message a envoyer
                 if (buffer) {
@@ -378,12 +395,21 @@ $$.service.registerService('hub', {
             else if (eventType == Event.ATTACHED_VIRTUAL_IO) {
                 const portIdA = PortMapNames[msg.getUint8(7)]
                 const portIdB = PortMapNames[msg.getUint8(8)]
-                PortMapNames[portId] = `${portIdA}-${portIdB}`
+                PortMapNames[portId] = `${portIdA}_${portIdB}`
 
                 log({ portIdA, portIdB })
                 event.emit('attach', { portId, deviceTypeName: 'Virtual Port' })
             }
 
+        }
+
+        function getPortIdFromName(portName) {
+            for(const [key, name] of Object.entries(PortMapNames)) {
+                if (name == portName) {
+                    return key
+                }
+            }
+            return -1;
         }
 
         /**
@@ -408,7 +434,7 @@ $$.service.registerService('hub', {
          * @returns {ArrayBuffer}
          */
         function formatMsg(...data) {
-            const buff = data.flat()
+            const buff = data.flat(2)
             const msgLen = buff.length + 2
             const buffer = new ArrayBuffer(msgLen)
             const uint8Buffer = new Uint8Array(buffer)
@@ -496,6 +522,36 @@ $$.service.registerService('hub', {
                 portMsgQueue[portId].push(buffer)
             }            
         }
+        
+        const maxPower = 100
+
+        async function setSpeed(portId, speed) {
+            await writePortCommand(portId, 0x07, speed, maxPower, 0)
+        }
+
+        async function setSpeedEx(portId, speed1, speed2) {
+            await writePortCommand(portId, 0x08, speed1, speed2, maxPower, 0)
+        }
+
+        /**
+         * 
+         * @param {number} val 
+         * @returns {Array}
+         */
+        function toInt16(val) {
+            const buff = new Uint8Array(2)
+            const view = new DataView(buff.buffer)
+            view.setInt16(0, val, true)
+            return Array.from(buff)
+        }
+
+        async function setSpeedForTime(portId, speed, time, brakingStyle = BrakingStyle.BRAKE) {
+            return new Promise(async (resolve) => {
+                await writePortCommand(portId, 0x09, toInt16(time), speed, maxPower, 0)
+                callback[portId] = resolve
+            })            
+        }
+
         /**
          * 
          * @param {number} portId 
@@ -559,7 +615,7 @@ $$.service.registerService('hub', {
             charac.addEventListener('characteristicvaluechanged', onCharacteristicValueChanged)
             charac.startNotifications()
 
-            //await sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02)
+            await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02))
         }
 
         return {
@@ -569,10 +625,14 @@ $$.service.registerService('hub', {
             subscribe,
             createVirtualPort,
             getPortInformation,
+            getPortIdFromName,
             on: event.on.bind(event),
             motor: {
                 setPower,
-                resetZero
+                resetZero,
+                setSpeed,
+                setSpeedEx,
+                setSpeedForTime
             },
             led: {
                 setColor,
@@ -581,7 +641,8 @@ $$.service.registerService('hub', {
             Color,
             PortMap,
             PortMapNames,
-            DeviceMode
+            DeviceMode,
+            BrakingStyle
         }
     }
 });

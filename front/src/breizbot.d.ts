@@ -4,7 +4,7 @@ declare namespace Breizbot {
     declare namespace Services {
 
         declare namespace Gamepad {
-            type EventName = 'connected' | 'disconnected'
+            type EventName = 'connected' | 'disconnected' | 'buttonUp' | 'buttonDown' | 'axe'
 
             interface Info {
                 index: number;
@@ -16,6 +16,7 @@ declare namespace Breizbot {
             interface Interface {
                 on(event: EventName, callback: (ev: Info) => void): void;
                 getGamepads(): Array<Info>;
+                checkGamePadStatus():void;
             }
         }
 

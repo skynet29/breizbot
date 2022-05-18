@@ -1,6 +1,6 @@
 declare namespace HUB {
 
-    type EventName = 'disconnected' | 'attach' | 'detach' | 'batteryLevel' | 'rotate' | 'error'
+    type EventName = 'disconnected' | 'attach' | 'detach' | 'batteryLevel' | 'rotate' | 'error' | 'speed'
 
     interface Range {
         min: number;
@@ -27,10 +27,14 @@ declare namespace HUB {
     function subscribe(portId: PortMap, mode: number): Promise<void>;
     function createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<void>;
     function getPortInformation(portId: PortMap): Promise<PortInformation>;
+    function getPortIdFromName(portName: string): number;
 
     declare namespace motor {
         function setPower(portId: PortMap, power: number): Promise<void>;
         function resetZero(portId: PortMap): Promise<void>;
+        function setSpeed(portId: number, speed: number): Promise<void>;
+        function setSpeedEx(portId: number, speed1: number, speed2: number): Promise<void>;
+        function setSpeedForTime(portId: PortMap, speed: number, time: number, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
     }
 
     declare namespace led {
@@ -86,5 +90,11 @@ declare namespace HUB {
         SPEED,
         COLOR,
         RGB
+    }
+
+    enum BrakingStyle {
+        FLOAT,
+        HOLD,
+        BRAKE
     }
 }

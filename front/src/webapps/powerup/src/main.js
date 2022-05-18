@@ -5,7 +5,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'hub'],
+	deps: ['breizbot.pager', 'hub', 'breizbot.gamepad'],
 
 	props: {
 	},
@@ -14,9 +14,61 @@ $$.control.registerControl('rootPage', {
 	 * 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {HUB} hub
+	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
 	 */
-	init: function (elt, pager, hub) {
+	init: function (elt, pager, hub, gamepad) {
 
+		Number.prototype.map = function (in_min, in_max, out_min, out_max) {
+			return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+		  }		
+
+		let speed1 = 100
+		let speed2 = 100
+		let running  = false
+
+		gamepad.on('connected', (ev) => {
+			console.log('gamepad connnected', ev)
+			gamepad.checkGamePadStatus()
+
+		})
+
+		gamepad.on('buttonUp', async (data) => {
+			console.log('buttonUp', data)
+			const portId = hub.getPortIdFromName('C_D')
+			console.log('portId', portId)
+			running = false
+			await hub.motor.setPower(portId, 0)
+
+		})
+
+		gamepad.on('buttonDown', async (data) => {
+			console.log('buttonDown', data)
+			const portId = hub.getPortIdFromName('C_D')
+			console.log('portId', portId)
+			running = true
+			await hub.motor.setSpeedEx(portId, -speed1, -speed2)
+
+		})
+
+		gamepad.on('axe', (data) => {
+			//console.log('axe', data)
+			const {id, value} = data
+			if (id == 0) {
+				if (value <= 0) {
+					speed1 = 100
+					speed2 = Math.ceil(value.map(-1, 0, 0, 100))
+				}
+				else {
+					speed1 = Math.ceil(value.map(0, 1, 100, 0))
+					speed2 = 100
+				}
+				console.log({speed1, speed2})
+				if (running) {
+					const portId = hub.getPortIdFromName('C_D')
+					hub.motor.setSpeedEx(portId, -speed1, -speed2)
+				}
+			}
+		})
 
 		hub.on('disconnected', () => {
 			ctrl.setData({ connected: false })
@@ -52,8 +104,16 @@ $$.control.registerControl('rootPage', {
 			console.log('rotate', data)
 		})
 
+		hub.on('speed', (data) => {
+			console.log('speed', data)
+		})
+
 		hub.on('error', (data) => {
 			console.log(data)
+		})
+
+		hub.on('batteryLevel', (data) => {
+			console.log('batteryLevel', data)
 		})
 
 
@@ -89,7 +149,7 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onMouseUp: function() {
-					console.log('onMouseUp')
+					//console.log('onMouseUp')
 					const action = $(this).data('action')
 					const portId = getExternalPortId($(this))
 					switch (action) {
@@ -105,21 +165,31 @@ $$.control.registerControl('rootPage', {
 					}					
 				},
 				onMouseDown: function() {
-					console.log('onMouseDown')
+					//console.log('onMouseDown')
 					const portId = getExternalPortId($(this))
 					hub.motor.setPower(portId, 0)
 				},
 				onConnect: async function () {
 					await hub.connect()
 					ctrl.setData({ connected: true })
-					//await hub.subscribe(hub.PortMap.B, hub.DeviceMode.ROTATION)
+					await hub.subscribe(hub.PortMap.B, hub.DeviceMode.SPEED)
+					await hub.createVirtualPort(hub.PortMap.C, hub.PortMap.D)
 				},
 				onSendMsg: async function () {
 					console.log('onSendMsg')
 					//await hub.led.setColor(hub.Color.RED)
 					//await hub.led.setRGBColor(0, 0, 255)
 					//await hub.motor.resetZero(hub.PortMap.B)
-					hub.createVirtualPort(hub.PortMap.C, hub.PortMap.D)
+					//await hub.motor.setSpeedForTime(hub.PortMap.B, 20, 2000)
+					//console.log('Finished')
+					//await hub.motor.setSpeedEx(hub.PortMap.C-D)
+					const portId = hub.getPortIdFromName('C_D')
+					console.log('portId', portId)
+					await hub.motor.setSpeedEx(portId, -50, -20)
+					await $$.util.wait(5000)
+					await hub.motor.setPower(portId, 0)
+					console.log('Finished')
+
 				},
 				onShutdown: async function () {
 					await hub.shutdown()

@@ -579,6 +579,10 @@ $$.service.registerService('hub', {
         function rotateDegrees(portId, degrees, speed, brakingStyle = BrakingStyle.BRAKE) {
             return writePortCommand(portId, 0x0B, toInt32(degrees), speed, maxPower, brakingStyle)
         }
+
+        function gotoAngle(portId, angle, speed, brakingStyle = BrakingStyle.BRAKE) {
+            return writePortCommand(portId, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
+        }
         
         /**
          * 
@@ -663,7 +667,8 @@ $$.service.registerService('hub', {
                 setSpeed,
                 setSpeedEx,
                 setSpeedForTime,
-                rotateDegrees
+                rotateDegrees,
+                gotoAngle
             },
             led: {
                 setColor,

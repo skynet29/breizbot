@@ -25,6 +25,9 @@ $$.control.registerControl('rootPage', {
 		let speed1 = 100
 		let speed2 = 100
 		let running = false
+		
+		let calibrateState = 0
+
 
 		gamepad.on('connected', (ev) => {
 			console.log('gamepad connnected', ev)
@@ -104,8 +107,26 @@ $$.control.registerControl('rootPage', {
 			console.log('rotate', data)
 		})
 
-		hub.on('speed', (data) => {
-			console.log('speed', data)
+		hub.on('speed', async (data) => {
+			console.log('speed', calibrateState, data)
+			const {speed, portId} = data
+			if (calibrateState == 1) {
+				if (speed > 5) {
+					calibrateState = 2
+				}
+			}
+			else if (calibrateState == 2) { 
+				if (speed < 6) {
+					calibrateState = 3
+					await hub.motor.setPower(hub.PortMap.A, 0)
+					await $$.util.wait(300)
+					await hub.motor.rotateDegrees(hub.PortMap.A, -220, -20)
+					await hub.motor.resetZero(hub.PortMap.A)
+					await hub.led.setColor(hub.Color.BLUE)
+					await hub.subscribe(hub.PortMap.A, hub.DeviceMode.ROTATION)
+					ctrl.setData({mode: 'RUNNING'})
+				}
+			}
 		})
 
 		hub.on('error', (data) => {
@@ -143,12 +164,14 @@ $$.control.registerControl('rootPage', {
 			})
 		}
 
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				connected: false,
 				internalDevices: [],
 				externalDevices: [],
-				batteryLevel: 0
+				batteryLevel: 0,
+				mode: 'UNKNOWN'
 			},
 			events: {
 				onMouseUp: function () {
@@ -175,8 +198,34 @@ $$.control.registerControl('rootPage', {
 				onConnect: async function () {
 					await hub.connect()
 					ctrl.setData({ connected: true })
-					await hub.subscribe(hub.PortMap.B, hub.DeviceMode.ROTATION)
 					await hub.createVirtualPort(hub.PortMap.C, hub.PortMap.D)
+				},
+				onCalibrate: async function() {
+					console.log('onCalibrate')
+					calibrateState = 1
+					ctrl.setData({mode: 'CALIBRATING'})
+					await hub.subscribe(hub.PortMap.A, hub.DeviceMode.SPEED)
+
+					await hub.led.setColor(hub.Color.RED)
+					await hub.motor.setSpeed(hub.PortMap.A, -20)
+					await $$.util.wait(200)
+					await hub.motor.setSpeed(hub.PortMap.A, 20)
+					
+				},
+				onChangeMode: async function() {
+					const {mode} = ctrl.model
+					if (mode == 'RUNNING') {
+						await hub.led.setColor(hub.Color.YELLOW)
+						await hub.motor.rotateDegrees(hub.PortMap.A, 180, 50)
+						await hub.led.setColor(hub.Color.GREEN)
+						ctrl.setData({mode: 'MANIPULATOR'})
+					}
+					else if (mode == 'MANIPULATOR') {
+						await hub.led.setColor(hub.Color.YELLOW)
+						await hub.motor.rotateDegrees(hub.PortMap.A, 180, -50)
+						await hub.led.setColor(hub.Color.BLUE)
+						ctrl.setData({mode: 'RUNNING'})
+					}
 				},
 				onSendMsg: async function () {
 					console.log('onSendMsg')

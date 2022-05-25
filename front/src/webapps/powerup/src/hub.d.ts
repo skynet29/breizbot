@@ -36,6 +36,7 @@ declare namespace HUB {
         function setSpeedEx(portId: number, speed1: number, speed2: number): Promise<void>;
         function setSpeedForTime(portId: PortMap, speed: number, time: number, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
         function rotateDegrees(portId: PortMap, degrees: number, speed: number, brakingStyle = BrakingStyle.BRAKE): Promise<void>; 
+        function gotoAngle(portId: PortMap, angle: number, speed: number, brakingStyle = BrakingStyle.BRAKE): Promise<void>;
 
     }
 

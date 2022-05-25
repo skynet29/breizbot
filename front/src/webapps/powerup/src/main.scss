@@ -3,6 +3,13 @@
     display: flex;
     flex-direction: column;
 
+    .toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 5px;
+    }
+
     .scrollBar {
         flex: 1;
         overflow-y: auto;

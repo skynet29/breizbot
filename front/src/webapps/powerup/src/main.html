@@ -1,20 +1,27 @@
-<div>
-    <button class="w3-blue w3-button" 
-        bn-event="click: onConnect"
-        bn-show="!connected"
-    >Connect to HUB</button>
-
-    <button class="w3-blue w3-button" 
-        bn-event="click: onShutdown"
-        bn-show="connected"
-    >Shutdown</button>
-
-
-    <button class="w3-blue w3-button" 
-        bn-event="click: onSendMsg"
-        bn-show="connected"
-    >Send Msg</button>
+<div class="toolbar">
+    <div>
+        <button class="w3-blue w3-button" 
+            bn-event="click: onConnect"
+            bn-show="!connected"
+        >Connect to HUB</button>
+    
+        <button class="w3-blue w3-button" 
+            bn-event="click: onShutdown"
+            bn-show="connected"
+        >Shutdown</button>
+    
+    
+        <button class="w3-blue w3-button" 
+            bn-event="click: onSendMsg"
+            bn-show="connected"
+        >Send Msg</button>
+    </div>
+    <div bn-show="connected">
+        Battery Level:
+        <span bn-text="batteryLevel"></span>
+    </div>
 </div>
+
 
 <div bn-show="connected" class="scrollBar">
     <h1>External Devices</h1>

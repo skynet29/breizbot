@@ -322,6 +322,8 @@ $$.service.registerService('hub', {
                 cb(data)
             }
         }
+
+
         /**
          * 
          * @param {DataView} msg 
@@ -334,6 +336,11 @@ $$.service.registerService('hub', {
                 const batteryLevel = msg.getUint8(5)
                 log({ batteryLevel })
                 event.emit('batteryLevel', { batteryLevel })
+            }
+            else if (property == HubPropertyPayload.BUTTON_STATE) {
+                const buttonState = msg.getUint8(5)
+                log({ buttonState })
+                event.emit('buttonState', { buttonState })
             }
         }
         /**
@@ -508,29 +515,37 @@ $$.service.registerService('hub', {
         const portMsgQueue = {}
 
         async function writePortCommand(portId, ...data) {
-            const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, data)
-            if (portMsgQueue[portId] == undefined) {
-                portMsgQueue[portId] = []
-            }
 
-            if (portMsgQueue[portId].length == 0) { // la queue de msg est vide
-                portMsgQueue[portId].push(buffer)
-                await sendMsg(buffer)
-            }
-            else {
-                log('Message mis en attente')
-                portMsgQueue[portId].push(buffer)
-            }            
+            log('writePortCommand', {portId})
+
+            return new Promise(async (resolve) => {
+                const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, data)
+                if (portMsgQueue[portId] == undefined) {
+                    portMsgQueue[portId] = []
+                }
+    
+                if (portMsgQueue[portId].length == 0) { // la queue de msg est vide
+                    portMsgQueue[portId].push(buffer)
+                    await sendMsg(buffer)
+                }
+                else {
+                    log('Message mis en attente')
+                    portMsgQueue[portId].push(buffer)
+                }            
+    
+                callback[portId] = resolve
+            })            
+
         }
         
         const maxPower = 100
 
-        async function setSpeed(portId, speed) {
-            await writePortCommand(portId, 0x07, speed, maxPower, 0)
+        function setSpeed(portId, speed) {
+            return writePortCommand(portId, 0x07, speed, maxPower, 0)
         }
 
-        async function setSpeedEx(portId, speed1, speed2) {
-            await writePortCommand(portId, 0x08, speed1, speed2, maxPower, 0)
+        function setSpeedEx(portId, speed1, speed2) {
+            return writePortCommand(portId, 0x08, speed1, speed2, maxPower, 0)
         }
 
         /**
@@ -545,13 +560,26 @@ $$.service.registerService('hub', {
             return Array.from(buff)
         }
 
-        async function setSpeedForTime(portId, speed, time, brakingStyle = BrakingStyle.BRAKE) {
-            return new Promise(async (resolve) => {
-                await writePortCommand(portId, 0x09, toInt16(time), speed, maxPower, 0)
-                callback[portId] = resolve
-            })            
+        /**
+         * 
+         * @param {number} val 
+         * @returns {Array}
+         */
+         function toInt32(val) {
+            const buff = new Uint8Array(4)
+            const view = new DataView(buff.buffer)
+            view.setInt32(0, val, true)
+            return Array.from(buff)
         }
 
+        function setSpeedForTime(portId, speed, time, brakingStyle = BrakingStyle.BRAKE) {
+            return writePortCommand(portId, 0x09, toInt16(time), speed, maxPower, brakingStyle)
+        }
+
+        function rotateDegrees(portId, degrees, speed, brakingStyle = BrakingStyle.BRAKE) {
+            return writePortCommand(portId, 0x0B, toInt32(degrees), speed, maxPower, brakingStyle)
+        }
+        
         /**
          * 
          * @param {number} portId 
@@ -559,8 +587,8 @@ $$.service.registerService('hub', {
          * @param  {...any} data 
          * @returns 
          */
-        async function writeDirect(portId, mode, ...data) {
-            await writePortCommand(portId, 0x51, mode, data)
+        function writeDirect(portId, mode, ...data) {
+            return writePortCommand(portId, 0x51, mode, data)
         }
 
         function setPower(portId, power) {
@@ -615,7 +643,9 @@ $$.service.registerService('hub', {
             charac.addEventListener('characteristicvaluechanged', onCharacteristicValueChanged)
             charac.startNotifications()
 
+            await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_TYPE, 0x05))
             await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02))
+            await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BUTTON_STATE, 0x02))
         }
 
         return {
@@ -632,7 +662,8 @@ $$.service.registerService('hub', {
                 resetZero,
                 setSpeed,
                 setSpeedEx,
-                setSpeedForTime
+                setSpeedForTime,
+                rotateDegrees
             },
             led: {
                 setColor,

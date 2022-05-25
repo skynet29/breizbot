@@ -2,6 +2,11 @@
   margin: 5px;
   display: flex;
   flex-direction: column; }
+  .rootPage .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px; }
   .rootPage .scrollBar {
     flex: 1;
     overflow-y: auto;

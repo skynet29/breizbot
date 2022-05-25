@@ -20,11 +20,11 @@ $$.control.registerControl('rootPage', {
 
 		Number.prototype.map = function (in_min, in_max, out_min, out_max) {
 			return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-		  }		
+		}
 
 		let speed1 = 100
 		let speed2 = 100
-		let running  = false
+		let running = false
 
 		gamepad.on('connected', (ev) => {
 			console.log('gamepad connnected', ev)
@@ -52,7 +52,7 @@ $$.control.registerControl('rootPage', {
 
 		gamepad.on('axe', (data) => {
 			//console.log('axe', data)
-			const {id, value} = data
+			const { id, value } = data
 			if (id == 0) {
 				if (value <= 0) {
 					speed1 = 100
@@ -62,7 +62,7 @@ $$.control.registerControl('rootPage', {
 					speed1 = Math.ceil(value.map(0, 1, 100, 0))
 					speed2 = 100
 				}
-				console.log({speed1, speed2})
+				console.log({ speed1, speed2 })
 				if (running) {
 					const portId = hub.getPortIdFromName('C_D')
 					hub.motor.setSpeedEx(portId, -speed1, -speed2)
@@ -86,7 +86,7 @@ $$.control.registerControl('rootPage', {
 				ctrl.model.externalDevices.sort((a, b) => a.portId - b.portId)
 			}
 			else {
-				ctrl.model.internalDevices.push({deviceTypeName, portId})
+				ctrl.model.internalDevices.push({ deviceTypeName, portId })
 			}
 			ctrl.update()
 		})
@@ -113,7 +113,9 @@ $$.control.registerControl('rootPage', {
 		})
 
 		hub.on('batteryLevel', (data) => {
-			console.log('batteryLevel', data)
+			//console.log('batteryLevel', data)
+			const { batteryLevel } = data
+			ctrl.setData({ batteryLevel })
 		})
 
 
@@ -145,10 +147,11 @@ $$.control.registerControl('rootPage', {
 			data: {
 				connected: false,
 				internalDevices: [],
-				externalDevices: []
+				externalDevices: [],
+				batteryLevel: 0
 			},
 			events: {
-				onMouseUp: function() {
+				onMouseUp: function () {
 					//console.log('onMouseUp')
 					const action = $(this).data('action')
 					const portId = getExternalPortId($(this))
@@ -162,9 +165,9 @@ $$.control.registerControl('rootPage', {
 						case 'backward':
 							hub.motor.setPower(portId, -100)
 							break
-					}					
+					}
 				},
-				onMouseDown: function() {
+				onMouseDown: function () {
 					//console.log('onMouseDown')
 					const portId = getExternalPortId($(this))
 					hub.motor.setPower(portId, 0)
@@ -172,37 +175,37 @@ $$.control.registerControl('rootPage', {
 				onConnect: async function () {
 					await hub.connect()
 					ctrl.setData({ connected: true })
-					await hub.subscribe(hub.PortMap.B, hub.DeviceMode.SPEED)
+					await hub.subscribe(hub.PortMap.B, hub.DeviceMode.ROTATION)
 					await hub.createVirtualPort(hub.PortMap.C, hub.PortMap.D)
 				},
 				onSendMsg: async function () {
 					console.log('onSendMsg')
-					//await hub.led.setColor(hub.Color.RED)
+					await hub.led.setColor(hub.Color.RED)
+					console.log('Finished')
 					//await hub.led.setRGBColor(0, 0, 255)
-					//await hub.motor.resetZero(hub.PortMap.B)
+					await hub.motor.resetZero(hub.PortMap.B)
+					console.log('Finished')
+
 					//await hub.motor.setSpeedForTime(hub.PortMap.B, 20, 2000)
 					//console.log('Finished')
 					//await hub.motor.setSpeedEx(hub.PortMap.C-D)
-					const portId = hub.getPortIdFromName('C_D')
-					console.log('portId', portId)
-					await hub.motor.setSpeedEx(portId, -50, -20)
-					await $$.util.wait(5000)
-					await hub.motor.setPower(portId, 0)
+					//const portId = hub.getPortIdFromName('C_D')
+					await hub.motor.rotateDegrees(hub.PortMap.B, 720, 100)
 					console.log('Finished')
 
 				},
 				onShutdown: async function () {
 					await hub.shutdown()
 				},
-				onInfo: function() {
+				onInfo: function () {
 					const idx = $(this).closest('tr').index()
-					const {portId, deviceTypeName} = ctrl.model.internalDevices[idx]
+					const { portId, deviceTypeName } = ctrl.model.internalDevices[idx]
 					openInfoPage(portId, deviceTypeName)
 
 				},
-				onInfo2: function() {
+				onInfo2: function () {
 					const idx = $(this).closest('tr').index()
-					const {portId, deviceTypeName} = ctrl.model.externalDevices[idx]
+					const { portId, deviceTypeName } = ctrl.model.externalDevices[idx]
 					openInfoPage(portId, deviceTypeName)
 				}
 			}

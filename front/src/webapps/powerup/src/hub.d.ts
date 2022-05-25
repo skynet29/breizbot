@@ -1,6 +1,6 @@
 declare namespace HUB {
 
-    type EventName = 'disconnected' | 'attach' | 'detach' | 'batteryLevel' | 'rotate' | 'error' | 'speed'
+    type EventName = 'disconnected' | 'attach' | 'detach' | 'batteryLevel' | 'buttonState' | 'rotate' | 'error' | 'speed'
 
     interface Range {
         min: number;
@@ -35,6 +35,8 @@ declare namespace HUB {
         function setSpeed(portId: number, speed: number): Promise<void>;
         function setSpeedEx(portId: number, speed1: number, speed2: number): Promise<void>;
         function setSpeedForTime(portId: PortMap, speed: number, time: number, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
+        function rotateDegrees(portId: PortMap, degrees: number, speed: number, brakingStyle = BrakingStyle.BRAKE): Promise<void>; 
+
     }
 
     declare namespace led {

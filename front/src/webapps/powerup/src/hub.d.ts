@@ -1,6 +1,6 @@
 declare namespace HUB {
 
-    type EventName = 'disconnected' | 'attach' | 'detach' | 'batteryLevel' | 'buttonState' | 'rotate' | 'error' | 'speed'
+    type EventName = 'disconnected' | 'attach' | 'detach' | 'batteryLevel' | 'buttonState' | 'error'
 
     interface Range {
         min: number;
@@ -24,10 +24,11 @@ declare namespace HUB {
     function connect(): Promise<void>;
     function shutdown(): Promise<void>;
     function getDeviceType(portId: PortMap): string;
-    function subscribe(portId: PortMap, mode: number): Promise<void>;
+    function subscribe(portId: PortMap, mode: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
     function createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<void>;
     function getPortInformation(portId: PortMap): Promise<PortInformation>;
     function getPortIdFromName(portName: string): number;
+    function waitTestValue(portId: number, mode: number, testFn: (value: number) => boolean): Promise<void>;
 
     declare namespace motor {
         function setPower(portId: PortMap, power: number): Promise<void>;
@@ -71,19 +72,6 @@ declare namespace HUB {
         ACCELEROMETER,
         GYRO_SENSOR,
         TILT_SENSOR
-    }
-
-    enum ModeInformationType {
-        NAME,
-        RAW,
-        PCT,
-        SI,
-        SYMBOL,
-        MAPPING,
-        USED_INTERNALLY,
-        MOTOR_BIAS,
-        CAPABILITY_BITS,
-        VALUE_FORMAT
     }
 
     enum DeviceMode {

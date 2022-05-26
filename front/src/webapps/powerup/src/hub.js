@@ -220,18 +220,26 @@ $$.service.registerService('hub', {
          */
         function handleMotorValue(msg) {
             const portId = msg.getUint8(3)
-            const mode = deviceModes[portId]
-            if (mode == DeviceMode.ABSOLUTE) {
-                const degrees = msg.getInt16(4, true)
-                event.emit('rotate', { portId, degrees, mode })
-            }
-            else if (mode == DeviceMode.ROTATION) {
-                const degrees = msg.getInt32(4, true)
-                event.emit('rotate', { portId, degrees, mode })
-            }
-            else if (mode == DeviceMode.SPEED) {
-                const speed = msg.getInt8(4)
-                event.emit('speed', { portId, speed, mode })
+            if (deviceModes[portId] != undefined) {
+                const { mode, cbk } = deviceModes[portId]
+                let value
+                switch (mode) {
+                    case DeviceMode.ABSOLUTE:
+                        value = msg.getInt16(4, true)
+                        break
+                    case DeviceMode.ROTATION:
+                        value = msg.getInt32(4, true)
+                        break
+                    case DeviceMode.SPEED:
+                        value = msg.getInt8(4)
+                        break
+
+                }
+
+                if (typeof cbk == 'function') {
+                    cbk({ mode, value, portId })
+                }
+
             }
         }
         /**
@@ -411,7 +419,7 @@ $$.service.registerService('hub', {
         }
 
         function getPortIdFromName(portName) {
-            for(const [key, name] of Object.entries(PortMapNames)) {
+            for (const [key, name] of Object.entries(PortMapNames)) {
                 if (name == portName) {
                     return key
                 }
@@ -459,11 +467,12 @@ $$.service.registerService('hub', {
             await charac.writeValueWithoutResponse(buffer)
         }
 
-        async function subscribe(portId, mode) {
+        async function subscribe(portId, mode, cbk = null) {
+            deviceModes[portId] = { mode, cbk }
+
             await sendMsg(formatMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
                 portId, mode, 0x01, 0x00, 0x00, 0x00, 0x01))
 
-            deviceModes[portId] = mode
         }
 
         function createVirtualPort(portId1, portId2) {
@@ -516,14 +525,14 @@ $$.service.registerService('hub', {
 
         async function writePortCommand(portId, ...data) {
 
-            log('writePortCommand', {portId})
+            log('writePortCommand', { portId })
 
             return new Promise(async (resolve) => {
                 const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, data)
                 if (portMsgQueue[portId] == undefined) {
                     portMsgQueue[portId] = []
                 }
-    
+
                 if (portMsgQueue[portId].length == 0) { // la queue de msg est vide
                     portMsgQueue[portId].push(buffer)
                     await sendMsg(buffer)
@@ -531,13 +540,26 @@ $$.service.registerService('hub', {
                 else {
                     log('Message mis en attente')
                     portMsgQueue[portId].push(buffer)
-                }            
-    
+                }
+
                 callback[portId] = resolve
-            })            
+            })
 
         }
-        
+
+
+        async function waitTestValue(portId, mode, testFn) {
+            return new Promise(async (resolve) => {
+                await subscribe(portId, mode, (data) => {
+                    log('waitTestValue', data)
+                    if (testFn(data.value)) {
+                        delete deviceModes[portId]
+                        resolve()
+                    }
+                })
+            })
+        }
+
         const maxPower = 100
 
         function setSpeed(portId, speed) {
@@ -565,7 +587,7 @@ $$.service.registerService('hub', {
          * @param {number} val 
          * @returns {Array}
          */
-         function toInt32(val) {
+        function toInt32(val) {
             const buff = new Uint8Array(4)
             const view = new DataView(buff.buffer)
             view.setInt32(0, val, true)
@@ -583,7 +605,7 @@ $$.service.registerService('hub', {
         function gotoAngle(portId, angle, speed, brakingStyle = BrakingStyle.BRAKE) {
             return writePortCommand(portId, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
         }
-        
+
         /**
          * 
          * @param {number} portId 
@@ -657,6 +679,7 @@ $$.service.registerService('hub', {
             shutdown,
             getDeviceType,
             subscribe,
+            waitTestValue,
             createVirtualPort,
             getPortInformation,
             getPortIdFromName,

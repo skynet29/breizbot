@@ -26,9 +26,6 @@ $$.control.registerControl('rootPage', {
 		let speed2 = 100
 		let running = false
 		
-		let calibrateState = 0
-
-
 		gamepad.on('connected', (ev) => {
 			console.log('gamepad connnected', ev)
 			gamepad.checkGamePadStatus()
@@ -103,31 +100,6 @@ $$.control.registerControl('rootPage', {
 			ctrl.update()
 		})
 
-		hub.on('rotate', (data) => {
-			console.log('rotate', data)
-		})
-
-		hub.on('speed', async (data) => {
-			console.log('speed', calibrateState, data)
-			const {speed, portId} = data
-			if (calibrateState == 1) {
-				if (speed > 5) {
-					calibrateState = 2
-				}
-			}
-			else if (calibrateState == 2) { 
-				if (speed < 6) {
-					calibrateState = 3
-					await hub.motor.setPower(hub.PortMap.A, 0)
-					await $$.util.wait(300)
-					await hub.motor.rotateDegrees(hub.PortMap.A, -220, -20)
-					await hub.motor.resetZero(hub.PortMap.A)
-					await hub.led.setColor(hub.Color.BLUE)
-					await hub.subscribe(hub.PortMap.A, hub.DeviceMode.ROTATION)
-					ctrl.setData({mode: 'RUNNING'})
-				}
-			}
-		})
 
 		hub.on('error', (data) => {
 			console.log(data)
@@ -202,14 +174,33 @@ $$.control.registerControl('rootPage', {
 				},
 				onCalibrate: async function() {
 					console.log('onCalibrate')
-					calibrateState = 1
 					ctrl.setData({mode: 'CALIBRATING'})
-					await hub.subscribe(hub.PortMap.A, hub.DeviceMode.SPEED)
+
+					console.log('step 1')
 
 					await hub.led.setColor(hub.Color.RED)
 					await hub.motor.setSpeed(hub.PortMap.A, -20)
 					await $$.util.wait(200)
 					await hub.motor.setSpeed(hub.PortMap.A, 20)
+
+					await hub.waitTestValue(hub.PortMap.A, hub.DeviceMode.SPEED, (speed) => {
+						//console.log({speed})
+						return speed > 5
+					})
+
+					console.log('step 2')
+					await hub.waitTestValue(hub.PortMap.A, hub.DeviceMode.SPEED, (speed) => {
+						//console.log({speed})
+						return speed < 6
+					})
+					console.log('step 3')
+
+					await hub.motor.setPower(hub.PortMap.A, 0)
+					await $$.util.wait(300)
+					await hub.motor.rotateDegrees(hub.PortMap.A, -220, -20)
+					await hub.motor.resetZero(hub.PortMap.A)
+					await hub.led.setColor(hub.Color.BLUE)
+					ctrl.setData({mode: 'RUNNING'})
 					
 				},
 				onChangeMode: async function() {

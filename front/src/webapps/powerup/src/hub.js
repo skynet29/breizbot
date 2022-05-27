@@ -8,9 +8,8 @@ $$.service.registerService('hub', {
         let hubDevices = {}
         const event = new EventEmitter2()
         const debug = false
-        const portCmdCallback = {}
+        const callback = {}
         const deviceModes = {}
-        const { getEnumName } = $$.util
 
 
         const log = function (...data) {
@@ -19,6 +18,11 @@ $$.service.registerService('hub', {
             }
         }
 
+        function getEnumName(enumVal) {
+            const ret = {}
+            Object.entries(enumVal).forEach(([key, val]) => { ret[val] = key })
+            return ret
+        }
 
         const Event = {
             DETACHED_IO: 0x00,
@@ -295,10 +299,10 @@ $$.service.registerService('hub', {
                     break
             }
             log('portModeInformation', data)
-            const cb = portCmdCallback[portId]
+            const cb = callback[portId]
             if (typeof cb == 'function') {
                 cb(data)
-                delete portCmdCallback[portId]
+                delete callback[portId]
             }
         }
         /**
@@ -321,7 +325,7 @@ $$.service.registerService('hub', {
                 }
             }
             const data = { portId, capabilities: cap.join(', '), count, input, output }
-            const cb = portCmdCallback[portId]
+            const cb = callback[portId]
             if (typeof cb == 'function') {
                 cb(data)
             }
@@ -368,11 +372,17 @@ $$.service.registerService('hub', {
                 const feedback = msg.getUint8(offset + 1)
                 log({ portId, feedback })
                 if (feedback == 10) {
-                    const cbk = portCmdCallback[portId]
+                    const cbk = callback[portId]
                     if (typeof cbk == 'function') {
                         cbk()
-                        delete portCmdCallback[portId]
+                        delete callback[portId]
                     }
+                }
+                portMsgQueue[portId].shift()
+                const buffer = portMsgQueue[portId][0] // verifie si il y a d'autre message a envoyer
+                if (buffer) {
+                    log('envoie message mis en attente', buffer)
+                    sendMsg(buffer)
                 }
             }
         }
@@ -433,60 +443,54 @@ $$.service.registerService('hub', {
 
         }
 
-
         /**
          * 
-         * @param {number} msgType
          * @param  {...any} data 
+         * @returns {ArrayBuffer}
          */
-        async function sendMsg(msgType, ...data) {
-            log('sendMsg', MessageTypeNames[msgType], data)
+        function formatMsg(...data) {
             const buff = data.flat(2)
-            const msgLen = buff.length + 3
+            const msgLen = buff.length + 2
             const buffer = new ArrayBuffer(msgLen)
             const uint8Buffer = new Uint8Array(buffer)
             uint8Buffer[0] = msgLen
             uint8Buffer[1] = 0
-            uint8Buffer[2] = msgType
-            uint8Buffer.set(buff, 3)
+            uint8Buffer.set(buff, 2)
+            return buffer
+        }
+        /**
+         * 
+         * @param  {ArrayBuffer} buffer 
+         */
+        async function sendMsg(buffer) {
+            log('sendMsg', buffer)
             await charac.writeValueWithoutResponse(buffer)
         }
 
         async function subscribe(portId, mode, cbk = null) {
             deviceModes[portId] = { mode, cbk }
 
-            await sendMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
-                portId, mode, 0x01, 0x00, 0x00, 0x00, 0x01)
+            await sendMsg(formatMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
+                portId, mode, 0x01, 0x00, 0x00, 0x00, 0x01))
 
         }
 
         function createVirtualPort(portId1, portId2) {
-            return sendMsg(MessageType.VIRTUAL_PORT_SETUP, 0x01, portId1, portId2)
+            return sendMsg(formatMsg(MessageType.VIRTUAL_PORT_SETUP, 0x01, portId1, portId2))
         }
 
         function getPortInformationRequest(portId) {
-            return new Promise(async (resolve, reject) => {
-                if (portCmdCallback[portId] != undefined) {
-                    reject('Busy')
-                }
-                else {
-                    await sendMsg(MessageType.PORT_INFORMATION_REQUEST, portId, 0x01)
-                    portCmdCallback[portId] = resolve    
-                }
+            return new Promise(async (resolve) => {
+                await sendMsg(formatMsg(MessageType.PORT_INFORMATION_REQUEST, portId, 0x01))
+                callback[portId] = resolve
             })
         }
 
         function getPortModeInformationRequest(portId, mode, type) {
-            return new Promise(async (resolve, reject) => {
-                if (portCmdCallback[portId] != undefined) {
-                    reject('Busy')
-                }
-                else {
-                    await sendMsg(MessageType.PORT_MODE_INFORMATION_REQUEST, portId, mode, type)
-                    portCmdCallback[portId] = resolve    
-                }
+            return new Promise(async (resolve) => {
+                await sendMsg(formatMsg(MessageType.PORT_MODE_INFORMATION_REQUEST, portId, mode, type))
+                callback[portId] = resolve
             })
-
         }
 
         async function getPortInformation(portId) {
@@ -517,19 +521,29 @@ $$.service.registerService('hub', {
             return { modes, capabilities }
         }
 
+        const portMsgQueue = {}
+
         async function writePortCommand(portId, ...data) {
 
             log('writePortCommand', { portId })
 
-            return new Promise(async (resolve, reject) => {
-                if (portCmdCallback[portId] != undefined) {
-                    reject('Busy')
+            return new Promise(async (resolve) => {
+                const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, data)
+                if (portMsgQueue[portId] == undefined) {
+                    portMsgQueue[portId] = []
+                }
+
+                if (portMsgQueue[portId].length == 0) { // la queue de msg est vide
+                    portMsgQueue[portId].push(buffer)
+                    await sendMsg(buffer)
                 }
                 else {
-                    await sendMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, data)
-                    portCmdCallback[portId] = resolve    
+                    log('Message mis en attente')
+                    portMsgQueue[portId].push(buffer)
                 }
-            })            
+
+                callback[portId] = resolve
+            })
 
         }
 
@@ -633,7 +647,7 @@ $$.service.registerService('hub', {
         }
 
         function shutdown() {
-            return sendMsg(MessageType.HUB_ACTIONS, 0x01)
+            return sendMsg(formatMsg(MessageType.HUB_ACTIONS, 0x01))
         }
 
         function getDeviceType(portId) {
@@ -655,9 +669,9 @@ $$.service.registerService('hub', {
             charac.addEventListener('characteristicvaluechanged', onCharacteristicValueChanged)
             charac.startNotifications()
 
-            await sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_TYPE, 0x05)
-            await sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02)
-            await sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BUTTON_STATE, 0x02)
+            await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_TYPE, 0x05))
+            await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02))
+            await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BUTTON_STATE, 0x02))
         }
 
         return {

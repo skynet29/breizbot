@@ -10,6 +10,7 @@ $$.service.registerService('hub', {
         const debug = false
         const portCmdCallback = {}
         const deviceModes = {}
+        const portMsgQueue = {}
 
 
         const log = function (...data) {
@@ -372,18 +373,18 @@ $$.service.registerService('hub', {
                 const feedback = msg.getUint8(offset + 1)
                 log({ portId, feedback })
                 if (feedback == 10) {
-                    const cbk = portCmdCallback[portId]
+                    const { cbk } = portMsgQueue[portId].shift()
                     if (typeof cbk == 'function') {
+                        log('call cbk')
                         cbk()
-                        delete portCmdCallback[portId]
+                    }
+                    const cmd = portMsgQueue[portId][0] // verifie si il y a d'autre message a envoyer
+                    if (cmd) {
+                        log('envoie message mis en attente')
+                        sendMsg(cmd.buffer)
                     }
                 }
-                portMsgQueue[portId].shift()
-                const buffer = portMsgQueue[portId][0] // verifie si il y a d'autre message a envoyer
-                if (buffer) {
-                    log('envoie message mis en attente', buffer)
-                    sendMsg(buffer)
-                }
+
             }
         }
         /**
@@ -521,7 +522,6 @@ $$.service.registerService('hub', {
             return { modes, capabilities }
         }
 
-        const portMsgQueue = {}
 
         async function writePortCommand(portId, ...data) {
 
@@ -534,15 +534,14 @@ $$.service.registerService('hub', {
                 }
 
                 if (portMsgQueue[portId].length == 0) { // la queue de msg est vide
-                    portMsgQueue[portId].push(buffer)
+                    portMsgQueue[portId].push({ buffer, cbk: resolve })
                     await sendMsg(buffer)
                 }
                 else {
                     log('Message mis en attente')
-                    portMsgQueue[portId].push(buffer)
+                    portMsgQueue[portId].push({ buffer, cbk: resolve })
                 }
 
-                portCmdCallback[portId] = resolve
             })
 
         }

@@ -8,7 +8,7 @@ $$.service.registerService('hub', {
         let hubDevices = {}
         const event = new EventEmitter2()
         const debug = false
-        const callback = {}
+        const portCmdCallback = {}
         const deviceModes = {}
 
 
@@ -299,10 +299,10 @@ $$.service.registerService('hub', {
                     break
             }
             log('portModeInformation', data)
-            const cb = callback[portId]
+            const cb = portCmdCallback[portId]
             if (typeof cb == 'function') {
                 cb(data)
-                delete callback[portId]
+                delete portCmdCallback[portId]
             }
         }
         /**
@@ -325,7 +325,7 @@ $$.service.registerService('hub', {
                 }
             }
             const data = { portId, capabilities: cap.join(', '), count, input, output }
-            const cb = callback[portId]
+            const cb = portCmdCallback[portId]
             if (typeof cb == 'function') {
                 cb(data)
             }
@@ -372,10 +372,10 @@ $$.service.registerService('hub', {
                 const feedback = msg.getUint8(offset + 1)
                 log({ portId, feedback })
                 if (feedback == 10) {
-                    const cbk = callback[portId]
+                    const cbk = portCmdCallback[portId]
                     if (typeof cbk == 'function') {
                         cbk()
-                        delete callback[portId]
+                        delete portCmdCallback[portId]
                     }
                 }
                 portMsgQueue[portId].shift()
@@ -482,14 +482,14 @@ $$.service.registerService('hub', {
         function getPortInformationRequest(portId) {
             return new Promise(async (resolve) => {
                 await sendMsg(formatMsg(MessageType.PORT_INFORMATION_REQUEST, portId, 0x01))
-                callback[portId] = resolve
+                portCmdCallback[portId] = resolve
             })
         }
 
         function getPortModeInformationRequest(portId, mode, type) {
             return new Promise(async (resolve) => {
                 await sendMsg(formatMsg(MessageType.PORT_MODE_INFORMATION_REQUEST, portId, mode, type))
-                callback[portId] = resolve
+                portCmdCallback[portId] = resolve
             })
         }
 
@@ -542,7 +542,7 @@ $$.service.registerService('hub', {
                     portMsgQueue[portId].push(buffer)
                 }
 
-                callback[portId] = resolve
+                portCmdCallback[portId] = resolve
             })
 
         }
@@ -670,7 +670,7 @@ $$.service.registerService('hub', {
             charac.startNotifications()
 
             await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_TYPE, 0x05))
-            await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02))
+            //await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02))
             await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BUTTON_STATE, 0x02))
         }
 

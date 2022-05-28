@@ -10,7 +10,7 @@ $$.service.registerService('hub', {
         const debug = false
         const portCmdCallback = {}
         const deviceModes = {}
-        const portMsgQueue = {}
+        const portCmdQueue = {}
 
 
         const log = function (...data) {
@@ -19,11 +19,8 @@ $$.service.registerService('hub', {
             }
         }
 
-        function getEnumName(enumVal) {
-            const ret = {}
-            Object.entries(enumVal).forEach(([key, val]) => { ret[val] = key })
-            return ret
-        }
+        const { getEnumName } = $$.util
+
 
         const Event = {
             DETACHED_IO: 0x00,
@@ -373,15 +370,15 @@ $$.service.registerService('hub', {
                 const feedback = msg.getUint8(offset + 1)
                 log({ portId, feedback })
                 if (feedback == 10) {
-                    const { cbk } = portMsgQueue[portId].shift()
+                    const { cbk } = portCmdQueue[portId].shift()
                     if (typeof cbk == 'function') {
                         log('call cbk')
                         cbk()
                     }
-                    const cmd = portMsgQueue[portId][0] // verifie si il y a d'autre message a envoyer
+                    const cmd = portCmdQueue[portId][0] // verifie si il y a d'autre cmd a envoyer
                     if (cmd) {
-                        log('envoie message mis en attente')
-                        sendMsg(cmd.buffer)
+                        log('envoie cmd mise en attente')
+                        sendBuffer(cmd.buffer)
                     }
                 }
 
@@ -449,47 +446,58 @@ $$.service.registerService('hub', {
          * @param  {...any} data 
          * @returns {ArrayBuffer}
          */
-        function formatMsg(...data) {
+        function formatMsg(msgType, ...data) {
             const buff = data.flat(2)
-            const msgLen = buff.length + 2
+            const msgLen = buff.length + 3
             const buffer = new ArrayBuffer(msgLen)
             const uint8Buffer = new Uint8Array(buffer)
             uint8Buffer[0] = msgLen
             uint8Buffer[1] = 0
-            uint8Buffer.set(buff, 2)
+            uint8Buffer[2] = msgType
+            uint8Buffer.set(buff, 3)
             return buffer
         }
         /**
          * 
          * @param  {ArrayBuffer} buffer 
          */
-        async function sendMsg(buffer) {
-            log('sendMsg', buffer)
-            await charac.writeValueWithoutResponse(buffer)
+        function sendBuffer(buffer) {
+            log('sendBuffer', buffer)
+            return charac.writeValueWithoutResponse(buffer)
         }
 
-        async function subscribe(portId, mode, cbk = null) {
+        /**
+         * 
+         * @param {number} msgType
+         * @param  {...any} data 
+         */
+        function sendMsg(msgType, ...data) {
+            log('sendMsg', MessageTypeNames[msgType])
+            return sendBuffer(formatMsg(msgType, data))
+        }
+
+        function subscribe(portId, mode, cbk = null) {
             deviceModes[portId] = { mode, cbk }
 
-            await sendMsg(formatMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
-                portId, mode, 0x01, 0x00, 0x00, 0x00, 0x01))
+            return sendMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
+                portId, mode, 0x01, 0x00, 0x00, 0x00, 0x01)
 
         }
 
         function createVirtualPort(portId1, portId2) {
-            return sendMsg(formatMsg(MessageType.VIRTUAL_PORT_SETUP, 0x01, portId1, portId2))
+            return sendMsg(MessageType.VIRTUAL_PORT_SETUP, 0x01, portId1, portId2)
         }
 
         function getPortInformationRequest(portId) {
             return new Promise(async (resolve) => {
-                await sendMsg(formatMsg(MessageType.PORT_INFORMATION_REQUEST, portId, 0x01))
+                await sendMsg(MessageType.PORT_INFORMATION_REQUEST, portId, 0x01)
                 portCmdCallback[portId] = resolve
             })
         }
 
         function getPortModeInformationRequest(portId, mode, type) {
             return new Promise(async (resolve) => {
-                await sendMsg(formatMsg(MessageType.PORT_MODE_INFORMATION_REQUEST, portId, mode, type))
+                await sendMsg(MessageType.PORT_MODE_INFORMATION_REQUEST, portId, mode, type)
                 portCmdCallback[portId] = resolve
             })
         }
@@ -529,17 +537,17 @@ $$.service.registerService('hub', {
 
             return new Promise(async (resolve) => {
                 const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, data)
-                if (portMsgQueue[portId] == undefined) {
-                    portMsgQueue[portId] = []
+                if (portCmdQueue[portId] == undefined) {
+                    portCmdQueue[portId] = []
                 }
 
-                if (portMsgQueue[portId].length == 0) { // la queue de msg est vide
-                    portMsgQueue[portId].push({ buffer, cbk: resolve })
-                    await sendMsg(buffer)
+                if (portCmdQueue[portId].length == 0) { // la queue de cmd est vide
+                    portCmdQueue[portId].push({ buffer, cbk: resolve })
+                    await sendBuffer(buffer)
                 }
                 else {
-                    log('Message mis en attente')
-                    portMsgQueue[portId].push({ buffer, cbk: resolve })
+                    log('Cmd mise en attente')
+                    portCmdQueue[portId].push({ buffer, cbk: resolve })
                 }
 
             })
@@ -646,7 +654,7 @@ $$.service.registerService('hub', {
         }
 
         function shutdown() {
-            return sendMsg(formatMsg(MessageType.HUB_ACTIONS, 0x01))
+            return sendMsg(MessageType.HUB_ACTIONS, 0x01)
         }
 
         function getDeviceType(portId) {
@@ -668,9 +676,9 @@ $$.service.registerService('hub', {
             charac.addEventListener('characteristicvaluechanged', onCharacteristicValueChanged)
             charac.startNotifications()
 
-            await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_TYPE, 0x05))
+            await sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_TYPE, 0x05)
             //await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02))
-            await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BUTTON_STATE, 0x02))
+            await sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BUTTON_STATE, 0x02)
         }
 
         return {

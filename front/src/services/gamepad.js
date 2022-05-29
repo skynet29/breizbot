@@ -48,12 +48,22 @@ $$.service.registerService('breizbot.gamepad', {
 			}
 		}
 
+        function getButtonState(buttonId) {
+            return navigator.getGamepads()[0].buttons[buttonId].pressed
+        }
+
+        function getAxeValue(axeId) {
+            return navigator.getGamepads()[0].axes[axeId]
+        }
+
         return {
             on: event.on.bind(event),
             getGamepads: function() {
                 return navigator.getGamepads()
             },
-            checkGamePadStatus
+            checkGamePadStatus,
+            getButtonState,
+            getAxeValue
         }
     }
 });

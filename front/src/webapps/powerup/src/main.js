@@ -18,14 +18,9 @@ $$.control.registerControl('rootPage', {
 	 */
 	init: function (elt, pager, hub, gamepad) {
 
-		Number.prototype.map = function (in_min, in_max, out_min, out_max) {
-			return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-		}
+		let speed1 = 0
+		let speed2 = 0
 
-		let speed1 = 100
-		let speed2 = 100
-		let running = false
-		
 		gamepad.on('connected', (ev) => {
 			console.log('gamepad connnected', ev)
 			gamepad.checkGamePadStatus()
@@ -34,41 +29,98 @@ $$.control.registerControl('rootPage', {
 
 		gamepad.on('buttonUp', async (data) => {
 			console.log('buttonUp', data)
-			const portId = hub.getPortIdFromName('C_D')
-			console.log('portId', portId)
-			running = false
-			await hub.motor.setPower(portId, 0)
+			const { id } = data
+			if (id == 1) {
+				await onChangeMode()
+			}
+			else if (ctrl.model.mode == 'MANIPULATOR') {
+				let portId = false
+				if (id == 2) {
+					portId = hub.PortMap.B
+				}
+				else if (id == 3) {
+					portId = hub.PortMap.C
+				}
+				else if (id == 4) {
+					portId = hub.PortMap.D
+				}
+				if (portId !== false) {
+					await hub.motor.setPower(portId, 0)
+				}
+			}
 
 		})
 
 		gamepad.on('buttonDown', async (data) => {
 			console.log('buttonDown', data)
-			const portId = hub.getPortIdFromName('C_D')
-			console.log('portId', portId)
-			running = true
-			await hub.motor.setSpeedEx(portId, -speed1, -speed2)
+			await checkAxes()
 
 		})
 
-		gamepad.on('axe', (data) => {
+
+		async function checkAxes() {
 			//console.log('axe', data)
-			const { id, value } = data
-			if (id == 0) {
-				if (value <= 0) {
-					speed1 = 100
-					speed2 = Math.ceil(value.map(-1, 0, 0, 100))
+			if (ctrl.model.mode == 'RUNNING') {
+				let value = gamepad.getAxeValue(0)
+				//console.log({ value })
+				let motor1 = 1
+				let motor2 = 1
+				let speed = 0
+				if (value <= -0.6) {
+					motor1 = 1
+					motor2 = -1
 				}
-				else {
-					speed1 = Math.ceil(value.map(0, 1, 100, 0))
-					speed2 = 100
+				else if (value >= 0.6) {
+					motor1 = -1
+					motor2 = 1
 				}
-				console.log({ speed1, speed2 })
-				if (running) {
+				value = gamepad.getAxeValue(1)
+				if (value <= -0.5) {
+					speed = -100
+				}
+				else if (value >= 0.5) {
+					speed = 100
+				}
+				motor1 *= speed
+				motor2 *= speed
+				if (motor1 != speed1 || motor2 != speed2) {
+					console.log({ motor1, motor2 })
 					const portId = hub.getPortIdFromName('C_D')
-					hub.motor.setSpeedEx(portId, -speed1, -speed2)
+					speed1 = motor1
+					speed2 = motor2
+					await hub.motor.setSpeedEx(portId, motor1, motor2)
 				}
 			}
-		})
+			else if (ctrl.model.mode == 'MANIPULATOR') {
+				let portId = false
+				if (gamepad.getButtonState(2)) {
+					portId = hub.PortMap.B
+				}
+				else if (gamepad.getButtonState(3)) {
+					portId = hub.PortMap.C
+				}
+				else if (gamepad.getButtonState(4)) {
+					portId = hub.PortMap.D
+				}
+				let speed = 0
+				const value = gamepad.getAxeValue(1)
+				if (value <= -0.5) {
+					speed = -100
+				}
+				else if (value >= 0.5) {
+					speed = 100
+				}
+				if (portId !== false) {
+					await hub.motor.setSpeed(portId, speed)
+				}
+
+			}
+
+
+		}
+
+		gamepad.on('axe', checkAxes)
+
 
 		hub.on('disconnected', () => {
 			ctrl.setData({ connected: false })
@@ -136,6 +188,26 @@ $$.control.registerControl('rootPage', {
 			})
 		}
 
+		async function onChangeMode() {
+			const { mode } = ctrl.model
+			const portId = hub.getPortIdFromName('C_D')
+			await hub.motor.setSpeedEx(portId, 0, 0)
+			speed1 = 0
+			speed2 = 0
+
+			if (mode == 'RUNNING') {
+				await hub.led.setColor(hub.Color.YELLOW)
+				await hub.motor.rotateDegrees(hub.PortMap.A, 180, 50)
+				await hub.led.setColor(hub.Color.GREEN)
+				ctrl.setData({ mode: 'MANIPULATOR' })
+			}
+			else if (mode == 'MANIPULATOR') {
+				await hub.led.setColor(hub.Color.YELLOW)
+				await hub.motor.rotateDegrees(hub.PortMap.A, 180, -50)
+				await hub.led.setColor(hub.Color.BLUE)
+				ctrl.setData({ mode: 'RUNNING' })
+			}
+		}
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -172,9 +244,9 @@ $$.control.registerControl('rootPage', {
 					ctrl.setData({ connected: true })
 					await hub.createVirtualPort(hub.PortMap.C, hub.PortMap.D)
 				},
-				onCalibrate: async function() {
+				onCalibrate: async function () {
 					console.log('onCalibrate')
-					ctrl.setData({mode: 'CALIBRATING'})
+					ctrl.setData({ mode: 'CALIBRATING' })
 
 					console.log('step 1')
 
@@ -200,24 +272,10 @@ $$.control.registerControl('rootPage', {
 					await hub.motor.rotateDegrees(hub.PortMap.A, -220, -20)
 					await hub.motor.resetZero(hub.PortMap.A)
 					await hub.led.setColor(hub.Color.BLUE)
-					ctrl.setData({mode: 'RUNNING'})
-					
+					ctrl.setData({ mode: 'RUNNING' })
+
 				},
-				onChangeMode: async function() {
-					const {mode} = ctrl.model
-					if (mode == 'RUNNING') {
-						await hub.led.setColor(hub.Color.YELLOW)
-						await hub.motor.rotateDegrees(hub.PortMap.A, 180, 50)
-						await hub.led.setColor(hub.Color.GREEN)
-						ctrl.setData({mode: 'MANIPULATOR'})
-					}
-					else if (mode == 'MANIPULATOR') {
-						await hub.led.setColor(hub.Color.YELLOW)
-						await hub.motor.rotateDegrees(hub.PortMap.A, 180, -50)
-						await hub.led.setColor(hub.Color.BLUE)
-						ctrl.setData({mode: 'RUNNING'})
-					}
-				},
+				onChangeMode,
 				onSendMsg: async function () {
 					console.log('onSendMsg')
 					await hub.led.setColor(hub.Color.RED)

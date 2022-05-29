@@ -17,6 +17,9 @@ declare namespace Breizbot {
                 on(event: EventName, callback: (ev: Info) => void): void;
                 getGamepads(): Array<Info>;
                 checkGamePadStatus():void;
+                getButtonState(buttonId: number):boolean;
+                getAxeValue(axeId: number):number;
+        
             }
         }
 

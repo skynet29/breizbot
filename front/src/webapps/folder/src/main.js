@@ -117,7 +117,6 @@ $$.control.registerControl('rootPage', {
 					if (url != null) {
 						progressDlg.setPercentage(0)
 						progressDlg.show('Downloading...')
-						const resp = await folder.importUrl(ctrl.model.rootDir, url)
 						//console.log('resp', resp)
 
 						async function onProgress(msg) {
@@ -139,6 +138,7 @@ $$.control.registerControl('rootPage', {
 
 						broker.onTopic('breizbot.importUrl.progress', onProgress)
 
+						const resp = await folder.importUrl(ctrl.model.rootDir, url)
 
 
 					}

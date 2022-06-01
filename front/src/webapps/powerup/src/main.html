@@ -1,5 +1,5 @@
 <div class="toolbar">
-    <div>
+    <div class="left">
         <button class="w3-blue w3-button" 
             bn-event="click: onConnect"
             bn-show="!connected"
@@ -24,6 +24,10 @@
             bn-event="click: onSendMsg"
             bn-show="connected"
         >Send Msg</button>
+
+        <div bn-show="connected">
+            Max Speed:<span bn-text="fmtMaxSpeed"></span>
+        </div>
     </div>
     <div bn-show="connected">
         Mode:

@@ -11,7 +11,6 @@ $$.service.registerService('hub', {
         const portCmdCallback = {}
         const deviceModes = {}
         const portCmdQueue = {}
-        const motorSpeed = {}
 
 
         const log = function (...data) {
@@ -246,10 +245,10 @@ $$.service.registerService('hub', {
          * @param {DataView} msg 
          */
         function handlePortValueSingle(msg) {
-            log('msg', msg)
+            //log('msg', msg)
             const portId = msg.getUint8(3)
             const device = hubDevices[portId]
-            log('handlePortValueSingle', { portId, device })
+            //log('handlePortValueSingle', { portId, device })
             const fn = mapValue[device]
             if (typeof fn == 'function') {
                 fn(msg)
@@ -370,7 +369,7 @@ $$.service.registerService('hub', {
                 const portId = msg.getUint8(offset)
                 const feedback = msg.getUint8(offset + 1)
                 log({ portId, feedback })
-                if (feedback == 10) {
+                if (feedback == 10 || feedback == 44) {
                     const { cbk } = portCmdQueue[portId].shift()
                     if (typeof cbk == 'function') {
                         log('call cbk')
@@ -434,7 +433,7 @@ $$.service.registerService('hub', {
             const bufferLen = msg.byteLength
             const msgLen = msg.getUint8(0)
             const msgType = msg.getUint8(2)
-            log('decodeMsg', { msgLen, bufferLen, msgType: MessageTypeNames[msgType] })
+            //log('decodeMsg', { msgLen, bufferLen, msgType: MessageTypeNames[msgType] })
             const fcn = mapFcn[msgType]
             if (typeof fcn == 'function') {
                 fcn(msg)
@@ -463,7 +462,7 @@ $$.service.registerService('hub', {
          * @param  {ArrayBuffer} buffer 
          */
         function sendBuffer(buffer) {
-            log('sendBuffer', buffer)
+            //log('sendBuffer', buffer)
             return charac.writeValueWithoutResponse(buffer)
         }
 
@@ -473,7 +472,7 @@ $$.service.registerService('hub', {
          * @param  {...any} data 
          */
         function sendMsg(msgType, ...data) {
-            log('sendMsg', MessageTypeNames[msgType])
+            //log('sendMsg', MessageTypeNames[msgType])
             return sendBuffer(formatMsg(msgType, data))
         }
 
@@ -571,15 +570,7 @@ $$.service.registerService('hub', {
         const maxPower = 100
 
         async function setSpeed(portId, speed) {
-            if (motorSpeed[portId] == undefined || motorSpeed[portId] != speed) {
-                motorSpeed[portId] = speed
-                if (speed == 0) {
-                    await setPower(portId, 0)
-                }
-                else {
-                    await writePortCommand(portId, 0x07, speed, maxPower, 0)
-                }
-            }
+            return writePortCommand(portId, 0x07, speed, maxPower, 0)
         }
 
         function setSpeedEx(portId, speed1, speed2) {
@@ -634,9 +625,6 @@ $$.service.registerService('hub', {
         }
 
         function setPower(portId, power) {
-            if (power == 0) {
-                motorSpeed[portId] = 0
-            }
             return writeDirect(portId, DeviceMode.POWER, power)
         }
 

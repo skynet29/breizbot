@@ -8,6 +8,14 @@
         justify-content: space-between;
         align-items: center;
         padding: 5px;
+
+        .left {
+            display: flex;
+            align-items: center;
+            button {
+                margin-right: 10px;
+            }
+        }
     }
 
     .scrollBar {

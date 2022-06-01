@@ -20,106 +20,118 @@ $$.control.registerControl('rootPage', {
 
 		let speed1 = 0
 		let speed2 = 0
+		let portId = 0
+		let speed = 0
+		const map = $$.util.mapRange(-1, 1, 100, 0)
 
-		gamepad.on('connected', (ev) => {
-			console.log('gamepad connnected', ev)
-			gamepad.checkGamePadStatus()
 
-		})
+		function run() {
+			const {maxSpeed} = ctrl.model
+			return hub.motor.setSpeedEx(hub.getPortIdFromName('C_D'), -speed1 * maxSpeed, -speed2 * maxSpeed)
+		}
 
-		gamepad.on('buttonUp', async (data) => {
-			console.log('buttonUp', data)
-			const { id } = data
-			if (id == 1) {
-				await onChangeMode()
-			}
-			else if (ctrl.model.mode == 'MANIPULATOR') {
-				let portId = false
-				if (id == 2) {
-					portId = hub.PortMap.B
-				}
-				else if (id == 3) {
-					portId = hub.PortMap.C
-				}
-				else if (id == 4) {
-					portId = hub.PortMap.D
-				}
-				if (portId !== false) {
-					await hub.motor.setPower(portId, 0)
-				}
+		function setMaxSpeed(value) {
+			ctrl.setData({maxSpeed: Math.ceil(map(value))})
+			//console.log({maxSpeed})
+			if (speed1 != 0 || speed2 != 0) {
+				run()
 			}
 
+		}
+
+		gamepad.on('axe', (data) => {
+			//console.log('axe', data)
+			const {id, value} = data
+			if (id == 2) {
+				setMaxSpeed(value)
+			}
 		})
 
 		gamepad.on('buttonDown', async (data) => {
 			console.log('buttonDown', data)
-			await checkAxes()
+			const { id } = data
+			if (id == 0) {
+				await onChangeMode()
+			}
+			else if (id == 5) {
+				await hub.motor.setSpeed(hub.PortMap.B, 100)
+			}
+			else if (id == 6) {
+				await hub.motor.setSpeed(hub.PortMap.B, -100)
+			}
+			else if (ctrl.model.mode == 'RUNNING') {
+				switch (id) {
+					case 2:
+						speed1 = 1
+						speed2 = 1
 
-		})
-
-
-		async function checkAxes() {
-			//console.log('axe', data)
-			if (ctrl.model.mode == 'RUNNING') {
-				let value = gamepad.getAxeValue(0)
-				//console.log({ value })
-				let motor1 = 1
-				let motor2 = 1
-				let speed = 0
-				if (value <= -0.6) {
-					motor1 = 1
-					motor2 = -1
+						break
+					case 1:
+						speed1 = -1
+						speed2 = -1
+						break
+					case 3:
+						speed1 = 1
+						speed2 = -1
+						break
+					case 4:
+						speed1 = -1
+						speed2 = 1
+						break
 				}
-				else if (value >= 0.6) {
-					motor1 = -1
-					motor2 = 1
-				}
-				value = gamepad.getAxeValue(1)
-				if (value <= -0.5) {
-					speed = -100
-				}
-				else if (value >= 0.5) {
-					speed = 100
-				}
-				motor1 *= speed
-				motor2 *= speed
-				if (motor1 != speed1 || motor2 != speed2) {
-					console.log({ motor1, motor2 })
-					const portId = hub.getPortIdFromName('C_D')
-					speed1 = motor1
-					speed2 = motor2
-					await hub.motor.setSpeedEx(portId, motor1, motor2)
+				if (speed1 != 0 && speed2 != 0) {
+					await run()
 				}
 			}
+
 			else if (ctrl.model.mode == 'MANIPULATOR') {
-				let portId = false
-				if (gamepad.getButtonState(2)) {
-					portId = hub.PortMap.B
+				switch (id) {
+					case 2:
+						portId = hub.PortMap.C
+						speed = -100
+						break
+					case 1:
+						portId = hub.PortMap.C
+						speed = 100
+						break
+					case 3:
+						portId = hub.PortMap.D
+						speed = -100
+						break
+					case 4:
+						portId = hub.PortMap.D
+						speed = 100
+						break
+
 				}
-				else if (gamepad.getButtonState(3)) {
-					portId = hub.PortMap.C
-				}
-				else if (gamepad.getButtonState(4)) {
-					portId = hub.PortMap.D
-				}
-				let speed = 0
-				const value = gamepad.getAxeValue(1)
-				if (value <= -0.5) {
-					speed = -100
-				}
-				else if (value >= 0.5) {
-					speed = 100
-				}
-				if (portId !== false) {
+				if (speed != 0) {
 					await hub.motor.setSpeed(portId, speed)
 				}
 
 			}
 
+		})
 
-		}
+		gamepad.on('buttonUp', async (data) => {
+			console.log('buttonUp', data)
+			const {id} = data
+			if (id == 5) {
+				await hub.motor.setPower(hub.PortMap.B, 0)
+			}
+			else if (id == 6) {
+				await hub.motor.setPower(hub.PortMap.B, 0)
+			}
 
-		gamepad.on('axe', checkAxes)
+			else if (speed1 != 0 || speed2 != 0) {
+				speed1 = 0
+				speed2 = 0
+				await hub.motor.setSpeedEx(hub.getPortIdFromName('C_D'), 0, 0)
+			}
+			else if ([1, 2, 3, 4].includes(id) && speed != 0) {
+				speed = 0
+				await hub.motor.setPower(portId, 0)
+			}
+		})
 
 
 		hub.on('disconnected', () => {
@@ -190,8 +202,7 @@ $$.control.registerControl('rootPage', {
 
 		async function onChangeMode() {
 			const { mode } = ctrl.model
-			const portId = hub.getPortIdFromName('C_D')
-			await hub.motor.setSpeedEx(portId, 0, 0)
+			await hub.motor.setSpeedEx(hub.getPortIdFromName('C_D'), 0, 0)
 			speed1 = 0
 			speed2 = 0
 
@@ -215,7 +226,11 @@ $$.control.registerControl('rootPage', {
 				internalDevices: [],
 				externalDevices: [],
 				batteryLevel: 0,
-				mode: 'UNKNOWN'
+				mode: 'UNKNOWN',
+				maxSpeed: 100,
+				fmtMaxSpeed: function() {
+					return this.maxSpeed.toLocaleString().padStart(4)
+				}
 			},
 			events: {
 				onMouseUp: function () {
@@ -308,6 +323,17 @@ $$.control.registerControl('rootPage', {
 				}
 			}
 		})
+
+		gamepad.on('connected', (ev) => {
+			console.log('gamepad connnected', ev)
+			gamepad.checkGamePadStatus()
+			if (ev.axes[2] != undefined) {
+				setMaxSpeed(ev.axes[2])
+
+			}
+
+		})
+
 
 	}
 

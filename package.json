@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/web-bluetooth": "0.0.14",
     "@wasmer/wasi": "^1.0.2",
     "ask-sdk-core": "^2.9.0",
     "ask-sdk-dynamodb-persistence-adapter": "^2.9.0",

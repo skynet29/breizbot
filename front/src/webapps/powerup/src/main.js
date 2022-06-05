@@ -16,18 +16,25 @@ $$.control.registerControl('rootPage', {
 	 * @param {HUB} hub
 	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
 	 */
-	init: function (elt, pager, hub, gamepad) {
+	init: async function (elt, pager, hub, gamepad) {
 
 		let speed1 = 0
 		let speed2 = 0
-		let portId = 0
+		let motor = null
 		let speed = 0
 		const map = $$.util.mapRange(-1, 1, 100, 0)
+
+		const motorA = hub.Motor(hub.PortMap.A)
+		const motorB = hub.Motor(hub.PortMap.B)
+		const motorC = hub.Motor(hub.PortMap.C)
+		const motorD = hub.Motor(hub.PortMap.D)
+		let motorCD = null
+		const led = hub.Led(hub.PortMap.HUB_LED)
 
 
 		function run() {
 			const {maxSpeed} = ctrl.model
-			return hub.motor.setSpeedEx(hub.getPortIdFromName('C_D'), -speed1 * maxSpeed, -speed2 * maxSpeed)
+			return motorCD.setSpeed(-speed1 * maxSpeed, -speed2 * maxSpeed)
 		}
 
 		function setMaxSpeed(value) {
@@ -54,10 +61,10 @@ $$.control.registerControl('rootPage', {
 				await onChangeMode()
 			}
 			else if (id == 5) {
-				await hub.motor.setSpeed(hub.PortMap.B, 100)
+				await motorB.setSpeed(100)
 			}
 			else if (id == 6) {
-				await hub.motor.setSpeed(hub.PortMap.B, -100)
+				await motorB.setSpeed(-100)
 			}
 			else if (ctrl.model.mode == 'RUNNING') {
 				switch (id) {
@@ -87,25 +94,25 @@ $$.control.registerControl('rootPage', {
 			else if (ctrl.model.mode == 'MANIPULATOR') {
 				switch (id) {
 					case 2:
-						portId = hub.PortMap.C
+						motor = motorC
 						speed = -100
 						break
 					case 1:
-						portId = hub.PortMap.C
+						motor = motorC
 						speed = 100
 						break
 					case 3:
-						portId = hub.PortMap.D
+						motor = motorD
 						speed = -100
 						break
 					case 4:
-						portId = hub.PortMap.D
+						motor = motorD
 						speed = 100
 						break
 
 				}
 				if (speed != 0) {
-					await hub.motor.setSpeed(portId, speed)
+					await motor.setSpeed(speed)
 				}
 
 			}
@@ -115,21 +122,18 @@ $$.control.registerControl('rootPage', {
 		gamepad.on('buttonUp', async (data) => {
 			console.log('buttonUp', data)
 			const {id} = data
-			if (id == 5) {
-				await hub.motor.setPower(hub.PortMap.B, 0)
-			}
-			else if (id == 6) {
-				await hub.motor.setPower(hub.PortMap.B, 0)
+			if (id == 5 || id == 6) {
+				await motorB.setPower(0)
 			}
 
 			else if (speed1 != 0 || speed2 != 0) {
 				speed1 = 0
 				speed2 = 0
-				await hub.motor.setSpeedEx(hub.getPortIdFromName('C_D'), 0, 0)
+				await motorCD.setSpeed(0, 0)
 			}
 			else if ([1, 2, 3, 4].includes(id) && speed != 0) {
 				speed = 0
-				await hub.motor.setPower(portId, 0)
+				await motor.setPower(0)
 			}
 		})
 
@@ -202,20 +206,20 @@ $$.control.registerControl('rootPage', {
 
 		async function onChangeMode() {
 			const { mode } = ctrl.model
-			await hub.motor.setSpeedEx(hub.getPortIdFromName('C_D'), 0, 0)
+			await motorCD.setSpeed(0, 0)
 			speed1 = 0
 			speed2 = 0
 
 			if (mode == 'RUNNING') {
-				await hub.led.setColor(hub.Color.YELLOW)
-				await hub.motor.rotateDegrees(hub.PortMap.A, 180, 50)
-				await hub.led.setColor(hub.Color.GREEN)
+				await led.setColor(hub.Color.YELLOW)
+				await motorA.rotateDegrees(180, 50)
+				await led.setColor(hub.Color.GREEN)
 				ctrl.setData({ mode: 'MANIPULATOR' })
 			}
 			else if (mode == 'MANIPULATOR') {
-				await hub.led.setColor(hub.Color.YELLOW)
-				await hub.motor.rotateDegrees(hub.PortMap.A, 180, -50)
-				await hub.led.setColor(hub.Color.BLUE)
+				await led.setColor(hub.Color.YELLOW)
+				await motorA.rotateDegrees(180, -50)
+				await led.setColor(hub.Color.BLUE)
 				ctrl.setData({ mode: 'RUNNING' })
 			}
 		}
@@ -238,26 +242,26 @@ $$.control.registerControl('rootPage', {
 					const action = $(this).data('action')
 					const portId = getExternalPortId($(this))
 					switch (action) {
-						case 'off':
-							hub.motor.setPower(portId, 0)
-							break
 						case 'forward':
-							hub.motor.setPower(portId, 100)
+							hub.Motor(portId).setPower(100)
 							break
 						case 'backward':
-							hub.motor.setPower(portId, -100)
+							hub.Motor(portId).setPower(-100)
 							break
 					}
 				},
 				onMouseDown: function () {
 					//console.log('onMouseDown')
 					const portId = getExternalPortId($(this))
-					hub.motor.setPower(portId, 0)
+					hub.Motor(portId).setPower(0)
 				},
 				onConnect: async function () {
 					await hub.connect()
 					ctrl.setData({ connected: true })
-					await hub.createVirtualPort(hub.PortMap.C, hub.PortMap.D)
+					motorCD = await hub.DoubleMotor(hub.PortMap.C, hub.PortMap.D, 'C_D')
+					await hub.subscribe(hub.PortMap.TILT_SENSOR, hub.DeviceMode.TILT_POS, 2, (data) => {
+						console.log('TILT POS', data.value)
+					})
 				},
 				onCalibrate: async function () {
 					console.log('onCalibrate')
@@ -265,47 +269,33 @@ $$.control.registerControl('rootPage', {
 
 					console.log('step 1')
 
-					await hub.led.setColor(hub.Color.RED)
-					await hub.motor.setSpeed(hub.PortMap.A, -20)
+					await led.setColor(hub.Color.RED)
+					await motorA.setSpeed(-20)
 					await $$.util.wait(200)
-					await hub.motor.setSpeed(hub.PortMap.A, 20)
+					await motorA.setSpeed(20)
 
-					await hub.waitTestValue(hub.PortMap.A, hub.DeviceMode.SPEED, (speed) => {
+					await motorA.waitSpeed((speed) => {
 						//console.log({speed})
 						return speed > 5
 					})
 
 					console.log('step 2')
-					await hub.waitTestValue(hub.PortMap.A, hub.DeviceMode.SPEED, (speed) => {
+					await motorA.waitSpeed((speed) => {
 						//console.log({speed})
 						return speed < 6
 					})
 					console.log('step 3')
 
-					await hub.motor.setPower(hub.PortMap.A, 0)
+					await motorA.setPower(0)
 					await $$.util.wait(300)
-					await hub.motor.rotateDegrees(hub.PortMap.A, -220, -20)
-					await hub.motor.resetZero(hub.PortMap.A)
-					await hub.led.setColor(hub.Color.BLUE)
+					await motorA.rotateDegrees(-220, -20)
+					await led.setColor(hub.Color.BLUE)
 					ctrl.setData({ mode: 'RUNNING' })
 
 				},
 				onChangeMode,
 				onSendMsg: async function () {
 					console.log('onSendMsg')
-					await hub.led.setColor(hub.Color.RED)
-					console.log('Finished')
-					//await hub.led.setRGBColor(0, 0, 255)
-					await hub.motor.resetZero(hub.PortMap.B)
-					console.log('Finished')
-
-					//await hub.motor.setSpeedForTime(hub.PortMap.B, 20, 2000)
-					//console.log('Finished')
-					//await hub.motor.setSpeedEx(hub.PortMap.C-D)
-					//const portId = hub.getPortIdFromName('C_D')
-					await hub.motor.rotateDegrees(hub.PortMap.B, 720, 100)
-					console.log('Finished')
-
 				},
 				onShutdown: async function () {
 					await hub.shutdown()

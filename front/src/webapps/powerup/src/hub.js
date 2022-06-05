@@ -4,6 +4,7 @@ $$.service.registerService('hub', {
 
     init: function () {
 
+        /**@type {BluetoothRemoteGATTCharacteristic} */
         let charac = null
         let hubDevices = {}
         const event = new EventEmitter2()
@@ -11,6 +12,8 @@ $$.service.registerService('hub', {
         const portCmdCallback = {}
         const deviceModes = {}
         const portCmdQueue = {}
+        const LPF2_SERVICE_UUID = '00001623-1212-efde-1623-785feabcd123'
+        const LPF2_CHARAC_UUID = '00001624-1212-efde-1623-785feabcd123'
 
 
         const log = function (...data) {
@@ -187,7 +190,8 @@ $$.service.registerService('hub', {
             ROTATION: 0x02,
             ABSOLUTE: 0x03,
             COLOR: 0x00,
-            RGB: 0x01
+            RGB: 0x01,
+            TILT_POS: 0x00
         }
 
         const BrakingStyle = {
@@ -211,34 +215,48 @@ $$.service.registerService('hub', {
         const mapValue = {}
         mapValue[DeviceType.TECHNIC_LARGE_LINEAR_MOTOR] = handleMotorValue
         mapValue[DeviceType.TECHNIC_LARGE_ANGULAR_MOTOR_GREY] = handleMotorValue
+        mapValue[DeviceType.TECHNIC_MEDIUM_HUB_TILT_SENSOR] = handleTiltSensorValue
 
         /**
          * 
-         * @param {DataView} msg 
+         * @param {number} mode 
+         * @param {DataView} msg
          */
-        function handleMotorValue(msg) {
-            const portId = msg.getUint8(3)
-            if (deviceModes[portId] != undefined) {
-                const { mode, cbk } = deviceModes[portId]
-                let value
-                switch (mode) {
-                    case DeviceMode.ABSOLUTE:
-                        value = msg.getInt16(4, true)
-                        break
-                    case DeviceMode.ROTATION:
-                        value = msg.getInt32(4, true)
-                        break
-                    case DeviceMode.SPEED:
-                        value = msg.getInt8(4)
-                        break
+        function handleTiltSensorValue(mode, msg) {
+            let value
+            switch (mode) {
+                case DeviceMode.TILT_POS:
+                    value = {
+                        yaw: msg.getInt16(4, true),
+                        pitch: msg.getInt16(6, true),
+                        roll: msg.getInt16(8, true)
+                    }
+                    break
+            }
+            return value
 
-                }
-
-                if (typeof cbk == 'function') {
-                    cbk({ mode, value, portId })
-                }
+        }
+        /**
+         * 
+         * @param {number} mode 
+         * @param {DataView} msg
+         */
+        function handleMotorValue(mode, msg) {
+            let value
+            switch (mode) {
+                case DeviceMode.ABSOLUTE:
+                    value = msg.getInt16(4, true)
+                    break
+                case DeviceMode.ROTATION:
+                    value = msg.getInt32(4, true)
+                    break
+                case DeviceMode.SPEED:
+                    value = msg.getInt8(4)
+                    break
 
             }
+            return value
+
         }
         /**
          * 
@@ -251,7 +269,15 @@ $$.service.registerService('hub', {
             //log('handlePortValueSingle', { portId, device })
             const fn = mapValue[device]
             if (typeof fn == 'function') {
-                fn(msg)
+                if (deviceModes[portId] != undefined) {
+                    const { mode, cbk } = deviceModes[portId]
+
+                    const value = fn(mode, msg)
+                    if (typeof cbk == 'function') {
+                        cbk({ mode, value, portId })
+                    }
+
+                }
             }
         }
 
@@ -476,11 +502,11 @@ $$.service.registerService('hub', {
             return sendBuffer(formatMsg(msgType, data))
         }
 
-        function subscribe(portId, mode, cbk = null) {
+        function subscribe(portId, mode, deltaInterval = 1, cbk = null) {
             deviceModes[portId] = { mode, cbk }
 
             return sendMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
-                portId, mode, 0x01, 0x00, 0x00, 0x00, 0x01)
+                portId, mode, toUint32(deltaInterval), 0x01)
 
         }
 
@@ -557,7 +583,7 @@ $$.service.registerService('hub', {
 
         async function waitTestValue(portId, mode, testFn) {
             return new Promise(async (resolve) => {
-                await subscribe(portId, mode, (data) => {
+                await subscribe(portId, mode, 1, (data) => {
                     log('waitTestValue', data)
                     if (testFn(data.value)) {
                         delete deviceModes[portId]
@@ -569,13 +595,7 @@ $$.service.registerService('hub', {
 
         const maxPower = 100
 
-        async function setSpeed(portId, speed) {
-            return writePortCommand(portId, 0x07, speed, maxPower, 0)
-        }
 
-        function setSpeedEx(portId, speed1, speed2) {
-            return writePortCommand(portId, 0x08, speed1, speed2, maxPower, 0)
-        }
 
         /**
          * 
@@ -601,17 +621,14 @@ $$.service.registerService('hub', {
             return Array.from(buff)
         }
 
-        function setSpeedForTime(portId, speed, time, brakingStyle = BrakingStyle.BRAKE) {
-            return writePortCommand(portId, 0x09, toInt16(time), speed, maxPower, brakingStyle)
+        function toUint32(val) {
+            const buff = new Uint8Array(4)
+            const view = new DataView(buff.buffer)
+            view.setUint32(0, val, true)
+            return Array.from(buff)
         }
 
-        function rotateDegrees(portId, degrees, speed, brakingStyle = BrakingStyle.BRAKE) {
-            return writePortCommand(portId, 0x0B, toInt32(degrees), speed, maxPower, brakingStyle)
-        }
 
-        function gotoAngle(portId, angle, speed, brakingStyle = BrakingStyle.BRAKE) {
-            return writePortCommand(portId, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
-        }
 
         /**
          * 
@@ -624,23 +641,8 @@ $$.service.registerService('hub', {
             return writePortCommand(portId, 0x51, mode, data)
         }
 
-        function setPower(portId, power) {
-            return writeDirect(portId, DeviceMode.POWER, power)
-        }
 
-        function resetZero(portId) {
-            return writeDirect(portId, DeviceMode.ROTATION, 0x00, 0x00, 0x00, 0x00)
-        }
 
-        async function setColor(color) {
-            await subscribe(PortMap.HUB_LED, DeviceMode.COLOR)
-            return writeDirect(PortMap.HUB_LED, DeviceMode.COLOR, color)
-        }
-
-        async function setRGBColor(r, g, b) {
-            await subscribe(PortMap.HUB_LED, DeviceMode.RGB)
-            return writeDirect(PortMap.HUB_LED, DeviceMode.RGB, r, g, b)
-        }
 
         function onCharacteristicValueChanged(event) {
             //log('onCharacteristicvaluechanged', event.target.value)
@@ -666,19 +668,95 @@ $$.service.registerService('hub', {
             hubDevices = {}
             const device = await navigator.bluetooth.requestDevice({
                 acceptAllDevices: true,
-                optionalServices: ['00001623-1212-efde-1623-785feabcd123']
+                optionalServices: [LPF2_SERVICE_UUID]
             })
             device.addEventListener('gattserverdisconnected', onGattServerDisconnected)
             const server = await device.gatt.connect()
             log('Connected')
-            const service = await server.getPrimaryService('00001623-1212-efde-1623-785feabcd123')
-            charac = await service.getCharacteristic('00001624-1212-efde-1623-785feabcd123')
+            const service = await server.getPrimaryService(LPF2_SERVICE_UUID)
+            charac = await service.getCharacteristic(LPF2_CHARAC_UUID)
             charac.addEventListener('characteristicvaluechanged', onCharacteristicValueChanged)
             charac.startNotifications()
 
-            await sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_TYPE, 0x05)
+            //await sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_TYPE, 0x05)
             //await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02))
             await sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BUTTON_STATE, 0x02)
+        }
+
+        function Motor(portId) {
+            function setPower(power) {
+                return writeDirect(portId, DeviceMode.POWER, power)
+            }
+    
+            function setSpeed(speed) {
+                return writePortCommand(portId, 0x07, speed, maxPower, 0)
+            }
+    
+            function rotateDegrees(degrees, speed, brakingStyle = BrakingStyle.BRAKE) {
+                return writePortCommand(portId, 0x0B, toInt32(degrees), speed, maxPower, brakingStyle)
+            }   
+            
+            function gotoAngle(angle, speed, brakingStyle = BrakingStyle.BRAKE) {
+                return writePortCommand(portId, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
+            }
+
+            function setSpeedForTime(speed, time, brakingStyle = BrakingStyle.BRAKE) {
+                return writePortCommand(portId, 0x09, toInt16(time), speed, maxPower, brakingStyle)
+            }    
+            
+            function resetZero() {
+                return writeDirect(portId, DeviceMode.ROTATION, 0x00, 0x00, 0x00, 0x00)
+            }
+
+            function waitSpeed(testFn) {
+                return waitTestValue(portId, DeviceMode.SPEED, testFn)
+            }
+
+    
+                
+            return {
+                setPower,
+                setSpeed,
+                rotateDegrees,
+                gotoAngle,
+                setSpeedForTime,
+                resetZero,
+                waitSpeed
+
+            } 
+        }
+
+        async function DoubleMotor(portId1, portId2, name) {
+
+            await createVirtualPort(portId1, portId2)
+
+            function setSpeed(speed1, speed2) {
+                return writePortCommand(getPortIdFromName(name), 0x08, speed1, speed2, maxPower, 0)
+            }
+    
+            return {
+                setSpeed
+            }
+
+        }
+
+
+        function Led(portId) {
+            async function setColor(color) {
+                await subscribe(portId, DeviceMode.COLOR)
+                return writeDirect(portId, DeviceMode.COLOR, color)
+            }
+    
+            async function setRGBColor(r, g, b) {
+                await subscribe(portId, DeviceMode.RGB)
+                return writeDirect(portId, DeviceMode.RGB, r, g, b)
+            }
+
+            return {
+                setColor,
+                setRGBColor,
+            }
+    
         }
 
         return {
@@ -691,19 +769,9 @@ $$.service.registerService('hub', {
             getPortInformation,
             getPortIdFromName,
             on: event.on.bind(event),
-            motor: {
-                setPower,
-                resetZero,
-                setSpeed,
-                setSpeedEx,
-                setSpeedForTime,
-                rotateDegrees,
-                gotoAngle
-            },
-            led: {
-                setColor,
-                setRGBColor
-            },
+            Motor,
+            DoubleMotor,
+            Led,
             Color,
             PortMap,
             PortMapNames,

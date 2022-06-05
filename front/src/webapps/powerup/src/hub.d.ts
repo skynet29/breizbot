@@ -24,27 +24,36 @@ declare namespace HUB {
     function connect(): Promise<void>;
     function shutdown(): Promise<void>;
     function getDeviceType(portId: PortMap): string;
-    function subscribe(portId: PortMap, mode: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
+    function subscribe(portId: PortMap, mode: DeviceMode, deltaInterval?: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
     function createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<void>;
     function getPortInformation(portId: PortMap): Promise<PortInformation>;
     function getPortIdFromName(portName: string): number;
     function waitTestValue(portId: number, mode: number, testFn: (value: number) => boolean): Promise<void>;
-
-    declare namespace motor {
-        function setPower(portId: PortMap, power: number): Promise<void>;
-        function resetZero(portId: PortMap): Promise<void>;
-        function setSpeed(portId: number, speed: number): Promise<void>;
-        function setSpeedEx(portId: number, speed1: number, speed2: number): Promise<void>;
-        function setSpeedForTime(portId: PortMap, speed: number, time: number, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
-        function rotateDegrees(portId: PortMap, degrees: number, speed: number, brakingStyle = BrakingStyle.BRAKE): Promise<void>; 
-        function gotoAngle(portId: PortMap, angle: number, speed: number, brakingStyle = BrakingStyle.BRAKE): Promise<void>;
+    
+    interface MotorInterface  {
+        setPower(power: number): Promise<void>;
+        resetZero(): Promise<void>;
+        setSpeed(speed: number): Promise<void>;
+        setSpeedForTime(speed: number, time: number, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
+        rotateDegrees(degrees: number, speed: number, brakingStyle = BrakingStyle.BRAKE): Promise<void>; 
+        gotoAngle(angle: number, speed: number, brakingStyle = BrakingStyle.BRAKE): Promise<void>;
+        waitSpeed(testFn: (speed: number) => boolean): Promise<void>;
 
     }
 
-    declare namespace led {
-        function setColor(color: Color): Promise<void>;
-        function setRGBColor(red: number, green: number, blue: number): Promise<void>;
+    interface DoubleMotorInterface {
+        setSpeed(speed1: number, speed2: number): Promise<void>;
     }
+
+    function Motor(portId: PortMap): MotorInterface;
+    function DoubleMotor(portId1: PortMap, portId2: PortMap, name: string):Promise<DoubleMotorInterface>;
+
+    interface LedInterface {
+        setColor(color: Color): Promise<void>;
+        setRGBColor(red: number, green: number, blue: number): Promise<void>;
+    }
+
+    function Led(portId: PortMap): LedInterface;
 
     enum Color {
         BLACK,
@@ -80,7 +89,8 @@ declare namespace HUB {
         POWER,
         SPEED,
         COLOR,
-        RGB
+        RGB,
+        TILT_POS
     }
 
     enum BrakingStyle {

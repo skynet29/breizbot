@@ -23,8 +23,7 @@ $$.control.registerControl('rootPage', {
 		let motor = null
 		let speed = 0
 		const map = $$.util.mapRange(-1, 1, 100, 0)
-		let internalDevices = []
-		let externalDevices = []
+		let devices = {}
 
 
 		const motorA = hub.Motor(hub.PortMap.A)
@@ -147,32 +146,7 @@ $$.control.registerControl('rootPage', {
 
 
 		hub.on('disconnected', () => {
-			ctrl.setData({ connected: false })
-		})
-
-		hub.on('attach', (data) => {
-			//console.log('attach', data)
-			const { portId, deviceTypeName } = data
-			if (portId < 50) {
-				externalDevices.push({
-					portId,
-					portName: hub.PortMapNames[data.portId],
-					deviceTypeName
-				})
-				externalDevices.sort((a, b) => a.portId - b.portId)
-			}
-			else {
-				internalDevices.push({ deviceTypeName, portId })
-			}
-		})
-
-		hub.on('detach', (data) => {
-			//console.log('detach', data)
-
-			const idx = ctrl.model.externalDevices.findIndex((e) => e.portId == data.portId)
-			console.log('idx', idx)
-			ctrl.model.externalDevices.splice(idx, 1)
-			ctrl.update()
+			ctrl.setData({ connected: false, mode: 'UNKNOWN' })
 		})
 
 
@@ -276,8 +250,7 @@ $$.control.registerControl('rootPage', {
 					pager.pushPage('hubinfo', {
 						title: 'Hub Info',
 						props: {
-							internalDevices,
-							externalDevices
+							devices
 						}
 					})
 				},

@@ -2,6 +2,7 @@ declare namespace HUB {
 
     type EventName = 'disconnected' | 'attach' | 'detach' | 'batteryLevel' | 'buttonState' | 'error'
 
+
     interface Range {
         min: number;
         max: Number;
@@ -20,7 +21,8 @@ declare namespace HUB {
         capabilities: number;
     }
 
-    function on(eventName: EventName, cbk: (data: object) => void)
+    function getHubDevices(): {[portId: string]: string};
+    function on(eventName: EventName, cbk: (data: object) => void);
     function connect(): Promise<void>;
     function shutdown(): Promise<void>;
     function getDeviceType(portId: PortMap): string;

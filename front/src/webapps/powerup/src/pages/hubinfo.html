@@ -13,9 +13,9 @@
                 <td bn-text="$scope.$i.portName"></td>
                 <td bn-text="$scope.$i.deviceTypeName"></td>
                 <td>
-                    <button class="w3-button w3-green action" data-action="forward">FWD</button>
-                    <button class="w3-button w3-green action" data-action="backward">BKWD</button>
-                    <button class="w3-button w3-blue portInfo">MODE</button>
+                    <button class="w3-btn w3-green action" data-action="forward">FWD</button>
+                    <button class="w3-btn w3-green action" data-action="backward">BKWD</button>
+                    <button class="w3-btn w3-blue portInfo">MODE</button>
                 </td>
             </tr>
 
@@ -29,11 +29,11 @@
                 <th>Action</th>
             </tr>
         </thead>
-        <tbody bn-each="internalDevices" bn-event="click.w3-button: onInfo">
+        <tbody bn-each="internalDevices" bn-event="click.w3-btn: onInfo">
             <tr>
                 <td bn-text="$scope.$i.deviceTypeName"></td>
                 <td>
-                    <button class="w3-button w3-blue">MODE</button>
+                    <button class="w3-btn w3-blue">MODE</button>
                 </td>
             </tr>
 

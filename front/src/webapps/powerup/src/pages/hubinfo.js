@@ -16,8 +16,29 @@ $$.control.registerControl('hubinfo', {
 	 */
 	init: function (elt, pager, hub) {
 
-		const {internalDevices, externalDevices} = this.props
-		console.log('props', this.props)
+		const devices = hub.getHubDevices()
+		console.log('devices', devices)
+
+		const internalDevices = []
+		const externalDevices = []
+
+		for(const [key, deviceTypeName] of Object.entries(devices)) {
+			const portId = parseInt(key)
+			if (portId < 50) {
+				externalDevices.push({
+					portName: hub.PortMapNames[portId],
+					portId,
+					deviceTypeName
+				})
+			}
+			else {
+				internalDevices.push({
+					portId,
+					deviceTypeName
+				})
+
+			}
+		}
 
 		/**
 		 * 
@@ -42,6 +63,18 @@ $$.control.registerControl('hubinfo', {
 			return ctrl.model.externalDevices[idx].portId
 
 		}		
+
+		hub.on('attach', (data) => {
+			console.log('attach', data)
+			const { portId, deviceTypeName } = data
+			devices[portId] = deviceTypeName
+		})
+
+		hub.on('detach', (data) => {
+			console.log('detach', data)
+
+			delete devices[data.portId]
+		})
 
 		const ctrl = $$.viewController(elt, {			
 			data: {

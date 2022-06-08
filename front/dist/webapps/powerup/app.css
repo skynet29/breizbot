@@ -34,13 +34,6 @@
       display: flex; }
       .rootPage .toolbar .mode > div {
         margin-left: 20px; }
-  .rootPage .scrollBar {
-    flex: 1;
-    overflow-y: auto;
-    margin-top: 10px; }
-    .rootPage .scrollBar h1 {
-      font-size: 16px;
-      font-weight: bold; }
 
 .hubinfo {
   margin: 5px;

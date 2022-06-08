@@ -103,6 +103,7 @@ $$.service.registerService('hub', {
             MARIO_PANTS_SENSOR: 74,
             TECHNIC_MEDIUM_ANGULAR_MOTOR_GREY: 75, // Mindstorms
             TECHNIC_LARGE_ANGULAR_MOTOR_GREY: 76, // Technic Control+
+            VIRTUAL_DEVICE: 100
         }
 
         const DeviceTypeNames = getEnumName(DeviceType)
@@ -395,10 +396,9 @@ $$.service.registerService('hub', {
                 const portId = msg.getUint8(offset)
                 const feedback = msg.getUint8(offset + 1)
                 log({ portId, feedback })
-                if (feedback == 10 || feedback == 44) {
+                if (feedback == 10) {
                     const { cbk } = portCmdQueue[portId].shift()
                     if (typeof cbk == 'function') {
-                        log('call cbk')
                         cbk()
                     }
                     const cmd = portCmdQueue[portId][0] // verifie si il y a d'autre cmd a envoyer
@@ -435,6 +435,7 @@ $$.service.registerService('hub', {
                 const portIdA = PortMapNames[msg.getUint8(7)]
                 const portIdB = PortMapNames[msg.getUint8(8)]
                 PortMapNames[portId] = `${portIdA}_${portIdB}`
+                hubDevices[portId] = 100
 
                 log({ portIdA, portIdB })
                 event.emit('attach', { portId, deviceTypeName: 'Virtual Port' })
@@ -676,7 +677,7 @@ $$.service.registerService('hub', {
             const service = await server.getPrimaryService(LPF2_SERVICE_UUID)
             charac = await service.getCharacteristic(LPF2_CHARAC_UUID)
             charac.addEventListener('characteristicvaluechanged', onCharacteristicValueChanged)
-            charac.startNotifications()
+            await charac.startNotifications()
 
             //await sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_TYPE, 0x05)
             //await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02))
@@ -728,7 +729,13 @@ $$.service.registerService('hub', {
 
         async function DoubleMotor(portId1, portId2) {
 
-            await createVirtualPort(portId1, portId2)
+            try {
+                await createVirtualPort(portId1, portId2)
+            }
+            catch(e) {
+                console.log('Error', e)
+                return null
+            }
 
             const name = `${PortMapNames[portId1]}_${PortMapNames[portId2]}`
 
@@ -762,8 +769,17 @@ $$.service.registerService('hub', {
     
         }
 
+        function getHubDevices() {
+            const ret = {}
+            for(const [key, deviceType] of Object.entries(hubDevices)) {
+                ret[key] = DeviceTypeNames[deviceType]
+            }                
+            return ret                
+        }
+
         return {
             connect,
+            getHubDevices,
             shutdown,
             getDeviceType,
             subscribe,

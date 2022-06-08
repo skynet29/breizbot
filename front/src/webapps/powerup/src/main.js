@@ -23,6 +23,9 @@ $$.control.registerControl('rootPage', {
 		let motor = null
 		let speed = 0
 		const map = $$.util.mapRange(-1, 1, 100, 0)
+		let internalDevices = []
+		let externalDevices = []
+
 
 		const motorA = hub.Motor(hub.PortMap.A)
 		const motorB = hub.Motor(hub.PortMap.B)
@@ -55,8 +58,8 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		gamepad.on('buttonDown', async (data) => {
-			console.log('buttonDown', data)
+		async function buttonDown(data) {
+			//console.log('buttonDown', data)
 			const { id } = data
 			if (id == 0) {
 				await onChangeMode()
@@ -117,11 +120,12 @@ $$.control.registerControl('rootPage', {
 				}
 
 			}
+		}
 
-		})
+		gamepad.on('buttonDown', buttonDown)
 
-		gamepad.on('buttonUp', async (data) => {
-			console.log('buttonUp', data)
+		async function buttonUp(data) {
+			//console.log('buttonUp', data)
 			const {id} = data
 			if (id == 5 || id == 6) {
 				await motorB.setPower(0)
@@ -136,7 +140,10 @@ $$.control.registerControl('rootPage', {
 				speed = 0
 				await motor.setPower(0)
 			}
-		})
+
+		}
+
+		gamepad.on('buttonUp', buttonUp)
 
 
 		hub.on('disconnected', () => {
@@ -147,17 +154,16 @@ $$.control.registerControl('rootPage', {
 			//console.log('attach', data)
 			const { portId, deviceTypeName } = data
 			if (portId < 50) {
-				ctrl.model.externalDevices.push({
+				externalDevices.push({
 					portId,
 					portName: hub.PortMapNames[data.portId],
 					deviceTypeName
 				})
-				ctrl.model.externalDevices.sort((a, b) => a.portId - b.portId)
+				externalDevices.sort((a, b) => a.portId - b.portId)
 			}
 			else {
-				ctrl.model.internalDevices.push({ deviceTypeName, portId })
+				internalDevices.push({ deviceTypeName, portId })
 			}
-			ctrl.update()
 		})
 
 		hub.on('detach', (data) => {
@@ -179,31 +185,6 @@ $$.control.registerControl('rootPage', {
 			const { batteryLevel } = data
 			ctrl.setData({ batteryLevel })
 		})
-
-
-		/**
-		 * 
-		 * @param {JQuery<HTMLElement>} elt 
-		 */
-		function getExternalPortId(elt) {
-			const idx = elt.closest('tr').index()
-			return ctrl.model.externalDevices[idx].portId
-
-		}
-
-		/**
-		 * 
-		 * @param {number} portId 
-		 * @param {string} deviceTypeName
-		 */
-		function openInfoPage(portId, deviceTypeName) {
-			pager.pushPage('info', {
-				title: deviceTypeName,
-				props: {
-					portId
-				}
-			})
-		}
 
 		async function onChangeMode() {
 			const { mode } = ctrl.model
@@ -228,41 +209,36 @@ $$.control.registerControl('rootPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				connected: false,
-				internalDevices: [],
-				externalDevices: [],
 				batteryLevel: 0,
 				mode: 'UNKNOWN',
 				maxSpeed: 100,
 				fmtMaxSpeed: function() {
 					return this.maxSpeed.toLocaleString().padStart(4)
+				},
+				isInit: function() {
+					return this.connected && ['RUNNING', 'MANIPULATOR'].includes(this.mode)
 				}
 			},
 			events: {
-				onMouseUp: function () {
-					//console.log('onMouseUp')
-					const action = $(this).data('action')
-					const portId = getExternalPortId($(this))
-					switch (action) {
-						case 'forward':
-							hub.Motor(portId).setPower(100)
-							break
-						case 'backward':
-							hub.Motor(portId).setPower(-100)
-							break
-					}
+				onButtonDown: function() {
+					const cmd = $(this).data('cmd')
+					//console.log('onButtonDown', cmd)
+					buttonDown({id: cmd})
 				},
-				onMouseDown: function () {
-					//console.log('onMouseDown')
-					const portId = getExternalPortId($(this))
-					hub.Motor(portId).setPower(0)
+				onButtonUp: function() {
+					const cmd = $(this).data('cmd')
+					//console.log('onButtonUp', cmd)
+					buttonUp({id: cmd})
+
 				},
+
 				onConnect: async function () {
 					await hub.connect()
 					ctrl.setData({ connected: true })
 					motorCD = await hub.DoubleMotor(hub.PortMap.C, hub.PortMap.D)
-					await hub.subscribe(hub.PortMap.TILT_SENSOR, hub.DeviceMode.TILT_POS, 2, (data) => {
-						console.log('TILT POS', data.value)
-					})
+					// await hub.subscribe(hub.PortMap.TILT_SENSOR, hub.DeviceMode.TILT_POS, 2, (data) => {
+					// 	console.log('TILT POS', data.value)
+					// })
 				},
 				onCalibrate: async function () {
 					console.log('onCalibrate')
@@ -295,22 +271,18 @@ $$.control.registerControl('rootPage', {
 
 				},
 				onChangeMode,
-				onSendMsg: async function () {
-					console.log('onSendMsg')
+				onHubInfo: async function () {
+					console.log('onHubInfo')
+					pager.pushPage('hubinfo', {
+						title: 'Hub Info',
+						props: {
+							internalDevices,
+							externalDevices
+						}
+					})
 				},
 				onShutdown: async function () {
 					await hub.shutdown()
-				},
-				onInfo: function () {
-					const idx = $(this).closest('tr').index()
-					const { portId, deviceTypeName } = ctrl.model.internalDevices[idx]
-					openInfoPage(portId, deviceTypeName)
-
-				},
-				onInfo2: function () {
-					const idx = $(this).closest('tr').index()
-					const { portId, deviceTypeName } = ctrl.model.externalDevices[idx]
-					openInfoPage(portId, deviceTypeName)
 				}
 			}
 		})

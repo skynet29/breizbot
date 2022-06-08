@@ -2,6 +2,24 @@
   margin: 5px;
   display: flex;
   flex-direction: column; }
+  .rootPage .controlBar {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 40px; }
+    .rootPage .controlBar .controlBarItem1 {
+      width: 150px; }
+      .rootPage .controlBar .controlBarItem1 .top, .rootPage .controlBar .controlBarItem1 .bottom {
+        display: flex;
+        justify-content: center; }
+      .rootPage .controlBar .controlBarItem1 .middle {
+        display: flex;
+        justify-content: space-between; }
+    .rootPage .controlBar .controlBarItem2 {
+      margin-left: 60px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between; }
   .rootPage .toolbar {
     display: flex;
     justify-content: space-between;
@@ -12,11 +30,27 @@
       align-items: center; }
       .rootPage .toolbar .left button {
         margin-right: 10px; }
+    .rootPage .toolbar .mode {
+      display: flex; }
+      .rootPage .toolbar .mode > div {
+        margin-left: 20px; }
   .rootPage .scrollBar {
     flex: 1;
     overflow-y: auto;
     margin-top: 10px; }
     .rootPage .scrollBar h1 {
+      font-size: 16px;
+      font-weight: bold; }
+
+.hubinfo {
+  margin: 5px;
+  display: flex;
+  flex-direction: column; }
+  .hubinfo .scrollBar {
+    flex: 1;
+    overflow-y: auto;
+    margin-top: 10px; }
+    .hubinfo .scrollBar h1 {
       font-size: 16px;
       font-weight: bold; }
 

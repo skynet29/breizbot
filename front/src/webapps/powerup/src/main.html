@@ -17,63 +17,46 @@
 
         <button class="w3-blue w3-button" 
             bn-event="click: onChangeMode"
-            bn-show="connected"
+            bn-show="isInit"
         >Change Mode</button>
         
         <button class="w3-blue w3-button" 
-            bn-event="click: onSendMsg"
+            bn-event="click: onHubInfo"
             bn-show="connected"
-        >Send Msg</button>
+        >Info</button>
 
-        <div bn-show="connected">
-            Max Speed:<span bn-text="fmtMaxSpeed"></span>
-        </div>
     </div>
-    <div bn-show="connected">
-        Mode:
-        <span bn-text="mode"></span>
+    <div bn-show="connected" class="mode">
+        <div>Max Speed:<span bn-text="fmtMaxSpeed"></span></div>
+        <div>Mode: <span bn-text="mode"></span></div>
     </div>
 </div>
 
+<div class="controlBar" bn-event="mousedown.w3-button: onButtonDown, mouseup.w3-button: onButtonUp"
+    bn-show="isInit">
+    <div class="controlBarItem1">
+        <div class="top">
+            <button class="w3-blue w3-button" bn-icon="fas fa-angle-up" data-cmd="2"></button>
+        </div>
+        <div class="middle">
+            <button class="w3-blue w3-button" bn-icon="fas fa-angle-left" data-cmd="3"></button>
+            <button class="w3-blue w3-button" bn-icon="fas fa-angle-right" data-cmd="4"></button>
+        </div>
+        <div class="bottom">
+            <button class="w3-blue w3-button" bn-icon="fas fa-angle-down" data-cmd="1"></button>
+        </div>
+    
+    </div>
+    <div class="controlBarItem2">
+        <div class="top">
+            <button class="w3-blue w3-button" bn-icon="fas fa-angle-up" data-cmd="5"></button>
+        </div>
+        <div class="bottom">
+            <button class="w3-blue w3-button" bn-icon="fas fa-angle-down" data-cmd="6"></button>
+        </div>
+    
+    </div>
+    
+</div>
 
-<div bn-show="connected" class="scrollBar">
-    <h1>External Devices</h1>
-    <table class="w3-table-all">
-        <thead>
-            <tr>
-                <th>Port</th>
-                <th>Device Type</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody bn-each="externalDevices" bn-event="mousedown.action: onMouseUp, mouseup.action:onMouseDown, click.portInfo: onInfo2">
-            <tr>
-                <td bn-text="$scope.$i.portName"></td>
-                <td bn-text="$scope.$i.deviceTypeName"></td>
-                <td>
-                    <button class="w3-button w3-green action" data-action="forward">FWD</button>
-                    <button class="w3-button w3-green action" data-action="backward">BKWD</button>
-                    <button class="w3-button w3-blue portInfo">INFO</button>
-                </td>
-            </tr>
 
-        </tbody>
-    </table>
-    <h1>Internal Devices</h1>
-    <table class="w3-table-all">
-        <thead>
-            <tr>
-                <th>Device Type</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody bn-each="internalDevices" bn-event="click.w3-button: onInfo">
-            <tr>
-                <td bn-text="$scope.$i.deviceTypeName"></td>
-                <td>
-                    <button class="w3-button w3-blue">INFO</button>
-                </td>
-            </tr>
-
-        </tbody>
-    </table></div>

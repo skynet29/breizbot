@@ -1,0 +1,41 @@
+<div class="scrollBar">
+    <h1>External Devices</h1>
+    <table class="w3-table-all">
+        <thead>
+            <tr>
+                <th>Port</th>
+                <th>Device Type</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody bn-each="externalDevices" bn-event="mousedown.action: onMouseUp, mouseup.action:onMouseDown, click.portInfo: onInfo2">
+            <tr>
+                <td bn-text="$scope.$i.portName"></td>
+                <td bn-text="$scope.$i.deviceTypeName"></td>
+                <td>
+                    <button class="w3-button w3-green action" data-action="forward">FWD</button>
+                    <button class="w3-button w3-green action" data-action="backward">BKWD</button>
+                    <button class="w3-button w3-blue portInfo">MODE</button>
+                </td>
+            </tr>
+
+        </tbody>
+    </table>
+    <h1>Internal Devices</h1>
+    <table class="w3-table-all">
+        <thead>
+            <tr>
+                <th>Device Type</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody bn-each="internalDevices" bn-event="click.w3-button: onInfo">
+            <tr>
+                <td bn-text="$scope.$i.deviceTypeName"></td>
+                <td>
+                    <button class="w3-button w3-blue">MODE</button>
+                </td>
+            </tr>
+
+        </tbody>
+    </table></div>

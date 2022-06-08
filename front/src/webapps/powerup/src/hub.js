@@ -726,9 +726,12 @@ $$.service.registerService('hub', {
             } 
         }
 
-        async function DoubleMotor(portId1, portId2, name) {
+        async function DoubleMotor(portId1, portId2) {
 
             await createVirtualPort(portId1, portId2)
+
+            const name = `${PortMapNames[portId1]}_${PortMapNames[portId2]}`
+
 
             function setSpeed(speed1, speed2) {
                 return writePortCommand(getPortIdFromName(name), 0x08, speed1, speed2, maxPower, 0)

@@ -28,6 +28,7 @@ $$.control.registerControl('rootPage', {
 		const motorB = hub.Motor(hub.PortMap.B)
 		const motorC = hub.Motor(hub.PortMap.C)
 		const motorD = hub.Motor(hub.PortMap.D)
+		/**@type {HUB.DoubleMotorInterface} */
 		let motorCD = null
 		const led = hub.Led(hub.PortMap.HUB_LED)
 
@@ -258,7 +259,7 @@ $$.control.registerControl('rootPage', {
 				onConnect: async function () {
 					await hub.connect()
 					ctrl.setData({ connected: true })
-					motorCD = await hub.DoubleMotor(hub.PortMap.C, hub.PortMap.D, 'C_D')
+					motorCD = await hub.DoubleMotor(hub.PortMap.C, hub.PortMap.D)
 					await hub.subscribe(hub.PortMap.TILT_SENSOR, hub.DeviceMode.TILT_POS, 2, (data) => {
 						console.log('TILT POS', data.value)
 					})

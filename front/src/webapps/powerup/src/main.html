@@ -25,6 +25,12 @@
             bn-show="connected"
         >Info</button>
 
+        <button class="w3-blue w3-btn" 
+            bn-event="click: onGamePad"
+            bn-show="showGamepadButton"
+            bn-icon="fas fa-gamepad"
+        ></button>
+
     </div>
     <div bn-show="connected" class="mode">
         <div>Max Speed:<span bn-text="fmtMaxSpeed"></span></div>

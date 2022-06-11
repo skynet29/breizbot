@@ -35,6 +35,9 @@
       .rootPage .toolbar .mode > div {
         margin-left: 20px; }
 
+.gamepad {
+  padding: 10px; }
+
 .hubinfo {
   margin: 5px;
   display: flex;

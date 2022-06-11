@@ -5,7 +5,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'hub', 'breizbot.gamepad'],
+	deps: ['breizbot.pager', 'hub', 'breizbot.gamepad', 'breizbot.appData'],
 
 	props: {
 	},
@@ -15,8 +15,9 @@ $$.control.registerControl('rootPage', {
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {HUB} hub
 	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
+	 * @param {Breizbot.Services.AppData.Interface} appDataSrv
 	 */
-	init: async function (elt, pager, hub, gamepad) {
+	init: async function (elt, pager, hub, gamepad, appDataSrv) {
 
 		let speed1 = 0
 		let speed2 = 0
@@ -24,6 +25,8 @@ $$.control.registerControl('rootPage', {
 		let speed = 0
 		const map = $$.util.mapRange(-1, 1, 100, 0)
 		let devices = {}
+		const appData = appDataSrv.getData()
+		console.log('appData', appData)
 
 
 		const motorA = hub.Motor(hub.PortMap.A)
@@ -34,115 +37,132 @@ $$.control.registerControl('rootPage', {
 		let motorCD = null
 		const led = hub.Led(hub.PortMap.HUB_LED)
 
+		const actions = [
+			{
+				name: 'Change Mode',
+				fn: onChangeMode
+			},
+			{
+				name: 'Move Forward',
+				mode: 'RUNNING',
+				value: [-100, -100],
+				key: 2
+			},
+			{
+				name: 'Move Backward',
+				mode: 'RUNNING',
+				value: [100, 100],
+				key: 1
+			},
+			{
+				name: 'Move Left',
+				mode: 'RUNNING',
+				value: [-100, 100],
+				key: 3
+			},
+			{
+				name: 'Move Right',
+				mode: 'RUNNING',
+				value: [100, -100],
+				key: 4
+			},
 
-		function run() {
-			const {maxSpeed} = ctrl.model
-			return motorCD.setSpeed(-speed1 * maxSpeed, -speed2 * maxSpeed)
+			{
+				name: 'Arm Up',
+				mode: 'MANIPULATOR',
+				motor: motorC,
+				value: -100,
+				key: 1
+			},
+			{
+				name: 'Arm Down',
+				mode: 'MANIPULATOR',
+				motor: motorC,
+				value: 100,
+				key: 2
+			},
+			{
+				name: 'Elbow Up',
+				mode: 'MANIPULATOR',
+				motor: motorD,
+				value: 100,
+				key: 3
+			},
+			{
+				name: 'Elbow Down',
+				mode: 'MANIPULATOR',
+				motor: motorD,
+				value: -100,
+				key: 4
+			},
+
+			{
+				name: 'Hand Open',
+				motor: motorB,
+				value: -100,
+				key: 5
+			},
+			{
+				name: 'Hand Close',
+				motor: motorB,
+				value: 100,
+				key: 6
+			},
+		]
+
+
+		async function buttonDown(action) {
+			//console.log('buttonDown', action)
+			if (action != null) {
+				console.log(action)
+				const { motor, value, fn } = action
+				if (typeof fn == 'function') {
+					fn()
+				}
+				else {
+					if (Array.isArray(value)) {
+						const [speed1, speed2] = value
+						await motorCD.setSpeed(speed1, speed2)
+					}
+					else {
+						await motor.setSpeed(value)
+					}
+				}
+			}
 		}
 
-		function setMaxSpeed(value) {
-			ctrl.setData({maxSpeed: Math.ceil(map(value))})
-			//console.log({maxSpeed})
-			if (speed1 != 0 || speed2 != 0) {
-				run()
+		async function buttonUp(action) {
+			//console.log('buttonUp', action)
+			if (action != null) {
+				const { value, motor } = action
+				if (Array.isArray(value)) {
+					await motorCD.setSpeed(0, 0)
+				} else if (motor != undefined) {
+					await motor.setSpeed(0)
+				}
 			}
-
 		}
 
-		gamepad.on('axe', (data) => {
-			//console.log('axe', data)
-			const {id, value} = data
-			if (id == 2) {
-				setMaxSpeed(value)
-			}
+		function getAction(cmdId) {
+			const { mode } = ctrl.model
+			const action = actions.find((e) => (e.mode == undefined || e.mode == mode) && e.key == cmdId)
+			return (action) ? action : null
+		}
+
+		function getGamepadAction(buttonId) {
+			const { mode } = ctrl.model
+			const action = actions.find((e) => (e.mode == undefined || e.mode == mode) && e.button == buttonId)
+			return (action) ? action : null
+		}
+
+		gamepad.on('buttonDown', (data) => {
+			buttonDown(getGamepadAction(data.id))
 		})
 
-		async function buttonDown(data) {
-			//console.log('buttonDown', data)
-			const { id } = data
-			if (id == 0) {
-				await onChangeMode()
-			}
-			else if (id == 5) {
-				await motorB.setSpeed(100)
-			}
-			else if (id == 6) {
-				await motorB.setSpeed(-100)
-			}
-			else if (ctrl.model.mode == 'RUNNING') {
-				switch (id) {
-					case 2:
-						speed1 = 1
-						speed2 = 1
+		gamepad.on('buttonUp', (data) => {
+			buttonUp(getGamepadAction(data.id))
 
-						break
-					case 1:
-						speed1 = -1
-						speed2 = -1
-						break
-					case 3:
-						speed1 = 1
-						speed2 = -1
-						break
-					case 4:
-						speed1 = -1
-						speed2 = 1
-						break
-				}
-				if (speed1 != 0 && speed2 != 0) {
-					await run()
-				}
-			}
-
-			else if (ctrl.model.mode == 'MANIPULATOR') {
-				switch (id) {
-					case 2:
-						motor = motorC
-						speed = -100
-						break
-					case 1:
-						motor = motorC
-						speed = 100
-						break
-					case 3:
-						motor = motorD
-						speed = -100
-						break
-					case 4:
-						motor = motorD
-						speed = 100
-						break
-
-				}
-				if (speed != 0) {
-					await motor.setSpeed(speed)
-				}
-
-			}
-		}
-
-		gamepad.on('buttonDown', buttonDown)
-
-		async function buttonUp(data) {
-			//console.log('buttonUp', data)
-			const {id} = data
-			if (id == 5 || id == 6) {
-				await motorB.setPower(0)
-			}
-
-			else if (speed1 != 0 || speed2 != 0) {
-				speed1 = 0
-				speed2 = 0
-				await motorCD.setSpeed(0, 0)
-			}
-			else if ([1, 2, 3, 4].includes(id) && speed != 0) {
-				speed = 0
-				await motor.setPower(0)
-			}
-
-		}
-
-		gamepad.on('buttonUp', buttonUp)
+		})
 
 
 		hub.on('disconnected', () => {
@@ -186,23 +206,41 @@ $$.control.registerControl('rootPage', {
 				batteryLevel: 0,
 				mode: 'UNKNOWN',
 				maxSpeed: 100,
-				fmtMaxSpeed: function() {
+				gamepadConnected: false,
+				fmtMaxSpeed: function () {
 					return this.maxSpeed.toLocaleString().padStart(4)
 				},
-				isInit: function() {
+				isInit: function () {
 					return this.connected && ['RUNNING', 'MANIPULATOR'].includes(this.mode)
+				},
+				showGamepadButton: function() {
+					return this.connected && this.gamepadConnected
 				}
 			},
 			events: {
-				onButtonDown: function() {
-					const cmd = $(this).data('cmd')
-					//console.log('onButtonDown', cmd)
-					buttonDown({id: cmd})
+				onGamePad: function () {
+					pager.pushPage('gamepad', {
+						title: 'Gamepad',
+						props: {
+							actions
+						},
+						onReturn: async (gamepadMapping) => {
+							console.log('onReturn', gamepadMapping)
+							const gamepadId = gamepad.getGamepads()[0].id
+							appData[gamepadId] = gamepadMapping
+							await appDataSrv.saveData(appData)
+						}
+					})
 				},
-				onButtonUp: function() {
-					const cmd = $(this).data('cmd')
-					//console.log('onButtonUp', cmd)
-					buttonUp({id: cmd})
+				onButtonDown: function () {
+					const cmdId = $(this).data('cmd')
+					//console.log('onButtonDown', cmdId)
+					buttonDown(getAction(cmdId))
+				},
+				onButtonUp: function () {
+					const cmdId = $(this).data('cmd')
+					//console.log('onButtonUp', cmdId)
+					buttonUp(getAction(cmdId))
 
 				},
 
@@ -224,6 +262,8 @@ $$.control.registerControl('rootPage', {
 					await motorA.setSpeed(-20)
 					await $$.util.wait(200)
 					await motorA.setSpeed(20)
+
+					console.log('step 11')
 
 					await motorA.waitSpeed((speed) => {
 						//console.log({speed})
@@ -260,16 +300,25 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
+
 		gamepad.on('connected', (ev) => {
 			console.log('gamepad connnected', ev)
-			gamepad.checkGamePadStatus()
-			if (ev.axes[2] != undefined) {
-				setMaxSpeed(ev.axes[2])
-
+			const gamepadMapping = appData[ev.id]
+			if (gamepadMapping) {
+				for(const {actionId, button} of gamepadMapping) {
+					actions[actionId].button = button
+				}
 			}
+			ctrl.setData({ gamepadConnected: true })
+			gamepad.checkGamePadStatus()
 
 		})
 
+		gamepad.on('disconnected', (ev) => {
+			console.log('gamepad disconnected')
+			ctrl.setData({ gamepadConnected: false })
+
+		})
 
 	}
 

@@ -23,6 +23,8 @@ $$.service.registerService('breizbot.gamepad', {
 
         window.addEventListener('gamepaddisconnected', (ev) => {
             //console.log('gamepaddisconnected', ev)
+            buttons = []
+            axes = []
 
             event.emit('disconnected', ev.gamepad)
         })

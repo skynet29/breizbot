@@ -19,11 +19,6 @@ $$.control.registerControl('rootPage', {
 	 */
 	init: async function (elt, pager, hub, gamepad, appDataSrv) {
 
-		let speed1 = 0
-		let speed2 = 0
-		let motor = null
-		let speed = 0
-		const map = $$.util.mapRange(-1, 1, 100, 0)
 		let devices = {}
 		const appData = appDataSrv.getData()
 		console.log('appData', appData)
@@ -33,8 +28,7 @@ $$.control.registerControl('rootPage', {
 		const motorB = hub.Motor(hub.PortMap.B)
 		const motorC = hub.Motor(hub.PortMap.C)
 		const motorD = hub.Motor(hub.PortMap.D)
-		/**@type {HUB.DoubleMotorInterface} */
-		let motorCD = null
+		const motorCD = hub.DoubleMotor(hub.PortMap.C, hub.PortMap.D)
 		const led = hub.Led(hub.PortMap.HUB_LED)
 
 		const actions = [
@@ -183,8 +177,6 @@ $$.control.registerControl('rootPage', {
 		async function onChangeMode() {
 			const { mode } = ctrl.model
 			await motorCD.setSpeed(0, 0)
-			speed1 = 0
-			speed2 = 0
 
 			if (mode == 'RUNNING') {
 				await led.setColor(hub.Color.YELLOW)
@@ -247,7 +239,7 @@ $$.control.registerControl('rootPage', {
 				onConnect: async function () {
 					await hub.connect()
 					ctrl.setData({ connected: true })
-					motorCD = await hub.DoubleMotor(hub.PortMap.C, hub.PortMap.D)
+					await motorCD.create()
 					// await hub.subscribe(hub.PortMap.TILT_SENSOR, hub.DeviceMode.TILT_POS, 2, (data) => {
 					// 	console.log('TILT POS', data.value)
 					// })

@@ -44,11 +44,12 @@ declare namespace HUB {
     }
 
     interface DoubleMotorInterface {
+        create(): Promise<void>;
         setSpeed(speed1: number, speed2: number): Promise<void>;
     }
 
     function Motor(portId: PortMap): MotorInterface;
-    function DoubleMotor(portId1: PortMap, portId2: PortMap):Promise<DoubleMotorInterface>;
+    function DoubleMotor(portId1: PortMap, portId2: PortMap):DoubleMotorInterface;
 
     interface LedInterface {
         setColor(color: Color): Promise<void>;

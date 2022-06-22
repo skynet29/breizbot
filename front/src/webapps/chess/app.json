@@ -1,5 +1,5 @@
 {	
-	"iconCls": "fa fa-chess fa-2x",
+	"iconUrl": "chess.webp",
 	"colorCls": "w3-amber",
 	"title": "Chess",
 	"styles": ["app.css"],

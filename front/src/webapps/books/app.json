@@ -1,6 +1,6 @@
 {	
-	"iconCls": "fa fa-book fa-2x",
-	"colorCls": "w3-green",
+	"iconUrl": "books.webp",
+	"colorCls": "w3-white",
 	"title": "Books",
 	"styles": ["app.css"]
 }

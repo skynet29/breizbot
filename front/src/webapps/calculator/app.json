@@ -1,5 +1,5 @@
 {	
-	"iconCls": "fa fa-calculator fa-2x",
+	"iconUrl": "calculator.webp",
 	"colorCls": "w3-purple",
 	"title": "Calculator",
 	"styles": ["app.css"],

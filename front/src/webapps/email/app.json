@@ -1,5 +1,5 @@
 {	
-	"iconCls": "fa fa-envelope fa-2x",
+	"iconUrl": "email.webp",
 	"colorCls": "w3-teal",
 	"title": "Email",
 	"styles": ["app.css"],

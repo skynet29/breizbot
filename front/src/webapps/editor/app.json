@@ -1,5 +1,5 @@
 {	
-	"title": "Editor",
+	"title": "Text Editor",
 	"iconUrl": "editor.webp",
 	"colorCls": "w3-yellow"	,
 	"styles": ["app.css"],

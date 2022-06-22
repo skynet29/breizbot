@@ -1,6 +1,6 @@
 {	
-	"iconCls": "fa fa-map fa-2x",
-	"colorCls": "w3-red",
+	"iconUrl": "map.webp",
+	"colorCls": "w3-white",
 	"title": "Map",
 	"brainjs": ["map"],
 	"styles": ["app.css"]

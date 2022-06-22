@@ -1,6 +1,6 @@
 {	
-	"iconCls": "fab fa-youtube fa-2x",
-	"colorCls": "w3-red",
+	"iconUrl": "youtube.webp",
+	"colorCls": "w3-white",
 	"title": "YouTube",
 	"styles": ["app.css"],
 	"description": "YouTube search engine (use Qwant video api);Download video directly in your cloud"

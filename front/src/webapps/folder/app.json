@@ -1,7 +1,7 @@
 {	
 	"iconUrl": "folder.webp",
 	"colorCls": "w3-yellow",
-	"title": "Files",
+	"title": "Files Manager",
 	"brainjs": ["map", "pdf"],
 	"styles": ["app.css"],
 	"description": "Cloud file browser with File viewer which supports most format (image, audio, video, PDF);;NOTE: Microsoft Office application format are not supported"

@@ -75,7 +75,7 @@ function create(account) {
 
             f.on('message', function (msg, seqno) {
                 //console.log('message #', seqno)
-                let buffer = new Buffer(0)
+                let buffer = Buffer.alloc(0)
 
                 msg.on('body', function (stream, info) {
                     //console.log('body', info)

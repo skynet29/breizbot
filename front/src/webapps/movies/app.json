@@ -1,6 +1,6 @@
 {	
-	"iconCls": "fa fa-film fa-2x",
-	"colorCls": "w3-yellow",
+	"iconUrl": "movies.webp",
+	"colorCls": "w3-white",
 	"title": "Movies",
 	"styles": ["app.css"]
 }

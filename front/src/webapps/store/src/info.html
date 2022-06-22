@@ -1,9 +1,13 @@
 <div class="titleBar">
     <h3 bn-text="title"></h3>
 
-    <span bn-attr="{class: getColorClass}">
+    <span bn-attr="{class: getColorClass}" bn-show="iconCls">
         <i bn-attr="{class: iconCls}"></i>
     </span>
+
+    <div bn-show="iconUrl" class="title">
+        <img bn-attr="{src: getIconUrl}" class="w3-round-large">
+    </div>
 </div>
 <h3>Description</h3>
 <p class="w3-padding" bn-html="description"></p>

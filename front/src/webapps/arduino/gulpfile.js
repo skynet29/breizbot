@@ -19,12 +19,21 @@ const appCss = task('app.css',
 	{concat: 'app.css', isSass:true}
 )
 
-const app = gulp.series(appJs, appCss)
+const assets = task('assets',
+	[
+		'./assets/*',
+	],
+	{dest: 'assets'}
+)
+
+
+const app = gulp.series(appJs, appCss, assets)
 exports.default = app
 
 
 exports.watch = gulp.series(app, function() {
 	gulp.watch(['./src/**/*.js', './src/**/*.html'], appJs)
 	gulp.watch(['./src/**/*.scss'], appCss)
+	gulp.watch(['./assets/*'], assets)
 
 })

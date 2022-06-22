@@ -3,6 +3,9 @@
   .infoPage .titleBar {
     display: flex;
     justify-content: space-between; }
+    .infoPage .titleBar img {
+      width: 60px;
+      height: 60px; }
     .infoPage .titleBar .tile {
       display: flex;
       justify-content: center;

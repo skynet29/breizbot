@@ -9,8 +9,10 @@
 			<div bn-show="show2" style="margin-bottom: 5px;">
 				<i bn-attr="{class: $scope.app.props.iconCls}"></i>
 			</div>
-
-			<span bn-text="$scope.app.props.title"></span>
+			<div bn-if="show3">
+				<img bn-attr="{src: getIconUrl}">
+			</div>
+			<span bn-text="$scope.app.props.title" bn-show="!show3"></span>
 		</div>
 
 	</div>

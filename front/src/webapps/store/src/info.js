@@ -9,9 +9,10 @@ $$.control.registerControl('infoPage', {
 
     init: function(elt) {
 
-        let {info} = this.props
+        const {info} = this.props
 
-        let {description, title, iconCls, colorCls} = info.props
+        const {appName, props} = info
+        let {description, title, iconCls, colorCls, iconUrl} = props
 
         description = description || "No description"
         description = description.split(';').join('<br>')
@@ -25,8 +26,12 @@ $$.control.registerControl('infoPage', {
                 description,
                 title,
                 iconCls,
+                iconUrl,
                 getColorClass: function() {
                     return `tile w3-round-large ${colorCls}`
+                },
+                getIconUrl: function() {
+                    return `/webapps/${appName}/assets/${iconUrl}`
                 }
             }
         })

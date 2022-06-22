@@ -8,49 +8,69 @@ $$.control.registerControl('breizbot.apps', {
 
 	$iface: 'setData(data)',
 
-	template: {gulp_inject: './apps.html'},
+	template: { gulp_inject: './apps.html' },
 
-	init: function(elt) {
+	init: function (elt) {
 
-		const {apps, showActivated, items} = this.props
+		const { apps, showActivated, items } = this.props
+		console.log('apps', apps)
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				getItems: function(scope) {
+				getItems: function (scope) {
 					//console.log('getItems', scope.app)
 					return (typeof items == 'function') ? items(scope.app) : items
 				},
 				apps,
 				showActivated,
-				show1: function(scope) {
+				show1: function (scope) {
 					return this.showActivated && scope.app.activated
 				},
-				class1: function(scope) {
-					return {class: `tile w3-btn ${scope.app.props.colorCls}`}
+				class1: function (scope) {
+					const {title, colorCls} = scope.app.props
+					const ret = {
+						title,
+						class: 'tile w3-btn'
+
+					}
+					if (colorCls.startsWith('#')) {
+						ret.style = `background-color: ${colorCls}`
+					}
+					else {
+						ret.class += ' ' + colorCls
+					}
+					return ret
 				},
-				show2: function(scope) {
+				show2: function (scope) {
 					return typeof scope.app.props.iconCls == 'string'
+				},
+				show3: function (scope) {
+					return typeof scope.app.props.iconUrl == 'string'
+				},
+				getIconUrl(scope) {
+					const { appName, props } = scope.app
+					return `/webapps/${appName}/assets/${props.iconUrl}`
 				}
 			},
 			events: {
-				onTileClick: function(ev) {
+				onTileClick: function (ev) {
 					//console.log('onTileClick', $(this).data('item'))
 					const idx = $(this).index()
 					elt.trigger('appclick', ctrl.model.apps[idx])
 				},
-				onTileContextMenu: function(ev, data) {
+				onTileContextMenu: function (ev, data) {
 					const idx = $(this).index()
 					//console.log('onTileContextMenu', data)
-					const {cmd} = data
-					const info = $.extend({cmd}, ctrl.model.apps[idx])
+					const { cmd } = data
+					const info = $.extend({ cmd }, ctrl.model.apps[idx])
 					elt.trigger('appcontextmenu', info)
 				}
 			}
 		})
 
 
-		this.setData = function(data) {
-			//console.log('data', data)
+		this.setData = function (data) {
+			console.log('data', data)
 			ctrl.setData({
 				apps: data.apps.filter((a) => a.props.visible != false && a.appName != 'template')
 			})

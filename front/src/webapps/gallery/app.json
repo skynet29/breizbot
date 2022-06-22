@@ -1,5 +1,5 @@
 {	
-	"iconCls": "fa fa-image fa-2x",
+	"iconUrl": "gallery.webp",
 	"colorCls": "w3-pink",
 	"title": "Gallery",
 	"styles": ["app.css"],

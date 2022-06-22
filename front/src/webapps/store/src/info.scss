@@ -6,6 +6,11 @@
         display: flex;
         justify-content: space-between;
 
+        img {
+            width: 60px;
+            height: 60px;
+        }
+
         .tile {
             display: flex;
             justify-content: center;

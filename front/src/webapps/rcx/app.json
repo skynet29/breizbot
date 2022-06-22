@@ -1,5 +1,5 @@
 {	
-	"iconCls": "fa fa-robot fa-2x",
+	"iconUrl": "rcx.jpg",
 	"colorCls": "w3-blue",
 	"title": "RCX",
 	"styles": ["app.css"],

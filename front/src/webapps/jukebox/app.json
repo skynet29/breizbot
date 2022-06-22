@@ -1,5 +1,5 @@
 {	
-	"iconCls": "fab fa-itunes-note fa-2x",
+	"iconUrl": "music.webp",
 	"colorCls": "w3-pink",
 	"title": "Music",
 	"styles": ["app.css"],

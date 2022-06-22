@@ -11,6 +11,8 @@
 		align-items: center;
 		justify-content: center;
 		position: relative;
+		padding: 0;
+		box-shadow:0 8px 16px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
 	}
 
 	.arrow-right {
@@ -38,7 +40,12 @@
 		//height: 100%;
 		align-items: flex-start;
 		flex-wrap: wrap;
-		align-content: start;		
+		align-content: start;	
+		img {
+			width: 90px;
+			height: 90px;
+			margin: 0;
+		}	
 	}
 
 }

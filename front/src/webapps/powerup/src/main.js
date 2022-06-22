@@ -192,6 +192,8 @@ $$.control.registerControl('rootPage', {
 			}
 		}
 
+		elt.find('button').addClass('w3-btn w3-blue')
+		
 		const ctrl = $$.viewController(elt, {
 			data: {
 				connected: false,

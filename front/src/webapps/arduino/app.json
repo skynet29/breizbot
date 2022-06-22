@@ -1,5 +1,5 @@
 {	
-	"iconCls": "fa fa-infinity fa-2x",
+	"iconUrl": "arduino.webp",
 	"colorCls": "w3-blue",
 	"title": "Arduino",
 	"styles": ["app.css"]

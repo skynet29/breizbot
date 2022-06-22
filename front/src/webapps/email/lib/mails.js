@@ -14,7 +14,7 @@ function decodeString(name) {
   if (name.toUpperCase().startsWith('=?UTF-8?B?')) {
     const t = name.split('?')
     //console.log('t', t)
-    const buff = new Buffer(t[3], 'base64')
+    const buff = Buffer.from(t[3], 'base64')
     name = buff.toString('utf8')
   }
 
@@ -22,14 +22,14 @@ function decodeString(name) {
     const t = name.split('?')
     name = quotedPrintable.decode(t[3])
 
-    name = iconv.decode(name, 'ISO-8859-1')
+    name = iconv.decode(Buffer.from(name), 'ISO-8859-1')
   }
 
   if (name.toUpperCase().startsWith('=?UTF-8?Q?')) {
     const t = name.split('?')
     name = quotedPrintable.decode(t[3])
 
-    name = iconv.decode(name, 'utf8')
+    name = iconv.decode(Buffer.from(name), 'utf8')
 
   }
 
@@ -92,7 +92,7 @@ function decodeBody(body, info) {
   //console.log('body.length', body.length)
 
   if (encoding.toUpperCase() === 'BASE64') {
-    const buff = new Buffer(body.toString('utf8'), 'base64')
+    const buff = Buffer.from(body.toString('utf8'), 'base64')
     //return 'base64 encoding not supported'
     body = iconv.decode(buff, charset)
   }
@@ -100,17 +100,17 @@ function decodeBody(body, info) {
   if (encoding.toUpperCase() === 'QUOTED-PRINTABLE') {
     body = quotedPrintable.decode(body.toString('utf8'))
 
-    body = iconv.decode(body, charset)
+    body = iconv.decode(Buffer.from(body), charset)
 
   }
 
   if (encoding.toUpperCase() === '8BIT') {
-    const buff = new Buffer(body, 'binary')
+    const buff = Buffer.from(body, 'binary')
     body = iconv.decode(buff, charset)
   }
 
   if (encoding.toUpperCase() === '7BIT') {
-    const buff = new Buffer(body, 'ascii')
+    const buff = Buffer.from(body, 'ascii')
     body = iconv.decode(buff, charset)
   }
   return body

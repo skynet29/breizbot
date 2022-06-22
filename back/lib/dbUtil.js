@@ -113,7 +113,7 @@ class DbWrapper {
 module.exports = {
 	init: function () {
 		return new Promise((resolve, reject) => {
-			MongoClient.connect(config.dbUrl, (err, client) => {
+			MongoClient.connect(config.dbUrl, {useUnifiedTopology: true}, (err, client) => {
 				if (err) {
 					reject(err)
 					return

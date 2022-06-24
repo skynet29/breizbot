@@ -12,43 +12,43 @@ $$.control.registerControl('rootPage', {
 	 */
 	init: function (elt, srvFiles, pager) {
 
+		let timer = null
+		let startTime = 0
+
 		const audio = new Audio(srvFiles.assetsUrl('camera_shutter.mp3'))
+
+		async function saveVideo(blob) {
+			const fileName = 'VIDEO' + Date.now() + '.webm'
+			//console.log('fileName', fileName)
+			await srvFiles.saveFile(blob, fileName)
+		}
 
 		async function saveImage(blob) {
 			const fileName = 'SNAP' + Date.now() + '.png'
 			//console.log('fileName', fileName)
 			await srvFiles.saveFile(blob, fileName)
 		}
-
+		
 		const ctrl = $$.viewController(elt, {
 			data: {
 				ready: false,
+				recording: false,
+				recordingTime: '',
 				videoDevices: [],
-				constraints: { video: true },
+				constraints: { video: true, audio: true },
 				showMessage: false,
 				show1: function () {
 					return this.videoDevices.length > 1
 				},
+				canRecord: function () {
+					return this.ready && !this.recording
+				},
+				canStop: function () {
+					return this.ready && this.recording
+				},
 				hasZoom: false
 			},
 			events: {
-				onCameraReady: async function () {
-					console.log('onCameraReady')
-					const capabilities = await camera.getCapabilities()
-					console.log('capabilities', capabilities)
-
-					if (capabilities.zoom) {
-						const settings = camera.getSettings()
-						//console.log('settings', settings)
-						const { min, max, step } = capabilities.zoom
-						ctrl.scope.slider.setData({ min, max, step })
-						ctrl.scope.slider.setValue(settings.zoom)
-						ctrl.setData({ hasZoom: true })
-					}
-
-
-					ctrl.setData({ ready: true })
-				},
 				onTakePicture: async function (ev) {
 					audio.play()
 					const blob = await camera.takePicture()
@@ -70,10 +70,77 @@ $$.control.registerControl('rootPage', {
 							URL.revokeObjectURL(url)
 						}
 					})
+				},				
+				onStartRecord: function (ev) {
+					camera.startRecord()
+					ctrl.setData({ recording: true, recordingTime: '00:00' })
+					startTime = Date.now()
+					timer = setInterval(() => {
+						const diffMs = Date.now() - startTime
+						let seconds = Math.floor((diffMs / 1000) % 60)
+						let minutes = Math.floor((diffMs / (1000 * 60)) % 60)
+						minutes = (minutes < 10) ? "0" + minutes : minutes
+						seconds = (seconds < 10) ? "0" + seconds : seconds
+
+						ctrl.setData({ recordingTime: `${minutes}:${seconds}` })
+
+					}, 1000)
+				},
+				onStopRecord: function (ev) {
+					camera.stopRecord()
+					clearInterval(timer)
+					timer = null
+					ctrl.setData({ recording: false })
+				},
+				/**
+				 * 
+				 * @param {Brainjs.Controls.Camera.EventData.VideoRcord} data 
+				 */
+				onVideoRecord: function (ev, data) {
+					console.log('onVideoRecord', data)
+					const { blob } = data
+
+					const url = URL.createObjectURL(blob)
+
+					pager.pushPage('breizbot.viewer', {
+						title: 'Recorded Video',
+						props: { url, type: 'video' },
+						buttons: {
+							save: {
+								title: 'Save',
+								icon: 'fa fa-save',
+								onClick: function () {
+									saveVideo(blob)
+								}
+							}
+						},
+						onBack: function () {
+							URL.revokeObjectURL(url)
+						}
+					})
+
+				},
+				onCameraReady: async function () {
+					//console.log('onCameraReady')
+					const capabilities = await camera.getCapabilities()
+					//console.log('capabilities', capabilities)
+
+					if (capabilities.zoom) {
+						const settings = camera.getSettings()
+						//console.log('settings', settings)
+						const { min, max, step } = capabilities.zoom
+						ctrl.scope.slider.setData({ min, max, step })
+						ctrl.scope.slider.setValue(settings.zoom)
+						ctrl.setData({ hasZoom: true })
+					}
+
+
+					ctrl.setData({ ready: true })
 				},
 				onDeviceChange: function (ev, data) {
 					console.log('onDeviceChange', $(this).getValue())
 					const constraints = {
+						audio: true,
 						video: {
 							deviceId: {
 								exact: $(this).getValue()
@@ -95,7 +162,6 @@ $$.control.registerControl('rootPage', {
 		/**@type {Brainjs.Controls.Camera.Interface} */
 		const camera = ctrl.scope.camera
 
-
 		async function getVideoDevices() {
 			const videoDevices = await $$.media.getVideoDevices()
 			ctrl.setData({
@@ -105,7 +171,7 @@ $$.control.registerControl('rootPage', {
 			})
 
 			if (videoDevices.length > 0) {
-				camera.start()
+				ctrl.scope.camera.start()
 			}
 			else {
 				ctrl.setData({ showMessage: true })

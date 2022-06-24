@@ -15,6 +15,24 @@
     height: 100%; }
     .rootPage .main .brainjs-camera {
       height: 100%; }
+  .rootPage .header {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    width: 100%;
+    display: flex;
+    align-items: center; }
+    .rootPage .header .icon {
+      margin-right: 5px; }
+    .rootPage .header .blink {
+      color: red;
+      animation: colorblink 2s infinite; }
+
+@keyframes colorblink {
+  0% { }
+  50% {
+    color: transparent; } }
   .rootPage .footer {
     position: absolute;
     bottom: 20px;
@@ -23,6 +41,8 @@
     width: 100%;
     display: flex;
     justify-content: center; }
+    .rootPage .footer button {
+      margin-left: 10px; }
   .rootPage .slider {
     position: absolute;
     top: 50px;

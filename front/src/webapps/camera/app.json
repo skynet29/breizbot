@@ -4,5 +4,5 @@
 	"title": "Camera",
 	"styles": ["app.css"],
 	"brainjs": ["map"],
-	"description": "Take photo (in full resolution for smartphone device);Select the camera if several are available;ZoomIn/ZoomOut (only on smartphone device)"
+	"description": "Take photo or record video (in full resolution for smartphone device);Select the camera if several are available;ZoomIn/ZoomOut (only on smartphone device)"
 }

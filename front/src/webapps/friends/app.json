@@ -1,5 +1,5 @@
 {	
-	"iconCls": "fa fa-user-friends fa-2x",
+	"iconUrl": "friends.jpg",
 	"colorCls": "w3-green",
 	"title": "Friends",
 	"styles": ["app.css"],

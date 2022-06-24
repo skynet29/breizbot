@@ -1,14 +1,5 @@
 <div class="header">
 	<div class="item">
-		<label>Audio Input</label>
-		<div bn-control="brainjs.combobox" bn-data="{items: audioDevices}"
-			bn-event="comboboxchange: onAudioDeviceChange"></div>
-	</div>
-	<div class="item">
-		<label>Status:</label>
-		<span bn-text="status"></span>
-	</div>
-	<div class="item">
 		<button class="w3-btn w3-blue" bn-icon="fa fa-folder-open" bn-event="click: onChooseFile"
 			title="Choose video file"></button>
 	</div>
@@ -33,10 +24,6 @@
 		<button class="w3-btn w3-blue" bn-event="click: onSyncDisplayWithMain" bn-icon="fas fa-level-up-alt"
 			title="Sync display with main"></button>
 	</div>
-	<div class="item" bn-show="isDisplayStarted">
-		<label>Karaoke</label>
-		<div bn-control="brainjs.flipswitch" bn-val="karaokeEnabled" bn-event="flipswitchchange: onKaraokeChange"></div>
-	</div>
 </div>
 
 <div class="slider" bn-show="isDisplayStarted">
@@ -50,11 +37,6 @@
 		<video bn-attr="{src: url}" controls="" controlsList=nodownload bn-bind="video"></video>
 	</div>
 	<div class="gain">
-		<div class="gainItem">
-			<label>Micro</label>
-			<div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step:0.1, orientation: 'vertical'}"
-				bn-val="micGain" bn-event="input: onMicGainChange"></div>
-		</div>
 		<div class="gainItem">
 			<label>Video</label>
 			<div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step:0.1, orientation: 'vertical'}"

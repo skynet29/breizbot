@@ -1,7 +1,7 @@
 {	
-	"iconCls": "fa fa-microphone-alt fa-2x",
+	"iconUrl": "cast.webp",
 	"colorCls": "w3-orange",
-	"title": "Karaoke",
+	"title": "Video cast",
 	"styles": ["app.css"],
 	"description": "Karaoké"
 }

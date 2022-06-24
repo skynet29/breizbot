@@ -3,5 +3,5 @@
 	"colorCls": "w3-orange",
 	"title": "Video cast",
 	"styles": ["app.css"],
-	"description": "Karaoké"
+	"description": "Cast video to secondary display"
 }

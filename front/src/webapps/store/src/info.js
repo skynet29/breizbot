@@ -1,18 +1,25 @@
 //@ts-check
 $$.control.registerControl('infoPage', {
 
-    template: {gulp_inject: './info.html'},
+    template: { gulp_inject: './info.html' },
+
+    deps: ['breizbot.users', 'breizbot.scheduler'],
 
     props: {
         info: {}
     },
 
-    init: function(elt) {
+    /**
+     * 
+     * @param {Breizbot.Services.User.Interface} users 
+     * @param {Breizbot.Services.Scheduler.Interface} scheduler 
+     */
+    init: function (elt, users, scheduler) {
 
-        const {info} = this.props
+        const { info } = this.props
 
-        const {appName, props} = info
-        let {description, title, iconCls, colorCls, iconUrl} = props
+        const { appName, props, activated } = info
+        let { description, title, iconCls, colorCls, iconUrl } = props
 
         description = description || "No description"
         description = description.split(';').join('<br>')
@@ -20,19 +27,26 @@ $$.control.registerControl('infoPage', {
 
         const ctrl = $$.viewController(elt, {
             data: {
-                btnText: function() {
-                    return (info.activated) ? 'Remove from Home page' : 'Add to Home page'
-                },
                 description,
                 title,
                 iconCls,
                 iconUrl,
-                getColorClass: function() {
+                activated,
+                getColorClass: function () {
                     return `tile w3-round-large ${colorCls}`
                 },
-                getIconUrl: function() {
+                getIconUrl: function () {
                     return `/webapps/${appName}/assets/${iconUrl}`
                 }
+            },
+            events: {
+                onLaunch: function () {
+                    scheduler.openApp(appName)
+                },
+                onAddToHome: async function () {
+                    await users.activateApp(appName, true)
+                    ctrl.setData({activated: true})
+                },
             }
         })
 

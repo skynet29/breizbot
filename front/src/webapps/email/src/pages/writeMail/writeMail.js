@@ -40,8 +40,8 @@ $$.control.registerControl('writeMailPage', {
 					const data = $(this).getFormData()
 					console.log('data', data)
 					const { attachments } = ctrl.model
-					data.attachments = attachments.map((a) => {
-						return { path: a.rootDir + a.fileName }
+					data.attachments = attachments.map((fileName) => {
+						return { path: fileName }
 					})
 
 					const $html = $('<div>').append(data.html)
@@ -125,18 +125,25 @@ $$.control.registerControl('writeMailPage', {
 					onClick: function () {
 						pager.pushPage('breizbot.files', {
 							title: 'Select a file to attach',
+							/**@type {Breizbot.Controls.Files.Props} */				
 							props: {
-								showThumbnail: true
+								selectionEnabled: true,
+								folderSelectionEnabled: false
 							},
-							events: {
-								fileclick: function (ev, data) {
-									pager.popPage(data)
-								}
-							},
-							onReturn: function (data) {
-								const { fileName, rootDir } = data
-								ctrl.model.attachments.push({ fileName, rootDir })
+							onReturn: function (fileNames) {
+								console.log('data', data)
+								ctrl.model.attachments = ctrl.model.attachments.concat(fileNames)
 								ctrl.update()
+							},
+							buttons: {
+								apply: {
+									icon: 'fa fa-check',
+									title: 'Apply',
+									onClick: function() {
+										console.log('onApply')
+										pager.popPage(this.getSelFileNames())
+									}	
+								}
 							}
 						})
 

@@ -460,6 +460,7 @@ declare namespace Breizbot {
 
             interface Props {
                 selectionEnabled?: boolean; // default false
+                folderSelectionEnabled?: boolean; // default true
                 imageOnly?: boolean;        // default false
                 filterExtension?: string;
                 getMP3Info?: boolean;       // default false

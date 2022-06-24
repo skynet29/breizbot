@@ -47,6 +47,7 @@
 		deps: ['breizbot.files'],
 		props: {
 			selectionEnabled: false,
+			folderSelectionEnabled: true,
 			imageOnly: false,
 			filterExtension: undefined,
 			getMP3Info: false,
@@ -73,6 +74,7 @@
 			/**@type {Breizbot.Controls.Files.Props} */
 			let {
 				selectionEnabled,
+				folderSelectionEnabled,
 				filterExtension,
 				friendUser,
 				imageOnly,
@@ -89,6 +91,7 @@
 					},
 					loading: false,
 					selectionEnabled,
+					folderSelectionEnabled,
 					rootDir: '/',
 					files: [],
 					mp3Filters,
@@ -186,6 +189,13 @@
 					if1: function (scope) {
 						return scope.f.name != '..'
 					},
+
+					showCheckSelection: function(scope)	{
+						let ret = this.selectionEnabled
+						if (scope.f.folder)  { ret &= this.folderSelectionEnabled}
+						return ret
+					},
+
 					if2: function (scope) {
 						return !scope.f.folder && !scope.f.isImage && !this.isMP3(scope)
 					},
@@ -223,6 +233,7 @@
 						return 'Last Modif: ' + date
 
 					}
+
 
 
 				},

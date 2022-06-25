@@ -1,4 +1,4 @@
-<div class="header" bn-show="canStop">
+<div class="header" bn-show="recording">
 	<span class="icon"><i class="fa fa-xs fa-circle blink"></i></span>
 	<span bn-text="recordingTime" ></span>
 </div>
@@ -7,7 +7,7 @@
 		title="Start" 
 		bn-event="click: onStartRecord" 
 		bn-show="canRecord"
-		class="w3-button w3-circle w3-blue w3-text-red">
+		class="w3-btn w3-circle w3-blue w3-text-red">
 			<i class="fa fa-lg fa-circle"></i>
 		</button>
 
@@ -15,7 +15,7 @@
 		title="Stop" 
 		bn-event="click: onStopRecord" 
 		bn-show="canStop"
-		class="w3-button w3-circle w3-blue">
+		class="w3-btn w3-circle w3-blue">
 			<i class="fa fa-lg fa-stop"></i>
 		</button>
 
@@ -24,9 +24,17 @@
 		bn-event="click: onTakePicture" 
 		bn-show="canRecord"
 		bn-icon="fa fa-lg fa-camera"
-		class="w3-button w3-circle w3-blue">
+		class="w3-btn w3-circle w3-blue">
 		</button>		
-		
+
+		<button 
+		title="Start QR code detection" 
+		bn-event="click: onStartBarcodeDetection" 
+		bn-show="showBarcodeDetection"
+		bn-icon="fa fa-lg fa-barcode"
+		class="w3-btn w3-circle w3-blue">
+		</button>		
+
 </div>
 
 <div 
@@ -51,7 +59,7 @@
 	<div bn-show="showMessage">Sorry, no video device found !</div>
 	<div 
 		bn-control="brainjs.camera" 
-		bn-event="cameraready: onCameraReady, videorecord: onVideoRecord"
+		bn-event="cameraready: onCameraReady, videorecord: onVideoRecord,  barcode: onBarcode"
 		bn-data="{constraints}"
 		bn-iface="camera">
 			

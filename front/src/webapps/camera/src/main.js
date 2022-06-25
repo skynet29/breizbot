@@ -27,28 +27,65 @@ $$.control.registerControl('rootPage', {
 			const fileName = 'SNAP' + Date.now() + '.png'
 			//console.log('fileName', fileName)
 			await srvFiles.saveFile(blob, fileName)
+			
 		}
+
 		
 		const ctrl = $$.viewController(elt, {
 			data: {
 				ready: false,
 				recording: false,
+				barcodeDetectionAvailable: false,
 				recordingTime: '',
 				videoDevices: [],
 				constraints: { video: true, audio: true },
 				showMessage: false,
+				barcodeDetectionStarted: false,
 				show1: function () {
 					return this.videoDevices.length > 1
 				},
 				canRecord: function () {
-					return this.ready && !this.recording
+					return this.ready && !this.recording && !this.barcodeDetectionStarted
 				},
 				canStop: function () {
-					return this.ready && this.recording
+					return this.recording || this.barcodeDetectionStarted
+				},
+				canTakePicture: function() {
+					return true
+				},
+				showBarcodeDetection: function() {
+					return this.ready && this.barcodeDetectionAvailable && !this.recording && !this.barcodeDetectionStarted
 				},
 				hasZoom: false
 			},
 			events: {
+				/**
+				 * 
+				 * @param {Brainjs.Controls.Camera.EventData.BarCode} data 
+				 */
+				 onBarcode: function (ev, data) {
+					console.log('onBarcode', data)
+					const { format, rawValue } = data
+					let content = null
+					if (format == 'qr_code') {
+						content = {
+							link: `<a href="${rawValue}" target="_blank">${rawValue}</a>`
+						}
+					}
+					else {
+						content = {
+							format,
+							value: rawValue
+						}
+					}
+					$$.ui.showAlert({ title: 'BarCode Detected', content }, () => {
+						ctrl.setData({barcodeDetectionStarted: false})
+					})
+				},				
+				onStartBarcodeDetection: function() {
+					ctrl.setData({barcodeDetectionStarted: true})
+					camera.startBarcodeDetection()
+				},
 				onTakePicture: async function (ev) {
 					audio.play()
 					const blob = await camera.takePicture()
@@ -87,10 +124,17 @@ $$.control.registerControl('rootPage', {
 					}, 1000)
 				},
 				onStopRecord: function (ev) {
-					camera.stopRecord()
-					clearInterval(timer)
-					timer = null
-					ctrl.setData({ recording: false })
+					if (ctrl.model.recording) {
+						camera.stopRecord()
+						clearInterval(timer)
+						timer = null
+						ctrl.setData({ recording: false })
+	
+					}
+					else if (ctrl.model.barcodeDetectionStarted) {
+						camera.stopBarcodeDetection()
+						ctrl.setData({ barcodeDetectionStarted: false })
+					}
 				},
 				/**
 				 * 
@@ -161,6 +205,7 @@ $$.control.registerControl('rootPage', {
 
 		/**@type {Brainjs.Controls.Camera.Interface} */
 		const camera = ctrl.scope.camera
+		ctrl.setData({barcodeDetectionAvailable: camera.isBarcodeDetectionAvailable()})
 
 		async function getVideoDevices() {
 			const videoDevices = await $$.media.getVideoDevices()

@@ -1,7 +1,0 @@
-{	
-	"iconCls": "fa fa-barcode fa-2x",
-	"colorCls": "w3-amber",
-	"title": "Barcode",
-	"styles": ["app.css"],
-	"description": "Barcode and QR code scanner"
-}

@@ -50,9 +50,6 @@ $$.control.registerControl('rootPage', {
 				canStop: function () {
 					return this.recording || this.barcodeDetectionStarted
 				},
-				canTakePicture: function() {
-					return true
-				},
 				showBarcodeDetection: function() {
 					return this.ready && this.barcodeDetectionAvailable && !this.recording && !this.barcodeDetectionStarted
 				},

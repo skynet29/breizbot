@@ -22,10 +22,10 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onSliderChange: function() {
-					const val = $(this).getValue()
+					const value = $(this).getValue()
 					//console.log('onSliderChange', val)
-					gain1.gain.value = 1 - val
-					gain2.gain.value = val
+					gain2.gain.value = Math.cos((1.0-value) * 0.5*Math.PI)
+					gain1.gain.value = Math.cos(value * 0.5*Math.PI)
 				}
 			}
 		})

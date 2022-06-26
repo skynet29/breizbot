@@ -1,0 +1,13 @@
+{
+	"name": "HexEd.it",
+	"readme": "none",
+	"entryPoints": [
+		"breizbot.d.ts"
+	],
+	"out": "../dist/docs",
+	"excludeExternals": true,
+	"excludePrivate": true,
+	"excludeProtected": true,
+	"disableSources": true,
+	"listInvalidSymbolLinks": true
+}

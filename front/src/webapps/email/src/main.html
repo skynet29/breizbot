@@ -1,49 +1,28 @@
 <div class="toolbar">
-	<div class="info">
-		<div bn-show="show2" class="account">
-			<span>Account:&nbsp;</span> 
-			<div 
-				bn-control="brainjs.combobox" 
-				bn-data="{items: accounts}" 
-				data-width="150"
-				bn-val="currentAccount"
-				bn-event="comboboxchange: onAccountChange">
-			</div>
-		</div>
-		
-	</div>
-	<div>
-		<div bn-control="brainjs.contextmenu" 
-			bn-data="{items: getItems}" 
-			data-trigger="left" 
-			class="w3-button" 
-			bn-event="contextmenuchange: onMenu"
-			>
-				<i class="fa fa-ellipsis-v"></i>
-    	
-		</div>		
-		
-	</div>
-	
+	<button class="w3-button" bn-icon="fas fa-plus" title="Add account" bn-event="click:onAddAccount"></button>	
 </div>
 
-<span bn-show="show1" class="message">You have no email account</span>
+<span bn-show="!hasAccounts" class="message">You have no email account</span>
 
-<div class="content" bn-show="show3">
-	<div>
-		Select folder to open:
-	</div>
-	
-	<div class="scrollPanelTree">
-		<div 
-			class="tree" 
-			bn-control="brainjs.tree"
-			bn-data="{source: mailboxes}"
-			bn-event="treeactivate: onTreeActivate"
-			bn-iface="tree"
-		></div>
-	</div>
-	
-	
-	
+<div class="content" bn-show="hasAccounts">
+    <h1>Accounts</h1>
+    <div class="scrollPanel">
+        <div bn-each="accounts" 
+            class="items"
+            bn-event="click.item: onItemClick, contextmenuchange.item:onItemContextMenu">
+            <div class="w3-card-2 item" 
+                bn-control="brainjs.contextmenu"
+                bn-data="{
+                    items: {
+                        edit: { name: 'Edit', icon: 'fas fa-edit' },
+                        delete: {name: 'Remove', icon: 'fas fa-trash-alt'}
+                    }
+                }"
+            >
+            <div>
+                <strong bn-text="$scope.$i"></strong>
+            </div>
+            </div>
+        </div>
+    </div>
 </div>

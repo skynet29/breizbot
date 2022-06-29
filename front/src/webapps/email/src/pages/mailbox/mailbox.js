@@ -105,7 +105,7 @@ $$.control.registerControl('mailboxPage', {
 		}
 
 		async function load(idx) {
-			console.log('load', idx)
+			//console.log('load', idx)
 
 			if (idx != 1 && ctrl.model.messages.length == ctrl.model.nbMsg) {
 				console.log('No more data')
@@ -116,7 +116,7 @@ $$.control.registerControl('mailboxPage', {
 			pager.setButtonEnabled(false)
 
 			const data = await srvMail.openMailbox(currentAccount, mailboxName, idx)
-			console.log('data', data)
+			//console.log('data', data)
 			let { messages, nbMsg } = data
 			messages.forEach((i) => { i.checked = ctrl.model.check })
 			if (idx == 1) {

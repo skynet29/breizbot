@@ -113,7 +113,6 @@ $$.control.registerControl('mailboxPage', {
 			}
 
 			ctrl.setData({ loading: true })
-			pager.setButtonEnabled(false)
 
 			const data = await srvMail.openMailbox(currentAccount, mailboxName, idx)
 			//console.log('data', data)

@@ -21,7 +21,8 @@
       border: 1px solid lightgray; }
       .rootPage .content .scrollPanel .item {
         padding: 10px;
-        margin-top: 10px; }
+        margin-top: 10px;
+        cursor: pointer; }
   .rootPage > .message {
     margin: 10px; }
 

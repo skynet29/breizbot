@@ -18,7 +18,6 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				options : {filterExtension: 'mp3', getMP3Info: true, showMp3Filter: true}
 			},
 			events: {
 				onSliderChange: function() {
@@ -26,6 +25,15 @@ $$.control.registerControl('rootPage', {
 					//console.log('onSliderChange', val)
 					gain2.gain.value = Math.cos((1.0-value) * 0.5*Math.PI)
 					gain1.gain.value = Math.cos(value * 0.5*Math.PI)
+				},
+				onLoad: function() {
+					const audio = $(this).data('audio')
+					//console.log('onLoad', audio)
+					const selFile = ctrl.scope.filelist.getSelFile()
+					//console.log('selFile', selFile)
+					if (selFile) {
+						ctrl.scope[audio].setInfo(selFile)
+					}
 				}
 			}
 		})

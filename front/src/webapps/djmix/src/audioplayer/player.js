@@ -8,16 +8,13 @@
 	}
 
 
-	$$.control.registerControl('breizbot.audioplayer', {
+	$$.control.registerControl('audioplayer', {
 
 		template: { gulp_inject: './player.html' },
 
 		deps: ['breizbot.pager'],
 
 		props: {
-			filterExtension: '',
-			getMP3Info: false,
-			showMp3Filter: false
 		},
 
 		/**
@@ -26,9 +23,6 @@
 		init: function (elt, pager) {
 
 			console.log('props', this.props)
-
-			const { filterExtension, getMP3Info, showMp3Filter } = this.props
-
 
 			const ctrl = $$.viewController(elt, {
 				data: {
@@ -46,28 +40,6 @@
 
 				},
 				events: {
-					onChooseFile: function () {
-						pager.pushPage('breizbot.filechooser', {
-							props: {
-								filterExtension,
-								getMP3Info,
-								showMp3Filter
-							},
-							title: 'Choose File',
-							onReturn: async function (data) {
-								console.log('data', data)
-								const {fileName, url, mp3} = data
-								if (mp3 && mp3.title) {
-									const {artist, title} = mp3
-									ctrl.setData({artist, title, url})	
-								}
-								else { 
-									ctrl.setData({url, name: fileName})	
-								}
-							}
-						})
-	
-					},					
 					onVolumeChange: function (ev, value) {
 						audio.volume = value
 					},
@@ -111,7 +83,13 @@
 			/**@type {HTMLAudioElement} */
 			const audio = ctrl.scope.audio.get(0)
 
-			this.getAudioElement = function() {
+			this.setInfo = function (info) {
+				const { mp3, name, url } = info
+				const { artist, title } = mp3
+				ctrl.setData({ name, url, artist, title })
+			}
+
+			this.getAudioElement = function () {
 				return audio
 			}
 		}

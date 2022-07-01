@@ -41,46 +41,6 @@
     height: 90px;
     margin: 0; }
 
-.breizbot-audioplayer {
-  padding: 10px; }
-  .breizbot-audioplayer .info {
-    margin-top: 10px; }
-    .breizbot-audioplayer .info .title {
-      display: flex; }
-      .breizbot-audioplayer .info .title > strong {
-        min-width: 80px; }
-  .breizbot-audioplayer audio {
-    width: 100%; }
-  .breizbot-audioplayer .toolbar {
-    margin-top: 20px;
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between; }
-    .breizbot-audioplayer .toolbar button {
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 3rem;
-      height: 3rem;
-      margin: 10px; }
-  .breizbot-audioplayer .toolbar2 {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 20px;
-    align-items: center; }
-    .breizbot-audioplayer .toolbar2 .brainjs-slider {
-      margin-top: 20px;
-      margin-bottom: 20px; }
-  .breizbot-audioplayer .slider {
-    display: flex;
-    align-items: center; }
-    .breizbot-audioplayer .slider .brainjs-slider {
-      margin-left: 20px;
-      flex: 1; }
-
 .breizbot-addContactPage {
   padding: 10px;
   display: flex;
@@ -195,6 +155,42 @@
     align-items: center; }
     .breizbot-filechooser .w3-bar-item span {
       margin-left: 20px; }
+
+.breizbot-filelist {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column; }
+  .breizbot-filelist > .scrollPanel {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid lightgrey;
+    margin-top: 10px; }
+    .breizbot-filelist > .scrollPanel th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background-color: #666;
+      color: white; }
+    .breizbot-filelist > .scrollPanel .item {
+      cursor: pointer; }
+    .breizbot-filelist > .scrollPanel .item.active {
+      background-color: #ccc; }
+  .breizbot-filelist > .pathPanel {
+    margin-left: 10px; }
+    .breizbot-filelist > .pathPanel .fa-chevron-right {
+      color: #6c757d; }
+    .breizbot-filelist > .pathPanel .lastItem {
+      color: #6c757d; }
+    .breizbot-filelist > .pathPanel .pathItem {
+      text-decoration: none;
+      color: #007bff; }
+    .breizbot-filelist > .pathPanel > div {
+      display: inline-block; }
+  .breizbot-filelist > .info {
+    margin: 10px;
+    text-align: right; }
+  .breizbot-filelist > .loading {
+    margin-left: 10px; }
 
 .breizbot-files {
   overflow: hidden;

@@ -2,4 +2,7 @@
     "typeAcquisition": {
       "include": ["jquery"]
     }
+    "compilerOptions": {
+      "target": "es2021"
+    }
   }

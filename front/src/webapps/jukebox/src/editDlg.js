@@ -36,7 +36,17 @@ $$.control.registerControl('editDlg', {
                         ctrl.update()
                     }
                     else {
-                        $$.ui.showAlert({title: 'MP3 Information', content: 'No information found !'})
+                        $$.ui.showAlert({title: 'MP3 Information', content: 'No information found !'}, () => {
+                            const [artist, title] = fileName.replace('.mp3', '').split('__')
+                            console.log({artist, title})
+                            if (artist) {
+                                ctrl.model.mp3.artist = artist.replaceAll('_', ' ')
+                            }
+                            if (title) {
+                                ctrl.model.mp3.title = title.replaceAll('_', ' ')
+                            }
+                            ctrl.update()
+                        })
                     }                    
                 },
                 onSubmit: function(ev) {

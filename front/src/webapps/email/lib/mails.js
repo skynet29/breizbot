@@ -22,14 +22,12 @@ function decodeString(name) {
     const t = name.split('?')
     name = quotedPrintable.decode(t[3])
 
-    name = iconv.decode(Buffer.from(name), 'ISO-8859-1')
+    name = iconv.decode(Buffer.from(name, 'binary'), 'ISO-8859-1')
   }
 
   if (name.toUpperCase().startsWith('=?UTF-8?Q?')) {
     const t = name.split('?')
     name = quotedPrintable.decode(t[3])
-
-    name = iconv.decode(Buffer.from(name), 'utf8')
 
   }
 
@@ -78,18 +76,21 @@ function decodeHeaders(buffer, myEmail) {
       name: addr.name || addr.address,
       email: addr.address
     },
-    subject: (headers.subject != undefined) ? headers.subject[0] : "<Sans objet>",
+    subject: (headers.subject != undefined) ? decodeString(headers.subject[0]) : "<Sans objet>",
     date: headers.date[0]
   }
 }
 
 
 function decodeBody(body, info) {
-  //console.log('decodeBody', info)
+  console.log('decodeBody', info)
   const { encoding, params } = info
   const charset = (params != null) ? params.charset : 'utf8'
 
-  //console.log('body.length', body.length)
+  if (!iconv.encodingExists(charset)) {
+      console.error('enconing not supported: ' + charset)
+  }
+
 
   if (encoding.toUpperCase() === 'BASE64') {
     const buff = Buffer.from(body.toString('utf8'), 'base64')
@@ -98,20 +99,18 @@ function decodeBody(body, info) {
   }
 
   if (encoding.toUpperCase() === 'QUOTED-PRINTABLE') {
-    body = quotedPrintable.decode(body.toString('utf8'))
+    body = quotedPrintable.decode(body.toString())
 
-    body = iconv.decode(Buffer.from(body), charset)
+    body = iconv.decode(Buffer.from(body, 'binary'), charset)
 
   }
 
   if (encoding.toUpperCase() === '8BIT') {
-    const buff = Buffer.from(body, 'binary')
-    body = iconv.decode(buff, charset)
+    body = iconv.decode(Buffer.from(body, 'binary'), charset)
   }
 
   if (encoding.toUpperCase() === '7BIT') {
-    const buff = Buffer.from(body, 'ascii')
-    body = iconv.decode(buff, charset)
+    body = iconv.decode(Buffer.from(body, 'ascii'), charset)
   }
   return body
 }

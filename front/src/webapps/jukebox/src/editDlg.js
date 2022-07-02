@@ -38,12 +38,12 @@ $$.control.registerControl('editDlg', {
                     else {
                         $$.ui.showAlert({title: 'MP3 Information', content: 'No information found !'}, () => {
                             const [artist, title] = fileName.replace('.mp3', '').split('__')
-                            console.log({artist, title})
+                            //console.log({artist, title})
                             if (artist) {
-                                ctrl.model.mp3.artist = artist.replaceAll('_', ' ')
+                                ctrl.model.mp3.artist = artist.replaceAll('_', ' ').trim()
                             }
                             if (title) {
-                                ctrl.model.mp3.title = title.replaceAll('_', ' ')
+                                ctrl.model.mp3.title = title.replaceAll('_', ' ').trim()
                             }
                             ctrl.update()
                         })

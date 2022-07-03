@@ -1,6 +1,13 @@
 .rootPage {
     display: flex;
     flex-direction: column;
+
+    .audioplayer {
+        border: 1px solid black;
+        border-radius: 10px;
+        margin-top: 5px;
+    }
+
     .top {
         display: flex;
         flex-direction: row;
@@ -9,6 +16,11 @@
             flex: 1;
             margin-left: 10px;
             margin-right: 10px;
+        }
+
+        .loadLeft {
+            display: flex;
+            justify-content: flex-end;
         }
     }
     .bottom {

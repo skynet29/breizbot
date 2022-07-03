@@ -49,7 +49,28 @@
 			margin-bottom: 20px;
 		}
 
-	}		
+	}	
+	
+	
+	.bufferContainer {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding-top: 5px;
+		padding-bottom: 5px;
+		.loading {
+			margin-left: 10px;
+		}
+		.bufferCanvas {
+			background-color: navy;
+
+		}
+	
+	}
+	.bufferCanvas {
+		width: 370px;
+		height: 50px;
+	}
 
 	.slider {
 		display: flex;

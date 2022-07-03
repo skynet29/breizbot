@@ -1,10 +1,18 @@
 <div class="top">
     <div>
-        <button class="w3-button w3-blue" bn-event="click: onLoad" data-audio="audio1">Load</button>
+        <div class="loadLeft">
+            <button class="w3-button w3-blue" bn-event="click: onLoad" data-audio="audio1">LOAD 1
+                <i class="fa fa-spinner fa-pulse" bn-show="audio1"></i>
+            </button>
+        </div>
         <div bn-control="audioplayer" bn-data="options" bn-iface="audio1"></div>
     </div>
     <div>
-        <button class="w3-button w3-blue" bn-event="click: onLoad" data-audio="audio2">Load</button>
+        <div>
+            <button class="w3-button w3-blue" bn-event="click: onLoad" data-audio="audio2">LOAD 2
+                <i class="fa fa-spinner fa-pulse" bn-show="audio2"></i>
+            </button>
+        </div>
         <div bn-control="audioplayer" bn-data="options" bn-iface="audio2"></div>
     </div>
 </div>

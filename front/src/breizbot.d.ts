@@ -425,6 +425,44 @@ declare namespace Breizbot {
             }
         }
 
+        declare namespace FileList {
+
+            interface Mp3Filter {
+                artist?: string;
+                genre?: string;
+            }
+
+            type Events = 'fileclick' | 'dirchange';
+
+            declare namespace EventData {
+                interface DirChange {
+                    newDir: string;
+                }
+
+                interface FileClick {
+                    fileName: string;
+                    rootDir:string;
+                    isImage: boolean;
+                    mp3?: Services.Files.Mp3Info;
+                }
+
+            }
+
+            interface Props {
+                selectionEnabled?: boolean; // default false
+                filterExtension?: string;
+                getMP3Info?: boolean;       // default false
+                friendUser?: string;
+                mp3Filters?: Mp3Filter;
+            }
+
+
+            interface Interface {
+                getSelFile(): {name: string, url: string, mp3?: Services.Files.Mp3Info};
+            }
+           
+        }
+
         declare namespace Files {
 
             interface Mp3Filter {

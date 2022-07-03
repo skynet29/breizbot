@@ -18,6 +18,8 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				audio1: false,
+				audio2: false
 			},
 			events: {
 				onSliderChange: function() {
@@ -26,17 +28,24 @@ $$.control.registerControl('rootPage', {
 					gain2.gain.value = Math.cos((1.0-value) * 0.5*Math.PI)
 					gain1.gain.value = Math.cos(value * 0.5*Math.PI)
 				},
-				onLoad: function() {
+				onLoad: async function() {
 					const audio = $(this).data('audio')
 					//console.log('onLoad', audio)
-					const selFile = ctrl.scope.filelist.getSelFile()
+					const selFile = fileList.getSelFile()
 					//console.log('selFile', selFile)
 					if (selFile) {
-						ctrl.scope[audio].setInfo(selFile)
-					}
+						ctrl.model[audio] = true
+						ctrl.update()
+						await ctrl.scope[audio].setInfo(selFile)
+						ctrl.model[audio] = false
+						ctrl.update()
+						}
 				}
 			}
 		})
+
+		/**@type {Breizbot.Controls.FileList.Interface} */
+		const fileList = ctrl.scope.filelist
 
 		/**@type {HTMLAudioElement} */
 		const audio1 = ctrl.scope.audio1.getAudioElement()

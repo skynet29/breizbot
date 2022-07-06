@@ -80,7 +80,7 @@
 					name: '',
 					title: '',
 					artist: '',
-					volume: 0,
+					volume: 0.5,
 					duration: 0,
 					curTime: 0,
 					playing: false,
@@ -95,6 +95,7 @@
 					},
 					onLoad: function () {
 						//console.log('duration', this.duration)
+						audio.volume = 0.5
 						ctrl.setData({ duration: Math.floor(audio.duration), volume: audio.volume })
 					},
 
@@ -139,6 +140,7 @@
 
 			const bufferDisplay = createBufferDisplay(bufferCanvas, (time) => {
 				console.log({ time })
+				audio.currentTime = time
 			})
 
 
@@ -151,6 +153,25 @@
 
 			this.getAudioElement = function () {
 				return audio
+			}
+
+			this.isPlaying = function() {
+				return ctrl.model.isPlaying
+			}
+
+			this.setVolume = function(volume) {
+				audio.volume = volume
+				ctrl.setData({ volume })
+
+			}
+
+			this.togglePlay = function() {
+				if (ctrl.model.playing) {
+					audio.pause()
+				}
+				else {
+					audio.play()
+				}
 			}
 		}
 

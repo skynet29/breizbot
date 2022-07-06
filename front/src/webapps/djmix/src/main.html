@@ -1,3 +1,13 @@
+<div class="midi">
+    <div class="midiIO">
+        <div>MIDI Inputs</div>
+        <div bn-control="brainjs.combobox" bn-data="{items: midiInputs}" bn-event="comboboxchange: onMidiInputChange"></div>
+    </div>
+    <div class="midiIO">
+        <div>MIDI Outputs</div>
+        <div bn-control="brainjs.combobox" bn-data="{items: midiOutputs}"  bn-event="comboboxchange: onMidiOutputChange"></div>
+    </div>
+</div>
 <div class="top">
     <div>
         <div class="loadLeft">
@@ -19,7 +29,7 @@
 <div class="bottom">
     <div class="balance">
         <label>Left</label>
-        <div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step: 0.01}" bn-event="input: onSliderChange"></div>
+        <div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step: 0.01}" bn-event="input: onSliderChange" bn-val="crossFader"></div>
         <label>Right</label>
     </div>
     

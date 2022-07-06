@@ -1,6 +1,15 @@
 .rootPage {
   display: flex;
   flex-direction: column; }
+  .rootPage .midi {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 10px 0 10px; }
+  .rootPage .midiIO {
+    display: flex;
+    align-items: center; }
+    .rootPage .midiIO .brainjs-combobox {
+      margin-left: 10px; }
   .rootPage .audioplayer {
     border: 1px solid black;
     border-radius: 10px;
@@ -74,9 +83,6 @@
       margin-left: 10px; }
     .audioplayer .bufferContainer .bufferCanvas {
       background-color: navy; }
-  .audioplayer .bufferCanvas {
-    width: 370px;
-    height: 50px; }
   .audioplayer .slider {
     display: flex;
     align-items: center; }

@@ -459,6 +459,9 @@ declare namespace Breizbot {
 
             interface Interface {
                 getSelFile(): {name: string, url: string, mp3?: Services.Files.Mp3Info};
+                selUp():void;
+                selDown():void;
+                enterSelFolder():void;
             }
            
         }

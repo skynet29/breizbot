@@ -247,6 +247,9 @@
 				}
 			})
 
+			/**@type {JQuery} */
+			const files = ctrl.scope.files
+
 			async function loadData(rootDir, resetFilters) {
 				if (rootDir == undefined) {
 					rootDir = ctrl.model.rootDir
@@ -269,6 +272,10 @@
 					rootDir
 				})
 
+				if (selectionEnabled) {
+					ctrl.scope.files.find('.item').eq(0).addClass('active')
+				}
+
 			}
 
 			loadData()
@@ -278,6 +285,49 @@
 				return ctrl.model.rootDir
 			}
 
+			this.enterSelFolder = function() {
+				const selElt = files.find('.active')
+				const idx = selElt.index()
+				console.log('enterSelFolder', idx)
+				const info = ctrl.model.getFiles()[idx]
+				console.log('info', info)
+				if (info.folder) {
+					const dirName = info.name
+					const newDir = ctrl.model.rootDir + dirName + '/'
+					elt.trigger('dirchange', { newDir })
+					loadData(newDir)
+
+				}
+
+			}
+
+			this.selUp = function () {
+				const selElt = files.find('.active')
+				const idx = selElt.index()
+				//console.log('selUp', idx)
+				if (idx > 0) {
+					selElt.removeClass('active')
+					const items = files.find('.item')
+					items.eq(idx - 1).addClass('active')
+					if (idx -1 > 0) {
+						items.eq(idx - 2).get(0).scrollIntoViewIfNeeded()
+					}
+					else {
+						items.eq(idx - 1).get(0).scrollIntoViewIfNeeded()
+					}
+					//selElt.get(0).scrollIntoView()
+				}
+			}
+
+			this.selDown = function () {
+				const selElt = files.find('.active')
+				const idx = selElt.index()
+				//console.log('selDown', idx)
+				if (idx < ctrl.model.files.length - 1) {
+					selElt.removeClass('active')
+					files.find('.item').eq(idx + 1).addClass('active').get(0).scrollIntoView(false)
+				}
+			}
 
 			this.getSelFile = function () {
 				const idx = ctrl.scope.files.find('.active').index()

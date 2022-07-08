@@ -1,12 +1,57 @@
 declare namespace DJMix {
 
-    declare namespace AudioPlayer {
+    declare namespace Service {
 
-        interface Interface {
-            getAudioElement(): HTMLAudioElement;
-            togglePlay(): void;
-            setInfo(info: {name: string, url: string, mp3?: {artist: string, title: string}}):Promise<void>;
-            setVolume(volume: number):void;
+        declare namespace MIDICtrl {
+
+            type eventNames = 'MASTER_LEVEL' | 'CUE_LEVEL' | 'CROSS_FADER' | 'LEVEL' | 'PITCH' | 'SYNC' | 'CUE' | 'PLAY' | 'PFL' | 'JOGTOUCH' | 'LOAD' | 'ENTER' | 'JOG_WHEEL' | 'BROWSE_WHEEL' | 'HOT_CUE' | 'LOOP_AUTO' | 'LOOP_MANUAL' | 'SAMPLER'
+
+            interface MidiInfo {
+                midiInputs: Array<{label: string, value: string}>,
+                midiOutputs: Array<{label: string, value: string}>
+            }
+
+            interface Interface {
+                setButtonIntensity(action: string, intensity: number, deck?: number, key?: number);
+                selectMIDIInput(id: number): void;
+                selectMIDIOutput(id: number): void;
+                clearAllButtons():void;
+                requestMIDIAccess(): Promise<MidiInfo>;
+                getMIDIOutpus(): Array<{label: string, value: string}>;
+                on(action: eventNames, cbk: ({deck: number, key: number, velocity: number}) => void): void;
+            }
+        }
+
+        declare namespace AudioTools {
+
+            interface CrossFaderWithMasterLevel {
+                setFaderLevel(level: number): void;
+                setMasterLevel(level: number): void;   
+                getOutputNode(): AudioNode; 
+            }
+
+            interface Interface {
+                createStereoMerger(source1: AudioNode, source2: AudioNode): AudioNode;
+                createDestination(channelCount: number, inputNode: AudioNode): void;
+                createMediaSource(audio: HTMLAudioElement): AudioNode
+                createCrossFaderWithMasterLevel(source1: AudioNode, source2: AudioNode): CrossFaderWithMasterLevel;
+            }
         }
     }
+
+    declare namespace Control {
+        declare namespace AudioPlayer {
+
+            interface Interface {
+                getAudioElement(): HTMLAudioElement;
+                togglePlay(): void;
+                setInfo(info: {name: string, url: string, mp3?: {artist: string, title: string}}):Promise<void>;
+                setVolume(volume: number):void;
+                play(node: AudioNode): void;
+                isPlaying(): boolean;
+            }
+        }
+    
+    }
+
 }

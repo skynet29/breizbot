@@ -156,7 +156,7 @@
 			}
 
 			this.isPlaying = function() {
-				return ctrl.model.isPlaying
+				return ctrl.model.playing
 			}
 
 			this.setVolume = function(volume) {

@@ -6,12 +6,36 @@
         display: flex;
         justify-content: space-between;
         margin: 10px 10px 0 10px;
-        
+
     }
+
+    .visualizer {
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+
+        .runningBufferContainer {
+            position: relative;
+            border: 1px solid black;
+            overflow: hidden;
+
+            .runningBuffer {
+                // width: 860px;
+                // height: 80px;
+                position: absolute;
+                display: flex;
+                
+            }
+    
+        }
+
+    }
+
 
     .midiIO {
         display: flex;
         align-items: center;
+
         .brainjs-combobox {
             margin-left: 10px;
         }
@@ -27,7 +51,8 @@
         display: flex;
         flex-direction: row;
         margin-top: 10px;
-        > div {
+
+        >div {
             flex: 1;
             margin-left: 10px;
             margin-right: 10px;
@@ -38,23 +63,26 @@
             justify-content: flex-end;
         }
     }
+
     .bottom {
         display: flex;
         flex-direction: row;
         justify-content: center;
+
         .balance {
             margin: 10px;
             display: flex;
             flex-direction: row;
             align-items: center;
             width: 400px;
+
             .brainjs-slider {
                 flex: 1;
                 margin-left: 20px;
                 margin-right: 20px;
             }
         }
-    
+
     }
 
 }

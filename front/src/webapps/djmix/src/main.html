@@ -1,11 +1,12 @@
 <div class="midi">
     <div class="midiIO">
-        <div>MIDI Inputs</div>
+        <div>MIDI Device</div>
         <div bn-control="brainjs.combobox" bn-data="{items: midiInputs}" bn-event="comboboxchange: onMidiInputChange"></div>
     </div>
-    <div class="midiIO">
-        <div>MIDI Outputs</div>
-        <div bn-control="brainjs.combobox" bn-data="{items: midiOutputs}"  bn-event="comboboxchange: onMidiOutputChange"></div>
+</div>
+<div class="visualizer">
+    <div class="runningBufferContainer" bn-bind="runningBufferContainer">
+        <div class="runningBuffer" bn-bind="runningBuffer"></div>    
     </div>
 </div>
 <div class="top">
@@ -15,7 +16,7 @@
                 <i class="fa fa-spinner fa-pulse" bn-show="audio1"></i>
             </button>
         </div>
-        <div bn-control="audioplayer" bn-iface="audio1"></div>
+        <div bn-control="audioplayer" bn-iface="audio1" bn-event="timeUpdate: onTimeUpdate"></div>
     </div>
     <div>
         <div>

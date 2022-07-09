@@ -5,6 +5,17 @@
     display: flex;
     justify-content: space-between;
     margin: 10px 10px 0 10px; }
+  .rootPage .visualizer {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px; }
+    .rootPage .visualizer .runningBufferContainer {
+      position: relative;
+      border: 1px solid black;
+      overflow: hidden; }
+      .rootPage .visualizer .runningBufferContainer .runningBuffer {
+        position: absolute;
+        display: flex; }
   .rootPage .midiIO {
     display: flex;
     align-items: center; }

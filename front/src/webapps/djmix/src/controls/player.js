@@ -37,6 +37,7 @@
 			console.log('duration', audioBuffer.duration)
 			$$.media.drawAudioBuffer(width, height - 10, ctx, audioBuffer, 'black')
 			update(0)
+			return audioBuffer
 		}
 
 		/**
@@ -74,12 +75,14 @@
 		 */
 		init: function (elt, pager) {
 
+			/**@type {AudioBuffer} */
+			let audioBuffer = null
+
+
 			const ctrl = $$.viewController(elt, {
 				data: {
 					url: '#',
 					name: '',
-					title: '',
-					artist: '',
 					volume: 0.5,
 					duration: 0,
 					curTime: 0,
@@ -102,6 +105,7 @@
 					onTimeUpdate: function () {
 						ctrl.setData({ curTime: this.currentTime })
 						bufferDisplay.update(this.currentTime)
+						elt.trigger('timeUpdate', this.currentTime)
 					},
 
 					onPlaying: function () {
@@ -145,33 +149,41 @@
 
 
 			this.setInfo = async function (info) {
-				const { mp3, name, url } = info
-				const { artist, title } = mp3
-				ctrl.setData({ name, url, artist, title})
-				await bufferDisplay.load(url)
+				let { mp3, name, url } = info
+				let { artist, title } = mp3
+				if (title != undefined) {
+					name = `${artist} - ${title}`
+				}
+				console.log('name', name)
+				ctrl.setData({ url, name })
+				return  await bufferDisplay.load(url)
 			}
 
 			this.getAudioElement = function () {
 				return audio
 			}
 
-			this.isPlaying = function() {
+			this.isPlaying = function () {
 				return ctrl.model.playing
 			}
 
-			this.setVolume = function(volume) {
+			this.setVolume = function (volume) {
 				audio.volume = volume
 				ctrl.setData({ volume })
 
 			}
 
-			this.togglePlay = function() {
+			this.togglePlay = function () {
 				if (ctrl.model.playing) {
 					audio.pause()
 				}
 				else {
 					audio.play()
 				}
+			}
+
+			this.getAudioBuffer = function() {
+				return audioBuffer
 			}
 		}
 

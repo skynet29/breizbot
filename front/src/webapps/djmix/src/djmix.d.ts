@@ -15,6 +15,7 @@ declare namespace DJMix {
                 setButtonIntensity(action: string, intensity: number, deck?: number, key?: number);
                 selectMIDIInput(id: number): void;
                 selectMIDIOutput(id: number): void;
+                selectMIDIDevice(id: number): void;
                 clearAllButtons():void;
                 requestMIDIAccess(): Promise<MidiInfo>;
                 getMIDIOutpus(): Array<{label: string, value: string}>;
@@ -45,10 +46,11 @@ declare namespace DJMix {
             interface Interface {
                 getAudioElement(): HTMLAudioElement;
                 togglePlay(): void;
-                setInfo(info: {name: string, url: string, mp3?: {artist: string, title: string}}):Promise<void>;
+                setInfo(info: {name: string, url: string, mp3?: {artist: string, title: string}}):Promise<AudioBuffer>;
                 setVolume(volume: number):void;
                 play(node: AudioNode): void;
                 isPlaying(): boolean;
+                getAudioBuffer(): AudioBuffer;
             }
         }
     

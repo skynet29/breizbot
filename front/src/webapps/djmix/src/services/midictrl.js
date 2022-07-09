@@ -130,6 +130,27 @@ $$.service.registerService('MIDICtrl', {
                     midiIn.onmidimessage = onMidiMessage
                     return
                 }
+            }            
+        }
+
+        function selectMIDIDevice(selectedId) {
+            if (midiIn) {
+                midiIn.onmidimessage = null
+            }
+            for (const input of midiAccess.inputs.values()) {
+                if (input.id == selectedId) {
+                    midiIn = input
+                    midiIn.onmidimessage = onMidiMessage
+
+                    for (const output of midiAccess.outputs.values()) {
+                        if (output.name == input.name) {
+                            midiOut = output
+                            break
+                        }
+                    }
+        
+                    break
+                }
             }
         }
 
@@ -181,6 +202,7 @@ $$.service.registerService('MIDICtrl', {
         return {
             selectMIDIInput,
             selectMIDIOutput,
+            selectMIDIDevice,
             clearAllButtons,
             setButtonIntensity,
             requestMIDIAccess,

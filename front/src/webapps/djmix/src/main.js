@@ -189,6 +189,7 @@ $$.control.registerControl('rootPage', {
 		 * @param {string} color 
 		 */
 		function drawRunningBuffer(audioBuffer, color) {
+			runningBuffer.innerHTML = '' // remove all children
 			console.log('bufferLength', audioBuffer.length)
 			const width = Math.ceil(RUNNING_DISPLAY_WIDTH * audioBuffer.duration / SECONDS_OF_RUNNING_DISPLAY)
 			console.log('width', width)

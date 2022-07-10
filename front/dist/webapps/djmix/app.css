@@ -1,59 +1,55 @@
 .rootPage {
   display: flex;
   flex-direction: column; }
-  .rootPage .midi {
-    display: flex;
-    justify-content: space-between;
-    margin: 10px 10px 0 10px; }
-  .rootPage .visualizer {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px; }
-    .rootPage .visualizer .runningBufferContainer {
-      position: relative;
-      border: 1px solid black;
-      overflow: hidden; }
-      .rootPage .visualizer .runningBufferContainer .runningBuffer {
-        position: absolute;
-        display: flex; }
-  .rootPage .midiIO {
-    display: flex;
-    align-items: center; }
-    .rootPage .midiIO .brainjs-combobox {
-      margin-left: 10px; }
-  .rootPage .audioplayer {
-    border: 1px solid black;
-    border-radius: 10px;
-    margin-top: 5px; }
   .rootPage .top {
     display: flex;
-    flex-direction: row;
-    margin-top: 10px; }
-    .rootPage .top > div {
-      flex: 1;
-      margin-left: 10px;
-      margin-right: 10px; }
-    .rootPage .top .loadLeft {
+    margin: 10px;
+    justify-content: space-between; }
+    .rootPage .top .midi {
       display: flex;
-      justify-content: flex-end; }
-  .rootPage .bottom {
-    display: flex;
-    flex-direction: row;
-    justify-content: center; }
-    .rootPage .bottom .balance {
+      align-items: center; }
+      .rootPage .top .midi .brainjs-combobox {
+        margin-left: 10px; }
+    .rootPage .top .balance {
       margin: 10px;
       display: flex;
       flex-direction: row;
       align-items: center;
       width: 400px; }
-      .rootPage .bottom .balance .brainjs-slider {
+      .rootPage .top .balance .brainjs-slider {
         flex: 1;
         margin-left: 20px;
         margin-right: 20px; }
+  .rootPage .center {
+    display: flex;
+    justify-content: center; }
+  .rootPage .visualizer {
+    display: flex;
+    justify-content: center;
+    margin-top: 5px; }
+    .rootPage .visualizer .runningBufferContainer {
+      position: relative;
+      border: 1px solid black;
+      overflow: hidden; }
+      .rootPage .visualizer .runningBufferContainer .zeroTime {
+        position: absolute;
+        width: 2px;
+        background-color: black; }
+      .rootPage .visualizer .runningBufferContainer .runningBuffer {
+        position: absolute;
+        display: flex; }
+  .rootPage .audioplayer:nth-child(1) {
+    margin-right: 10px; }
+  .rootPage .audioplayer {
+    border: 1px solid black;
+    border-radius: 10px;
+    margin-top: 5px; }
 
 .audioplayer {
   padding: 10px; }
   .audioplayer .info {
+    display: flex;
+    justify-content: space-between;
     margin-top: 10px; }
     .audioplayer .info .title {
       display: flex; }
@@ -62,12 +58,8 @@
   .audioplayer audio {
     width: 100%; }
   .audioplayer .toolbar {
-    margin-top: 20px;
-    margin-bottom: 20px;
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between; }
+    flex-direction: column; }
     .audioplayer .toolbar button {
       border-radius: 50%;
       display: flex;
@@ -79,7 +71,6 @@
   .audioplayer .toolbar2 {
     display: flex;
     flex-direction: column;
-    margin-bottom: 20px;
     align-items: center; }
     .audioplayer .toolbar2 .brainjs-slider {
       margin-top: 20px;
@@ -96,7 +87,8 @@
       background-color: navy; }
   .audioplayer .slider {
     display: flex;
-    align-items: center; }
+    align-items: center;
+    min-width: 500px; }
     .audioplayer .slider .brainjs-slider {
       margin-left: 20px;
       flex: 1; }

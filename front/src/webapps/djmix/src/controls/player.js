@@ -68,12 +68,14 @@
 		deps: ['breizbot.pager'],
 
 		props: {
+			showBuffer: false
 		},
 
 		/**
 		 * @param {Breizbot.Services.Pager.Interface} pager
 		 */
 		init: function (elt, pager) {
+			const { showBuffer } = this.props
 
 			/**@type {AudioBuffer} */
 			let audioBuffer = null
@@ -82,13 +84,18 @@
 			const ctrl = $$.viewController(elt, {
 				data: {
 					url: '#',
-					name: '',
+					name: 'No Track loaded',
 					volume: 0.5,
 					duration: 0,
 					curTime: 0,
 					playing: false,
+					loaded: false,
+					showBuffer,
 					getTimeInfo: function () {
 						return `${getTime(this.curTime)} / ${getTime(this.duration)}`
+					},
+					showPlay: function () {
+						return this.loaded && !this.playing
 					}
 
 				},
@@ -105,17 +112,18 @@
 					onTimeUpdate: function () {
 						ctrl.setData({ curTime: this.currentTime })
 						bufferDisplay.update(this.currentTime)
-						elt.trigger('timeUpdate', this.currentTime)
 					},
 
 					onPlaying: function () {
 						//console.log('onPlaying')
 						ctrl.setData({ playing: true })
+						elt.trigger('playing')
 					},
 
 					onPaused: function () {
 						//console.log('onPaused')
 						ctrl.setData({ playing: false })
+						elt.trigger('pause')
 					},
 
 					onPlay: function () {
@@ -156,7 +164,13 @@
 				}
 				console.log('name', name)
 				ctrl.setData({ url, name })
-				return  await bufferDisplay.load(url)
+				const audioBuffer = await bufferDisplay.load(url)
+				ctrl.setData({ loaded: true })
+				return audioBuffer
+			}
+
+			this.getCurrentTime = function () {
+				return audio.currentTime
 			}
 
 			this.getAudioElement = function () {
@@ -173,6 +187,10 @@
 
 			}
 
+			this.isLoaded = function () {
+				return ctrl.model.loaded
+			}
+
 			this.togglePlay = function () {
 				if (ctrl.model.playing) {
 					audio.pause()
@@ -182,7 +200,7 @@
 				}
 			}
 
-			this.getAudioBuffer = function() {
+			this.getAudioBuffer = function () {
 				return audioBuffer
 			}
 		}

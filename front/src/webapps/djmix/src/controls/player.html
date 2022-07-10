@@ -1,27 +1,25 @@
 <div class="info">
-	<div class="title" bn-show="name">
+	<div class="toolbar">
 		<strong bn-text="name"></strong>
+
+		<button bn-show="showPlay" bn-event="click: onPlay" class="w3-btn w3-blue" title="Play" bn-icon="fa fa-play">
+		</button>
+
+		<button bn-show="playing" bn-event="click: onPause" class="w3-btn w3-blue" title="Pause" bn-icon="fa fa-pause">
+		</button>
+
+
+
 	</div>
-</div>
-<div class="toolbar">
-	<div></div>
-
-	<button bn-show="!playing" bn-event="click: onPlay" class="w3-btn w3-blue" title="Play" bn-icon="fa fa-lg fa-play">
-	</button>
-
-	<button bn-show="playing" bn-event="click: onPause" class="w3-btn w3-blue" title="Pause"
-		bn-icon="fa fa-lg fa-pause">
-	</button>
 
 	<div class="toolbar2">
 		<i class="fas fa-lg fa-volume-down w3-text-blue volume"></i>
 		<div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.01, orientation: 'vertical'}"
 			bn-event="input: onVolumeChange" bn-val="volume" class="volulmeSlider"></div>
 	</div>
-
 </div>
 
-<div class="bufferContainer">
+<div class="bufferContainer" bn-show="showBuffer">
 	<canvas bn-bind="bufferCanvas" class="bufferCanvas" width="470" height="100">
 </div>
 

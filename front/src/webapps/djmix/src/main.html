@@ -1,38 +1,45 @@
-<div class="midi">
-    <div class="midiIO">
+<div class="top">
+    <div class="midi">
         <div>MIDI Device</div>
-        <div bn-control="brainjs.combobox" bn-data="{items: midiInputs}" bn-event="comboboxchange: onMidiInputChange"></div>
+        <div bn-control="brainjs.combobox" bn-data="{items: midiInputs}" bn-event="comboboxchange: onMidiInputChange">
+        </div>
+
+    </div>
+    <div class="balance">
+        <label>Left</label>
+        <div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step: 0.01}" bn-event="input: onSliderChange"
+            bn-val="crossFader"></div>
+        <label>Right</label>
+    </div>
+    <div>
+        <button class="w3-button w3-blue" bn-event="click: onLoad" data-audio="1">LOAD 1
+            <i class="fa fa-spinner fa-pulse" bn-show="audio1"></i>
+        </button>
+        <button class="w3-button w3-blue" bn-event="click: onLoad" data-audio="2">LOAD 2
+            <i class="fa fa-spinner fa-pulse" bn-show="audio2"></i>
+        </button>
+
+    </div>
+
+</div>
+<div class="visualizer">
+    <div class="runningBufferContainer" bn-style="runningBufferContainerStyle">
+        <div class="runningBuffer" bn-bind="runningBuffer1"></div>
+        <div class="zeroTime" bn-style="zeroTimeStyle"></div>
     </div>
 </div>
 <div class="visualizer">
-    <div class="runningBufferContainer" bn-bind="runningBufferContainer">
-        <div class="runningBuffer" bn-bind="runningBuffer"></div>    
+    <div class="runningBufferContainer" bn-style="runningBufferContainerStyle">
+        <div class="runningBuffer" bn-bind="runningBuffer2"></div>
+        <div class="zeroTime" bn-style="zeroTimeStyle"></div>
     </div>
 </div>
-<div class="top">
-    <div>
-        <div class="loadLeft">
-            <button class="w3-button w3-blue" bn-event="click: onLoad" data-audio="audio1">LOAD 1
-                <i class="fa fa-spinner fa-pulse" bn-show="audio1"></i>
-            </button>
-        </div>
-        <div bn-control="audioplayer" bn-iface="audio1" bn-event="timeUpdate: onTimeUpdate"></div>
-    </div>
-    <div>
-        <div>
-            <button class="w3-button w3-blue" bn-event="click: onLoad" data-audio="audio2">LOAD 2
-                <i class="fa fa-spinner fa-pulse" bn-show="audio2"></i>
-            </button>
-        </div>
-        <div bn-control="audioplayer" bn-iface="audio2"></div>
-    </div>
+
+<div class="center">
+    <div bn-control="audioplayer" bn-iface="audio1" data-audio="1" bn-event="pause: onPause, playing: onPlay"></div>
+    <div bn-control="audioplayer" bn-iface="audio2" data-audio="2" bn-event="pause: onPause, playing: onPlay"></div>
 </div>
-<div class="bottom">
-    <div class="balance">
-        <label>Left</label>
-        <div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step: 0.01}" bn-event="input: onSliderChange" bn-val="crossFader"></div>
-        <label>Right</label>
-    </div>
-    
-</div>
-<div bn-control="breizbot.filelist" bn-data="{selectionEnabled: true, filterExtension: 'mp3', getMP3Info: true}" bn-iface="filelist"></div>
+
+
+<div bn-control="breizbot.filelist" bn-data="{selectionEnabled: true, filterExtension: 'mp3', getMP3Info: true}"
+    bn-iface="filelist"></div>

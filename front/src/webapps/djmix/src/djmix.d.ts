@@ -51,6 +51,8 @@ declare namespace DJMix {
                 play(node: AudioNode): void;
                 isPlaying(): boolean;
                 getAudioBuffer(): AudioBuffer;
+                getCurrentTime(): number;
+                isLoaded(): boolean;
             }
         }
     

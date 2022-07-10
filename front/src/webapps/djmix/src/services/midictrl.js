@@ -164,6 +164,8 @@ $$.service.registerService('MIDICtrl', {
         }
 
         function clearAllButtons() {
+            if (midiOut == null)
+                return
             for (const { cmd, note, type } of midiInputMapping) {
                 if (type == 'BTN' || type == 'BTN2') {
                     midiOut.send([cmd, note, type == 'BTN' ? BtnIntensity.MIN : BtnIntensity.OFF])
@@ -172,6 +174,8 @@ $$.service.registerService('MIDICtrl', {
         }
 
         function setButtonIntensity(action, intensity, deck, key) {
+            if (midiOut == null)
+                return
             for (const e of midiInputMapping) {
                 let ret = (e.action == action)
                 if (deck != undefined) {

@@ -37,6 +37,22 @@
 
 <div class="center">
     <div bn-control="audioplayer" bn-iface="audio1" data-audio="1" bn-event="pause: onPause, playing: onPlay"></div>
+    <div class="masterPanel">
+        <span>Master</span>
+        <div class="toolbar2">
+            <i class="fas fa-lg fa-volume-down w3-text-blue volume"></i>
+            <div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.01, orientation: 'vertical'}"
+                bn-event="input: onMasterVolumeChange" bn-val="masterVolume" class="volulmeSlider"></div>
+        </div>        
+    </div>
+    <div class="masterPanel">
+        <span>PFL</span>
+        <div class="toolbar2">
+            <i class="fas fa-lg fa-volume-down w3-text-blue volume"></i>
+            <div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.01, orientation: 'vertical'}"
+                bn-event="input: onCueVolumeChange" bn-val="cueVolume" class="volulmeSlider"></div>
+        </div>        
+    </div>
     <div bn-control="audioplayer" bn-iface="audio2" data-audio="2" bn-event="pause: onPause, playing: onPlay"></div>
 </div>
 

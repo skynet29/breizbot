@@ -32,6 +32,8 @@ $$.control.registerControl('rootPage', {
 				midiInputs: [],
 				midiOutputs: [],
 				crossFader: 0.5,
+				masterVolume: 0.5,
+				cueVolume: 0.5,
 				runningBufferContainerStyle: {
 					width: RUNNING_DISPLAY_WIDTH + 'px',
 					height: RUNNING_DISPLAY_HEIGHT + 'px'
@@ -42,6 +44,14 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				onMasterVolumeChange: function() {
+					const masterVolume = $(this).getValue()
+					masterCrossFader.setMasterLevel(masterVolume)
+				},
+				onCueVolumeChange: function() {
+					const cueVolume = $(this).getValue()
+					masterCrossFader.setMasterLevel(cueVolume)
+				},
 				onPause: function() {
 					const deck = $(this).data('audio')
 					//console.log('onPause', deck)
@@ -107,6 +117,7 @@ $$.control.registerControl('rootPage', {
 		 * @param {HTMLElement} runningBuffer 
 		 */
 		function updateTime(time, runningBuffer) {
+			//console.log('updateTime', time)
 			const left = (RUNNING_DISPLAY_WIDTH / 2) * (1 - time)
 			runningBuffer.style.left = left + 'px'
 		}
@@ -168,11 +179,15 @@ $$.control.registerControl('rootPage', {
 		})
 
 		midiCtrl.on('MASTER_LEVEL', ({ velocity }) => {
-			masterCrossFader.setMasterLevel(map(velocity))
+			const masterVolume = map(velocity)
+			masterCrossFader.setMasterLevel(masterVolume)
+			ctrl.setData({masterVolume})
 		})
 
 		midiCtrl.on('CUE_LEVEL', ({ velocity }) => {
-			cueCrossFader.setMasterLevel(map(velocity))
+			const cueVolume = map(velocity)
+			cueCrossFader.setMasterLevel(cueVolume)
+			ctrl.setData({cueVolume})
 		})
 
 		async function init() {

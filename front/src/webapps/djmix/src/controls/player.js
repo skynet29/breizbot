@@ -65,7 +65,7 @@
 
 		template: { gulp_inject: './player.html' },
 
-		deps: ['breizbot.pager'],
+		deps: ['breizbot.pager', 'AudioTools'],
 
 		props: {
 			showBuffer: false
@@ -73,17 +73,27 @@
 
 		/**
 		 * @param {Breizbot.Services.Pager.Interface} pager
+		 * @param {DJMix.Service.AudioTools.Interface} audioTools
 		 */
-		init: function (elt, pager) {
+		init: function (elt, pager, audioTools) {
 			const { showBuffer } = this.props
 
 			/**@type {AudioBuffer} */
 			let audioBuffer = null
 
+			let startTime = 0
+			let elapsedTime = 0
+
+			/**@type {AudioBufferSourceNode} */
+			let audioBufferSourceNode = null
+
+			const audioCtx = audioTools.getAudioContext()
+
+			const gainNode = audioCtx.createGain()
+			gainNode.gain.value = 0.5
 
 			const ctrl = $$.viewController(elt, {
 				data: {
-					url: '#',
 					name: 'No Track loaded',
 					volume: 0.5,
 					duration: 0,
@@ -101,42 +111,22 @@
 				},
 				events: {
 					onVolumeChange: function (ev, value) {
-						audio.volume = value
-					},
-					onLoad: function () {
-						//console.log('duration', this.duration)
-						audio.volume = 0.5
-						ctrl.setData({ duration: Math.floor(audio.duration), volume: audio.volume })
-					},
-
-					onTimeUpdate: function () {
-						ctrl.setData({ curTime: this.currentTime })
-						bufferDisplay.update(this.currentTime)
-					},
-
-					onPlaying: function () {
-						//console.log('onPlaying')
-						ctrl.setData({ playing: true })
-						elt.trigger('playing')
-					},
-
-					onPaused: function () {
-						//console.log('onPaused')
-						ctrl.setData({ playing: false })
-						elt.trigger('pause')
+						//console.log('onVolumeChange', value)
+						gainNode.gain.value = value
 					},
 
 					onPlay: function () {
-						audio.play()
+						play()
 					},
 
 					onPause: function () {
-						audio.pause()
+						pause()
 					},
 
 					onSliderChange: function (ev, value) {
 						//console.log('onSliderChange', value)
-						audio.currentTime = value
+						//audio.currentTime = value
+						reset(value, true)
 					},
 
 
@@ -144,17 +134,54 @@
 			})
 
 
-			/**@type {HTMLAudioElement} */
-			const audio = ctrl.scope.audio.get(0)
 
 			/**@type {HTMLCanvasElement} */
 			const bufferCanvas = ctrl.scope.bufferCanvas.get(0)
 
 			const bufferDisplay = createBufferDisplay(bufferCanvas, (time) => {
 				console.log({ time })
-				audio.currentTime = time
+				//audio.currentTime = time
 			})
 
+
+			function play() {
+				audioBufferSourceNode = audioCtx.createBufferSource()
+				audioBufferSourceNode.buffer = audioBuffer
+				audioBufferSourceNode.connect(gainNode)
+				startTime = audioCtx.currentTime
+				audioBufferSourceNode.start(0, elapsedTime)
+				ctrl.setData({ playing: true })
+				elt.trigger('playing')
+			}
+
+			function pause() {
+				elapsedTime += audioCtx.currentTime - startTime
+				//console.log('elapsedTime', elapsedTime)
+				audioBufferSourceNode.stop()
+				ctrl.setData({ playing: false })
+				elt.trigger('pause')
+			}
+
+
+			this.seek = function (ticks) {
+				if (!ctrl.model.playing && ctrl.model.loaded) {
+					elapsedTime += ticks * 11 / 360
+				}
+			}
+
+			function reset(time = 0, restart = false) {
+				//console.log('reset', { time, restart })
+				const { playing } = ctrl.model
+				if (playing) {
+					pause()
+				}
+				elapsedTime = time
+				if (restart && playing) {
+					play()
+				}
+			}
+
+			this.reset = reset
 
 			this.setInfo = async function (info) {
 				let { mp3, name, url } = info
@@ -163,26 +190,34 @@
 					name = `${artist} - ${title}`
 				}
 				console.log('name', name)
-				ctrl.setData({ url, name })
-				const audioBuffer = await bufferDisplay.load(url)
-				ctrl.setData({ loaded: true })
+				ctrl.setData({name: 'Loading...'})
+				audioBuffer = await $$.media.getAudioBuffer(url)
+				const duration = audioBuffer.duration
+				ctrl.setData({ name, duration, loaded: true })
 				return audioBuffer
 			}
 
 			this.getCurrentTime = function () {
-				return audio.currentTime
+				let curTime = elapsedTime
+				if (ctrl.model.playing) {
+					curTime += audioCtx.currentTime - startTime
+				}
+				ctrl.setData({ curTime })
+				return curTime
 			}
 
-			this.getAudioElement = function () {
-				return audio
+
+			this.getOutputNode = function () {
+				return gainNode
 			}
+
 
 			this.isPlaying = function () {
 				return ctrl.model.playing
 			}
 
 			this.setVolume = function (volume) {
-				audio.volume = volume
+				gainNode.gain.value = volume
 				ctrl.setData({ volume })
 
 			}
@@ -193,10 +228,10 @@
 
 			this.togglePlay = function () {
 				if (ctrl.model.playing) {
-					audio.pause()
+					pause()
 				}
 				else {
-					audio.play()
+					play()
 				}
 			}
 

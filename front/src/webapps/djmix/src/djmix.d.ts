@@ -34,8 +34,9 @@ declare namespace DJMix {
             interface Interface {
                 createStereoMerger(source1: AudioNode, source2: AudioNode): AudioNode;
                 createDestination(channelCount: number, inputNode: AudioNode): void;
-                createMediaSource(audio: HTMLAudioElement): AudioNode
                 createCrossFaderWithMasterLevel(source1: AudioNode, source2: AudioNode): CrossFaderWithMasterLevel;
+                getAudioContext():AudioContext;
+                getCurrentTime(): number;
             }
         }
     }
@@ -44,15 +45,16 @@ declare namespace DJMix {
         declare namespace AudioPlayer {
 
             interface Interface {
-                getAudioElement(): HTMLAudioElement;
                 togglePlay(): void;
                 setInfo(info: {name: string, url: string, mp3?: {artist: string, title: string}}):Promise<AudioBuffer>;
                 setVolume(volume: number):void;
-                play(node: AudioNode): void;
                 isPlaying(): boolean;
                 getAudioBuffer(): AudioBuffer;
                 getCurrentTime(): number;
                 isLoaded(): boolean;
+                getOutputNode(): AudioNode
+                seek(ticks: number):void;
+                reset(time?: number, restart?: boolean):void;
             }
         }
     

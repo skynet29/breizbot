@@ -7,7 +7,7 @@
     </div>
     <div class="balance">
         <label>Left</label>
-        <div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step: 0.01}" bn-event="input: onSliderChange"
+        <div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step: 0.01}" bn-event="input: onCrossFaderChange"
             bn-val="crossFader"></div>
         <label>Right</label>
     </div>
@@ -26,12 +26,14 @@
     <div class="runningBufferContainer" bn-style="runningBufferContainerStyle">
         <div class="runningBuffer" bn-bind="runningBuffer1"></div>
         <div class="zeroTime" bn-style="zeroTimeStyle"></div>
+        <div class="hotcueContainer" bn-style="hotcueContainerStyle" bn-bind="hotcueContainer1"></div>
     </div>
 </div>
 <div class="visualizer">
     <div class="runningBufferContainer" bn-style="runningBufferContainerStyle">
         <div class="runningBuffer" bn-bind="runningBuffer2"></div>
         <div class="zeroTime" bn-style="zeroTimeStyle"></div>
+        <div class="hotcueContainer" bn-bind="hotcueContainer2"></div>
     </div>
 </div>
 

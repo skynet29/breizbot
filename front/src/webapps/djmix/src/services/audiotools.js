@@ -6,6 +6,14 @@ $$.service.registerService('AudioTools', {
 
         const audioCtx = new AudioContext()
 
+        function getAudioContext() {
+            return audioCtx
+        }
+
+        function getCurrentTime() {
+            return audioCtx.currentTime
+        }
+
         /**
          * 
          * @param {AudioNode} source1 
@@ -41,9 +49,6 @@ $$.service.registerService('AudioTools', {
             audio.play()            
         }
 
-        function createMediaSource(audio) {
-            return audioCtx.createMediaElementSource(audio)
-        }
 
         /**
          * 
@@ -87,8 +92,9 @@ $$.service.registerService('AudioTools', {
         return {
             createStereoMerger,
             createDestination,
-            createMediaSource,
-            createCrossFaderWithMasterLevel
+            createCrossFaderWithMasterLevel,
+            getAudioContext,
+            getCurrentTime
         }
     }
 });

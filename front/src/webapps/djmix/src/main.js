@@ -24,6 +24,11 @@ $$.control.registerControl('rootPage', {
 		const SECONDS_OF_RUNNING_DISPLAY = 2.0
 		const MAX_CANVAS_WIDTH = 32000
 
+		const hotcues1 = {}
+		const hotcues2 = {}
+
+		const hotcues = [hotcues1, hotcues2]
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				audio1: false,
@@ -41,37 +46,32 @@ $$.control.registerControl('rootPage', {
 				zeroTimeStyle: {
 					left: RUNNING_DISPLAY_WIDTH / 2,
 					height: RUNNING_DISPLAY_HEIGHT
+				},
+				hotcueContainerStyle: {
+
 				}
 			},
 			events: {
-				onMasterVolumeChange: function() {
-					const masterVolume = $(this).getValue()
-					masterCrossFader.setMasterLevel(masterVolume)
+				onMasterVolumeChange: function (ev, value) {
+					//console.log('onMasterVolumeChange', value)
+					masterCrossFader.setMasterLevel(value)
 				},
-				onCueVolumeChange: function() {
-					const cueVolume = $(this).getValue()
-					masterCrossFader.setMasterLevel(cueVolume)
+				onCueVolumeChange: function (ev, value) {
+					masterCrossFader.setMasterLevel(value)
 				},
-				onPause: function() {
+				onPause: function () {
 					const deck = $(this).data('audio')
 					//console.log('onPause', deck)
 					midiCtrl.setButtonIntensity('PLAY', 1, deck)
 				},
 
-				onPlay: function() {
+				onPlay: function () {
 					const deck = $(this).data('audio')
 					//console.log('onPlay', deck)
 					midiCtrl.setButtonIntensity('PLAY', 127, deck)
 
 				},
-				onTimeUpdate: function (ev, data) {
-					const deck = $(this).data('audio')
-
-					//console.log('onTimeUpdate', data)
-					updateTime(data, runningBuffers[deck - 1])
-				},
-				onSliderChange: function () {
-					const value = $(this).getValue()
+				onCrossFaderChange: function (ev, value) {
 					masterCrossFader.setFaderLevel(value)
 				},
 				onLoad: function () {
@@ -100,12 +100,20 @@ $$.control.registerControl('rootPage', {
 			if (selFile) {
 				const runningBuffer = runningBuffers[deck - 1]
 				runningBuffer.innerHTML = '' // remove all children
+				const hotcueContainer = hotcueContainers[deck - 1]
+				hotcueContainer.innerHTML = '' // remove all children
+
 				ctrl.model[audio] = true
 				ctrl.update()
 				const audioBuffer = await ctrl.scope[audio].setInfo(selFile)
+
+				const width = RUNNING_DISPLAY_WIDTH / 2 * audioBuffer.duration
+				hotcueContainer.style.width = width + 'px'
+				hotcueContainer.style.height = RUNNING_DISPLAY_HEIGHT + 'px'
+
 				drawRunningBuffer(audioBuffer, runningBuffer, colors[deck - 1])
 				ctrl.model[audio] = false
-				updateTime(0, runningBuffer)
+				updateTime(0, deck)
 				ctrl.update()
 			}
 
@@ -114,14 +122,39 @@ $$.control.registerControl('rootPage', {
 		/**
 		 * 
 		 * @param {number} time 
-		 * @param {HTMLElement} runningBuffer 
+		 * @param {number} deck 
 		 */
-		function updateTime(time, runningBuffer) {
+		function updateTime(time, deck) {
 			//console.log('updateTime', time)
+			const runningBuffer = runningBuffers[deck - 1]
+			const hotcueContainer = hotcueContainers[deck - 1]
 			const left = (RUNNING_DISPLAY_WIDTH / 2) * (1 - time)
 			runningBuffer.style.left = left + 'px'
+			hotcueContainer.style.left = left + 'px'
 		}
 
+		const hotcueColors = ['red', 'green', 'blue', 'orange']
+
+		/**
+		 * 
+		 * @param {number} deck 
+		 * @param {number} hotcue 
+		 * @param {number} time 
+		 */
+		function createHotCue(deck, hotcue, time) {
+			console.log('createHotCue', { deck, hotcue, time })
+			const hotcueContainer = hotcueContainers[deck - 1]
+			const div = document.createElement('div')
+			div.classList.add('hotcue')
+
+			const width = RUNNING_DISPLAY_WIDTH / 2 * time
+			div.style.left = width + 'px'
+			div.style.backgroundColor = hotcueColors[hotcue - 1]
+			div.style.height = RUNNING_DISPLAY_HEIGHT + 'px'
+			hotcueContainer.appendChild(div)
+			hotcues[deck - 1][hotcue - 1] = time
+
+		}
 		/**
 		 * 
 		 * @param {number} deck 
@@ -165,6 +198,34 @@ $$.control.registerControl('rootPage', {
 			fileList.enterSelFolder()
 		})
 
+		midiCtrl.on('JOG_WHEEL', ({ deck, velocity }) => {
+			//console.log('JOG_WHEEL', {deck, velocity})
+			const audioCtrl = getAudioCtrl(deck)
+			audioCtrl.seek(velocity == 1 ? 1 : -1)
+		})
+
+		midiCtrl.on('CUE', ({ deck }) => {
+			const audioCtrl = getAudioCtrl(deck)
+			audioCtrl.reset()
+		})
+
+		midiCtrl.on('HOT_CUE', ({ deck, key }) => {
+			//console.log('HOT_CUE', { deck, key })
+			const audioCtrl = getAudioCtrl(deck)
+			const time = audioCtrl.getCurrentTime()
+			//console.log('hotcues', hotcues[deck - 1])
+			const hotcueTime = hotcues[deck - 1][key - 1]
+			if (hotcueTime == undefined) {
+				createHotCue(deck, key, time)
+				midiCtrl.setButtonIntensity('HOT_CUE', 127, deck, key)
+			}
+			else {
+				audioCtrl.reset(hotcueTime, true)
+			}
+
+		})
+
+
 		midiCtrl.on('PFL', ({ deck }) => {
 			if (deck == 1) {
 				cueCrossFader.setFaderLevel(0)
@@ -181,13 +242,13 @@ $$.control.registerControl('rootPage', {
 		midiCtrl.on('MASTER_LEVEL', ({ velocity }) => {
 			const masterVolume = map(velocity)
 			masterCrossFader.setMasterLevel(masterVolume)
-			ctrl.setData({masterVolume})
+			ctrl.setData({ masterVolume })
 		})
 
 		midiCtrl.on('CUE_LEVEL', ({ velocity }) => {
 			const cueVolume = map(velocity)
 			cueCrossFader.setMasterLevel(cueVolume)
-			ctrl.setData({cueVolume})
+			ctrl.setData({ cueVolume })
 		})
 
 		async function init() {
@@ -210,6 +271,8 @@ $$.control.registerControl('rootPage', {
 		/**@type {Array<HTMLElement>} */
 		const runningBuffers = [ctrl.scope.runningBuffer1.get(0), ctrl.scope.runningBuffer2.get(0)]
 
+		/**@type {Array<HTMLElement>} */
+		const hotcueContainers = [ctrl.scope.hotcueContainer1.get(0), ctrl.scope.hotcueContainer2.get(0)]
 
 		/**
 		 * 
@@ -267,23 +330,23 @@ $$.control.registerControl('rootPage', {
 
 		function updateDisplay() {
 			if (audio1.isLoaded()) {
-				updateTime(audio1.getCurrentTime(), runningBuffers[0])
+				updateTime(audio1.getCurrentTime(), 1)
 			}
 			if (audio2.isLoaded()) {
-				updateTime(audio2.getCurrentTime(), runningBuffers[1])
+				updateTime(audio2.getCurrentTime(), 2)
 			}
 			requestAnimationFrame(updateDisplay)
 		}
 
 		updateDisplay()
 
-		const source1 = audioTools.createMediaSource(audio1.getAudioElement())
-		const source2 = audioTools.createMediaSource(audio2.getAudioElement())
+		const source1 = audio1.getOutputNode()
+		const source2 = audio2.getOutputNode()
 
 		const masterCrossFader = audioTools.createCrossFaderWithMasterLevel(source1, source2)
 
 		const cueCrossFader = audioTools.createCrossFaderWithMasterLevel(source1, source2)
-		cueCrossFader.setFaderLevel(0)
+		cueCrossFader.setFaderLevel(1)
 
 		const merger = audioTools.createStereoMerger(masterCrossFader.getOutputNode(), cueCrossFader.getOutputNode())
 

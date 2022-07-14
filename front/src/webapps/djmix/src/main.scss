@@ -85,6 +85,15 @@
 
             }
 
+            .hotcueContainer {
+                position: absolute;                
+
+                .hotcue {
+                    position: absolute;
+                    width: 2px;
+                }
+            }
+
         }
 
     }

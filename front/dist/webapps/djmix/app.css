@@ -56,6 +56,11 @@
       .rootPage .visualizer .runningBufferContainer .runningBuffer {
         position: absolute;
         display: flex; }
+      .rootPage .visualizer .runningBufferContainer .hotcueContainer {
+        position: absolute; }
+        .rootPage .visualizer .runningBufferContainer .hotcueContainer .hotcue {
+          position: absolute;
+          width: 2px; }
   .rootPage .audioplayer {
     border: 1px solid black;
     border-radius: 10px; }

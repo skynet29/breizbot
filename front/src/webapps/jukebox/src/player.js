@@ -3,8 +3,10 @@
 
 	function getTime(duration) {
 		const d = new Date(duration * 1000)
-		const v = d.getMinutes() + d.getSeconds() / 100
-		return v.toFixed(2).replace('.', ':')
+		if (d.getUTCHours() > 0)  {
+			return d.getUTCHours().toString() + ':' + d.getMinutes().toString().padStart(2, '0') + ':' + d.getSeconds().toString().padStart(2, '0')			
+		}
+		return d.getMinutes().toString() + ':' + d.getSeconds().toString().padStart(2, '0')
 	}
 
 

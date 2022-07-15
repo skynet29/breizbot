@@ -21,7 +21,7 @@ $$.control.registerControl('rootPage', {
 
 		const RUNNING_DISPLAY_WIDTH = 1200
 		const RUNNING_DISPLAY_HEIGHT = 80
-		const SECONDS_OF_RUNNING_DISPLAY = 2.0
+		const SECONDS_OF_RUNNING_DISPLAY = 4.0
 		const MAX_CANVAS_WIDTH = 32000
 
 		const hotcues1 = {}

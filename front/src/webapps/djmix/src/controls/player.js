@@ -1,11 +1,6 @@
 //@ts-check
 (function () {
 
-	function getTime(duration) {
-		const d = new Date(duration * 1000)
-		return d.getMinutes().toString() + ':' + d.getSeconds().toString().padStart(2, '0')
-	}
-
 	/**
 	 * 
 	 * @param {HTMLCanvasElement} bufferCanvas
@@ -77,6 +72,8 @@
 		 */
 		init: function (elt, pager, audioTools) {
 			const { showBuffer } = this.props
+
+			const getTime = $$.media.getFormatedTime
 
 			/**@type {AudioBuffer} */
 			let audioBuffer = null

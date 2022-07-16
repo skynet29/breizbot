@@ -1,36 +1,25 @@
 .editDlg {
 
     padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     form {
 
-        //margin-top: 10px;
+        .group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
 
-        display: grid;
-        grid-template-columns: 50px 1fr auto;
-        grid-gap: 10px;
-
-        label {
-            grid-column: 1 / 2;
-        }
-        
-        input {
-            grid-column: 2 / 3;
+            > label {
+                width: 80px;
+            }
         }
     }
 
     .toolbar {
         margin-top: 30px;
-        display: flex;
-        justify-content: center;
 
-        .w3-circle {
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 3rem;
-            height: 3rem;
-        }
     }
 }

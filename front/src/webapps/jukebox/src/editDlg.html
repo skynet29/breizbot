@@ -1,20 +1,38 @@
 <form bn-event="submit: onSubmit" bn-form="mp3">
-    <label>Title</label>
-    <input type="text" name="title" required>
-    <label>Artist</label>
-    <input type="text" name="artist" required>
-    <label>Genre</label>
-    <input type="text" name="genre">
-    <label>Year</label>
-    <input type="number" name="year">
-
+    <div class="group">
+        <label>Title</label>
+        <input type="text" name="title" required>    
+    </div>
+    <div class="group">
+        <label>Artist</label>
+        <input type="text" name="artist" required>
+        </div>
+    <div class="group">
+        <label>Title</label>
+        <input type="text" name="title" required>    
+    </div>
+    <div class="group">
+        <label>Genre</label>
+        <input type="text" name="genre">
+        </div>
+    <div class="group">
+        <label>Year</label>
+        <input type="number" name="year">
+        </div>
+    <div class="group">
+        <label>Duration</label>
+        <input type="number" name="length">
+        </div>
+    <div class="group">
+        <label>BPM</label>
+        <input type="number" name="bpm" step="0.1">
+        </div>
 
     <input type="submit" hidden bn-bind="submit">
 </form>
 
 <div class="toolbar">
-    <button type="button" title="Find Info" bn-event="click: onFindInfo" class="w3-btn w3-blue w3-circle">
-        <i class="fa fa-search"></i>
-    </button>
+    <button type="button" title="Find Info" bn-event="click: onFindInfo" class="w3-btn w3-blue" bn-icon="fa fa-search"></button>
+    <button type="button" title="Compute Beat Detection" bn-event="click: onComputeBeatDetection" class="w3-btn w3-blue">Compute Beat Detection</button>
     
 </div>

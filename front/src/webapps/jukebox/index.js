@@ -103,6 +103,8 @@ module.exports = function (ctx, router) {
 
 		const fullPath = util.getFilePath(req.session.user, filePath, friendUser)
 
+		console.log('saveInfo', tags)
+
 		NodeID3.write(tags, fullPath, function (err) {
 			if (err) {
 				res.status(400).send(err)

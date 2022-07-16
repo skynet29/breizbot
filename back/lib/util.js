@@ -40,6 +40,8 @@ function genThumbnail(filePath, res, size) {
  * @property {string} artist
  * @property {string} title
  * @property {number} year
+ * @property {number} length
+ * @property {number} bpm
  */
 
 
@@ -54,12 +56,9 @@ function readID3(filePath) {
 			if (err) {
 				reject(err)
 			}
-			resolve({
-				artist: tags.artist,
-				title: tags.title,
-				year: tags.year,
-				genre: tags.genre
-			})
+
+			delete tags.raw
+			resolve(tags)
 		})
 	})
 

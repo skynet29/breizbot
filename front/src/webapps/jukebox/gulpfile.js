@@ -35,14 +35,20 @@ const arg = (argList => {
   
   })(process.argv);
 
-  console.log('arg', arg)
-
-
 const appJs = task('app.js',
 	[
 		'./src/**/*.js'
 	],
 	{isCode: true, concat: 'app.js'}
+
+)
+
+
+const workerJs = task('worker.js',
+	[
+		'./worker/**/*.js'
+	],
+	{isCode: true, concat: 'worker.js', dest: 'assets'}
 
 )
 
@@ -115,7 +121,7 @@ function copyIndexJS()
 		.pipe(gulp.dest('.'))	
 }
 
-const app = gulp.series(appJs, appCss, assets)
+const app = gulp.series(appJs, appCss, assets, workerJs)
 exports.default = app
 
 exports.addCtrl = gulp.series(replaceTemplateJS, replaceTemplateSCSS, replaceTemplateHTML)
@@ -125,6 +131,7 @@ exports.addFormCtrl = gulp.series(replaceFormTemplateJS, replaceFormTemplateSCSS
 exports.addBack = copyIndexJS
 
 exports.watch = gulp.series(app, function() {
+	gulp.watch(['./worker/**/*.js'], workerJs)
 	gulp.watch(['./src/**/*.js', './src/**/*.html'], appJs)
 	gulp.watch(['./src/**/*.scss'], appCss)
 	gulp.watch(['./assets/*'], assets)

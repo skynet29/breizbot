@@ -12,7 +12,8 @@ $$.control.registerControl('player', {
 		firstIdx: 0,
 		friendUser: '',
 		fileCtrl: null,
-		isPlaylist: false
+		isPlaylist: false,
+		worker: null
 	},
 
 	/**
@@ -28,10 +29,11 @@ $$.control.registerControl('player', {
 		 * files: Breizbot.Services.Files.FileInfo[] | AppJukebox.PlaylistInfo[], 
 		 * firstIdx: number,
 		 * friendUser: string,
-		 * fileCtrl: Breizbot.Controls.Files.Interface
-		 * isPlaylist: boolean
+		 * fileCtrl: Breizbot.Controls.Files.Interface,
+		 * isPlaylist: boolean,
+		 * worker: Worker
 		 * }} */
-		const { rootDir, files, firstIdx, friendUser, fileCtrl, isPlaylist } = this.props
+		const { rootDir, files, firstIdx, friendUser, fileCtrl, isPlaylist, worker } = this.props
 
 		const getTime = $$.media.getFormatedTime
 
@@ -279,11 +281,15 @@ $$.control.registerControl('player', {
 					icon: 'fa fa-edit',
 					onClick: function () {
 						const { idx, name } = ctrl.model
+						const mp3 = files[idx].mp3
+						mp3.length = ctrl.model.duration
 						pager.pushPage('editDlg', {
 							title: 'Edit MP3 Info',
 							props: {
 								mp3: files[idx].mp3,
-								fileName: name
+								fileName: name,
+								worker,
+								url: ctrl.model.src,
 							},
 							onReturn: async function (tags) {
 								//console.group('onReturn', tags)

@@ -1,24 +1,16 @@
 .editDlg {
-  padding: 10px; }
-  .editDlg form {
-    display: grid;
-    grid-template-columns: 50px 1fr auto;
-    grid-gap: 10px; }
-    .editDlg form label {
-      grid-column: 1 / 2; }
-    .editDlg form input {
-      grid-column: 2 / 3; }
-  .editDlg .toolbar {
-    margin-top: 30px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center; }
+  .editDlg form .group {
     display: flex;
-    justify-content: center; }
-    .editDlg .toolbar .w3-circle {
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 3rem;
-      height: 3rem; }
+    align-items: center;
+    margin-bottom: 10px; }
+    .editDlg form .group > label {
+      width: 80px; }
+  .editDlg .toolbar {
+    margin-top: 30px; }
 
 .filterDlg {
   padding: 10px; }

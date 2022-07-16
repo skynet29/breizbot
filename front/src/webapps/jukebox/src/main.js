@@ -3,13 +3,18 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager'],
+	deps: ['breizbot.pager', 'breizbot.files'],
 
 	/**
 	 * 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Files.Interface} files
 	 */
-	init: function (elt, pager) {
+	init: function (elt, pager, files) {
+
+
+		const worker = new Worker(files.assetsUrl('worker.js'))
+
 
 		/**
 		 * 
@@ -69,7 +74,8 @@ $$.control.registerControl('rootPage', {
 								files,
 								rootDir,
 								friendUser,
-								fileCtrl
+								fileCtrl,
+								worker
 							}
 						})
 

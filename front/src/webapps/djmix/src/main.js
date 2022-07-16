@@ -128,7 +128,7 @@ $$.control.registerControl('rootPage', {
 			//console.log('updateTime', time)
 			const runningBuffer = runningBuffers[deck - 1]
 			const hotcueContainer = hotcueContainers[deck - 1]
-			const left = (RUNNING_DISPLAY_WIDTH / 2) * (1 - time)
+			const left = (RUNNING_DISPLAY_WIDTH / SECONDS_OF_RUNNING_DISPLAY) * (SECONDS_OF_RUNNING_DISPLAY / 2 - time)
 			runningBuffer.style.left = left + 'px'
 			hotcueContainer.style.left = left + 'px'
 		}

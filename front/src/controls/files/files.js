@@ -232,6 +232,13 @@
 						const date = new Date(scope.f.mtime).toLocaleDateString()
 						return 'Last Modif: ' + date
 
+					},
+
+					getDuration: function(scope) {
+						if (scope.f.mp3.length) {
+							return $$.media.getFormatedTime(scope.f.mp3.length)
+						}
+						return ''
 					}
 
 

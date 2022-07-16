@@ -88,12 +88,14 @@
 					getHeader: function () {
 						const data = []
 						data.push('')
-						data.push('Name')
 						if (getMP3Info) {
 							data.push('Title')
 							data.push('Artist')
+							data.push('Duration')
+							data.push('BPM')
 						}
 						else {
+							data.push('Name')
 							data.push('Size')
 							data.push('Last Modif')
 						}
@@ -102,12 +104,14 @@
 					getItem: function (scope) {
 						const data = []
 						data.push(`<i class="fa fa-2x ${getIconClass(scope.f)}"></i>`)
-						data.push(scope.f.name)
 						if (getMP3Info) {
 							data.push(this.getTitle(scope))
 							data.push(this.getArtist(scope))
+							data.push(this.getDuration(scope))
+							data.push(this.getBPM(scope))
 						}
 						else {
+							data.push(scope.f.name)
 							data.push(this.getSize(scope))
 							data.push(this.getDate(scope))
 						}
@@ -118,6 +122,22 @@
 						return { class: 'fa fa-lg ' + getIconClass(scope.f) }
 					},
 
+					getDuration: function(scope) {
+						const { mp3 } = scope.f
+						if (mp3 != undefined && mp3.length) {
+							return $$.media.getFormatedTime(mp3.length)
+						}
+						return ''						
+					},
+
+					getBPM: function(scope) {
+						const { mp3 } = scope.f
+						if (mp3 != undefined && mp3.bpm) {
+							return mp3.bpm
+						}
+						return ''						
+					},					
+
 					getArtist: function (scope) {
 						const { mp3 } = scope.f
 						if (mp3 != undefined && mp3.artist) {
@@ -127,7 +147,10 @@
 					},
 
 					getTitle: function (scope) {
-						const { mp3 } = scope.f
+						const { mp3, folder, name } = scope.f
+						if (folder) {
+							return name
+						}
 						if (mp3 != undefined && mp3.title) {
 							return mp3.title
 						}
@@ -217,9 +240,9 @@
 						ev.stopPropagation()
 
 						const idx = $(this).index()
-						console.log('idx', idx)
+						//console.log('idx', idx)
 						const info = ctrl.model.getFiles()[idx]
-						console.log('info', info)
+						//console.log('info', info)
 						if (info.folder) {
 							const dirName = info.name
 							const newDir = ctrl.model.rootDir + dirName + '/'
@@ -256,7 +279,10 @@
 				}
 				//console.log('loadData', rootDir)
 				ctrl.setData({ loading: true })
-				const files = await srvFiles.list(rootDir, { filterExtension, getMP3Info }, friendUser)
+				let files = await srvFiles.list(rootDir, { filterExtension, getMP3Info }, friendUser)
+				if (getMP3Info) {
+					files = files.filter((f) => f.folder || (f.mp3 != undefined && f.mp3.title))
+				}
 				//console.log('files', files)
 
 				sortFiles(files)

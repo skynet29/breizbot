@@ -99,7 +99,7 @@
 					loaded: false,
 					showBuffer,
 					getTimeInfo: function () {
-						return `${getTime(this.curTime)} / ${getTime(this.duration)}`
+						return `${getTime(this.curTime, true)} / ${getTime(this.duration)}`
 					},
 					showPlay: function () {
 						return this.loaded && !this.playing
@@ -140,10 +140,27 @@
 				//audio.currentTime = time
 			})
 
+			let pauseFeedback = null
 
 			function play() {
+				console.log('play', elapsedTime)
+				gainNode.gain.value = ctrl.model.volume
 				audioBufferSourceNode = audioCtx.createBufferSource()
 				audioBufferSourceNode.buffer = audioBuffer
+				audioBufferSourceNode.onended = function() {
+					console.log('onended', ctrl.model.playing)
+
+					if (ctrl.model.playing) {
+						ctrl.setData({ playing: false })
+						elapsedTime = audioBuffer.duration
+						elt.trigger('pause')	
+					}
+
+					if (pauseFeedback != null) {
+						pauseFeedback()
+						pauseFeedback = null
+					}
+				}
 				audioBufferSourceNode.connect(gainNode)
 				startTime = audioCtx.currentTime
 				audioBufferSourceNode.start(0, elapsedTime)
@@ -151,26 +168,34 @@
 				elt.trigger('playing')
 			}
 
+			const FADE = 0.01
+
 			function pause() {
-				elapsedTime += audioCtx.currentTime - startTime
-				//console.log('elapsedTime', elapsedTime)
-				audioBufferSourceNode.stop()
-				ctrl.setData({ playing: false })
-				elt.trigger('pause')
+				console.log('pause')
+				return new Promise((resolve) => {
+					ctrl.setData({ playing: false })
+					elapsedTime +=  audioCtx.currentTime - startTime
+					audioBufferSourceNode.stop()
+					audioBufferSourceNode = null
+					elt.trigger('pause')
+					pauseFeedback = resolve
+	
+				})
 			}
 
 
 			this.seek = function (ticks) {
 				if (!ctrl.model.playing && ctrl.model.loaded) {
 					elapsedTime += ticks * 11 / 360
+					elapsedTime = Math.max(0, elapsedTime)
 				}
 			}
 
-			function reset(time = 0, restart = false) {
+			async function reset(time = 0, restart = false) {
 				//console.log('reset', { time, restart })
 				const { playing } = ctrl.model
 				if (playing) {
-					pause()
+					await pause()
 				}
 				elapsedTime = time
 				if (restart && playing) {
@@ -200,6 +225,7 @@
 					curTime += audioCtx.currentTime - startTime
 				}
 				ctrl.setData({ curTime })
+				//console.log('getCurrentTime', curTime)
 				return curTime
 			}
 

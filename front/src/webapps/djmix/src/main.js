@@ -21,7 +21,7 @@ $$.control.registerControl('rootPage', {
 
 		const RUNNING_DISPLAY_WIDTH = 1200
 		const RUNNING_DISPLAY_HEIGHT = 80
-		const SECONDS_OF_RUNNING_DISPLAY = 4.0
+		const SECONDS_OF_RUNNING_DISPLAY = 10.0
 		const MAX_CANVAS_WIDTH = 32000
 
 		const hotcues1 = {}
@@ -147,7 +147,7 @@ $$.control.registerControl('rootPage', {
 			const div = document.createElement('div')
 			div.classList.add('hotcue')
 
-			const width = RUNNING_DISPLAY_WIDTH / 2 * time
+			const width = RUNNING_DISPLAY_WIDTH / SECONDS_OF_RUNNING_DISPLAY * time
 			div.style.left = width + 'px'
 			div.style.backgroundColor = hotcueColors[hotcue - 1]
 			div.style.height = RUNNING_DISPLAY_HEIGHT + 'px'

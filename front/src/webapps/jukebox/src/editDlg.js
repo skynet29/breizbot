@@ -3,7 +3,7 @@ $$.control.registerControl('editDlg', {
 
     template: { gulp_inject: './editDlg.html' },
 
-    deps: ['breizbot.http', 'breizbot.pager'],
+    deps: ['breizbot.http', 'breizbot.pager', 'brainjs.beatdetector'],
 
     props: {
         mp3: {},
@@ -16,55 +16,19 @@ $$.control.registerControl('editDlg', {
      * 
      * @param {Breizbot.Services.Http.Interface} http 
      * @param {Breizbot.Services.Pager.Interface} pager 
+     * @param {Brainjs.Services.BeatDetector.Interface} beatdetector
      */
-    init: function (elt, http, pager) {
+    init: function (elt, http, pager, beatdetector) {
 
         /**@type {{mp3: Breizbot.Services.Files.Mp3Info, fileName: string, url: string, worker: Worker}} */
         // @ts-ignore
-        const { mp3, fileName, url, worker } = this.props
+        const { mp3, fileName, url } = this.props
 
         const waitDlg = $$.ui.waitDialog('Computing...')
 
         //console.log('props', this.props)
 
-        function computeBeatDetection() {
 
-            return new Promise(async (resolve) => {
-
-                const audioBuffer = await $$.media.getAudioBuffer(url)
-                const sampleRate = audioBuffer.sampleRate
-                const offlineContext = new OfflineAudioContext(1, audioBuffer.length, sampleRate)
-
-                // Create buffer source
-                const source = offlineContext.createBufferSource()
-                source.buffer = audioBuffer
-
-                // Create filter
-                const filter = offlineContext.createBiquadFilter()
-                filter.type = "lowpass"
-                filter.frequency.value = 240
-
-                // Pipe the song into the filter, and the filter into the offline context
-                source.connect(filter)
-                filter.connect(offlineContext.destination)
-
-                // Schedule the song to start playing at time:0
-                source.start(0);
-
-                // Render the song
-                offlineContext.startRendering()
-
-                // Act on the result
-                offlineContext.oncomplete = function (e) {
-                    // Filtered buffer!
-                    const channelData = e.renderedBuffer.getChannelData(0)
-                    worker.postMessage({ channelData, sampleRate })
-                    worker.onmessage = function (ev) {
-                        resolve(ev.data)
-                    }
-                }
-            })
-        }
 
         const ctrl = $$.viewController(elt, {
             data: {
@@ -73,9 +37,10 @@ $$.control.registerControl('editDlg', {
             events: {
                 onComputeBeatDetection: async function() {
                     waitDlg.show()
-                    const info = await computeBeatDetection()
+                    const audioBuffer = await $$.media.getAudioBuffer(url)
+                    const info = await beatdetector.computeBeatDetection(audioBuffer)
                     console.log('tempo', info)
-                    ctrl.model.mp3.bpm = info.tempo
+                    ctrl.model.mp3.bpm = parseFloat(info.tempo.toFixed(2))
                     ctrl.update()
                     waitDlg.hide()
                 },

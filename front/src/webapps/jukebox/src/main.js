@@ -12,10 +12,6 @@ $$.control.registerControl('rootPage', {
 	 */
 	init: function (elt, pager, files) {
 
-
-		const worker = new Worker(files.assetsUrl('worker.js'))
-
-
 		/**
 		 * 
 		 * @param {Breizbot.Controls.Files.Interface} iface 
@@ -74,8 +70,7 @@ $$.control.registerControl('rootPage', {
 								files,
 								rootDir,
 								friendUser,
-								fileCtrl,
-								worker
+								fileCtrl
 							}
 						})
 

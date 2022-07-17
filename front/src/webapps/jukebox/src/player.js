@@ -31,9 +31,8 @@ $$.control.registerControl('player', {
 		 * friendUser: string,
 		 * fileCtrl: Breizbot.Controls.Files.Interface,
 		 * isPlaylist: boolean,
-		 * worker: Worker
 		 * }} */
-		const { rootDir, files, firstIdx, friendUser, fileCtrl, isPlaylist, worker } = this.props
+		const { rootDir, files, firstIdx, friendUser, fileCtrl, isPlaylist } = this.props
 
 		const getTime = $$.media.getFormatedTime
 
@@ -288,7 +287,6 @@ $$.control.registerControl('player', {
 							props: {
 								mp3: files[idx].mp3,
 								fileName: name,
-								worker,
 								url: ctrl.model.src,
 							},
 							onReturn: async function (tags) {

@@ -51,7 +51,8 @@ declare namespace DJMix {
 
             interface Interface {
                 togglePlay(): void;
-                setInfo(info: {name: string, url: string, mp3?: {artist: string, title: string}}):Promise<AudioBuffer>;
+                setInfo(info: {name: string, url: string, mp3?: {artist: string, title: string}}):
+                    Promise<{ audioBuffer: AudioBuffer, tempo: Breizbot.Services.BeatDetector.BeatInfo}>;
                 setVolume(volume: number):void;
                 isPlaying(): boolean;
                 getAudioBuffer(): AudioBuffer;
@@ -66,6 +67,8 @@ declare namespace DJMix {
                 toggleHotcueDeleteMode():void;
                 isHotcueDeleteMode():boolean;
                 deleteHotcue(nb: number):void;
+                autoLoopActivate(nb: number, startTime: number, duration: number):boolean;
+                getBpm():number;
             }
         }
     

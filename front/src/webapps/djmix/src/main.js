@@ -4,7 +4,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'MIDICtrl', 'AudioTools', 'breizbot.beatdetector'],
+	deps: ['breizbot.pager', 'MIDICtrl', 'AudioTools'],
 
 	props: {
 	},
@@ -14,9 +14,8 @@ $$.control.registerControl('rootPage', {
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {DJMix.Service.MIDICtrl.Interface} midiCtrl
 	 * @param {DJMix.Service.AudioTools.Interface} audioTools
-	 * @param {Breizbot.Services.BeatDetector.Interface} beatdetector
 	 */
-	init: async function (elt, pager, midiCtrl, audioTools, beatdetector) {
+	init: async function (elt, pager, midiCtrl, audioTools) {
 
 		const map = $$.util.mapRange(0, 127, 0, 1)
 
@@ -94,9 +93,7 @@ $$.control.registerControl('rootPage', {
 
 				ctrl.model[audio] = true
 				ctrl.update()
-				const audioBuffer = await ctrl.scope[audio].setInfo(selFile)
-				const tempo = await beatdetector.computeBeatDetection(audioBuffer)
-				console.log('tempo', tempo)
+				const {audioBuffer, tempo} = await ctrl.scope[audio].setInfo(selFile)
 
 				const width = RUNNING_DISPLAY_WIDTH / 2 * audioBuffer.duration
 				hotcueContainer.style.width = width + 'px'
@@ -165,6 +162,27 @@ $$.control.registerControl('rootPage', {
 
 		}
 
+		function removeLoop(deck) {
+			const hotcueContainer = hotcueContainers[deck - 1]
+			$(hotcueContainer).find('.loop').remove()
+		}
+
+		function createLoop(deck, startTime, duration) {
+			console.log('createLoop', { deck, startTime, duration })
+			const hotcueContainer = hotcueContainers[deck - 1]
+			$(hotcueContainer).find('.loop').remove()
+
+			const div = document.createElement('div')
+			div.classList.add('loop')
+
+			const width = getOffset(startTime)
+			div.style.left = width + 'px'
+			div.style.width = getOffset(duration) + 'px'
+			div.style.height = RUNNING_DISPLAY_HEIGHT + 'px'
+			hotcueContainer.appendChild(div)
+
+		}
+
 		/**
 		 * 
 		 * @param {number} deck 
@@ -176,7 +194,7 @@ $$.control.registerControl('rootPage', {
 
 		midiCtrl.on('MIDI_STATECHANGE', (ev) => {
 			console.log('midiStateChange', ev)
-			ctrl.setData({midiInputs: midiCtrl.getMIDIInputs()})			
+			ctrl.setData({ midiInputs: midiCtrl.getMIDIInputs() })
 		})
 
 		midiCtrl.on('PLAY', ({ deck }) => {
@@ -223,6 +241,18 @@ $$.control.registerControl('rootPage', {
 			audioCtrl.reset()
 		})
 
+		midiCtrl.on('LOOP_AUTO', ({ deck, key }) => {
+			const audioCtrl = getAudioCtrl(deck)
+			const startTime = audioCtrl.getCurrentTime()
+			const duration = 60 / audioCtrl.getBpm() * key
+			if (audioCtrl.autoLoopActivate(key, startTime, duration)) {
+				removeLoop(deck)
+			}
+			else {
+				createLoop(deck, startTime, duration)
+			}
+		})
+
 		midiCtrl.on('HOT_CUE', ({ deck, key }) => {
 			//console.log('HOT_CUE', { deck, key })
 			const audioCtrl = getAudioCtrl(deck)
@@ -235,23 +265,23 @@ $$.control.registerControl('rootPage', {
 				if (audioCtrl.isHotcueDeleteMode()) {
 					if (info) {
 						audioCtrl.deleteHotcue(key)
-						hotcueContainers[deck - 1].removeChild(info.div)	
+						hotcueContainers[deck - 1].removeChild(info.div)
 					}
 				}
 				else {
 					const time = audioCtrl.getCurrentTime()
-					
+
 					if (info == undefined) {
 						const div = createHotCue(deck, key, time)
-						
+
 						audioCtrl.addHotcue(key, time, div)
 					}
 					else {
 						audioCtrl.jumpToHotcue(key)
 					}
-	
+
 				}
-	
+
 			}
 
 		})
@@ -288,7 +318,7 @@ $$.control.registerControl('rootPage', {
 			ctrl.setData(info)
 			if (info.midiInputs.length > 1) {
 				const selectedInput = info.midiInputs[1].value
-				ctrl.setData({selectedInput})
+				ctrl.setData({ selectedInput })
 				selectMidiDevice(selectedInput)
 			}
 		}
@@ -323,7 +353,7 @@ $$.control.registerControl('rootPage', {
 			runningBuffer.appendChild(canvas)
 			const ctx = canvas.getContext('2d')
 			ctx.clearRect(0, 0, MAX_CANVAS_WIDTH, RUNNING_DISPLAY_HEIGHT)
-			
+
 			return ctx
 		}
 
@@ -336,7 +366,7 @@ $$.control.registerControl('rootPage', {
 		function drawRunningBuffer(audioBuffer, deck, beatInfo) {
 
 			console.log('bufferLength', audioBuffer.length)
-			const beatInterval =  Math.trunc(getOffset(60 / beatInfo.bpm))
+			const beatInterval = Math.trunc(getOffset(60 / beatInfo.bpm))
 			console.log('beatInterval', beatInterval)
 			const beatOffset = Math.trunc(getOffset(beatInfo.offset))
 			console.log('beatOffset', beatOffset)
@@ -371,7 +401,7 @@ $$.control.registerControl('rootPage', {
 				ctx.fillStyle = color
 				ctx.fillRect(k, (1 + min) * amp, 1, Math.max(1, (max - min) * amp));
 
-				if ((Math.abs(i - beatOffset) %  beatInterval) == 0) {
+				if ((Math.abs(i - beatOffset) % beatInterval) == 0) {
 					ctx.fillStyle = 'black'
 					ctx.fillRect(k, 0, 1, RUNNING_DISPLAY_HEIGHT)
 				}

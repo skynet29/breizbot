@@ -61,6 +61,9 @@
         .rootPage .visualizer .runningBufferContainer .hotcueContainer .hotcue {
           position: absolute;
           width: 2px; }
+        .rootPage .visualizer .runningBufferContainer .hotcueContainer .loop {
+          position: absolute;
+          background-color: rgba(0, 0, 0, 0.5); }
   .rootPage .audioplayer {
     border: 1px solid black;
     border-radius: 10px; }

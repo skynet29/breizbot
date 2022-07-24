@@ -60,7 +60,7 @@
 
 		template: { gulp_inject: './player.html' },
 
-		deps: ['breizbot.pager', 'AudioTools', 'MIDICtrl'],
+		deps: ['breizbot.pager', 'AudioTools', 'MIDICtrl', 'breizbot.beatdetector'],
 
 		props: {
 			showBuffer: false,
@@ -71,8 +71,9 @@
 		 * @param {Breizbot.Services.Pager.Interface} pager
 		 * @param {DJMix.Service.AudioTools.Interface} audioTools
 		 * @param {DJMix.Service.MIDICtrl.Interface} midiCtrl
+		 * @param {Breizbot.Services.BeatDetector.Interface} beatdetector
 		 */
-		init: function (elt, pager, audioTools, midiCtrl) {
+		init: function (elt, pager, audioTools, midiCtrl, beatdetector) {
 			console.log('props', this.props)
 
 			const { showBuffer, deck } = this.props
@@ -84,6 +85,10 @@
 
 			const hotcues = {}
 			let isHotcueDeleteMode = false
+
+			let autoLoop = 0
+			let loopStartTime = 0
+			let loopEndTime = 0
 
 			let startTime = 0
 			let elapsedTime = 0
@@ -98,6 +103,7 @@
 
 			const ctrl = $$.viewController(elt, {
 				data: {
+					tempo: 0,
 					name: 'No Track loaded',
 					volume: 0.5,
 					duration: 0,
@@ -150,7 +156,7 @@
 			let pauseFeedback = null
 
 			function play() {
-				console.log('play', {elapsedTime, deck})
+				console.log('play', { elapsedTime, deck })
 				midiCtrl.setButtonIntensity('PLAY', 127, deck)
 
 				gainNode.gain.value = ctrl.model.volume
@@ -225,15 +231,22 @@
 				console.log('name', name)
 				ctrl.setData({ name: 'Loading...' })
 				audioBuffer = await $$.media.getAudioBuffer(url)
+				const tempo = await beatdetector.computeBeatDetection(audioBuffer)
+				console.log('tempo', tempo)
+
 				const duration = audioBuffer.duration
-				ctrl.setData({ name, duration, loaded: true })
-				return audioBuffer
+				ctrl.setData({ name, duration, loaded: true, bpm: tempo.bpm })
+				return { audioBuffer, tempo }
 			}
 
 			this.getCurrentTime = function () {
 				let curTime = elapsedTime
 				if (ctrl.model.playing) {
 					curTime += audioCtx.currentTime - startTime
+				}
+				if (autoLoop != 0 && curTime >= loopEndTime) {
+					reset(loopStartTime, true)
+					curTime = audioCtx.currentTime - loopStartTime
 				}
 				ctrl.setData({ curTime })
 				//console.log('getCurrentTime', curTime)
@@ -296,14 +309,33 @@
 				midiCtrl.setButtonIntensity('HOT_CUE', (isHotcueDeleteMode) ? 127 : 1, deck, 1)
 			}
 
-			this.isHotcueDeleteMode = function() {
+			this.isHotcueDeleteMode = function () {
 				return isHotcueDeleteMode
 			}
 
-			this.deleteHotcue = function(nb) {
+			this.deleteHotcue = function (nb) {
 				console.log('deleteHotcue', nb)
 				delete hotcues[nb]
 				midiCtrl.setButtonIntensity('HOT_CUE', 1, deck, nb)
+			}
+
+			this.getBpm = function () {
+				return ctrl.model.bpm
+			}
+			this.autoLoopActivate = function (nb, startTime, duration) {
+				loopStartTime = startTime
+				loopEndTime = startTime + duration
+				if (nb == autoLoop) {
+					midiCtrl.setButtonIntensity('LOOP_AUTO', 1, deck, nb)
+					autoLoop = 0
+					return true
+				}
+				if (autoLoop != 0) {
+					midiCtrl.setButtonIntensity('LOOP_AUTO', 1, deck, autoLoop)
+				}
+				midiCtrl.setButtonIntensity('LOOP_AUTO', 127, deck, nb)
+				autoLoop = nb
+				return false
 			}
 		}
 

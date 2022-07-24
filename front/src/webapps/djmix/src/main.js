@@ -243,9 +243,10 @@ $$.control.registerControl('rootPage', {
 
 		midiCtrl.on('LOOP_AUTO', ({ deck, key }) => {
 			const audioCtrl = getAudioCtrl(deck)
-			const startTime = audioCtrl.getCurrentTime()
-			const duration = 60 / audioCtrl.getBpm() * key
-			if (audioCtrl.autoLoopActivate(key, startTime, duration)) {
+			let startTime = audioCtrl.getCurrentTime()
+			const duration = 60 / audioCtrl.getBpm() * (1 << (key - 1))
+			startTime = audioCtrl.autoLoopActivate(key, startTime, duration)
+			if (startTime == 0) {
 				removeLoop(deck)
 			}
 			else {

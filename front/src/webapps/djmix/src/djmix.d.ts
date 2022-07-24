@@ -67,7 +67,7 @@ declare namespace DJMix {
                 toggleHotcueDeleteMode():void;
                 isHotcueDeleteMode():boolean;
                 deleteHotcue(nb: number):void;
-                autoLoopActivate(nb: number, startTime: number, duration: number):boolean;
+                autoLoopActivate(nb: number, startTime: number, duration: number):number;
                 getBpm():number;
             }
         }

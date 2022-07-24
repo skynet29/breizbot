@@ -323,19 +323,22 @@
 				return ctrl.model.bpm
 			}
 			this.autoLoopActivate = function (nb, startTime, duration) {
-				loopStartTime = startTime
-				loopEndTime = startTime + duration
 				if (nb == autoLoop) {
 					midiCtrl.setButtonIntensity('LOOP_AUTO', 1, deck, nb)
 					autoLoop = 0
-					return true
+					return 0
 				}
 				if (autoLoop != 0) {
 					midiCtrl.setButtonIntensity('LOOP_AUTO', 1, deck, autoLoop)
+					loopEndTime = loopStartTime + duration
+				}
+				else {
+					loopStartTime = startTime
+					loopEndTime = startTime + duration	
 				}
 				midiCtrl.setButtonIntensity('LOOP_AUTO', 127, deck, nb)
 				autoLoop = nb
-				return false
+				return loopStartTime
 			}
 		}
 

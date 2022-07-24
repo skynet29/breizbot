@@ -3,6 +3,19 @@ declare namespace Breizbot {
 
     declare namespace Services {
 
+        declare namespace BeatDetector {
+
+            interface BeatInfo {
+                tempo: number;
+                bpm: number;
+                offset: number;
+            }
+            
+            interface Interface {
+                computeBeatDetection(audioBuffer: AudioBuffer): Promise<BeatInfo>;
+            }
+        }        
+
         declare namespace Gamepad {
             type EventName = 'connected' | 'disconnected' | 'buttonUp' | 'buttonDown' | 'axe'
 

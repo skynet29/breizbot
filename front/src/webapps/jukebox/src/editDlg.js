@@ -3,7 +3,7 @@ $$.control.registerControl('editDlg', {
 
     template: { gulp_inject: './editDlg.html' },
 
-    deps: ['breizbot.http', 'breizbot.pager', 'brainjs.beatdetector'],
+    deps: ['breizbot.http', 'breizbot.pager', 'breizbot.beatdetector', 'breizbot.spotify'],
 
     props: {
         mp3: {},
@@ -16,9 +16,10 @@ $$.control.registerControl('editDlg', {
      * 
      * @param {Breizbot.Services.Http.Interface} http 
      * @param {Breizbot.Services.Pager.Interface} pager 
-     * @param {Brainjs.Services.BeatDetector.Interface} beatdetector
+     * @param {Breizbot.Services.BeatDetector.Interface} beatdetector
+     * @param {Breizbot.Services.Spotify.Interface} spotify
      */
-    init: function (elt, http, pager, beatdetector) {
+    init: function (elt, http, pager, beatdetector, spotify) {
 
         /**@type {{mp3: Breizbot.Services.Files.Mp3Info, fileName: string, url: string, worker: Worker}} */
         // @ts-ignore
@@ -26,6 +27,16 @@ $$.control.registerControl('editDlg', {
 
         const waitDlg = $$.ui.waitDialog('Computing...')
 
+
+        async function searchOnSpotify(query) {
+            const data = await spotify.searchTracks(query)
+            console.log('searchTracks', data)
+            const features = await spotify.getAudioFeaturesForTrack(data.id)
+            console.log('features', features)
+
+        }
+
+        //searchOnSpotify()
         //console.log('props', this.props)
 
 
@@ -35,7 +46,7 @@ $$.control.registerControl('editDlg', {
                 mp3
             },
             events: {
-                onComputeBeatDetection: async function() {
+                onComputeBeatDetection: async function () {
                     waitDlg.show()
                     const audioBuffer = await $$.media.getAudioBuffer(url)
                     const info = await beatdetector.computeBeatDetection(audioBuffer)
@@ -45,12 +56,28 @@ $$.control.registerControl('editDlg', {
                     waitDlg.hide()
                 },
                 onFindInfo: async function () {
-                    const data = await http.post('/search', {
-                        query: fileName.replace('.mp3', ''),
-                    })
+                    let query = fileName.replace('.mp3', '')
+                    query = query.replaceAll('_', ' ').trim()
+                    const { mp3 } = ctrl.model
+                    if (mp3.title && mp3.artist) {
+                        query = mp3.artist + ' - ' + mp3.title
+                    }
+
+                    // const data = await http.post('/search', {
+                    //     query,
+                    // })
+
+                    const data = await spotify.searchTracks(query)
                     console.log(data)
-                    if (data && data.title) {
-                        $.extend(ctrl.model.mp3, data)
+
+                    if (data) {
+                        const info = {
+                            title: data.name,
+                            artist: data.artists[0].name
+                        }
+                        const features = await spotify.getAudioFeaturesForTrack(data.id)
+                        info.bpm = parseFloat(features.tempo.toFixed(2))
+                        $.extend(ctrl.model.mp3, info)
                         ctrl.update()
                     }
                     else {

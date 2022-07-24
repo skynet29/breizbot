@@ -3,6 +3,26 @@ declare namespace Breizbot {
 
     declare namespace Services {
 
+
+        declare namespace Spotify {
+
+            interface SearchInfo {
+                id: string;
+                name: string;
+                preview_url: string;
+                artists: Array<{name: string, id: string}>
+            }
+    
+            interface FeaturesInfo {
+                tempo: number;
+            }
+    
+            interface Interface {
+                searchTracks(query: string):Promise<SearchInfo>;
+                getAudioFeaturesForTrack(trackId: string): Promise<FeaturesInfo>;
+            }
+        }
+
         declare namespace BeatDetector {
 
             interface BeatInfo {

@@ -3,7 +3,6 @@ declare namespace Breizbot {
 
     declare namespace Services {
 
-
         declare namespace Spotify {
 
             interface SearchInfo {

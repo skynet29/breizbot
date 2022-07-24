@@ -28,14 +28,6 @@ $$.control.registerControl('editDlg', {
         const waitDlg = $$.ui.waitDialog('Computing...')
 
 
-        async function searchOnSpotify(query) {
-            const data = await spotify.searchTracks(query)
-            console.log('searchTracks', data)
-            const features = await spotify.getAudioFeaturesForTrack(data.id)
-            console.log('features', features)
-
-        }
-
         //searchOnSpotify()
         //console.log('props', this.props)
 
@@ -58,6 +50,7 @@ $$.control.registerControl('editDlg', {
                 onFindInfo: async function () {
                     let query = fileName.replace('.mp3', '')
                     query = query.replaceAll('_', ' ').trim()
+
                     const { mp3 } = ctrl.model
                     if (mp3.title && mp3.artist) {
                         query = mp3.artist + ' - ' + mp3.title

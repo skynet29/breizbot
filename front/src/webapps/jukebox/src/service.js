@@ -4,7 +4,7 @@ $$.service.registerService('app.jukebox', {
     deps: ['breizbot.http'],
     /**
      * 
-     * @param {Breizbot.Services.Http.Interface} srvFiles 
+     * @param {Breizbot.Services.Http.Interface} http 
      * @returns 
      */
     init(config, http) {

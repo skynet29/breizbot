@@ -1,7 +1,7 @@
 <div class="top">
     <div class="midi">
         <div>MIDI Device</div>
-        <div bn-control="brainjs.combobox" bn-data="{items: midiInputs}" bn-event="comboboxchange: onMidiInputChange">
+        <div bn-control="brainjs.combobox" bn-data="{items: midiInputs}" bn-val="selectedInput" bn-event="comboboxchange: onMidiInputChange">
         </div>
 
     </div>
@@ -38,7 +38,7 @@
 </div>
 
 <div class="center">
-    <div bn-control="audioplayer" bn-iface="audio1" data-audio="1" bn-event="pause: onPause, playing: onPlay"></div>
+    <div bn-control="audioplayer" bn-iface="audio1" data-deck="1"></div>
     <div class="masterPanel">
         <span>Master</span>
         <div class="toolbar2">
@@ -55,7 +55,7 @@
                 bn-event="input: onCueVolumeChange" bn-val="cueVolume" class="volulmeSlider"></div>
         </div>        
     </div>
-    <div bn-control="audioplayer" bn-iface="audio2" data-audio="2" bn-event="pause: onPause, playing: onPlay"></div>
+    <div bn-control="audioplayer" bn-iface="audio2" data-deck="2"></div>
 </div>
 
 

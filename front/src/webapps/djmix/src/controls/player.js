@@ -60,23 +60,30 @@
 
 		template: { gulp_inject: './player.html' },
 
-		deps: ['breizbot.pager', 'AudioTools'],
+		deps: ['breizbot.pager', 'AudioTools', 'MIDICtrl'],
 
 		props: {
-			showBuffer: false
+			showBuffer: false,
+			deck: 1
 		},
 
 		/**
 		 * @param {Breizbot.Services.Pager.Interface} pager
 		 * @param {DJMix.Service.AudioTools.Interface} audioTools
+		 * @param {DJMix.Service.MIDICtrl.Interface} midiCtrl
 		 */
-		init: function (elt, pager, audioTools) {
-			const { showBuffer } = this.props
+		init: function (elt, pager, audioTools, midiCtrl) {
+			console.log('props', this.props)
+
+			const { showBuffer, deck } = this.props
 
 			const getTime = $$.media.getFormatedTime
 
 			/**@type {AudioBuffer} */
 			let audioBuffer = null
+
+			const hotcues = {}
+			let isHotcueDeleteMode = false
 
 			let startTime = 0
 			let elapsedTime = 0
@@ -143,17 +150,19 @@
 			let pauseFeedback = null
 
 			function play() {
-				console.log('play', elapsedTime)
+				console.log('play', {elapsedTime, deck})
+				midiCtrl.setButtonIntensity('PLAY', 127, deck)
+
 				gainNode.gain.value = ctrl.model.volume
 				audioBufferSourceNode = audioCtx.createBufferSource()
 				audioBufferSourceNode.buffer = audioBuffer
-				audioBufferSourceNode.onended = function() {
+				audioBufferSourceNode.onended = function () {
 					console.log('onended', ctrl.model.playing)
 
 					if (ctrl.model.playing) {
 						ctrl.setData({ playing: false })
 						elapsedTime = audioBuffer.duration
-						elt.trigger('pause')	
+						elt.trigger('pause')
 					}
 
 					if (pauseFeedback != null) {
@@ -172,14 +181,16 @@
 
 			function pause() {
 				console.log('pause')
+				midiCtrl.setButtonIntensity('PLAY', 1, deck)
+
 				return new Promise((resolve) => {
 					ctrl.setData({ playing: false })
-					elapsedTime +=  audioCtx.currentTime - startTime
+					elapsedTime += audioCtx.currentTime - startTime
 					audioBufferSourceNode.stop()
 					audioBufferSourceNode = null
 					elt.trigger('pause')
 					pauseFeedback = resolve
-	
+
 				})
 			}
 
@@ -212,7 +223,7 @@
 					name = `${artist} - ${title}`
 				}
 				console.log('name', name)
-				ctrl.setData({name: 'Loading...'})
+				ctrl.setData({ name: 'Loading...' })
 				audioBuffer = await $$.media.getAudioBuffer(url)
 				const duration = audioBuffer.duration
 				ctrl.setData({ name, duration, loaded: true })
@@ -260,6 +271,39 @@
 
 			this.getAudioBuffer = function () {
 				return audioBuffer
+			}
+
+
+			this.getHotcue = function (nb) {
+				return hotcues[nb]
+			}
+
+			this.addHotcue = function (nb, time, div) {
+				console.log('addHotcue', nb)
+				hotcues[nb] = { time, div }
+				midiCtrl.setButtonIntensity('HOT_CUE', 127, deck, nb)
+			}
+
+			this.jumpToHotcue = function (nb) {
+				console.log('jumpToHotcue', nb)
+				const { time } = hotcues[nb]
+				reset(time, true)
+			}
+
+			this.toggleHotcueDeleteMode = function () {
+				isHotcueDeleteMode = !isHotcueDeleteMode
+				console.log('isHotcueDeleteMode', isHotcueDeleteMode)
+				midiCtrl.setButtonIntensity('HOT_CUE', (isHotcueDeleteMode) ? 127 : 1, deck, 1)
+			}
+
+			this.isHotcueDeleteMode = function() {
+				return isHotcueDeleteMode
+			}
+
+			this.deleteHotcue = function(nb) {
+				console.log('deleteHotcue', nb)
+				delete hotcues[nb]
+				midiCtrl.setButtonIntensity('HOT_CUE', 1, deck, nb)
 			}
 		}
 

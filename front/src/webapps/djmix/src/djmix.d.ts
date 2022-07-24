@@ -4,7 +4,7 @@ declare namespace DJMix {
 
         declare namespace MIDICtrl {
 
-            type eventNames = 'MASTER_LEVEL' | 'CUE_LEVEL' | 'CROSS_FADER' | 'LEVEL' | 'PITCH' | 'SYNC' | 'CUE' | 'PLAY' | 'PFL' | 'JOGTOUCH' | 'LOAD' | 'ENTER' | 'JOG_WHEEL' | 'BROWSE_WHEEL' | 'HOT_CUE' | 'LOOP_AUTO' | 'LOOP_MANUAL' | 'SAMPLER'
+            type eventNames = 'MIDI_STATECHANGE' | 'MASTER_LEVEL' | 'CUE_LEVEL' | 'CROSS_FADER' | 'LEVEL' | 'PITCH' | 'SYNC' | 'CUE' | 'PLAY' | 'PFL' | 'JOGTOUCH' | 'LOAD' | 'ENTER' | 'JOG_WHEEL' | 'BROWSE_WHEEL' | 'HOT_CUE' | 'LOOP_AUTO' | 'LOOP_MANUAL' | 'SAMPLER'
 
             interface MidiInfo {
                 midiInputs: Array<{label: string, value: string}>,
@@ -18,7 +18,7 @@ declare namespace DJMix {
                 selectMIDIDevice(id: number): void;
                 clearAllButtons():void;
                 requestMIDIAccess(): Promise<MidiInfo>;
-                getMIDIOutpus(): Array<{label: string, value: string}>;
+                getMIDIInputs(): Array<{label: string, value: string}>;
                 on(action: eventNames, cbk: ({deck: number, key: number, velocity: number}) => void): void;
             }
         }
@@ -44,6 +44,11 @@ declare namespace DJMix {
     declare namespace Control {
         declare namespace AudioPlayer {
 
+            interface HotcueInfo {
+                time: number;
+                div: HTMLElement;
+            }
+
             interface Interface {
                 togglePlay(): void;
                 setInfo(info: {name: string, url: string, mp3?: {artist: string, title: string}}):Promise<AudioBuffer>;
@@ -55,6 +60,12 @@ declare namespace DJMix {
                 getOutputNode(): AudioNode
                 seek(ticks: number):void;
                 reset(time?: number, restart?: boolean):void;
+                getHotcue(nb: number): HotcueInfo;
+                addHotcue(nb: number, time: number, div:HTMLElement):void;
+                jumpToHotcue(nb: number): void;
+                toggleHotcueDeleteMode():void;
+                isHotcueDeleteMode():boolean;
+                deleteHotcue(nb: number):void;
             }
         }
     

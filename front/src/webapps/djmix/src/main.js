@@ -4,7 +4,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'MIDICtrl', 'AudioTools'],
+	deps: ['breizbot.pager', 'MIDICtrl', 'AudioTools', 'breizbot.beatdetector'],
 
 	props: {
 	},
@@ -14,8 +14,9 @@ $$.control.registerControl('rootPage', {
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {DJMix.Service.MIDICtrl.Interface} midiCtrl
 	 * @param {DJMix.Service.AudioTools.Interface} audioTools
+	 * @param {Breizbot.Services.BeatDetector.Interface} beatdetector
 	 */
-	init: async function (elt, pager, midiCtrl, audioTools) {
+	init: async function (elt, pager, midiCtrl, audioTools, beatdetector) {
 
 		const map = $$.util.mapRange(0, 127, 0, 1)
 
@@ -24,13 +25,10 @@ $$.control.registerControl('rootPage', {
 		const SECONDS_OF_RUNNING_DISPLAY = 10.0
 		const MAX_CANVAS_WIDTH = 32000
 
-		const hotcues1 = {}
-		const hotcues2 = {}
-
-		const hotcues = [hotcues1, hotcues2]
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				selectedInput: 'default',
 				audio1: false,
 				audio2: false,
 				curPFL: 1,
@@ -59,18 +57,6 @@ $$.control.registerControl('rootPage', {
 				onCueVolumeChange: function (ev, value) {
 					masterCrossFader.setMasterLevel(value)
 				},
-				onPause: function () {
-					const deck = $(this).data('audio')
-					//console.log('onPause', deck)
-					midiCtrl.setButtonIntensity('PLAY', 1, deck)
-				},
-
-				onPlay: function () {
-					const deck = $(this).data('audio')
-					//console.log('onPlay', deck)
-					midiCtrl.setButtonIntensity('PLAY', 127, deck)
-
-				},
 				onCrossFaderChange: function (ev, value) {
 					masterCrossFader.setFaderLevel(value)
 				},
@@ -80,12 +66,15 @@ $$.control.registerControl('rootPage', {
 				},
 				onMidiInputChange: function (ev) {
 					const selectedId = $(this).getValue()
-					midiCtrl.selectMIDIDevice(selectedId)
-					midiCtrl.clearAllButtons()
-					midiCtrl.setButtonIntensity('PFL', 1, 2)
 				}
 			}
 		})
+
+		function selectMidiDevice(selectedId) {
+			midiCtrl.selectMIDIDevice(selectedId)
+			midiCtrl.clearAllButtons()
+			midiCtrl.setButtonIntensity('PFL', 1, 2)
+		}
 
 		const colors = ['red', 'green']
 
@@ -106,12 +95,14 @@ $$.control.registerControl('rootPage', {
 				ctrl.model[audio] = true
 				ctrl.update()
 				const audioBuffer = await ctrl.scope[audio].setInfo(selFile)
+				const tempo = await beatdetector.computeBeatDetection(audioBuffer)
+				console.log('tempo', tempo)
 
 				const width = RUNNING_DISPLAY_WIDTH / 2 * audioBuffer.duration
 				hotcueContainer.style.width = width + 'px'
 				hotcueContainer.style.height = RUNNING_DISPLAY_HEIGHT + 'px'
 
-				drawRunningBuffer(audioBuffer, runningBuffer, colors[deck - 1])
+				drawRunningBuffer(audioBuffer, deck, tempo)
 				ctrl.model[audio] = false
 				updateTime(0, deck)
 				ctrl.update()
@@ -131,9 +122,27 @@ $$.control.registerControl('rootPage', {
 			const left = (RUNNING_DISPLAY_WIDTH / SECONDS_OF_RUNNING_DISPLAY) * (SECONDS_OF_RUNNING_DISPLAY / 2 - time)
 			runningBuffer.style.left = left + 'px'
 			hotcueContainer.style.left = left + 'px'
+			// const audioBuffer = getAudioCtrl(deck).getAudioBuffer()
+			// const sampleIdx = Math.trunc(time * audioBuffer.sampleRate)
+			// const value = audioBuffer.getChannelData(0)[sampleIdx]
+			// console.log(`sample[${deck}, ${sampleIdx}] = ${value}`)
 		}
 
 		const hotcueColors = ['red', 'green', 'blue', 'orange']
+
+
+		function getOffset(time) {
+			return RUNNING_DISPLAY_WIDTH / SECONDS_OF_RUNNING_DISPLAY * time
+		}
+
+		/**
+		 * 
+		 * @param {number} offset 
+		 * @returns {number}
+		 */
+		function getTimeFromOffset(offset) {
+			return offset * SECONDS_OF_RUNNING_DISPLAY / RUNNING_DISPLAY_WIDTH
+		}
 
 		/**
 		 * 
@@ -147,14 +156,15 @@ $$.control.registerControl('rootPage', {
 			const div = document.createElement('div')
 			div.classList.add('hotcue')
 
-			const width = RUNNING_DISPLAY_WIDTH / SECONDS_OF_RUNNING_DISPLAY * time
+			const width = getOffset(time)
 			div.style.left = width + 'px'
 			div.style.backgroundColor = hotcueColors[hotcue - 1]
 			div.style.height = RUNNING_DISPLAY_HEIGHT + 'px'
 			hotcueContainer.appendChild(div)
-			hotcues[deck - 1][hotcue - 1] = time
+			return div
 
 		}
+
 		/**
 		 * 
 		 * @param {number} deck 
@@ -164,9 +174,13 @@ $$.control.registerControl('rootPage', {
 			return ctrl.scope['audio' + deck]
 		}
 
+		midiCtrl.on('MIDI_STATECHANGE', (ev) => {
+			console.log('midiStateChange', ev)
+			ctrl.setData({midiInputs: midiCtrl.getMIDIInputs()})			
+		})
+
 		midiCtrl.on('PLAY', ({ deck }) => {
 			const audioCtrl = getAudioCtrl(deck)
-			midiCtrl.setButtonIntensity('PLAY', audioCtrl.isPlaying() ? 1 : 127, deck)
 			audioCtrl.togglePlay()
 		})
 
@@ -212,15 +226,32 @@ $$.control.registerControl('rootPage', {
 		midiCtrl.on('HOT_CUE', ({ deck, key }) => {
 			//console.log('HOT_CUE', { deck, key })
 			const audioCtrl = getAudioCtrl(deck)
-			const time = audioCtrl.getCurrentTime()
-			//console.log('hotcues', hotcues[deck - 1])
-			const hotcueTime = hotcues[deck - 1][key - 1]
-			if (hotcueTime == undefined) {
-				createHotCue(deck, key, time)
-				midiCtrl.setButtonIntensity('HOT_CUE', 127, deck, key)
+			if (key == 1) {
+				audioCtrl.toggleHotcueDeleteMode()
 			}
 			else {
-				audioCtrl.reset(hotcueTime, true)
+				const info = audioCtrl.getHotcue(key)
+
+				if (audioCtrl.isHotcueDeleteMode()) {
+					if (info) {
+						audioCtrl.deleteHotcue(key)
+						hotcueContainers[deck - 1].removeChild(info.div)	
+					}
+				}
+				else {
+					const time = audioCtrl.getCurrentTime()
+					
+					if (info == undefined) {
+						const div = createHotCue(deck, key, time)
+						
+						audioCtrl.addHotcue(key, time, div)
+					}
+					else {
+						audioCtrl.jumpToHotcue(key)
+					}
+	
+				}
+	
 			}
 
 		})
@@ -255,6 +286,11 @@ $$.control.registerControl('rootPage', {
 			console.log('init')
 			const info = await midiCtrl.requestMIDIAccess()
 			ctrl.setData(info)
+			if (info.midiInputs.length > 1) {
+				const selectedInput = info.midiInputs[1].value
+				ctrl.setData({selectedInput})
+				selectMidiDevice(selectedInput)
+			}
 		}
 
 
@@ -277,10 +313,9 @@ $$.control.registerControl('rootPage', {
 		/**
 		 * 
 		 * @param {HTMLElement} runningBuffer 
-		 * @param {string} color 
 		 * @returns 
 		 */
-		function createCanvas(runningBuffer, color) {
+		function createCanvas(runningBuffer) {
 			console.log('createCanvas')
 			const canvas = document.createElement('canvas')
 			canvas.width = MAX_CANVAS_WIDTH
@@ -288,18 +323,27 @@ $$.control.registerControl('rootPage', {
 			runningBuffer.appendChild(canvas)
 			const ctx = canvas.getContext('2d')
 			ctx.clearRect(0, 0, MAX_CANVAS_WIDTH, RUNNING_DISPLAY_HEIGHT)
-			ctx.fillStyle = color
+			
 			return ctx
 		}
 
 		/**
 		 * 
 		 * @param {AudioBuffer} audioBuffer 
-		 * @param {string} color 
+		 * @param {number} deck 
+		 * @param {Brainjs.Services.BeatDetector.BeatInfo} beatInfo
 		 */
-		function drawRunningBuffer(audioBuffer, runningBuffer, color) {
+		function drawRunningBuffer(audioBuffer, deck, beatInfo) {
 
 			console.log('bufferLength', audioBuffer.length)
+			const beatInterval =  Math.trunc(getOffset(60 / beatInfo.bpm))
+			console.log('beatInterval', beatInterval)
+			const beatOffset = Math.trunc(getOffset(beatInfo.offset))
+			console.log('beatOffset', beatOffset)
+
+			const runningBuffer = runningBuffers[deck - 1]
+			const color = colors[deck - 1]
+
 			const width = Math.ceil(RUNNING_DISPLAY_WIDTH * audioBuffer.duration / SECONDS_OF_RUNNING_DISPLAY)
 			console.log('width', width)
 
@@ -308,10 +352,10 @@ $$.control.registerControl('rootPage', {
 			console.log('step', step)
 			const amp = RUNNING_DISPLAY_HEIGHT / 2
 
-			let ctx = createCanvas(runningBuffer, color)
+			let ctx = createCanvas(runningBuffer)
 			for (let i = 0, k = 0; i < width; i++, k++) {
 				if (k == MAX_CANVAS_WIDTH) {
-					ctx = createCanvas(runningBuffer, color)
+					ctx = createCanvas(runningBuffer)
 					k = 0
 				}
 				let min = 1.0
@@ -323,7 +367,14 @@ $$.control.registerControl('rootPage', {
 					if (datnum > max)
 						max = datnum
 				}
+
+				ctx.fillStyle = color
 				ctx.fillRect(k, (1 + min) * amp, 1, Math.max(1, (max - min) * amp));
+
+				if ((Math.abs(i - beatOffset) %  beatInterval) == 0) {
+					ctx.fillStyle = 'black'
+					ctx.fillRect(k, 0, 1, RUNNING_DISPLAY_HEIGHT)
+				}
 			}
 
 		}

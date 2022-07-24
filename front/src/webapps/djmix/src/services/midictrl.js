@@ -108,6 +108,12 @@ $$.service.registerService('MIDICtrl', {
 
         async function requestMIDIAccess() {
             midiAccess = await navigator.requestMIDIAccess()
+            midiAccess.onstatechange = function(ev) {
+                if (ev.port.type == 'input') {
+                    events.emit('MIDI_STATECHANGE', ev.port)
+                }
+            }
+
             const midiInputs = []
             for (const { name, id } of midiAccess.inputs.values()) {
                 midiInputs.push({ label: name, value: id })
@@ -118,6 +124,14 @@ $$.service.registerService('MIDICtrl', {
             }
 
             return { midiInputs, midiOutputs }
+        }
+
+        function getMIDIInputs() {
+            const midiInputs = []
+            for (const { name, id } of midiAccess.inputs.values()) {
+                midiInputs.push({ label: name, value: id })
+            }
+            return midiInputs             
         }
 
         function selectMIDIInput(selectedId) {
@@ -174,6 +188,7 @@ $$.service.registerService('MIDICtrl', {
         }
 
         function setButtonIntensity(action, intensity, deck, key) {
+            //console.log('setButtonIntensity', {action, intensity, deck, key})
             if (midiOut == null)
                 return
             for (const e of midiInputMapping) {
@@ -210,6 +225,7 @@ $$.service.registerService('MIDICtrl', {
             clearAllButtons,
             setButtonIntensity,
             requestMIDIAccess,
+            getMIDIInputs,
             on: events.on.bind(events),
             BtnIntensity
         }

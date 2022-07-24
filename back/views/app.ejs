@@ -43,7 +43,7 @@ body {
 			//console.log('appData', data)
 			$$.service.configureService('breizbot.params', '<%- params %>')
 			$$.service.configureService('breizbot.appData', data)
-			$$.service.configureService('brainjs.beatdetector', {workerPath: '/brainjs/beatdetector/worker.js'})
+			$$.service.configureService('breizbot.beatdetector', {workerPath: '/workers/beatdetector.js'})
 			
 			$$.viewController('body')			
 		})

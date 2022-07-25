@@ -45,9 +45,14 @@
 			<div bn-control="brainjs.combobox" bn-data="{items: samplers}"></div>
 		</div>
 	</div>
+	<div class="toolbar2">
+		<span>PITCH &#177 8%</span>
+		<div bn-control="brainjs.slider" bn-data="{min: 0.92, max:1.08, step: 0.01, orientation: 'vertical', showRange: false}"
+			bn-event="input: onPitchChange" bn-val="pitch" class="volulmeSlider"></div>
+	</div>
 
 	<div class="toolbar2">
-		<i class="fas fa-lg fa-volume-down w3-text-blue volume"></i>
+		<span>LEVEL</span>
 		<div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.01, orientation: 'vertical'}"
 			bn-event="input: onVolumeChange" bn-val="volume" class="volulmeSlider"></div>
 	</div>

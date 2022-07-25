@@ -17,9 +17,9 @@ $$.service.registerService('MIDICtrl', {
             { action: 'CUE_LEVEL', cmd: 0xBF, note: 0X0C },
             { action: 'CROSS_FADER', cmd: 0xBF, note: 0X08 },
             { action: 'LEVEL', cmd: 0xB0, note: 0X16, deck: 1 },
-            { action: 'PITCH', cmd: 0xB0, note: 0X19, deck: 1 },
+            { action: 'PITCH', cmd: 0xB0, note: 0X09, deck: 1 },
             { action: 'LEVEL', cmd: 0xB1, note: 0X16, deck: 2 },
-            { action: 'PITCH', cmd: 0xB1, note: 0X19, deck: 2 },
+            { action: 'PITCH', cmd: 0xB1, note: 0X09, deck: 2 },
 
             { action: 'SYNC', cmd: 0x90, note: 0X02, deck: 1, type: 'BTN' },
             { action: 'CUE', cmd: 0x90, note: 0X01, deck: 1, type: 'BTN' },

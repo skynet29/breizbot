@@ -21,6 +21,8 @@ $$.control.registerControl('rootPage', {
 
 		const map = $$.util.mapRange(0, 127, 0, 1)
 
+		const mapRate = $$.util.mapRange(0, 127, 0.92, 1.08)
+
 		const RUNNING_DISPLAY_WIDTH = 1300
 		const RUNNING_DISPLAY_HEIGHT = 80
 		const SECONDS_OF_RUNNING_DISPLAY = 10.0
@@ -255,6 +257,11 @@ $$.control.registerControl('rootPage', {
 			const crossFader = map(velocity)
 			ctrl.setData({ crossFader })
 			masterCrossFader.setFaderLevel(crossFader)
+		})
+
+		midiCtrl.on('PITCH', ({deck, velocity}) => {
+			const rate = mapRate(velocity)
+			getAudioCtrl(deck).setPlaybackRate(rate)
 		})
 
 		midiCtrl.on('LEVEL', async ({ deck, velocity }) => {

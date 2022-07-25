@@ -22,13 +22,13 @@
             flex-direction: row;
             align-items: center;
             width: 400px;
-    
+
             .brainjs-slider {
                 flex: 1;
                 margin-left: 20px;
                 margin-right: 20px;
             }
-        }        
+        }
 
     }
 
@@ -43,28 +43,30 @@
             display: flex;
             margin-left: 10px;
             margin-right: 10px;
-        }
+            padding: 5px;
 
-        .masterPanel {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 10px;
+            .toolbar2:nth-child(1) {
+                margin-right: 10px;
+            }
 
-            > .toolbar2 {
+
+            .toolbar2 {
                 display: flex;
                 flex-direction: column;
                 align-items: center;
                 margin-top: 10px;
-        
+                justify-content: center;
+    
                 .brainjs-slider {
                     margin-top: 20px;
                     margin-bottom: 20px;
                 }
-        
-            }              
+    
+            }            
         }
-      
+
+
+
     }
 
     .visualizer {
@@ -89,7 +91,7 @@
             }
 
             .hotcueContainer {
-                position: absolute;                
+                position: absolute;
 
                 .hotcue {
                     position: absolute;

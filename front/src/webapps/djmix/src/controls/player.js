@@ -27,6 +27,7 @@
 		/**@type {AudioBuffer} */
 		let audioBuffer = null
 
+
 		async function load(url) {
 			audioBuffer = await $$.media.getAudioBuffer(url)
 			console.log('duration', audioBuffer.duration)
@@ -83,6 +84,8 @@
 			/**@type {AudioBuffer} */
 			let audioBuffer = null
 
+			const mapRate = $$.util.mapRange(0.92, 1.08, 1.08, 0.92)
+
 			const hotcues = {}
 			let isHotcueDeleteMode = false
 
@@ -107,6 +110,7 @@
 					tempo: 0,
 					name: 'No Track loaded',
 					volume: 0.5,
+					pitch: 1,
 					duration: 0,
 					curTime: 0,
 					playing: false,
@@ -189,6 +193,7 @@
 				gainNode.gain.value = ctrl.model.volume
 				audioBufferSourceNode = audioCtx.createBufferSource()
 				audioBufferSourceNode.buffer = audioBuffer
+				audioBufferSourceNode.playbackRate.value = ctrl.model.pitch
 				audioBufferSourceNode.onended = function () {
 					//console.log('onended', ctrl.model.playing)
 
@@ -390,6 +395,14 @@
 				midiCtrl.setButtonIntensity('LOOP_AUTO', 127, deck, nb)
 				autoLoop = nb
 				return loopStartTime
+			}
+
+			this.setPlaybackRate = function(rate) {
+				//console.log('setPlaybackRate', rate)
+				if(ctrl.model.playing) {
+					audioBufferSourceNode.playbackRate.value = rate
+				}
+				ctrl.setData({pitch: mapRate(rate)})
 			}
 		}
 

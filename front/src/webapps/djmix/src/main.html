@@ -1,14 +1,15 @@
 <div class="top">
     <div class="midi">
         <div>MIDI Device</div>
-        <div bn-control="brainjs.combobox" bn-data="{items: midiInputs}" bn-val="selectedInput" bn-event="comboboxchange: onMidiInputChange">
+        <div bn-control="brainjs.combobox" bn-data="{items: midiInputs}" bn-val="selectedInput"
+            bn-event="comboboxchange: onMidiInputChange">
         </div>
 
     </div>
     <div class="balance">
         <label>Left</label>
-        <div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step: 0.01, showRange: false}" bn-event="input: onCrossFaderChange"
-            bn-val="crossFader"></div>
+        <div bn-control="brainjs.slider" bn-data="{min: 0, max: 1, step: 0.01, showRange: false}"
+            bn-event="input: onCrossFaderChange" bn-val="crossFader"></div>
         <label>Right</label>
     </div>
     <div>
@@ -41,24 +42,18 @@
 <div class="center">
     <div bn-control="audioplayer" bn-iface="audio1" data-deck="1"></div>
     <div class="mixer">
-        <div class="masterPanel">
-            <span>Master</span>
-            <div class="toolbar2">
-                <i class="fas fa-lg fa-volume-down w3-text-blue volume"></i>
-                <div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.01, orientation: 'vertical'}"
-                    bn-event="input: onMasterVolumeChange" bn-val="masterVolume" class="volulmeSlider"></div>
-            </div>        
+        <div class="toolbar2">
+            <span>MASTER</span>
+            <div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.01, orientation: 'vertical'}"
+                bn-event="input: onMasterVolumeChange" bn-val="masterVolume" class="volulmeSlider"></div>
         </div>
-        <div class="masterPanel">
-            <span>PFL</span>
-            <div class="toolbar2">
-                <i class="fas fa-lg fa-volume-down w3-text-blue volume"></i>
-                <div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.01, orientation: 'vertical'}"
-                    bn-event="input: onCueVolumeChange" bn-val="cueVolume" class="volulmeSlider"></div>
-            </div>        
+        <div class="toolbar2">
+            <span>CUE</span>
+            <div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.01, orientation: 'vertical'}"
+                bn-event="input: onCueVolumeChange" bn-val="cueVolume" class="volulmeSlider"></div>
         </div>
     </div>
- 
+
     <div bn-control="audioplayer" bn-iface="audio2" data-deck="2"></div>
 </div>
 

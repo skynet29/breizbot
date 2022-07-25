@@ -187,11 +187,12 @@
 				audioBufferSourceNode = audioCtx.createBufferSource()
 				audioBufferSourceNode.buffer = audioBuffer
 				audioBufferSourceNode.onended = function () {
-					//console.log('onended', ctrl.model.playing)
+					console.log('onended', ctrl.model.playing)
 
 					if (ctrl.model.playing) {
 						ctrl.setData({ playing: false })
 						elapsedTime = audioBuffer.duration
+						midiCtrl.setButtonIntensity('PLAY', 1, deck)
 						elt.trigger('pause')
 					}
 
@@ -260,6 +261,7 @@
 				audioBuffer = await $$.media.getAudioBuffer(url)
 				const tempo = await beatdetector.computeBeatDetection(audioBuffer)
 				console.log('tempo', tempo)
+				elapsedTime = 0
 
 				const duration = audioBuffer.duration
 				ctrl.setData({ name, duration, loaded: true, bpm: tempo.bpm })

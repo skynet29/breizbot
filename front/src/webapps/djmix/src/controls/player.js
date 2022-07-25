@@ -187,7 +187,7 @@
 				audioBufferSourceNode = audioCtx.createBufferSource()
 				audioBufferSourceNode.buffer = audioBuffer
 				audioBufferSourceNode.onended = function () {
-					console.log('onended', ctrl.model.playing)
+					//console.log('onended', ctrl.model.playing)
 
 					if (ctrl.model.playing) {
 						ctrl.setData({ playing: false })

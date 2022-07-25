@@ -87,6 +87,10 @@ router.post('/list', async function (req, res) {
 			})
 		}
 
+		if (options.filesOnly === true) {
+			ret = ret.filter((info) => info.folder === false)
+		}
+
 		if (options.folderOnly === true) {
 			ret = ret.filter((info) => info.folder === true)
 		}

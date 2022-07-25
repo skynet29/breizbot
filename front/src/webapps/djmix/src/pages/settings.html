@@ -1,0 +1,11 @@
+<div>
+    <form bn-event="submit: onSubmit" bn-form="data">
+        <label>Samplers Folder</label>
+        <div>
+            <input type="text" required name="samplersFolder">
+            <button type="button" class="w3-button w3-blue" bn-icon="fa fa-folder-open" bn-event="click: onChooseFolder"></button>    
+        </div>
+        
+        <input type="submit" hidden bn-bind="submit">
+    </form>
+</div>

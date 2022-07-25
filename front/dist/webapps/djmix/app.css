@@ -3,7 +3,7 @@
   flex-direction: column; }
   .rootPage .top {
     display: flex;
-    margin: 10px;
+    margin: 5px 10px 5px 10px;
     justify-content: space-between; }
     .rootPage .top .midi {
       display: flex;
@@ -24,14 +24,16 @@
     display: flex;
     justify-content: center;
     margin-top: 10px; }
+    .rootPage .center .mixer {
+      border: 1px solid black;
+      border-radius: 10px;
+      display: flex;
+      margin-left: 10px;
+      margin-right: 10px; }
     .rootPage .center .masterPanel {
       display: flex;
       flex-direction: column;
       align-items: center;
-      border: 1px solid black;
-      border-radius: 10px;
-      margin-left: 10px;
-      margin-right: 10px;
       padding: 10px; }
       .rootPage .center .masterPanel > .toolbar2 {
         display: flex;
@@ -43,8 +45,7 @@
           margin-bottom: 20px; }
   .rootPage .visualizer {
     display: flex;
-    justify-content: center;
-    margin-top: 5px; }
+    justify-content: center; }
     .rootPage .visualizer .runningBufferContainer {
       position: relative;
       border: 1px solid black;
@@ -72,27 +73,18 @@
 
 .audioplayer {
   padding: 10px; }
-  .audioplayer .info {
+  .audioplayer .content {
     display: flex;
-    justify-content: space-between;
-    margin-top: 10px; }
-    .audioplayer .info .title {
-      display: flex; }
-      .audioplayer .info .title > strong {
-        min-width: 80px; }
-  .audioplayer audio {
-    width: 100%; }
+    align-items: center;
+    justify-content: space-around; }
+  .audioplayer .samplerPlayer {
+    display: flex;
+    align-items: center; }
   .audioplayer .toolbar {
     display: flex;
-    flex-direction: column; }
-    .audioplayer .toolbar button {
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 3rem;
-      height: 3rem;
-      margin: 10px; }
+    justify-content: space-between;
+    margin-bottom: 5px;
+    align-items: center; }
   .audioplayer .toolbar2 {
     display: flex;
     flex-direction: column;
@@ -117,3 +109,18 @@
     .audioplayer .slider .brainjs-slider {
       margin-left: 20px;
       flex: 1; }
+
+.settings {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center; }
+  .settings form {
+    width: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; }
+    .settings form label {
+      width: 200px; }
+    .settings form input {
+      width: 300px; }

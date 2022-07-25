@@ -4,7 +4,7 @@
 
     .top {
         display: flex;
-        margin: 10px;
+        margin: 5px 10px 5px 10px;
         justify-content: space-between;
 
         .midi {
@@ -37,14 +37,18 @@
         justify-content: center;
         margin-top: 10px;
 
+        .mixer {
+            border: 1px solid black;
+            border-radius: 10px;
+            display: flex;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
         .masterPanel {
             display: flex;
             flex-direction: column;
             align-items: center;
-            border: 1px solid black;
-            border-radius: 10px;
-            margin-left: 10px;
-            margin-right: 10px;
             padding: 10px;
 
             > .toolbar2 {
@@ -66,7 +70,6 @@
     .visualizer {
         display: flex;
         justify-content: center;
-        margin-top: 5px;
 
         .runningBufferContainer {
             position: relative;

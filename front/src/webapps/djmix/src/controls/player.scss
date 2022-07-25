@@ -1,38 +1,22 @@
 .audioplayer {
 	padding: 10px;
 
-	.info {
+	.content {
 		display: flex;
-		justify-content: space-between;
-		margin-top: 10px;
-		.title {
-			display: flex;
-			> strong {
-				min-width: 80px;
-			}
-		}
-	
-
-	}
-	audio {
-		width: 100%;
+		align-items: center;
+		justify-content: space-around;
 	}
 
+	.samplerPlayer {
+		display: flex;
+		align-items: center;
+	}
 
 	.toolbar {
 		display: flex;
-		flex-direction: column;
-
-		button {
-			border-radius: 50%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			width: 3rem;
-			height: 3rem;
-			margin: 10px;
-
-		}
+		justify-content: space-between;
+		margin-bottom: 5px;
+		align-items: center;
 
 	}
 

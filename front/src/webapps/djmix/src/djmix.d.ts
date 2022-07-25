@@ -49,6 +49,12 @@ declare namespace DJMix {
                 div: HTMLElement;
             }
 
+            interface SamplerInfo {
+                value: number;
+                label: string;
+                audioBuffer: AudioBuffer;
+            }
+
             interface Interface {
                 togglePlay(): void;
                 setInfo(info: {name: string, url: string, mp3?: {artist: string, title: string}}):
@@ -73,6 +79,8 @@ declare namespace DJMix {
                 getStartLoopTime(): number;
                 setEndLoopTime(time:number):void;
                 clearLoop():void;
+                setSamplers(samplers: Array<SamplerInfo>): void;
+                playSample(key:number):void;
             }
         }
     

@@ -1,16 +1,49 @@
-<div class="info">
-	<div class="toolbar">
-		<strong bn-text="name"></strong>
-		<div bn-show="loaded">BPM: <span bn-text="bpm"></span></div>
+<div class="toolbar">
 
-		<button bn-show="showPlay" bn-event="click: onPlay" class="w3-btn w3-blue" title="Play" bn-icon="fa fa-play">
+	<strong bn-text="name"></strong>
+	<div bn-show="loaded">BPM: <strong bn-text="bpm"></strong></div>
+
+
+	<div>
+		<button bn-show="showPlay" bn-event="click: onPlay" class="w3-btn w3-blue w3-padding-small" title="Play" bn-icon="fa fa-play">
 		</button>
 
-		<button bn-show="playing" bn-event="click: onPause" class="w3-btn w3-blue" title="Pause" bn-icon="fa fa-pause">
+		<button bn-show="playing" bn-event="click: onPause" class="w3-btn w3-blue w3-padding-small" title="Pause" bn-icon="fa fa-pause">
 		</button>
 
+	</div>
+
+</div>
 
 
+</div>
+
+<div class="bufferContainer" bn-show="showBuffer">
+	<canvas bn-bind="bufferCanvas" class="bufferCanvas" width="470" height="100">
+</div>
+
+<div class="content">
+	<div class="samplers">
+		<div class="samplerPlayer">
+			<button class="w3-button w3-blue w3-padding-small" bn-icon="fa fa-play"
+				bn-event="click: onPlaySampler"></button>
+			<div bn-control="brainjs.combobox" bn-data="{items: samplers}"></div>
+		</div>
+		<div class="samplerPlayer">
+			<button class="w3-button w3-blue w3-padding-small" bn-icon="fa fa-play"
+				bn-event="click: onPlaySampler"></button>
+			<div bn-control="brainjs.combobox" bn-data="{items: samplers}"></div>
+		</div>
+		<div class="samplerPlayer">
+			<button class="w3-button w3-blue w3-padding-small" bn-icon="fa fa-play"
+				bn-event="click: onPlaySampler"></button>
+			<div bn-control="brainjs.combobox" bn-data="{items: samplers}"></div>
+		</div>
+		<div class="samplerPlayer">
+			<button class="w3-button w3-blue w3-padding-small" bn-icon="fa fa-play"
+				bn-event="click: onPlaySampler"></button>
+			<div bn-control="brainjs.combobox" bn-data="{items: samplers}"></div>
+		</div>
 	</div>
 
 	<div class="toolbar2">
@@ -20,14 +53,9 @@
 	</div>
 </div>
 
-<div class="bufferContainer" bn-show="showBuffer">
-	<canvas bn-bind="bufferCanvas" class="bufferCanvas" width="470" height="100">
-</div>
-
 <div class="slider">
 	<span bn-text="getTimeInfo"></span>
 	<div bn-control="brainjs.slider" bn-data="{max: duration}" bn-event="input: onSliderChange" bn-val="curTime">
 	</div>
 
 </div>
-

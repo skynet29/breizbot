@@ -4,7 +4,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'MIDICtrl', 'AudioTools'],
+	deps: ['breizbot.pager', 'MIDICtrl', 'AudioTools', 'breizbot.appData', 'breizbot.files'],
 
 	props: {
 	},
@@ -14,16 +14,23 @@ $$.control.registerControl('rootPage', {
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {DJMix.Service.MIDICtrl.Interface} midiCtrl
 	 * @param {DJMix.Service.AudioTools.Interface} audioTools
+	 * @param {Breizbot.Services.AppData.Interface} appData
+	 * @param {Breizbot.Services.Files.Interface} srvFiles
 	 */
-	init: async function (elt, pager, midiCtrl, audioTools) {
+	init: async function (elt, pager, midiCtrl, audioTools, appData, srvFiles) {
 
 		const map = $$.util.mapRange(0, 127, 0, 1)
 
-		const RUNNING_DISPLAY_WIDTH = 1200
+		const RUNNING_DISPLAY_WIDTH = 1300
 		const RUNNING_DISPLAY_HEIGHT = 80
 		const SECONDS_OF_RUNNING_DISPLAY = 10.0
 		const MAX_CANVAS_WIDTH = 32000
 
+		let settings = appData.getData()
+		console.log('settings', settings)
+
+
+		const waitDlg = $$.ui.waitDialog('Loading samplers...')
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -49,6 +56,20 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				onSettings: function() {
+					pager.pushPage('settings', {
+						title: 'Settings',
+						props: {
+							data: settings
+						},
+						onReturn: async function(data) {
+							console.log('settings', data)
+							settings = data
+							await appData.saveData(settings)
+							laodSamplers()
+						}
+					})
+				},
 				onMasterVolumeChange: function (ev, value) {
 					//console.log('onMasterVolumeChange', value)
 					masterCrossFader.setMasterLevel(value)
@@ -68,6 +89,30 @@ $$.control.registerControl('rootPage', {
 				}
 			}
 		})
+
+		async function laodSamplers() {
+			if (settings.samplersFolder) {
+				waitDlg.show()
+				const files = await srvFiles.list(settings.samplersFolder, {
+					filterExtension: 'mp3',
+					filesOnly: true
+				})
+				console.log('files', files)
+				const samplersInfo = []
+				for(const file of files) {
+					const url = srvFiles.fileUrl(settings.samplersFolder + file.name)
+					const audioBuffer = await $$.media.getAudioBuffer(url)
+					samplersInfo.push({
+						audioBuffer, 
+						value: samplersInfo.length,
+						label: file.name.replace('.mp3', '')
+					})
+				}
+				getAudioCtrl(1).setSamplers(samplersInfo)
+				getAudioCtrl(2).setSamplers(samplersInfo)
+				waitDlg.hide()
+			}	
+		}
 
 		function selectMidiDevice(selectedId) {
 			midiCtrl.selectMIDIDevice(selectedId)
@@ -254,6 +299,11 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
+		midiCtrl.on('SAMPLER', ({deck, key}) => {
+			const audioCtrl = getAudioCtrl(deck)
+			audioCtrl.playSample(key)
+		})
+
 		midiCtrl.on('LOOP_MANUAL', ({ deck, key }) => {
 			const audioCtrl = getAudioCtrl(deck)
 			if (key == 1) {
@@ -341,6 +391,7 @@ $$.control.registerControl('rootPage', {
 				ctrl.setData({ selectedInput })
 				selectMidiDevice(selectedInput)
 			}
+			laodSamplers()
 		}
 
 

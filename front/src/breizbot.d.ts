@@ -153,6 +153,8 @@ declare namespace Breizbot {
                 filterExtension?: string;
                 imageOnly?: boolean;
                 folderOnly?: boolean;
+                filesOnly?: boolean;
+                
             };
     
             interface Interface {

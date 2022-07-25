@@ -103,6 +103,7 @@
 
 			const ctrl = $$.viewController(elt, {
 				data: {
+					samplers: [],
 					tempo: 0,
 					name: 'No Track loaded',
 					volume: 0.5,
@@ -120,6 +121,12 @@
 
 				},
 				events: {
+					onPlaySampler: function () {
+						const combo = $(this).closest('.samplerPlayer').find('.brainjs-combobox')
+						const value = combo.getValue()
+						console.log('onPlaySampler', value)
+						playSampler(value)
+					},
 					onVolumeChange: function (ev, value) {
 						//console.log('onVolumeChange', value)
 						gainNode.gain.value = value
@@ -154,6 +161,23 @@
 			})
 
 			let pauseFeedback = null
+
+			function playSampler(id) {
+				const { samplers } = ctrl.model
+				if (id < samplers.length) {
+					//console.log('playSampler', id)
+					const sampleBufferSource = audioCtx.createBufferSource()
+					sampleBufferSource.buffer = samplers[id].audioBuffer
+					sampleBufferSource.connect(gainNode)
+					sampleBufferSource.start()
+				}
+			}
+
+			this.playSample = function(key) {
+				const combo = elt.find('.samplerPlayer').eq(key -1).find('.brainjs-combobox')
+				const value = combo.getValue()
+				playSampler(value)
+			}
 
 			function play() {
 				//console.log('play', { elapsedTime, deck })
@@ -200,6 +224,9 @@
 				})
 			}
 
+			this.setSamplers = function (samplers) {
+				ctrl.setData({ samplers })
+			}
 
 			this.seek = function (ticks) {
 				if (!ctrl.model.playing && ctrl.model.loaded) {
@@ -253,23 +280,23 @@
 				return curTime
 			}
 
-			this.setStartLoopTime = function(time) {
+			this.setStartLoopTime = function (time) {
 				loopStartTime = time
 			}
 
-			this.setEndLoopTime = function(time) {
+			this.setEndLoopTime = function (time) {
 				loopEndTime = time
 				autoLoop = 5
 				reset(loopStartTime, true)
 				midiCtrl.setButtonIntensity('LOOP_MANUAL', 127, deck, 3)
 			}
 
-			this.clearLoop = function() {
+			this.clearLoop = function () {
 				autoLoop = 0
 				midiCtrl.setButtonIntensity('LOOP_MANUAL', 1, deck, 3)
 			}
 
-			this.getStartLoopTime = function() {
+			this.getStartLoopTime = function () {
 				return loopStartTime
 			}
 
@@ -353,7 +380,7 @@
 				}
 				else {
 					loopStartTime = startTime
-					loopEndTime = startTime + duration	
+					loopEndTime = startTime + duration
 				}
 				midiCtrl.setButtonIntensity('LOOP_AUTO', 127, deck, nb)
 				autoLoop = nb

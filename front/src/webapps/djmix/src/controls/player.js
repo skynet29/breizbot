@@ -181,6 +181,9 @@
 
 			function play() {
 				//console.log('play', { elapsedTime, deck })
+				if (!ctrl.model.loaded)
+					return
+
 				midiCtrl.setButtonIntensity('PLAY', 127, deck)
 
 				gainNode.gain.value = ctrl.model.volume

@@ -177,7 +177,7 @@ $$.control.registerControl('rootPage', {
 
 			const width = getOffset(startTime)
 			div.style.left = width + 'px'
-			div.style.width = getOffset(duration) + 'px'
+			div.style.width = (duration == 0) ? '1px' : getOffset(duration) + 'px'
 			div.style.height = RUNNING_DISPLAY_HEIGHT + 'px'
 			hotcueContainer.appendChild(div)
 
@@ -251,6 +251,25 @@ $$.control.registerControl('rootPage', {
 			}
 			else {
 				createLoop(deck, startTime, duration)
+			}
+		})
+
+		midiCtrl.on('LOOP_MANUAL', ({ deck, key }) => {
+			const audioCtrl = getAudioCtrl(deck)
+			if (key == 1) {
+				const startTime = audioCtrl.getCurrentTime()
+				audioCtrl.setStartLoopTime(startTime)
+				createLoop(deck, startTime, 0)
+			}
+			else if (key == 2) {
+				const startTime = audioCtrl.getStartLoopTime()
+				const endTime = audioCtrl.getCurrentTime()
+				audioCtrl.setEndLoopTime(endTime)
+				createLoop(deck, startTime, endTime - startTime)
+			}
+			else if (key == 3) {
+				audioCtrl.clearLoop()
+				removeLoop(deck)				
 			}
 		})
 

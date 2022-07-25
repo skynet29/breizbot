@@ -85,11 +85,21 @@ $$.service.registerService('MIDICtrl', {
         ]
 
 
-        function getActionDesc(data) {
-            const [cmd, note] = data
+        function getActionDesc(cmd, note) {
             for (const e of midiInputMapping) {
                 if (e.cmd == cmd && e.note == note) {
+                    let ret = e
+                    if (e.type == 'BTN') {
+                        e.event = 'DOWN'
+                    }
                     return e
+                }
+                if (e.cmd - 0x10 == cmd && e.note == note) {
+                    let ret = e
+                    if (e.type == 'BTN') {
+                        e.event = 'UP'
+                        return e
+                    }
                 }
             }
             return null
@@ -209,11 +219,14 @@ $$.service.registerService('MIDICtrl', {
         function onMidiMessage(ev) {
             const [cmd, note, velocity] = ev.data
             //console.log('onMidiMessage', cmd.toString(16), note.toString(16), velocity)
-            const desc = getActionDesc(ev.data)
+            const desc = getActionDesc(cmd, note)
 
             if (desc != null) {
-                const { action, deck, key } = desc
-                events.emit(action, { deck, key, velocity })
+                const { action, deck, key, event } = desc
+                //console.log('onMidiMessage', {action, deck, key, event})
+                if (event != 'UP') {
+                    events.emit(action, { deck, key, velocity })
+                }
             }
 
         }

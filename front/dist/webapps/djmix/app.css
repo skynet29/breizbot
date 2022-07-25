@@ -63,7 +63,9 @@
           width: 2px; }
         .rootPage .visualizer .runningBufferContainer .hotcueContainer .loop {
           position: absolute;
-          background-color: rgba(0, 0, 0, 0.5); }
+          background-color: rgba(0, 255, 0, 0.5);
+          border-left: 1px solid green;
+          border-right: 1px solid green; }
   .rootPage .audioplayer {
     border: 1px solid black;
     border-radius: 10px; }

@@ -156,14 +156,14 @@
 			let pauseFeedback = null
 
 			function play() {
-				console.log('play', { elapsedTime, deck })
+				//console.log('play', { elapsedTime, deck })
 				midiCtrl.setButtonIntensity('PLAY', 127, deck)
 
 				gainNode.gain.value = ctrl.model.volume
 				audioBufferSourceNode = audioCtx.createBufferSource()
 				audioBufferSourceNode.buffer = audioBuffer
 				audioBufferSourceNode.onended = function () {
-					console.log('onended', ctrl.model.playing)
+					//console.log('onended', ctrl.model.playing)
 
 					if (ctrl.model.playing) {
 						ctrl.setData({ playing: false })
@@ -186,7 +186,7 @@
 			const FADE = 0.01
 
 			function pause() {
-				console.log('pause')
+				//console.log('pause')
 				midiCtrl.setButtonIntensity('PLAY', 1, deck)
 
 				return new Promise((resolve) => {
@@ -253,6 +253,25 @@
 				return curTime
 			}
 
+			this.setStartLoopTime = function(time) {
+				loopStartTime = time
+			}
+
+			this.setEndLoopTime = function(time) {
+				loopEndTime = time
+				autoLoop = 5
+				reset(loopStartTime, true)
+				midiCtrl.setButtonIntensity('LOOP_MANUAL', 127, deck, 3)
+			}
+
+			this.clearLoop = function() {
+				autoLoop = 0
+				midiCtrl.setButtonIntensity('LOOP_MANUAL', 1, deck, 3)
+			}
+
+			this.getStartLoopTime = function() {
+				return loopStartTime
+			}
 
 			this.getOutputNode = function () {
 				return gainNode

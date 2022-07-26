@@ -58,13 +58,13 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
-				onSettings: function() {
+				onSettings: function () {
 					pager.pushPage('settings', {
 						title: 'Settings',
 						props: {
 							data: settings
 						},
-						onReturn: async function(data) {
+						onReturn: async function (data) {
 							console.log('settings', data)
 							settings = data
 							await appData.saveData(settings)
@@ -101,11 +101,11 @@ $$.control.registerControl('rootPage', {
 				})
 				console.log('files', files)
 				const samplersInfo = []
-				for(const file of files) {
+				for (const file of files) {
 					const url = srvFiles.fileUrl(settings.samplersFolder + file.name)
 					const audioBuffer = await $$.media.getAudioBuffer(url)
 					samplersInfo.push({
-						audioBuffer, 
+						audioBuffer,
 						value: samplersInfo.length,
 						label: file.name.replace('.mp3', '')
 					})
@@ -113,7 +113,7 @@ $$.control.registerControl('rootPage', {
 				getAudioCtrl(1).setSamplers(samplersInfo)
 				getAudioCtrl(2).setSamplers(samplersInfo)
 				waitDlg.hide()
-			}	
+			}
 		}
 
 		function selectMidiDevice(selectedId) {
@@ -140,11 +140,13 @@ $$.control.registerControl('rootPage', {
 
 				ctrl.model[audio] = true
 				ctrl.update()
-				const {audioBuffer, tempo} = await ctrl.scope[audio].setInfo(selFile)
+				const { audioBuffer, tempo } = await ctrl.scope[audio].setInfo(selFile)
 
 				const width = RUNNING_DISPLAY_WIDTH / 2 * audioBuffer.duration
 				hotcueContainer.style.width = width + 'px'
 				hotcueContainer.style.height = RUNNING_DISPLAY_HEIGHT + 'px'
+
+				createHotCue(deck, 1, 0)
 
 				drawRunningBuffer(audioBuffer, deck, tempo)
 				ctrl.model[audio] = false
@@ -196,6 +198,8 @@ $$.control.registerControl('rootPage', {
 		 */
 		function createHotCue(deck, hotcue, time) {
 			console.log('createHotCue', { deck, hotcue, time })
+
+			deleteHotCue(deck, hotcue)
 			const hotcueContainer = hotcueContainers[deck - 1]
 			const div = document.createElement('div')
 			div.classList.add('hotcue')
@@ -205,8 +209,18 @@ $$.control.registerControl('rootPage', {
 			div.style.backgroundColor = hotcueColors[hotcue - 1]
 			div.style.height = RUNNING_DISPLAY_HEIGHT + 'px'
 			hotcueContainer.appendChild(div)
-			return div
 
+			getAudioCtrl(deck).addHotcue(hotcue, time, div)
+
+		}
+
+		function deleteHotCue(deck, hotcue) {
+			const audioCtrl = getAudioCtrl(deck)
+			const info = audioCtrl.getHotcue(hotcue)
+			if (info) {
+				audioCtrl.deleteHotcue(hotcue)
+				hotcueContainers[deck - 1].removeChild(info.div)
+			}
 		}
 
 		function removeLoop(deck) {
@@ -245,8 +259,7 @@ $$.control.registerControl('rootPage', {
 		})
 
 		midiCtrl.on('PLAY', ({ deck }) => {
-			const audioCtrl = getAudioCtrl(deck)
-			audioCtrl.togglePlay()
+			getAudioCtrl(deck).togglePlay()
 		})
 
 		midiCtrl.on('LOAD', async ({ deck }) => {
@@ -259,7 +272,7 @@ $$.control.registerControl('rootPage', {
 			masterCrossFader.setFaderLevel(crossFader)
 		})
 
-		midiCtrl.on('PITCH', ({deck, velocity}) => {
+		midiCtrl.on('PITCH', ({ deck, velocity }) => {
 			const rate = mapRate(velocity)
 			getAudioCtrl(deck).setPlaybackRate(rate)
 		})
@@ -284,13 +297,20 @@ $$.control.registerControl('rootPage', {
 
 		midiCtrl.on('JOG_WHEEL', ({ deck, velocity }) => {
 			//console.log('JOG_WHEEL', {deck, velocity})
-			const audioCtrl = getAudioCtrl(deck)
-			audioCtrl.seek(velocity == 1 ? 1 : -1)
+			getAudioCtrl(deck).seek(velocity == 1 ? 1 : -1)
 		})
 
 		midiCtrl.on('CUE', ({ deck }) => {
 			const audioCtrl = getAudioCtrl(deck)
-			audioCtrl.reset()
+
+			if (audioCtrl.isPlaying()) {
+				audioCtrl.jumpToHotcue(1, false)
+
+			}
+			else {
+				const time = audioCtrl.getCurrentTime()
+				createHotCue(deck, 1, time)
+			}
 		})
 
 		midiCtrl.on('LOOP_AUTO', ({ deck, key }) => {
@@ -306,9 +326,8 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		midiCtrl.on('SAMPLER', ({deck, key}) => {
-			const audioCtrl = getAudioCtrl(deck)
-			audioCtrl.playSample(key)
+		midiCtrl.on('SAMPLER', ({ deck, key }) => {
+			getAudioCtrl(deck).playSample(key)
 		})
 
 		midiCtrl.on('LOOP_MANUAL', ({ deck, key }) => {
@@ -326,7 +345,7 @@ $$.control.registerControl('rootPage', {
 			}
 			else if (key == 3) {
 				audioCtrl.clearLoop()
-				removeLoop(deck)				
+				removeLoop(deck)
 			}
 		})
 
@@ -337,30 +356,22 @@ $$.control.registerControl('rootPage', {
 				audioCtrl.toggleHotcueDeleteMode()
 			}
 			else {
-				const info = audioCtrl.getHotcue(key)
 
 				if (audioCtrl.isHotcueDeleteMode()) {
-					if (info) {
-						audioCtrl.deleteHotcue(key)
-						hotcueContainers[deck - 1].removeChild(info.div)
-					}
+					deleteHotCue(deck, key)
 				}
 				else {
-					const time = audioCtrl.getCurrentTime()
+					const info = audioCtrl.getHotcue(key)
 
 					if (info == undefined) {
-						const div = createHotCue(deck, key, time)
-
-						audioCtrl.addHotcue(key, time, div)
+						const time = audioCtrl.getCurrentTime()
+						createHotCue(deck, key, time)
 					}
 					else {
 						audioCtrl.jumpToHotcue(key)
 					}
-
 				}
-
 			}
-
 		})
 
 

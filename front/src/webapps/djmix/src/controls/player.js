@@ -86,7 +86,7 @@
 
 			const mapRate = $$.util.mapRange(0.92, 1.08, 1.08, 0.92)
 
-			const hotcues = {}
+			let hotcues = {}
 			let isHotcueDeleteMode = false
 
 			let autoLoop = 0
@@ -264,12 +264,13 @@
 				if (title != undefined) {
 					name = `${artist} - ${title}`
 				}
-				console.log('name', name)
+				//console.log('name', name)
 				ctrl.setData({ name: 'Loading...' })
 				audioBuffer = await $$.media.getAudioBuffer(url)
 				const tempo = await beatdetector.computeBeatDetection(audioBuffer)
 				console.log('tempo', tempo)
 				elapsedTime = 0
+				hotcues = {}
 
 				const duration = audioBuffer.duration
 				ctrl.setData({ name, duration, loaded: true, bpm: tempo.bpm })
@@ -350,13 +351,15 @@
 			this.addHotcue = function (nb, time, div) {
 				console.log('addHotcue', nb)
 				hotcues[nb] = { time, div }
-				midiCtrl.setButtonIntensity('HOT_CUE', 127, deck, nb)
+				if (nb != 1) {
+					midiCtrl.setButtonIntensity('HOT_CUE', 127, deck, nb)					
+				}
 			}
 
-			this.jumpToHotcue = function (nb) {
+			this.jumpToHotcue = function (nb, restart = true) {
 				console.log('jumpToHotcue', nb)
 				const { time } = hotcues[nb]
-				reset(time, true)
+				reset(time, restart)
 			}
 
 			this.toggleHotcueDeleteMode = function () {

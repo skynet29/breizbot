@@ -69,7 +69,7 @@ declare namespace DJMix {
                 reset(time?: number, restart?: boolean):void;
                 getHotcue(nb: number): HotcueInfo;
                 addHotcue(nb: number, time: number, div:HTMLElement):void;
-                jumpToHotcue(nb: number): void;
+                jumpToHotcue(nb: number, restart:boolean = true): void;
                 toggleHotcueDeleteMode():void;
                 isHotcueDeleteMode():boolean;
                 deleteHotcue(nb: number):void;

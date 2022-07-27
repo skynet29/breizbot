@@ -22,7 +22,6 @@ $$.control.registerControl('rootPage', {
 		const map = $$.util.mapRange(0, 127, 0, 1)
 
 		const mapRate = $$.util.mapRange(0, 127, 0.92, 1.08)
-		const mapRate2 = $$.util.mapRange(0.92, 1.08, 1.08, 0.92)
 
 		const RUNNING_DISPLAY_WIDTH = 1300
 		const RUNNING_DISPLAY_HEIGHT = 80
@@ -32,11 +31,14 @@ $$.control.registerControl('rootPage', {
 		let settings = appData.getData()
 		console.log('settings', settings)
 
+		const audioCtx = audioTools.getAudioContext()
 
 		const waitDlg = $$.ui.waitDialog('Loading samplers...')
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				audioCtx,
+				source1: null,
 				selectedInput: 'default',
 				audio1: false,
 				audio2: false,
@@ -521,6 +523,8 @@ $$.control.registerControl('rootPage', {
 
 		const source1 = audio1.getOutputNode()
 		const source2 = audio2.getOutputNode()
+
+		ctrl.setData({source1, source2})
 
 		const masterCrossFader = audioTools.createCrossFaderWithMasterLevel(source1, source2)
 

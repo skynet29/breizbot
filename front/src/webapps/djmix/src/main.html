@@ -42,6 +42,7 @@
 <div class="center">
     <div bn-control="audioplayer" bn-iface="audio1" data-deck="1"></div>
     <div class="mixer">
+        <div bn-control="brainjs.audiopeakmeter" bn-data="{audioCtx, sourceNode: source1}"></div>
         <div class="toolbar2">
             <span>MASTER</span>
             <div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.01, orientation: 'vertical'}"
@@ -52,6 +53,7 @@
             <div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.01, orientation: 'vertical'}"
                 bn-event="input: onCueVolumeChange" bn-val="cueVolume" class="volulmeSlider"></div>
         </div>
+        <div bn-control="brainjs.audiopeakmeter" bn-data="{audioCtx, sourceNode: source2}"></div>
     </div>
 
     <div bn-control="audioplayer" bn-iface="audio2" data-deck="2"></div>

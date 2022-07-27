@@ -33,4 +33,8 @@ module.exports = function(libName, scripts, styles) {
 		scripts.push('/brainjs/brainjs-pdf.js')
 	}
 
+	if (libName.includes('audiopeakmeter')) {
+		scripts.push('/brainjs/brainjs-audiopeakmeter.js')
+	}
+
 }

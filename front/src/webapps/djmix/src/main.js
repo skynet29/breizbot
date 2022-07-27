@@ -22,6 +22,7 @@ $$.control.registerControl('rootPage', {
 		const map = $$.util.mapRange(0, 127, 0, 1)
 
 		const mapRate = $$.util.mapRange(0, 127, 0.92, 1.08)
+		const mapRate2 = $$.util.mapRange(0.92, 1.08, 1.08, 0.92)
 
 		const RUNNING_DISPLAY_WIDTH = 1300
 		const RUNNING_DISPLAY_HEIGHT = 80
@@ -238,7 +239,7 @@ $$.control.registerControl('rootPage', {
 
 			const width = getOffset(startTime)
 			div.style.left = width + 'px'
-			div.style.width = (duration == 0) ? '1px' : getOffset(duration) + 'px'
+			div.style.width = (duration == 0) ? '2px' : getOffset(duration) + 'px'
 			div.style.height = RUNNING_DISPLAY_HEIGHT + 'px'
 			hotcueContainer.appendChild(div)
 
@@ -274,6 +275,14 @@ $$.control.registerControl('rootPage', {
 
 		midiCtrl.on('PITCH', ({ deck, velocity }) => {
 			const rate = mapRate(velocity)
+			const runningBuffer = runningBuffers[deck - 1]
+			for(const cv of runningBuffer.querySelectorAll('canvas')) {
+				cv.style.transform = `scale(${1 / rate}, 1)`
+			}
+
+			const hotcueContainer = hotcueContainers[deck - 1]
+			hotcueContainer.style.transform = `scale(${1 / rate}, 1)`
+
 			getAudioCtrl(deck).setPlaybackRate(rate)
 		})
 
@@ -368,7 +377,7 @@ $$.control.registerControl('rootPage', {
 						createHotCue(deck, key, time)
 					}
 					else {
-						audioCtrl.jumpToHotcue(key)
+						audioCtrl.jumpToHotcue(key, true)
 					}
 				}
 			}

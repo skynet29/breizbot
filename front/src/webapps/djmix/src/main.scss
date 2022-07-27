@@ -87,11 +87,15 @@
             .runningBuffer {
                 position: absolute;
                 display: flex;
+                > canvas {
+                    transform-origin: left;
+                }
 
             }
 
             .hotcueContainer {
                 position: absolute;
+                transform-origin: left;
 
                 .hotcue {
                     position: absolute;

@@ -56,8 +56,11 @@
       .rootPage .visualizer .runningBufferContainer .runningBuffer {
         position: absolute;
         display: flex; }
+        .rootPage .visualizer .runningBufferContainer .runningBuffer > canvas {
+          transform-origin: left; }
       .rootPage .visualizer .runningBufferContainer .hotcueContainer {
-        position: absolute; }
+        position: absolute;
+        transform-origin: left; }
         .rootPage .visualizer .runningBufferContainer .hotcueContainer .hotcue {
           position: absolute;
           width: 2px; }

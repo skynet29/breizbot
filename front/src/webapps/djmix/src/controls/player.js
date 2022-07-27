@@ -81,8 +81,34 @@
 
 			const getTime = $$.media.getFormatedTime
 
-			/**@type {AudioBuffer} */
-			let audioBuffer = null
+			const audio = new Audio()
+
+			audio.onplaying = function() {
+				//console.log('onplaying', {deck})
+				midiCtrl.setButtonIntensity('PLAY', 127, deck)
+				ctrl.setData({playing: true})
+			}
+			audio.onpause = function() {
+				//console.log('onpause', {deck})
+				midiCtrl.setButtonIntensity('PLAY', 1, deck)
+				ctrl.setData({playing: false})
+			}
+			audio.onload = function() {
+				console.log('onload', {deck})
+			}
+			audio.onended = function() {
+				//console.log('onended', {deck})
+				midiCtrl.setButtonIntensity('PLAY', 1, deck)
+				ctrl.setData({playing: false})
+			}
+
+			const audioCtx = audioTools.getAudioContext()
+
+			const sourceNode = audioCtx.createMediaElementSource(audio)
+
+			const gainNode = audioCtx.createGain()
+			gainNode.gain.value = 1
+			sourceNode.connect(gainNode)
 
 			const mapRate = $$.util.mapRange(0.92, 1.08, 1.08, 0.92)
 
@@ -93,29 +119,25 @@
 			let loopStartTime = 0
 			let loopEndTime = 0
 
-			let startTime = 0
-			let elapsedTime = 0
-
-			/**@type {AudioBufferSourceNode} */
-			let audioBufferSourceNode = null
-
-			const audioCtx = audioTools.getAudioContext()
-
-			const gainNode = audioCtx.createGain()
-			gainNode.gain.value = 0.5
-
 			const ctrl = $$.viewController(elt, {
 				data: {
 					samplers: [],
 					tempo: 0,
 					name: 'No Track loaded',
 					volume: 0.5,
-					pitch: 1,
+					rate: 1,
+					pitch: function() {
+						return mapRate(this.rate)
+					},
 					duration: 0,
 					curTime: 0,
 					playing: false,
 					loaded: false,
 					showBuffer,
+					bpm: 0,
+					getBpm: function() {
+						return (this.bpm * this.rate).toFixed(1)
+					},
 					getTimeInfo: function () {
 						return `${getTime(this.curTime, true)} / ${getTime(this.duration)}`
 					},
@@ -133,7 +155,7 @@
 					},
 					onVolumeChange: function (ev, value) {
 						//console.log('onVolumeChange', value)
-						gainNode.gain.value = value
+						audio.volume = value
 					},
 
 					onPlay: function () {
@@ -146,8 +168,7 @@
 
 					onSliderChange: function (ev, value) {
 						//console.log('onSliderChange', value)
-						//audio.currentTime = value
-						reset(value, true)
+						audio.currentTime = value
 					},
 
 
@@ -184,53 +205,18 @@
 			}
 
 			function play() {
-				//console.log('play', { elapsedTime, deck })
+				//console.log('play', { deck })
 				if (!ctrl.model.loaded)
-					return
-
-				midiCtrl.setButtonIntensity('PLAY', 127, deck)
-
-				gainNode.gain.value = ctrl.model.volume
-				audioBufferSourceNode = audioCtx.createBufferSource()
-				audioBufferSourceNode.buffer = audioBuffer
-				audioBufferSourceNode.playbackRate.value = ctrl.model.pitch
-				audioBufferSourceNode.onended = function () {
-					//console.log('onended', ctrl.model.playing)
-
-					if (ctrl.model.playing) {
-						ctrl.setData({ playing: false })
-						elapsedTime = audioBuffer.duration
-						midiCtrl.setButtonIntensity('PLAY', 1, deck)
-						elt.trigger('pause')
-					}
-
-					if (pauseFeedback != null) {
-						pauseFeedback()
-						pauseFeedback = null
-					}
-				}
-				audioBufferSourceNode.connect(gainNode)
-				startTime = audioCtx.currentTime
-				audioBufferSourceNode.start(0, elapsedTime)
-				ctrl.setData({ playing: true })
-				elt.trigger('playing')
+					return		
+				audio.play()
 			}
 
 			const FADE = 0.01
 
 			function pause() {
 				//console.log('pause')
-				midiCtrl.setButtonIntensity('PLAY', 1, deck)
+				audio.pause()
 
-				return new Promise((resolve) => {
-					ctrl.setData({ playing: false })
-					elapsedTime += audioCtx.currentTime - startTime
-					audioBufferSourceNode.stop()
-					audioBufferSourceNode = null
-					elt.trigger('pause')
-					pauseFeedback = resolve
-
-				})
 			}
 
 			this.setSamplers = function (samplers) {
@@ -239,20 +225,17 @@
 
 			this.seek = function (ticks) {
 				if (!ctrl.model.playing && ctrl.model.loaded) {
-					elapsedTime += ticks * 11 / 360
+					let elapsedTime = audio.currentTime + ticks * 11 / 360
 					elapsedTime = Math.max(0, elapsedTime)
+					audio.currentTime = elapsedTime
 				}
 			}
 
 			async function reset(time = 0, restart = false) {
 				//console.log('reset', { time, restart })
-				const { playing } = ctrl.model
-				if (playing) {
-					await pause()
-				}
-				elapsedTime = time
-				if (restart && playing) {
-					play()
+				audio.currentTime = time
+				if (!audio.paused && restart == false) {
+					pause()
 				}
 			}
 
@@ -266,29 +249,26 @@
 				}
 				//console.log('name', name)
 				ctrl.setData({ name: 'Loading...' })
-				audioBuffer = await $$.media.getAudioBuffer(url)
+				const audioBuffer = await $$.media.getAudioBuffer(url)
+				audio.src = url
+				audio.volume = ctrl.model.volume
 				const tempo = await beatdetector.computeBeatDetection(audioBuffer)
 				console.log('tempo', tempo)
-				elapsedTime = 0
 				hotcues = {}
 
-				const duration = audioBuffer.duration
+				const duration = audio.duration
 				ctrl.setData({ name, duration, loaded: true, bpm: tempo.bpm })
 				return { audioBuffer, tempo }
 			}
 
 			this.getCurrentTime = function () {
-				let curTime = elapsedTime
-				if (ctrl.model.playing) {
-					curTime += audioCtx.currentTime - startTime
-				}
+				const curTime = audio.currentTime
 				if (autoLoop != 0 && curTime >= loopEndTime) {
-					reset(loopStartTime, true)
-					curTime = audioCtx.currentTime - loopStartTime
-				}
+					audio.currentTime = loopStartTime
+				}				
 				ctrl.setData({ curTime })
 				//console.log('getCurrentTime', curTime)
-				return curTime
+				return curTime / audio.playbackRate
 			}
 
 			this.setStartLoopTime = function (time) {
@@ -321,7 +301,7 @@
 			}
 
 			this.setVolume = function (volume) {
-				gainNode.gain.value = volume
+				audio.volume = volume
 				ctrl.setData({ volume })
 
 			}
@@ -331,18 +311,13 @@
 			}
 
 			this.togglePlay = function () {
-				if (ctrl.model.playing) {
-					pause()
-				}
-				else {
+				if (audio.paused) {
 					play()
 				}
+				else {
+					pause()
+				}
 			}
-
-			this.getAudioBuffer = function () {
-				return audioBuffer
-			}
-
 
 			this.getHotcue = function (nb) {
 				return hotcues[nb]
@@ -402,10 +377,8 @@
 
 			this.setPlaybackRate = function(rate) {
 				//console.log('setPlaybackRate', rate)
-				if(ctrl.model.playing) {
-					audioBufferSourceNode.playbackRate.value = rate
-				}
-				ctrl.setData({pitch: mapRate(rate)})
+				audio.playbackRate = rate
+				ctrl.setData({rate})
 			}
 		}
 

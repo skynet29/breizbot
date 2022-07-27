@@ -82,6 +82,7 @@ declare namespace DJMix {
                 setSamplers(samplers: Array<SamplerInfo>): void;
                 playSample(key:number):void;
                 setPlaybackRate(rate: number):void;
+                getRealTime():number;
             }
         }
     

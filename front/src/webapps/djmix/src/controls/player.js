@@ -261,7 +261,11 @@
 				return { audioBuffer, tempo }
 			}
 
-			this.getCurrentTime = function () {
+			this.getCurrentTime = function() {
+				return audio.currentTime
+			}
+
+			this.getRealTime = function () {
 				const curTime = audio.currentTime
 				if (autoLoop != 0 && curTime >= loopEndTime) {
 					audio.currentTime = loopStartTime

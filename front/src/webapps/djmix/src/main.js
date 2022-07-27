@@ -512,10 +512,10 @@ $$.control.registerControl('rootPage', {
 
 		function updateDisplay() {
 			if (audio1.isLoaded()) {
-				updateTime(audio1.getCurrentTime(), 1)
+				updateTime(audio1.getRealTime(), 1)
 			}
 			if (audio2.isLoaded()) {
-				updateTime(audio2.getCurrentTime(), 2)
+				updateTime(audio2.getRealTime(), 2)
 			}
 			requestAnimationFrame(updateDisplay)
 		}

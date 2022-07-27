@@ -91,6 +91,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onMidiInputChange: function (ev) {
 					const selectedId = $(this).getValue()
+					selectMidiDevice(selectedId)
 				}
 			}
 		})

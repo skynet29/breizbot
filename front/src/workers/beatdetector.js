@@ -71,7 +71,7 @@ function countIntervalsBetweenNearbyPeaks(peaks) {
 
 
 function trunc(val) {
-    return Math.trunc(val * 10) / 10
+    return parseFloat(val.toFixed(2))
 }
 // Function used to return a histogram of tempo candidates.
 /**
@@ -96,7 +96,7 @@ function groupNeighborsByTempo(intervalBuckets, sampleRate) {
         while (theoreticalTempo < 90) theoreticalTempo *= 2;
         while (theoreticalTempo > 160) theoreticalTempo /= 2;
 
-        //theoreticalTempo = trunc(theoreticalTempo)
+        theoreticalTempo = trunc(theoreticalTempo)
 
         //console.log('theoreticalTempo', theoreticalTempo)
 
@@ -104,19 +104,19 @@ function groupNeighborsByTempo(intervalBuckets, sampleRate) {
         let foundTempo = false
 
         tempoBuckets.forEach((tempoBucket) => {
-            if (tempoBucket.tempo === theoreticalTempo) {
+            if (Math.abs(tempoBucket.tempo - theoreticalTempo) < 0.1) {
                 tempoBucket.score += intervalBucket.peaks.length;
                 tempoBucket.peaks = tempoBucket.peaks.concat(intervalBucket.peaks)
                 foundTempo = true
             }
 
-            if (tempoBucket.tempo > theoreticalTempo - 0.5 && tempoBucket.tempo < theoreticalTempo + 0.5) {
-                const tempoDifference = Math.abs(tempoBucket.tempo - theoreticalTempo) * 2;
+            // if (tempoBucket.tempo > theoreticalTempo - 0.5 && tempoBucket.tempo < theoreticalTempo + 0.5) {
+            //     const tempoDifference = Math.abs(tempoBucket.tempo - theoreticalTempo) * 2;
 
-                const scoreInc = (1 - tempoDifference) * tempoBucket.peaks.length;
-                score += scoreInc
-                tempoBucket.score += scoreInc
-            }
+            //     const scoreInc = (1 - tempoDifference) * tempoBucket.peaks.length;
+            //     score += scoreInc
+            //     tempoBucket.score += scoreInc
+            // }
 
         });
 
@@ -129,7 +129,7 @@ function groupNeighborsByTempo(intervalBuckets, sampleRate) {
         }
     });
 
-    console.log('tempoBuckets', tempoBuckets)
+    //console.log('tempoBuckets', tempoBuckets)
     return tempoBuckets
 }
 

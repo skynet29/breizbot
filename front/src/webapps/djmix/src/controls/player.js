@@ -224,7 +224,7 @@
 			}
 
 			this.seek = function (ticks) {
-				if (!ctrl.model.playing && ctrl.model.loaded) {
+				if (/*!ctrl.model.playing &&*/ ctrl.model.loaded) {
 					let elapsedTime = audio.currentTime + ticks * 11 / 360
 					elapsedTime = Math.max(0, elapsedTime)
 					audio.currentTime = elapsedTime
@@ -257,7 +257,7 @@
 				hotcues = {}
 
 				const duration = audio.duration
-				ctrl.setData({ name, duration, loaded: true, bpm: tempo.bpm })
+				ctrl.setData({ name, duration, loaded: true, bpm: parseFloat(tempo.tempo.toFixed(1)) })
 				return { audioBuffer, tempo }
 			}
 

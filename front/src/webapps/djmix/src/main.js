@@ -309,7 +309,11 @@ $$.control.registerControl('rootPage', {
 
 		midiCtrl.on('JOG_WHEEL', ({ deck, velocity }) => {
 			//console.log('JOG_WHEEL', {deck, velocity})
-			getAudioCtrl(deck).seek(velocity == 1 ? 1 : -1)
+			let offset = SECONDS_OF_RUNNING_DISPLAY / RUNNING_DISPLAY_WIDTH
+			if (velocity == 127) {
+				offset *= -1
+			}
+			getAudioCtrl(deck).seek(offset)
 		})
 
 		midiCtrl.on('CUE', ({ deck }) => {
@@ -471,15 +475,16 @@ $$.control.registerControl('rootPage', {
 			console.log('beatInterval', beatInterval)
 			const beatOffset = Math.trunc(getOffset(beatInfo.offset))
 			console.log('beatOffset', beatOffset)
+			console.log('duration', audioBuffer.duration)
 
 			const runningBuffer = runningBuffers[deck - 1]
 			const color = colors[deck - 1]
 
-			const width = Math.ceil(RUNNING_DISPLAY_WIDTH * audioBuffer.duration / SECONDS_OF_RUNNING_DISPLAY)
+			const width = Math.floor(RUNNING_DISPLAY_WIDTH * audioBuffer.duration / SECONDS_OF_RUNNING_DISPLAY)
 			console.log('width', width)
 
 			const data = audioBuffer.getChannelData(0)
-			const step = Math.ceil(SECONDS_OF_RUNNING_DISPLAY * audioBuffer.sampleRate / RUNNING_DISPLAY_WIDTH)
+			const step = Math.floor(SECONDS_OF_RUNNING_DISPLAY * audioBuffer.sampleRate / RUNNING_DISPLAY_WIDTH)
 			console.log('step', step)
 			const amp = RUNNING_DISPLAY_HEIGHT / 2
 

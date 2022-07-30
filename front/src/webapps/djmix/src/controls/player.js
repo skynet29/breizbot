@@ -98,6 +98,7 @@
 			let autoLoop = 0
 			let loopStartTime = 0
 			let loopEndTime = 0
+			let jogTouchPressed = false
 
 			const ctrl = $$.viewController(elt, {
 				data: {
@@ -167,7 +168,6 @@
 				//audio.currentTime = time
 			})
 
-			let pauseFeedback = null
 
 			function playSampler(id) {
 				const { samplers } = ctrl.model
@@ -206,13 +206,22 @@
 			}
 
 			this.seek = function (offset) {
-				if (/*!ctrl.model.playing &&*/ ctrl.model.loaded) {
-					let elapsedTime = player.getCurrentTime() + offset
-					elapsedTime = Math.max(0, elapsedTime)
+				if (player && jogTouchPressed) {
 					//console.log('seek', elapsedTime)
-					player.seek(elapsedTime, player.isPlaying())
+					player.seekOffset(offset)
 				}
 			}
+
+			this.jogTouch = function(isPressed) {
+				//console.log('jogTouch', isPressed)
+
+				if (!isPressed && player) {
+					player.seekEnd()
+				}
+
+				jogTouchPressed = isPressed
+			}
+
 
 			async function reset(time = 0, restart = false) {
 				//console.log('reset', { time, restart })
@@ -246,7 +255,7 @@
 				})
 
 				player.on('ended', function () {
-					console.log('ended', {deck})
+					console.log('ended', { deck })
 					midiCtrl.setButtonIntensity('PLAY', 1, deck)
 					ctrl.setData({ playing: false })
 				})
@@ -387,7 +396,7 @@
 				if (player) {
 					player.setPlaybackRate(rate)
 				}
-				ctrl.setData({ rate })	
+				ctrl.setData({ rate })
 			}
 		}
 

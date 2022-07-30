@@ -316,6 +316,14 @@ $$.control.registerControl('rootPage', {
 			getAudioCtrl(deck).seek(offset)
 		})
 
+		midiCtrl.on('JOGTOUCH_RELEASE', ({deck}) => {
+			getAudioCtrl(deck).jogTouch(false)
+		})
+
+		midiCtrl.on('JOGTOUCH_PRESS', ({deck}) => {
+			getAudioCtrl(deck).jogTouch(true)
+		})
+
 		midiCtrl.on('CUE', ({ deck }) => {
 			const audioCtrl = getAudioCtrl(deck)
 

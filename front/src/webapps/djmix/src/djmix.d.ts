@@ -4,7 +4,7 @@ declare namespace DJMix {
 
         declare namespace MIDICtrl {
 
-            type eventNames = 'MIDI_STATECHANGE' | 'MASTER_LEVEL' | 'CUE_LEVEL' | 'CROSS_FADER' | 'LEVEL' | 'PITCH' | 'SYNC' | 'CUE' | 'PLAY' | 'PFL' | 'JOGTOUCH' | 'LOAD' | 'ENTER' | 'JOG_WHEEL' | 'BROWSE_WHEEL' | 'HOT_CUE' | 'LOOP_AUTO' | 'LOOP_MANUAL' | 'SAMPLER'
+            type eventNames = 'MIDI_STATECHANGE' | 'MASTER_LEVEL' | 'CUE_LEVEL' | 'CROSS_FADER' | 'LEVEL' | 'PITCH' | 'SYNC' | 'CUE' | 'PLAY' | 'PFL' | 'JOGTOUCH_PRESS' | 'JOGTOUCH_RELEASE' | 'LOAD' | 'ENTER' | 'JOG_WHEEL' | 'BROWSE_WHEEL' | 'HOT_CUE' | 'LOOP_AUTO' | 'LOOP_MANUAL' | 'SAMPLER'
 
             interface MidiInfo {
                 midiInputs: Array<{label: string, value: string}>,
@@ -83,6 +83,7 @@ declare namespace DJMix {
                 playSample(key:number):void;
                 setPlaybackRate(rate: number):void;
                 getRealTime():number;
+                jogTouch(isPressed:boolean):void;
             }
         }
     

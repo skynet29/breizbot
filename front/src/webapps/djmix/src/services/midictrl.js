@@ -25,13 +25,15 @@ $$.service.registerService('MIDICtrl', {
             { action: 'CUE', cmd: 0x90, note: 0X01, deck: 1, type: 'BTN' },
             { action: 'PLAY', cmd: 0x90, note: 0X00, deck: 1, type: 'BTN' },
             { action: 'PFL', cmd: 0x90, note: 0X1B, deck: 1, type: 'BTN2' },
-            { action: 'JOGTOUCH', cmd: 0x90, note: 0X06, deck: 1 },
+            { action: 'JOGTOUCH_RELEASE', cmd: 0x80, note: 0X06, deck: 1 },
+            { action: 'JOGTOUCH_PRESS', cmd: 0x90, note: 0X06, deck: 1 },
 
             { action: 'SYNC', cmd: 0x91, note: 0X02, deck: 2, type: 'BTN' },
             { action: 'CUE', cmd: 0x91, note: 0X01, deck: 2, type: 'BTN' },
             { action: 'PLAY', cmd: 0x91, note: 0X00, deck: 2, type: 'BTN' },
             { action: 'PFL', cmd: 0x91, note: 0X1B, deck: 2, type: 'BTN2' },
-            { action: 'JOGTOUCH', cmd: 0x91, note: 0X06, deck: 2 },
+            { action: 'JOGTOUCH_RELEASE', cmd: 0x81, note: 0X06, deck: 2 },
+            { action: 'JOGTOUCH_PRESS', cmd: 0x91, note: 0X06, deck: 2 },
 
             { action: 'LOAD', cmd: 0x9F, note: 0X02, deck: 1 },
             { action: 'LOAD', cmd: 0x9F, note: 0X03, deck: 2 },
@@ -88,18 +90,7 @@ $$.service.registerService('MIDICtrl', {
         function getActionDesc(cmd, note) {
             for (const e of midiInputMapping) {
                 if (e.cmd == cmd && e.note == note) {
-                    let ret = e
-                    if (e.type == 'BTN') {
-                        e.event = 'DOWN'
-                    }
                     return e
-                }
-                if (e.cmd - 0x10 == cmd && e.note == note) {
-                    let ret = e
-                    if (e.type == 'BTN') {
-                        e.event = 'UP'
-                        return e
-                    }
                 }
             }
             return null
@@ -118,6 +109,10 @@ $$.service.registerService('MIDICtrl', {
 
         async function requestMIDIAccess() {
             midiAccess = await navigator.requestMIDIAccess()
+            /**
+             * 
+             * @param {MIDIConnectionEvent} ev 
+             */
             midiAccess.onstatechange = function(ev) {
                 if (ev.port.type == 'input') {
                     events.emit('MIDI_STATECHANGE', ev.port)

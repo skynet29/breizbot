@@ -68,22 +68,17 @@ function dbReady() {
 	for(const appName of apps) {
 		const dbWrapper = new dbUtil.DbWrapper(appName)
 		dbWrappers[appName] = dbWrapper
+		events.on('userDeleted', async (userName) => {
+			dbWrapper.setUserName(userName)
+			await dbWrapper.deleteMany()
+		})
 
 	}
 
 	if (config.USEALEXA) {
 		const skillInterface = require('./alexa/skill.js')
 
-
 		for(const appName of apps) {
-
-			const dbWrapper = new dbUtil.DbWrapper(appName)
-			dbWrappers[appName] = dbWrapper
-
-			events.on('userDeleted', async (userName) => {
-				dbWrapper.setUserName(userName)
-				await dbWrapper.deleteMany()
-			})
 
 			const appPath = path.join(appsPath, appName, 'skill.js')
 			if (fs.existsSync(appPath)) {
@@ -91,7 +86,7 @@ function dbReady() {
 
 				require(appPath)({
 					skillInterface,
-					db: dbWrapper,
+					db: dbWrappers[appName],
 					util,
 					config,
 					app

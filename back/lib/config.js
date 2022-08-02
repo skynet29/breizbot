@@ -20,6 +20,14 @@ if (CLOUD_HOME == undefined) {
 	process.exit(1)
 }
 
+let USEALEXA = process.env.BREIZBOT_USEALEXA
+if (USEALEXA == undefined) {
+	console.log('Missing USEALEXA env var !')
+	process.exit(1)
+}
+USEALEXA = (USEALEXA === 'true')
+
+
 let USESSL = process.env.BREIZBOT_USESSL
 if (USESSL == undefined) {
 	console.log('Missing USESSL env var !')
@@ -56,6 +64,7 @@ if (domain == undefined) {
 module.exports = {
 	CERTIF_HOME,
 	USESSL,
+	USEALEXA,
 	BRAINJS_HOME,
 	ADMIN_USER,
 	ADMIN_PWD,

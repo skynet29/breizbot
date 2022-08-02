@@ -8,7 +8,6 @@ const fs = require('fs-extra')
 const parseUrl = require('url').parse
 const helmet = require('helmet')
 const http = require('http')
-const { ExpressAdapter } = require('ask-sdk-express-adapter')
 const path = require('path')
 const websocket = require('./lib/websocket.js')
 
@@ -41,7 +40,7 @@ function dbReady() {
 
 	const util = require('./lib/util')
 	const events = require('./lib/events')
-	
+
 	const express = require('express')
 	const session = require('express-session')
 	const bodyParser = require('body-parser')
@@ -64,40 +63,51 @@ function dbReady() {
 
 	const app = express()
 
-	const skillInterface = require('./alexa/skill.js')
-	
 	events.setMaxListeners(apps.length + 10)
 
-	apps.forEach((appName) => {
-
+	for(const appName of apps) {
 		const dbWrapper = new dbUtil.DbWrapper(appName)
 		dbWrappers[appName] = dbWrapper
 
-		events.on('userDeleted', async (userName) => {
-			dbWrapper.setUserName(userName)
-			await dbWrapper.deleteMany()
-		})
+	}
 
-		const appPath = path.join(appsPath, appName, 'skill.js')
-		if (fs.existsSync(appPath)) {
-			console.log(`add skill IntentHandler for app ${appName}`.blue)
+	if (config.USEALEXA) {
+		const skillInterface = require('./alexa/skill.js')
 
-			require(appPath)({
-				skillInterface,
-				db: dbWrapper,
-				util,
-				config,
-				app
+
+		for(const appName of apps) {
+
+			const dbWrapper = new dbUtil.DbWrapper(appName)
+			dbWrappers[appName] = dbWrapper
+
+			events.on('userDeleted', async (userName) => {
+				dbWrapper.setUserName(userName)
+				await dbWrapper.deleteMany()
 			})
+
+			const appPath = path.join(appsPath, appName, 'skill.js')
+			if (fs.existsSync(appPath)) {
+				console.log(`add skill IntentHandler for app ${appName}`.blue)
+
+				require(appPath)({
+					skillInterface,
+					db: dbWrapper,
+					util,
+					config,
+					app
+				})
+			}
+
 		}
 
-	})
+		const { ExpressAdapter } = require('ask-sdk-express-adapter')
+
+		const adapter = new ExpressAdapter(skillInterface.start(), true, true)
 
 
-	const adapter = new ExpressAdapter(skillInterface.start(), true, true)
+		app.post('/alexa', adapter.getRequestHandlers())
+	}
 
-
-	app.post('/alexa', adapter.getRequestHandlers())
 
 
 	app.use(helmet({
@@ -181,7 +191,7 @@ function dbReady() {
 
 
 	//console.log('apps', apps)
-	apps.forEach((appName) => {
+	for(const appName of apps) {
 		//console.log('check path', appName)
 		const appPath = path.join(appsPath, appName, 'index.js')
 
@@ -201,7 +211,7 @@ function dbReady() {
 			app.use(`/api/app/${appName}`, router)
 		}
 
-	})
+	}
 
 	app.use('/brainjs', express.static(config.BRAINJS_HOME))
 	app.use('/lib', express.static(path.join(__dirname, '../front/externals')))

@@ -32,6 +32,20 @@
 
     }
 
+    .bottom {
+        display: flex;
+        flex: 1;
+        flex-direction: row;
+        overflow: hidden;
+        margin-top: 5px;
+        .brainjs-tree {
+            width: 200px;
+        }
+        .filelist {
+            flex: 1;
+        }
+    }
+
     .center {
         display: flex;
         justify-content: center;

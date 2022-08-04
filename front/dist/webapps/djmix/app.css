@@ -20,6 +20,16 @@
         flex: 1;
         margin-left: 20px;
         margin-right: 20px; }
+  .rootPage .bottom {
+    display: flex;
+    flex: 1;
+    flex-direction: row;
+    overflow: hidden;
+    margin-top: 5px; }
+    .rootPage .bottom .brainjs-tree {
+      width: 200px; }
+    .rootPage .bottom .filelist {
+      flex: 1; }
   .rootPage .center {
     display: flex;
     justify-content: center;
@@ -74,6 +84,41 @@
   .rootPage .audioplayer {
     border: 1px solid black;
     border-radius: 10px; }
+
+.filelist {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column; }
+  .filelist > .scrollPanel {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid lightgrey; }
+    .filelist > .scrollPanel th {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background-color: #666;
+      color: white; }
+    .filelist > .scrollPanel .item {
+      cursor: pointer; }
+    .filelist > .scrollPanel .item.active {
+      background-color: blue; }
+  .filelist > .pathPanel {
+    margin-left: 10px; }
+    .filelist > .pathPanel .fa-chevron-right {
+      color: #6c757d; }
+    .filelist > .pathPanel .lastItem {
+      color: #6c757d; }
+    .filelist > .pathPanel .pathItem {
+      text-decoration: none;
+      color: #007bff; }
+    .filelist > .pathPanel > div {
+      display: inline-block; }
+  .filelist > .info {
+    margin: 10px;
+    text-align: right; }
+  .filelist > .loading {
+    margin-left: 10px; }
 
 .audioplayer {
   padding: 10px; }

@@ -59,6 +59,12 @@
     <div bn-control="audioplayer" bn-iface="audio2" data-deck="2"></div>
 </div>
 
-
-<div bn-control="breizbot.filelist" bn-data="{selectionEnabled: true, filterExtension: 'mp3', getMP3Info: true}"
+<div class="bottom">
+    <div bn-control="brainjs.tree" 
+        bn-data="{source: treeInfo, options: treeOptions}"
+        bn-event="treeclick: onTreeItemSelected"
+    ></div>
+    <div bn-control="filelist" bn-data="{files}"
     bn-iface="filelist"></div>
+</div>
+

@@ -3,6 +3,26 @@ declare namespace Breizbot {
 
     declare namespace Services {
 
+        declare namespace Playlists {
+
+            interface FileInfo {
+                fileName: string;
+                friendUser: string;
+                rootDir: string;
+            }
+        
+            interface PlaylistInfo {
+                fileInfo: FileInfo;
+                mp3: Breizbot.Services.Files.Mp3Info;
+            }            
+
+            interface Interface {
+                getPlaylist():Promise<string[]>;
+    
+                getPlaylistSongs(name):Promise<PlaylistInfo[]>;
+            }
+        }
+
         declare namespace Spotify {
 
             interface SearchInfo {
@@ -135,6 +155,8 @@ declare namespace Breizbot {
                 artist: string;
                 year?: number;
                 genre?: string;
+                bpm?: number;
+                length?: number;
             }
     
             interface FileInfo {
@@ -358,9 +380,14 @@ declare namespace Breizbot {
                 groups: string[];
                 positionAuth: boolean;
             }
+
+            interface FriendInfo2 {
+                friendUserName: string;
+                isConnected: boolean;
+            }
     
             interface Interface {
-                getFriends():Promise<FriendInfo[]>;
+                getFriends():Promise<FriendInfo2[]>;
                 getFriendInfo(friend: string):Promise<FriendInfo>
                 setFriendInfo(friend: string, groups: string[], positionAuth: boolean):Promise
                 addFriend(friendUserName):Promise

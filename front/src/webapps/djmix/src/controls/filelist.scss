@@ -1,0 +1,62 @@
+.filelist {
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+
+	> .scrollPanel {
+		flex: 1;
+		overflow-y: auto;
+		border: 1px solid lightgrey;
+
+		th {
+			position: sticky;
+			top: 0;
+			z-index: 2;
+			//background-color: rgb(76, 175, 80);
+			background-color: #666;
+			color: white;
+		}
+
+		.item {
+			cursor: pointer;
+
+		}
+
+		.item.active {
+			background-color: rgb(0, 0, 255);
+		}
+
+
+						
+	}
+
+
+	> .pathPanel {
+		margin-left: 10px;
+
+		.fa-chevron-right {
+			color: #6c757d;
+		}
+
+		.lastItem {
+			color: #6c757d;
+		}
+
+		.pathItem {
+			text-decoration: none;
+			color: #007bff;
+		}
+		> div {
+			display: inline-block;
+		}
+	}
+
+	> .info {
+		margin: 10px;
+		text-align: right;
+	}
+
+	> .loading {
+		margin-left: 10px;
+	}
+}

@@ -12,12 +12,12 @@ $$.service.registerService('breizbot.files', {
 
 		return {
 			fileInfo: function (filePath, friendUser, options) {
-				console.log('[FileService] fileInfo', filePath, friendUser, options)
+				//console.log('[FileService] fileInfo', filePath, friendUser, options)
 
 				return http.post('/fileInfo', { filePath, friendUser, options })
 			},
 			list: function (destPath, options, friendUser) {
-				console.log('[FileService] list', destPath)
+				//console.log('[FileService] list', destPath)
 
 				return http.post('/list', { destPath, options, friendUser })
 			},
@@ -54,7 +54,7 @@ $$.service.registerService('breizbot.files', {
 			 * @returns 
 			 */
 			uploadFile: async function (blob, saveAsfileName, destPath, checkExists, onUploadProgress) {
-				console.log('[FileService] uploadFile', checkExists, saveAsfileName, destPath)
+				//console.log('[FileService] uploadFile', checkExists, saveAsfileName, destPath)
 				if (!(blob instanceof Blob)) {
 					console.warn('File format not supported')
 					return Promise.reject('File format not supported')

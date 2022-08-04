@@ -3,5 +3,5 @@
 	"colorCls": "w3-green",
 	"title": "DJ Mix",
 	"styles": ["app.css"],
-	"brainjs": ["audiopeakmeter"]
+	"brainjs": ["audiopeakmeter", "tree"]
 }

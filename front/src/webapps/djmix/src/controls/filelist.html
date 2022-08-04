@@ -1,0 +1,23 @@
+
+<div class="scrollPanel">
+	<table class="w3-table-all w3-hoverable w3-small">
+		<thead>
+			<tr>
+				<th>Title</th>
+				<th>Arist</th>
+				<th>Duration</th>
+				<th>BPM</th>
+			</tr>
+		</thead>
+		<tbody bn-each="files" bn-iter="f" bn-lazzy="10" bn-bind="files" bn-event="click.item: onItemClick">
+			<tr class="item">
+				<td bn-text="$scope.f.title"></td>
+				<td bn-text="$scope.f.artist"></td>
+				<td bn-text="getDuration"></td>
+				<td bn-text="$scope.f.bpm"></td>
+			</tr>
+		</tbody>
+	</table>
+
+</div>
+

@@ -4,7 +4,15 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'MIDICtrl', 'AudioTools', 'breizbot.appData', 'breizbot.files'],
+	deps: [
+		'breizbot.pager',
+		'MIDICtrl',
+		'AudioTools',
+		'breizbot.appData',
+		'breizbot.files',
+		'breizbot.friends',
+		'breizbot.playlists'
+	],
 
 	props: {
 	},
@@ -16,8 +24,10 @@ $$.control.registerControl('rootPage', {
 	 * @param {DJMix.Service.AudioTools.Interface} audioTools
 	 * @param {Breizbot.Services.AppData.Interface} appData
 	 * @param {Breizbot.Services.Files.Interface} srvFiles
+	 * @param {Breizbot.Services.Friends.Interface} srvFriends
+	 * @param {Breizbot.Services.Playlists.Interface} srvPlaylists
 	 */
-	init: async function (elt, pager, midiCtrl, audioTools, appData, srvFiles) {
+	init: async function (elt, pager, midiCtrl, audioTools, appData, srvFiles, srvFriends, srvPlaylists) {
 
 		const map = $$.util.mapRange(0, 127, 0, 1)
 
@@ -35,9 +45,50 @@ $$.control.registerControl('rootPage', {
 
 		const waitDlg = $$.ui.waitDialog('Loading samplers...')
 
+		const treeInfo = [
+			{ title: 'Home Files', icon: 'fa fa-home w3-text-blue', lazy: true, data: { path: '/' } },
+			{ title: 'Files Shared', folder: true, children: [], icon: 'fa fa-share-alt w3-text-blue' },
+			{ title: 'Playlists', folder: true, children: [], icon: 'fas fa-compact-disc w3-text-blue' }
+		]
+
+		function concatPath(path, fileName) {
+			let ret = path
+			if (!path.endsWith('/')) {
+				ret += '/'
+			}
+			ret += fileName
+			return ret
+		}
+
+		const treeOptions = {
+			lazyLoad: function (ev, data) {
+				const node = data.node
+				//console.log('lazyload', node.data)
+				data.result = new Promise(async (resolve) => {
+					const { path, friendUser } = node.data
+					const folders = await srvFiles.list(path, { filterExtension: 'mp3', folderOnly: true }, friendUser)
+					//console.log('folders', folders)
+					const results = folders.map((f) => {
+						return {
+							title: f.name,
+							data: {
+								path: concatPath(path, f.name),
+								friendUser
+							},
+							lazy: true,
+							folder: true
+						}
+					})
+					resolve(results)
+				})
+			}
+		}
 		const ctrl = $$.viewController(elt, {
 			data: {
+				files: [],
 				audioCtx,
+				treeInfo,
+				treeOptions,
 				source1: null,
 				selectedInput: 'default',
 				audio1: false,
@@ -61,6 +112,59 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				onTreeItemSelected: async function (ev, node) {
+					//console.log('onTreeItemSelected', node.data)
+					const { path, friendUser, playlistName } = node.data
+					if (Object.keys(node.data).length == 0) {
+						ctrl.setData({ files: [] })
+						return
+					}
+
+
+					if (playlistName) {
+						const files = await srvPlaylists.getPlaylistSongs(playlistName)
+						console.log('files', files)
+						ctrl.setData({
+							files: files
+								.filter((f) => f.mp3 && f.mp3.artist)
+								.map((f) => {
+									const { artist, bpm, title, length } = f.mp3
+									const { fileName, friendUser, rootDir } = f.fileInfo
+									return {
+										url: srvFiles.fileUrl(concatPath(rootDir, fileName), friendUser),
+										artist,
+										bpm,
+										title,
+										length
+									}
+								})
+						})
+					}
+					else {
+						const files = await srvFiles.list(path, {
+							filterExtension: 'mp3',
+							filesOnly: true,
+							getMP3Info: true
+						}, friendUser)
+
+						//console.log('files', files)
+
+						ctrl.setData({
+							files: files
+								.filter((f) => f.mp3 && f.mp3.artist)
+								.map((f) => {
+									const { artist, bpm, title, length } = f.mp3
+									return {
+										url: srvFiles.fileUrl(concatPath(path, f.name), friendUser),
+										artist,
+										bpm,
+										title,
+										length
+									}
+								})
+						})
+					}
+				},
 				onSettings: function () {
 					pager.pushPage('settings', {
 						title: 'Settings',
@@ -279,7 +383,7 @@ $$.control.registerControl('rootPage', {
 		midiCtrl.on('PITCH', ({ deck, velocity }) => {
 			const rate = mapRate(velocity)
 			const runningBuffer = runningBuffers[deck - 1]
-			for(const cv of runningBuffer.querySelectorAll('canvas')) {
+			for (const cv of runningBuffer.querySelectorAll('canvas')) {
 				cv.style.transform = `scale(${1 / rate}, 1)`
 			}
 
@@ -303,9 +407,6 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		midiCtrl.on('ENTER', async () => {
-			fileList.enterSelFolder()
-		})
 
 		midiCtrl.on('JOG_WHEEL', ({ deck, velocity }) => {
 			//console.log('JOG_WHEEL', {deck, velocity})
@@ -316,11 +417,11 @@ $$.control.registerControl('rootPage', {
 			getAudioCtrl(deck).seek(offset)
 		})
 
-		midiCtrl.on('JOGTOUCH_RELEASE', ({deck}) => {
+		midiCtrl.on('JOGTOUCH_RELEASE', ({ deck }) => {
 			getAudioCtrl(deck).jogTouch(false)
 		})
 
-		midiCtrl.on('JOGTOUCH_PRESS', ({deck}) => {
+		midiCtrl.on('JOGTOUCH_PRESS', ({ deck }) => {
 			getAudioCtrl(deck).jogTouch(true)
 		})
 
@@ -427,6 +528,26 @@ $$.control.registerControl('rootPage', {
 		async function init() {
 			console.log('init')
 			const info = await midiCtrl.requestMIDIAccess()
+
+			const friends = await srvFriends.getFriends()
+			for (const { friendUserName: title } of friends) {
+				ctrl.model.treeInfo[1].children.push({
+					title, icon: 'fa fa-user w3-text-blue',
+					data: { friendUser: title, path: '/' },
+					lazy: true,
+				})
+			}
+			//console.log('friends', friends)
+			const playlists = await srvPlaylists.getPlaylist()
+			for (const playlistName of playlists) {
+				ctrl.model.treeInfo[2].children.push({
+					title: playlistName,
+					icon: 'fa fa-music w3-text-blue',
+					data: { playlistName }
+				})
+			}
+
+			//console.log('playlists', playlists)
 			ctrl.setData(info)
 			if (info.midiInputs.length > 1) {
 				const selectedInput = info.midiInputs[1].value
@@ -538,7 +659,7 @@ $$.control.registerControl('rootPage', {
 		const source1 = audio1.getOutputNode()
 		const source2 = audio2.getOutputNode()
 
-		ctrl.setData({source1, source2})
+		ctrl.setData({ source1, source2 })
 
 		const masterCrossFader = audioTools.createCrossFaderWithMasterLevel(source1, source2)
 

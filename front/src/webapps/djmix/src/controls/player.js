@@ -231,12 +231,10 @@
 			this.reset = reset
 
 			this.setInfo = async function (info) {
-				let { mp3, name, url } = info
-				let { artist, title } = mp3
-				if (title != undefined) {
-					name = `${artist} - ${title}`
-				}
-				//console.log('name', name)
+				console.log('setInnfo', info)
+				const  { artist, title, url } = info
+				const name = `${artist} - ${title}`
+				console.log('name', name)
 				ctrl.setData({ name: 'Loading...' })
 				const audioBuffer = await $$.media.getAudioBuffer(url)
 				player = $$.media.createAudioPlayer(audioCtx, audioBuffer, gainNode)

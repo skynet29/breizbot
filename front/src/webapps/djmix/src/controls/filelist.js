@@ -102,7 +102,7 @@
 				//console.log('selDown', idx)
 				if (idx < ctrl.model.files.length - 1) {
 					selElt.removeClass('active')
-					fileElt.find('.item').eq(idx + 1).addClass('active').get(0).scrollIntoView(false)
+					fileElt.find('.item').eq(idx + 1).addClass('active').get(0).scrollIntoViewIfNeeded(false)
 				}
 			}
 

@@ -1,22 +1,21 @@
 //@ts-check
 
 $$.service.registerService('app.jukebox', {
-    deps: ['breizbot.http'],
+    deps: ['breizbot.http', 'breizbot.playlists'],
     /**
      * 
      * @param {Breizbot.Services.Http.Interface} http 
+     * @param {Breizbot.Services.Playlists.Interface} srvPlaylists
      * @returns 
      */
-    init(config, http) {
+    init(config, http, srvPlaylists) {
         return {
              getPlaylist: function() {
-                //console.log('getPlaylist')
-                return http.post('/getPlaylist')
-                //console.log('playlist', playlist)
+                return srvPlaylists.getPlaylist()
             },
     
             getPlaylistSongs: function(name) {
-                return http.post('/getPlaylistSongs', { name })
+                return srvPlaylists.getPlaylistSongs(name)
             },
 
             swapSongIndex: function(id1, id2) {

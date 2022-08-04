@@ -26,11 +26,6 @@ module.exports = function (ctx, router) {
 		res.sendStatus(200)
 	})
 
-	router.post('/getPlaylist', async function (req, res) {
-		const list = await db.getPlaylist()
-		res.json(list)
-	})
-
 	router.post('/removePlaylist', async function (req, res) {
 		const { name } = req.body
 		try {
@@ -41,12 +36,6 @@ module.exports = function (ctx, router) {
 			console.error(e)
 			res.status(400).send(e.message)
 		}
-	})
-
-	router.post('/getPlaylistSongs', async function (req, res) {
-		const { name } = req.body
-		const list = await db.getPlaylistSongs(name)
-		res.json(list)
 	})
 
 	router.post('/addSong', async function (req, res) {

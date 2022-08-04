@@ -27,7 +27,7 @@
     overflow: hidden;
     margin-top: 5px; }
     .rootPage .bottom > .scrollPanel {
-      width: 200px;
+      width: 300px;
       overflow-y: auto; }
     .rootPage .bottom .filelist {
       flex: 1; }

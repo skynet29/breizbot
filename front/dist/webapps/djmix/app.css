@@ -26,8 +26,9 @@
     flex-direction: row;
     overflow: hidden;
     margin-top: 5px; }
-    .rootPage .bottom .brainjs-tree {
-      width: 200px; }
+    .rootPage .bottom > .scrollPanel {
+      width: 200px;
+      overflow-y: auto; }
     .rootPage .bottom .filelist {
       flex: 1; }
   .rootPage .center {

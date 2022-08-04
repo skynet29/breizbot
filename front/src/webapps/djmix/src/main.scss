@@ -38,8 +38,10 @@
         flex-direction: row;
         overflow: hidden;
         margin-top: 5px;
-        .brainjs-tree {
+        > .scrollPanel {
             width: 200px;
+            overflow-y: auto;
+
         }
         .filelist {
             flex: 1;

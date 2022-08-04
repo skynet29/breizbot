@@ -42,6 +42,16 @@ declare namespace DJMix {
     }
 
     declare namespace Control {
+
+        declare namespace FileList {
+
+            interface Interface {
+                getSelFile(): {url: string, artist: string, title: string, bpm: number, length: number};
+                selUp():void;
+                selDown():void;
+            }
+        }
+
         declare namespace AudioPlayer {
 
             interface HotcueInfo {

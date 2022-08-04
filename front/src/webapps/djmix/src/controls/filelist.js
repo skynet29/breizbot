@@ -56,7 +56,7 @@
 						const idx = $(this).index()
 						//console.log('idx', idx)
 						const info = ctrl.model.files[idx]
-						console.log('info', info)
+						//console.log('info', info)
 						$(this).closest('tbody').find('.active').removeClass('active')
 						$(this).addClass('active')
 

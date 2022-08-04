@@ -559,7 +559,7 @@ $$.control.registerControl('rootPage', {
 
 
 
-		/**@type {Breizbot.Controls.FileList.Interface} */
+		/**@type {DJMix.Control.FileList.Interface} */
 		const fileList = ctrl.scope.filelist
 
 		/**@type {DJMix.Control.AudioPlayer.Interface} */
@@ -595,7 +595,7 @@ $$.control.registerControl('rootPage', {
 		 * 
 		 * @param {AudioBuffer} audioBuffer 
 		 * @param {number} deck 
-		 * @param {Brainjs.Services.BeatDetector.BeatInfo} beatInfo
+		 * @param {Breizbot.Services.BeatDetector.BeatInfo} beatInfo
 		 */
 		function drawRunningBuffer(audioBuffer, deck, beatInfo) {
 

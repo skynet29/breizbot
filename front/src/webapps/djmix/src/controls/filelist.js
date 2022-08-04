@@ -2,19 +2,9 @@
 (function () {
 
 
-	/**
-	 * 
-	 * @param {Breizbot.Services.Files.FileInfo[]} files 
-	 */
 	function sortFiles(files) {
 		files.sort((a, b) => {
-			if (a.folder && !b.folder) {
-				return -1
-			}
-			if (!a.folder && b.folder) {
-				return 1
-			}
-			return a.name.localeCompare(b.name)
+			return a.artist.localeCompare(b.artist)
 		})
 	}
 
@@ -37,6 +27,8 @@
 			let {
 				files
 			} = this.props
+
+			sortFiles(files)
 
 			const ctrl = $$.viewController(elt, {
 
@@ -79,6 +71,7 @@
 			this.setData = function (data) {
 				//console.log('setData', data)
 				if (data.files) {
+					sortFiles(data.files)
 					ctrl.setData({ files: data.files })
 					fileElt.find('.item').eq(0).addClass('active')
 				}

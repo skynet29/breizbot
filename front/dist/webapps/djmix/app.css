@@ -160,6 +160,9 @@
       margin-left: 20px;
       flex: 1; }
 
+.tree {
+  overflow-y: auto; }
+
 .settings {
   padding: 10px;
   display: flex;

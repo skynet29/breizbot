@@ -60,13 +60,7 @@
 </div>
 
 <div class="bottom">
-    <div class="scrollPanel">
-        <div bn-control="brainjs.tree" 
-        bn-data="{source: treeInfo, options: treeOptions}"
-        bn-event="treeclick: onTreeItemSelected"
-    ></div>        
-    </div>
-    <div bn-control="filelist" bn-data="{files}"
-    bn-iface="filelist"></div>
+    <div bn-control="tree" bn-event="filechange: onFileChange"></div>
+    <div bn-control="filelist" bn-data="{files}" bn-iface="filelist"></div>
 </div>
 

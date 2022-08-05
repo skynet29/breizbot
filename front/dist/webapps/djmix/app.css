@@ -26,9 +26,15 @@
     flex-direction: row;
     overflow: hidden;
     margin-top: 5px; }
-    .rootPage .bottom > .scrollPanel {
-      width: 300px;
-      overflow-y: auto; }
+    .rootPage .bottom .left {
+      display: flex;
+      overflow: hidden;
+      flex-direction: column;
+      width: 300px; }
+      .rootPage .bottom .left form {
+        display: flex; }
+        .rootPage .bottom .left form input {
+          flex: 1; }
     .rootPage .bottom .filelist {
       flex: 1; }
   .rootPage .center {

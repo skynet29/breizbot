@@ -49,6 +49,14 @@ $$.control.registerControl('rootPage', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				files: [],
+				getFiles: function() {
+					if (this.searchFilter == '') {
+						return this.files
+					}
+					const regex = new RegExp(`\w*${this.searchFilter}\w*`, 'i')
+					return this.files.filter((f) => regex.test(f.artist) || regex.test(f.title))
+				},
+				searchFilter: '',
 				audioCtx,
 				source1: null,
 				selectedInput: 'default',
@@ -73,6 +81,12 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				onSearch: function(ev) {
+					ev.preventDefault()
+					const data = $(this).getFormData()
+					//console.log('onSearch', data)
+					ctrl.setData({searchFilter: data.value})
+				},
 				onFileChange: function(ev, data) {
 					//console.log('onFileChange', data)
 					ctrl.setData({files: data.files})

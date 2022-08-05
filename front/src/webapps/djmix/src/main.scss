@@ -38,11 +38,22 @@
         flex-direction: row;
         overflow: hidden;
         margin-top: 5px;
-        > .scrollPanel {
+
+        .left {
+            display: flex;
+            overflow: hidden;
+            flex-direction: column;
             width: 300px;
-            overflow-y: auto;
+
+            form {
+                display: flex;
+                input {
+                    flex: 1;
+                }
+            }
 
         }
+
         .filelist {
             flex: 1;
         }

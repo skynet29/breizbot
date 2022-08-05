@@ -231,7 +231,7 @@
 			this.reset = reset
 
 			this.setInfo = async function (info) {
-				console.log('setInnfo', info)
+				//console.log('setInnfo', info)
 				const  { artist, title, url } = info
 				const name = `${artist} - ${title}`
 				console.log('name', name)
@@ -387,6 +387,10 @@
 				midiCtrl.setButtonIntensity('LOOP_AUTO', 127, deck, nb)
 				autoLoop = nb
 				return loopStartTime
+			}
+
+			this.getPlaybackRate = function() {
+				return ctrl.model.rate
 			}
 
 			this.setPlaybackRate = function (rate) {

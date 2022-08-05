@@ -306,16 +306,36 @@ $$.control.registerControl('rootPage', {
 			masterCrossFader.setFaderLevel(crossFader)
 		})
 
-		midiCtrl.on('PITCH', ({ deck, velocity }) => {
-			const rate = mapRate(velocity)
+		midiCtrl.on('SYNC', ({deck}) => {
+			const otherDeck = (deck == 1) ? 2 : 1
+			const audioCtrl = getAudioCtrl(deck)
+			const otherAudioCtrl = getAudioCtrl(otherDeck)
+			const targetBpm = otherAudioCtrl.getBpm() * otherAudioCtrl.getPlaybackRate()
+
+			const rate = targetBpm / audioCtrl.getBpm()
+			audioCtrl.setPlaybackRate(rate)
+			updateDisplayRate(deck, rate)
+			//otherAudioCtrl.setPlaybackRate(1)
+			midiCtrl.setButtonIntensity('SYNC', 127, deck)
+			midiCtrl.setButtonIntensity('SYNC', 1, otherDeck)
+		})
+
+		function updateDisplayRate(deck, rate) {
 			const runningBuffer = runningBuffers[deck - 1]
+			const transform = `scale(${1 / rate}, 1)`
 			for (const cv of runningBuffer.querySelectorAll('canvas')) {
-				cv.style.transform = `scale(${1 / rate}, 1)`
+				cv.style.transform = transform
 			}
 
 			const hotcueContainer = hotcueContainers[deck - 1]
-			hotcueContainer.style.transform = `scale(${1 / rate}, 1)`
+			hotcueContainer.style.transform = transform
+		}
 
+		midiCtrl.on('PITCH', ({ deck, velocity }) => {
+			const rate = mapRate(velocity)
+			midiCtrl.setButtonIntensity('SYNC', 1, 1)
+			midiCtrl.setButtonIntensity('SYNC', 1, 2)
+			updateDisplayRate(deck, rate)
 			getAudioCtrl(deck).setPlaybackRate(rate)
 		})
 

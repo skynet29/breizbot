@@ -1,36 +1,38 @@
-<div class="toolbar" bn-show="hasPlaylist">
+<div class="toolbar">
     <div class="right">
         <span bn-text="nbSongs" bn-bind="nbSongs"></span>&nbsp;Songs
     </div>
 </div>
 
-<div class="scrollPanel">
-    <div bn-each="songs" 
-        bn-lazzy="20"
-        bn-iter="f" 
-        bn-bind="songs"
-        class="items"
-        bn-event="click.item: onItemClick, contextmenuchange.item:onItemContextMenu">
-        <div class="w3-card-2 item" 
-            bn-control="brainjs.contextmenu"
-            bn-data="{
-                items: {
-                    remove: {name: 'Remove', icon: 'fas fa-trash-alt'}
-                }
-            }"
-        >
-            <div bn-show="!hasTitle">
-                <span class="w3-text-red" bn-show="!isOk">
-                    <i class="fa fa-exclamation-triangle"></i>
-                </span>
-                Filename:&nbsp;
-                <strong bn-text="$scope.f.fileInfo.fileName"></strong>
+<div class="content">
+    <div class="scrollPanel">
+        <div bn-each="songs" 
+            bn-lazzy="20"
+            bn-iter="f" 
+            bn-bind="songs"
+            class="items"
+            bn-event="click.item: onItemClick, contextmenuchange.item:onItemContextMenu">
+            <div class="w3-card-2 item" 
+                bn-control="brainjs.contextmenu"
+                bn-data="{
+                    items: {
+                        remove: {name: 'Remove', icon: 'fas fa-trash-alt'}
+                    }
+                }"
+            >
+                <div bn-show="!hasTitle">
+                    <span class="w3-text-red" bn-show="!isOk">
+                        <i class="fa fa-exclamation-triangle"></i>
+                    </span>
+                    Filename:&nbsp;
+                    <strong bn-text="$scope.f.fileInfo.fileName"></strong>
+                </div>
+                <div bn-show="hasTitle">Title:&nbsp;<strong bn-text="$scope.f.mp3.title"></strong></div>
+    
+                <div bn-show="hasArtist">Artist:&nbsp;<strong bn-text="$scope.f.mp3.artist"></strong></div>
+                <div bn-show="hasGenre">Genre:&nbsp;<strong bn-text="$scope.f.mp3.genre"></strong></div>
+                <div bn-show="hasYear"> Year:&nbsp;<strong bn-text="getYear"></strong></div>
             </div>
-            <div bn-show="hasTitle">Title:&nbsp;<strong bn-text="$scope.f.mp3.title"></strong></div>
-
-            <div bn-show="hasArtist">Artist:&nbsp;<strong bn-text="$scope.f.mp3.artist"></strong></div>
-            <div bn-show="hasGenre">Genre:&nbsp;<strong bn-text="$scope.f.mp3.genre"></strong></div>
-            <div bn-show="hasYear"> Year:&nbsp;<strong bn-text="getYear"></strong></div>
         </div>
     </div>
 </div>

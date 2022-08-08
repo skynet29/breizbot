@@ -1,12 +1,17 @@
 .playlistSongs {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     padding: 10px;
-    justify-content: center;
 
+    .content {
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+    }
 
     .scrollPanel {
-        max-width: 400px;
+        margin-top: 5px;;
+        max-width: 500px;
         padding: 10px;
         flex: 1;
         overflow-y: auto;

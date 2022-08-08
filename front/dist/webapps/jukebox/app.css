@@ -79,30 +79,32 @@
 
 .playlist {
   display: flex;
-  flex-direction: column; }
-  .playlist .toolbar {
-    margin-top: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px; }
-    .playlist .toolbar .left {
-      display: flex;
-      flex-direction: row;
-      align-items: center; }
-      .playlist .toolbar .left span {
-        margin-right: 10px; }
-  .playlist .message {
-    margin-top: 10px;
-    margin-left: 10px; }
+  flex-direction: row;
+  padding: 10px;
+  justify-content: center; }
   .playlist .scrollPanel {
+    max-width: 400px;
     padding: 10px;
     flex: 1;
     overflow-y: auto;
     border: 1px solid lightgray; }
     .playlist .scrollPanel .item {
       padding: 10px;
-      margin-top: 10px; }
+      margin-top: 10px;
+      cursor: pointer; }
+
+.playlistSongs {
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  justify-content: center; }
+  .playlistSongs .scrollPanel {
+    max-width: 400px;
+    padding: 10px;
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid lightgray; }
+    .playlistSongs .scrollPanel .item {
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer; }

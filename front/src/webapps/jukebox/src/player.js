@@ -251,7 +251,7 @@ $$.control.registerControl('player', {
 						return ret
 					},
 					onClick: async function (cmd) {
-						console.log('onClick', cmd)
+						//console.log('onClick', cmd)
 						const fileInfo = { rootDir, friendUser, fileName: ctrl.model.name }
 
 						if (cmd == 'new') {

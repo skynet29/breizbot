@@ -1,6 +1,6 @@
 <div class="toolbar">
     <div class="right">
-        <span bn-text="nbSongs" bn-bind="nbSongs"></span>&nbsp;Songs
+        <span bn-text="getInfo" bn-bind="nbSongs"></span>
     </div>
 </div>
 
@@ -32,6 +32,7 @@
                 <div bn-show="hasArtist">Artist:&nbsp;<strong bn-text="$scope.f.mp3.artist"></strong></div>
                 <div bn-show="hasGenre">Genre:&nbsp;<strong bn-text="$scope.f.mp3.genre"></strong></div>
                 <div bn-show="hasYear"> Year:&nbsp;<strong bn-text="getYear"></strong></div>
+                <div bn-show="hasDuration"> Duration:&nbsp;<strong bn-text="getDuration"></strong></div>
             </div>
         </div>
     </div>

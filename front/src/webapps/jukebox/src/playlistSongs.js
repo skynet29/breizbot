@@ -24,9 +24,14 @@ $$.control.registerControl('playlistSongs', {
         const ctrl = $$.viewController(elt, {
             data: {
                 songs: [],
-                nbSongs: function () {
-                    return this.songs.length
-                },
+				totalDuration: 0,
+				getInfo: function() {
+					let ret = `${this.songs.length} Songs`
+					if (this.totalDuration != 0) {
+						ret += ` (${$$.media.getFormatedTime(this.totalDuration)})`
+					}
+					return ret
+				},
                 hasGenre: function (scope) {
                     let { genre } = scope.f.mp3 || {} 
                     return genre != undefined && genre != '' && !genre.startsWith('(')
@@ -45,6 +50,14 @@ $$.control.registerControl('playlistSongs', {
                     let { year } = scope.f.mp3 || {}
                     return year != undefined && year != ''
                 },
+                hasDuration: function (scope) {
+                    let { length } = scope.f.mp3 || {}
+                    return length != undefined && length != ''
+                },
+
+				getDuration: function(scope) {
+					return $$.media.getFormatedTime(scope.f.mp3.length)
+				},
 
                 getYear: function (scope) {
                     return parseInt(scope.f.mp3 && scope.f.mp3.year)
@@ -58,9 +71,14 @@ $$.control.registerControl('playlistSongs', {
                     //console.log('onItemContextMenu', data)
                     const idx = $(this).closest('.item').index()
                     //console.log('idx', idx)
-                    const id = ctrl.model.songs[idx].id
+					const song = ctrl.model.songs[idx]
+                    const id = song.id
+					const duration = song.mp3 && song.mp3.length
                     await srvApp.removeSong(id)
                     ctrl.removeArrayItem('songs', idx, 'songs')
+					if (duration) {
+						ctrl.model.totalDuration -= duration
+					}
                     ctrl.updateNode('nbSongs')
                     pager.setButtonVisible({ play: ctrl.model.songs.length != 0 })
                 },
@@ -87,7 +105,7 @@ $$.control.registerControl('playlistSongs', {
         function setUpDownState() {
             pager.setButtonEnabled({
                 moveUp: selectedIndex > 0,
-                moveDown: selectedIndex >= 0 && selectedIndex < ctrl.model.nbSongs() - 1
+                moveDown: selectedIndex >= 0 && selectedIndex < ctrl.model.songs.length - 1
             })
         }
 
@@ -95,7 +113,18 @@ $$.control.registerControl('playlistSongs', {
         async function getPlaylistSongs() {
             const songs = await srvApp.getPlaylistSongs(playlistName)
             //console.log('songs', songs)
-            ctrl.setData({ songs })
+			let totalDuration = 0
+			for(const song of songs) {
+				const duration = song.mp3 && song.mp3.length
+				if (duration) {
+					totalDuration += parseInt(duration)
+				}
+				else {
+					totalDuration = 0
+					break
+				}
+			}
+            ctrl.setData({ songs, totalDuration })
             selectedIndex = -1
             setUpDownState()
         }

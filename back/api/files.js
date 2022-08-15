@@ -46,12 +46,12 @@ router.post('/list', async function (req, res) {
 	try {
 		const files = await fs.readdir(rootPath)
 		//console.log('files', files)
-		let promises = files.map(async (file) => {
+		let ret = []
+		for(const file of files) {
 			const filePath = path.join(rootPath, file)
-			return await getFileInfo(filePath, options)
-		})
-
-		let ret = await Promise.all(promises)
+			const info = await getFileInfo(filePath, options)
+			ret.push(info)
+		}
 
 		if (friendUser != undefined && friendUser != '' && destPath == '/') {
 			const friendInfo = await dbFriends.getFriendInfo(friendUser, user)
@@ -67,15 +67,18 @@ router.post('/list', async function (req, res) {
 			//console.log('ext', ext)
 
 			const regex = new RegExp(`\\.(${ext.join('|')})$`, 'i')
-			const results = await Promise.all(ret.map(async (info) => {
+			const results = []
+			for(const info of ret) {
 				if (info.folder) {
 					const filter = (ext.length == 1) ? ext[0] : `{${ext.join(',')}}`
 					const filterPath = path.join(rootPath, info.name, '**/*.' + filter)
 					const entries = await fg(filterPath)
-					return entries.length > 0
+					results.push(entries.length > 0)
 				}
-				return regex.test(info.name)
-			}))
+				else {
+					results.push(regex.test(info.name))
+				}				
+			}
 
 			ret = ret.filter((f, idx) => results[idx])
 

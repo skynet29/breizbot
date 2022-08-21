@@ -211,7 +211,7 @@ $$.control.registerControl('mailboxPage', {
 				},
 				onReturn: function () {
 					if (mailboxName == 'Sent') {
-						load()
+						load(1)
 					}
 				}
 			})

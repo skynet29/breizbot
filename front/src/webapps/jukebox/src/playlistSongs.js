@@ -56,7 +56,8 @@ $$.control.registerControl('playlistSongs', {
                 },
 
 				getDuration: function(scope) {
-					return $$.media.getFormatedTime(scope.f.mp3.length)
+                    return (this.hasDuration(scope)) ?
+					    $$.media.getFormatedTime(scope.f.mp3.length) : ''
 				},
 
                 getYear: function (scope) {

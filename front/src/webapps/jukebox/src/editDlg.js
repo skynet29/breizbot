@@ -47,7 +47,19 @@ $$.control.registerControl('editDlg', {
                     ctrl.update()
                     waitDlg.hide()
                 },
-                onFindInfo: async function () {
+                onFindInfo: function() {
+                    const [artist, title] = fileName.replace('.mp3', '').split('__')
+                    //console.log({artist, title})
+                    if (artist) {
+                        ctrl.model.mp3.artist = artist.replaceAll('_', ' ').trim()
+                    }
+                    if (title) {
+                        ctrl.model.mp3.title = title.replaceAll('_', ' ').trim()
+                    }
+                    ctrl.update()
+
+                },
+                onFindInfoSpotify: async function () {
                     let query = fileName.replace('.mp3', '')
                     query = query.replaceAll('_', ' ').trim()
 

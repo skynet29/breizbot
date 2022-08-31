@@ -64,8 +64,12 @@
         <form bn-event="submit: onSearch">
             <input type="text" placeholder="search" name="value">
         </form>
-        <div bn-control="tree" bn-event="filechange: onFileChange"></div>
+        <div bn-control="tree" bn-event="filechange: onFileChange, loading: onLoadingSongs"></div>
     </div>
-    <div bn-control="filelist" bn-data="{files: getFiles}" bn-iface="filelist"></div>
+    <div class="laodingPanel" bn-show="loadingSongs">
+        <i class="fa fa-spinner fa-pulse" ></i>
+        <span>Loading...</span>
+    </div>
+    <div bn-control="filelist" bn-data="{files: getFiles}" bn-iface="filelist" bn-show="!loadingSongs"></div>
 </div>
 

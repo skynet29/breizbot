@@ -72,6 +72,7 @@ $$.control.registerControl('tree', {
 
 
 					if (playlistName) {
+						elt.trigger('loading')
 						const files = await srvPlaylists.getPlaylistSongs(playlistName)
 						console.log('files', files)
 						const formatedfiles = files
@@ -90,6 +91,7 @@ $$.control.registerControl('tree', {
 						elt.trigger('filechange', { files: formatedfiles })
 					}
 					else {
+						elt.trigger('loading')
 						const files = await srvFiles.list(path, {
 							filterExtension: 'mp3',
 							filesOnly: true,

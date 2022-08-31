@@ -48,6 +48,7 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				loadingSongs: false,
 				files: [],
 				getFiles: function() {
 					if (this.searchFilter == '') {
@@ -81,6 +82,10 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				onLoadingSongs: function() {
+					console.log('onLoadingSongs')
+					ctrl.setData({loadingSongs: true, files: []})
+				},
 				onSearch: function(ev) {
 					ev.preventDefault()
 					const data = $(this).getFormData()
@@ -89,7 +94,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onFileChange: function(ev, data) {
 					//console.log('onFileChange', data)
-					ctrl.setData({files: data.files})
+					ctrl.setData({files: data.files, loadingSongs: false})
 				},
 				onSettings: function () {
 					pager.pushPage('settings', {

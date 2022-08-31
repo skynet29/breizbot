@@ -36,6 +36,8 @@
         display: flex; }
         .rootPage .bottom .left form input {
           flex: 1; }
+    .rootPage .bottom .laodingPanel {
+      padding: 10px; }
     .rootPage .bottom .filelist {
       flex: 1; }
   .rootPage .center {

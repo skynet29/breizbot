@@ -236,7 +236,11 @@
 				const name = `${artist} - ${title}`
 				console.log('name', name)
 				ctrl.setData({ name: 'Loading...' })
-				const audioBuffer = await $$.media.getAudioBuffer(url)
+				const audioBuffer = await $$.media.getAudioBuffer(url, (data) => {
+					//console.log(data)
+					const percent = Math.trunc(data.percentComplete * 100)
+					ctrl.setData({ name:  `Loading (${percent} %)` })
+				})
 				player = $$.media.createAudioPlayer(audioCtx, audioBuffer, gainNode)
 				player.setPlaybackRate(ctrl.model.rate)
 
@@ -260,6 +264,7 @@
 
 				// audio.src = url
 				// audio.volume = ctrl.model.volume
+				ctrl.setData({ name: 'Analysing...' })
 				const tempo = await beatdetector.computeBeatDetection(audioBuffer)
 				console.log('tempo', tempo)
 				hotcues = {}

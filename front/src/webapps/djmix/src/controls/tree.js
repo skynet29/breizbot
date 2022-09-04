@@ -78,14 +78,15 @@ $$.control.registerControl('tree', {
 						const formatedfiles = files
 							.filter((f) => f.mp3 && f.mp3.artist)
 							.map((f) => {
-								const { artist, bpm, title, length } = f.mp3
+								const { artist, bpm, title, length, genre } = f.mp3
 								const { fileName, friendUser, rootDir } = f.fileInfo
 								return {
 									url: srvFiles.fileUrl(concatPath(rootDir, fileName), friendUser),
 									artist,
 									bpm,
 									title,
-									length
+									length,
+									genre
 								}
 							})
 						elt.trigger('filechange', { files: formatedfiles })
@@ -102,13 +103,14 @@ $$.control.registerControl('tree', {
 						const formatedfiles = files
 							.filter((f) => f.mp3 && f.mp3.artist)
 							.map((f) => {
-								const { artist, bpm, title, length } = f.mp3
+								const { artist, bpm, title, length, genre } = f.mp3
 								return {
 									url: srvFiles.fileUrl(concatPath(path, f.name), friendUser),
 									artist,
 									bpm,
 									title,
-									length
+									length,
+									genre
 								}
 							})
 

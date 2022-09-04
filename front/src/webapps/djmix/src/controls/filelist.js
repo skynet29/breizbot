@@ -8,6 +8,19 @@
 		})
 	}
 
+	function sortFilesByGenre(files) {
+		files.sort((a, b) => {
+			const genre1 = a.genre || 'WWWW'
+			const genre2 = b.genre || 'WWWW'
+			let ret = genre1.localeCompare(genre2)
+			if (ret == 0) {
+				ret = a.artist.localeCompare(b.artist)
+			}
+			return ret
+		})
+	}
+
+
 	$$.control.registerControl('filelist', {
 		deps: ['breizbot.files'],
 		props: {
@@ -28,12 +41,20 @@
 				files
 			} = this.props
 
-			sortFiles(files)
+			//sortFiles(files)
 
 			const ctrl = $$.viewController(elt, {
 
 				data: {
 					files,
+					sortField: '',
+
+					isSortedByArtist: function() {
+						return this.sortField == 'artist'
+					},
+					isSortedByGenre: function() {
+						return this.sortField == 'genre'
+					},
 
 					getDuration: function (scope) {
 						const { length } = scope.f
@@ -41,6 +62,20 @@
 					}
 				},
 				events: {
+
+					onSortArtist: function() {
+						sortFiles(ctrl.model.files)
+						ctrl.model.sortField = 'artist'
+						ctrl.update()
+
+					},
+
+					onSortGenre: function() {
+						sortFilesByGenre(ctrl.model.files)
+						ctrl.model.sortField = 'genre'
+						ctrl.update()
+
+					},
 
 					onItemClick: function (ev) {
 						ev.stopPropagation()
@@ -71,8 +106,8 @@
 			this.setData = function (data) {
 				//console.log('setData', data)
 				if (data.files) {
-					sortFiles(data.files)
-					ctrl.setData({ files: data.files })
+					//sortFiles(data.files)
+					ctrl.setData({ files: data.files, sortField: '' })
 					fileElt.find('.item').eq(0).addClass('active')
 				}
 

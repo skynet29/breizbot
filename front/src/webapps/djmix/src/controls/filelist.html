@@ -1,11 +1,16 @@
-
 <div class="scrollPanel">
 	<table class="w3-table-all w3-hoverable w3-small">
 		<thead>
 			<tr>
-				<th>Arist</th>
+				<th class="sortedCol" bn-event="click: onSortArtist">
+					<i class="fas fa-sort-down" bn-show="isSortedByArtist"></i>
+					<span>Arist</span>
+				</th>
 				<th>Title</th>
-				<th>Genre</th>
+				<th class="sortedCol" bn-event="click: onSortGenre">
+					<i class="fas fa-sort-down" bn-show="isSortedByGenre"></i>
+					<span>Genre</span>
+				</th>
 				<th>Duration</th>
 				<th>BPM</th>
 			</tr>
@@ -22,4 +27,3 @@
 	</table>
 
 </div>
-

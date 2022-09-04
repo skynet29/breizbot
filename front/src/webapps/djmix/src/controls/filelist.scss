@@ -8,6 +8,10 @@
 		overflow-y: auto;
 		border: 1px solid lightgrey;
 
+		.sortedCol {
+			cursor: pointer;
+		}
+
 		th {
 			position: sticky;
 			top: 0;
@@ -15,6 +19,7 @@
 			//background-color: rgb(76, 175, 80);
 			background-color: #666;
 			color: white;
+
 		}
 
 		.item {

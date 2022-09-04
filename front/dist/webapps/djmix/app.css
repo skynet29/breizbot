@@ -103,6 +103,8 @@
     flex: 1;
     overflow-y: auto;
     border: 1px solid lightgrey; }
+    .filelist > .scrollPanel .sortedCol {
+      cursor: pointer; }
     .filelist > .scrollPanel th {
       position: sticky;
       top: 0;

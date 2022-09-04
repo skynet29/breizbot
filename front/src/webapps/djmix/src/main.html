@@ -62,7 +62,8 @@
 <div class="bottom">
     <div class="left">
         <form bn-event="submit: onSearch">
-            <input type="text" placeholder="search" name="value">
+            <input type="text" placeholder="Search..." name="value">
+            <button type="button" bn-icon="fas fa-times" bn-event="click: onClearSearch"></button>
         </form>
         <div bn-control="tree" bn-event="filechange: onFileChange, loading: onLoadingSongs"></div>
     </div>

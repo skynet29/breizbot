@@ -82,6 +82,11 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				onClearSearch: function() {
+					console.log('onClearSearch')
+					$(this).closest('form').setFormData({value: ''})
+					ctrl.setData({searchFilter: ''})
+				},
 				onLoadingSongs: function() {
 					console.log('onLoadingSongs')
 					ctrl.setData({loadingSongs: true, files: []})

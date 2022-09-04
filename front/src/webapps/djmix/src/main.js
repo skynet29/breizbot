@@ -172,7 +172,15 @@ $$.control.registerControl('rootPage', {
 			console.log('loadTrack', deck)
 			const audio = 'audio' + deck
 			if (ctrl.model[audio] == true) {
-				console.log('A track is already loading')
+				$.notify('A track is already loading', 'error')
+				return
+			}
+
+			/**@type {DJMix.Control.AudioPlayer.Interface} */
+			const player = ctrl.scope[audio]
+
+			if (player.isPlaying()) {
+				$.notify('Please stop playback before loading a track', 'error')
 				return
 			}
 			const selFile = fileList.getSelFile()

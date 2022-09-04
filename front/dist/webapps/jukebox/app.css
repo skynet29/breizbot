@@ -12,6 +12,15 @@
   .editDlg .toolbar {
     margin-top: 30px; }
 
+.fileInfo {
+  padding: 10px;
+  display: flex;
+  justify-content: center; }
+  .fileInfo label {
+    display: inline-block;
+    font-weight: bold;
+    width: 100px; }
+
 .filterDlg {
   padding: 10px; }
   .filterDlg form {

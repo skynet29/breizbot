@@ -105,6 +105,7 @@ $$.control.registerControl('playlistSongs', {
 
         function setUpDownState() {
             pager.setButtonEnabled({
+                info: selectedIndex >= 0,
                 moveUp: selectedIndex > 0,
                 moveDown: selectedIndex >= 0 && selectedIndex < ctrl.model.songs.length - 1
             })
@@ -135,6 +136,25 @@ $$.control.registerControl('playlistSongs', {
 
         this.getButtons = function () {
             return {
+                info : {
+                    title: 'Show File Info',
+                    icon: 'fas fa-info',
+                    enabled: false,
+                    onClick: function() {
+                        /**@type {AppJukebox.PlaylistInfo} */
+                        const info = ctrl.model.songs[selectedIndex]
+                        let title = info.fileInfo.fileName
+                        if (info.mp3 && info.mp3.title) {
+                            title = `${info.mp3.artist} - ${info.mp3.title}`
+                        }0
+                        pager.pushPage('fileInfo', {
+                            title,
+                            props: {
+                                info
+                            }
+                        })
+                    }
+                },
                 moveUp: {
                     title: 'Move up',
                     icon: 'fas fa-level-up-alt',

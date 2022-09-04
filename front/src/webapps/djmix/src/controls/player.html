@@ -47,14 +47,17 @@
 	</div>
 	<div class="toolbar2">
 		<span>PITCH &#177 8%</span>
-		<div bn-control="brainjs.slider" bn-data="{min: 0.92, max:1.08, step: 0.01, orientation: 'vertical', showRange: false}"
-			bn-event="input: onPitchChange" bn-val="pitch" class="volulmeSlider"></div>
+		<div bn-control="brainjs.knob" bn-data="{min:0.92, max:1.08, fgColor: '#3ff', bgColor: '#111', resetValue: 1, type: 'pan'}" bn-val="pitch" bn-event="turn: onKnobTurn"></div>
+
+		<!-- <div bn-control="brainjs.slider" bn-data="{min: 0.92, max:1.08, step: 0.01, orientation: 'vertical', showRange: false}"
+			bn-event="input: onPitchChange" bn-val="pitch" class="volulmeSlider"></div> -->
 	</div>
 
 	<div class="toolbar2">
 		<span>LEVEL</span>
-		<div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.01, orientation: 'vertical'}"
-			bn-event="input: onVolumeChange" bn-val="volume" class="volulmeSlider"></div>
+		<!-- <div bn-control="brainjs.slider" bn-data="{min: 0, max:1, step: 0.01, orientation: 'vertical'}"
+			bn-event="input: onVolumeChange" bn-val="volume" class="volulmeSlider"></div> -->
+		<div bn-control="brainjs.knob" bn-data="{max: 1, fgColor: '#3ff', bgColor: '#111', resetValue: 0.5}" bn-val="volume" bn-event="turn: onVolumeChange"></div>
 	</div>
 </div>
 

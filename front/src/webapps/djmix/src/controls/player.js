@@ -106,6 +106,9 @@
 					tempo: 0,
 					name: 'No Track loaded',
 					volume: 0.5,
+					getVolume: function() {
+						return this.volume * 100
+					},
 					rate: 1,
 					pitch: function () {
 						return mapRate(this.rate)
@@ -135,7 +138,7 @@
 						playSampler(value)
 					},
 					onVolumeChange: function (ev, value) {
-						//console.log('onVolumeChange', value)
+						console.log('onVolumeChange', value)
 						gainNode.gain.value = value
 					},
 

@@ -83,12 +83,12 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onClearSearch: function() {
-					console.log('onClearSearch')
+					//console.log('onClearSearch')
 					$(this).closest('form').setFormData({value: ''})
 					ctrl.setData({searchFilter: ''})
 				},
 				onLoadingSongs: function() {
-					console.log('onLoadingSongs')
+					//console.log('onLoadingSongs')
 					ctrl.setData({loadingSongs: true, files: []})
 				},
 				onSearch: function(ev) {

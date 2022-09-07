@@ -48,14 +48,20 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				genres: ['All'],
+				selGenre: 'All',
 				loadingSongs: false,
 				files: [],
-				getFiles: function() {
-					if (this.searchFilter == '') {
-						return this.files
+				getFiles: function () {
+					let files = this.files
+					if (this.selGenre != 'All') {
+						files = files.filter((f) => f.genre == this.selGenre)
 					}
-					const regex = new RegExp(`\w*${this.searchFilter}\w*`, 'i')
-					return this.files.filter((f) => regex.test(f.artist) || regex.test(f.title))
+					if (this.searchFilter != '') {
+						const regex = new RegExp(`\w*${this.searchFilter}\w*`, 'i')
+						files = files.filter((f) => regex.test(f.artist) || regex.test(f.title))
+					}
+					return files
 				},
 				searchFilter: '',
 				audioCtx,
@@ -82,24 +88,25 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
-				onClearSearch: function() {
+				onClearSearch: function () {
 					//console.log('onClearSearch')
-					$(this).closest('form').setFormData({value: ''})
-					ctrl.setData({searchFilter: ''})
+					ctrl.setData({ searchFilter: '' })
 				},
-				onLoadingSongs: function() {
+				onLoadingSongs: function () {
 					//console.log('onLoadingSongs')
-					ctrl.setData({loadingSongs: true, files: []})
+					ctrl.setData({ loadingSongs: true, files: [] })
 				},
-				onSearch: function(ev) {
-					ev.preventDefault()
-					const data = $(this).getFormData()
-					//console.log('onSearch', data)
-					ctrl.setData({searchFilter: data.value})
-				},
-				onFileChange: function(ev, data) {
-					//console.log('onFileChange', data)
-					ctrl.setData({files: data.files, loadingSongs: false})
+				onFileChange: function (ev, data) {
+					console.log('onFileChange', data)
+					let genres = {}
+					for (const file of data.files) {
+						if (file.genre) {
+							genres[file.genre] = 1
+						}
+					}
+					genres = Object.keys(genres)
+					genres.unshift('All')
+					ctrl.setData({ files: data.files, loadingSongs: false, genres, selGenre: 'All' })
 				},
 				onSettings: function () {
 					pager.pushPage('settings', {
@@ -324,7 +331,7 @@ $$.control.registerControl('rootPage', {
 			masterCrossFader.setFaderLevel(crossFader)
 		})
 
-		midiCtrl.on('SYNC', ({deck}) => {
+		midiCtrl.on('SYNC', ({ deck }) => {
 			const otherDeck = (deck == 1) ? 2 : 1
 			const audioCtrl = getAudioCtrl(deck)
 			const otherAudioCtrl = getAudioCtrl(otherDeck)

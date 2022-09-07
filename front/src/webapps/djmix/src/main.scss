@@ -46,11 +46,16 @@
             flex-direction: column;
             width: 300px;
 
-            form {
+            
+            .search {
                 display: flex;
                 input {
                     flex: 1;
                 }
+            }
+
+            span[role="combobox"] {
+                width: 100%;
             }
 
         }

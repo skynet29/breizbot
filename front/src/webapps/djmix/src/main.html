@@ -65,10 +65,11 @@
 
 <div class="bottom">
     <div class="left">
-        <form bn-event="submit: onSearch">
-            <input type="text" placeholder="Search..." name="value">
+        <div class="search">
+            <input type="text" placeholder="Search..." bn-val="searchFilter" bn-update="change">
             <button type="button" bn-icon="fas fa-times" bn-event="click: onClearSearch"></button>
-        </form>
+        </div>
+        <div bn-control="brainjs.combobox" bn-data="{items: genres}" bn-val="selGenre" bn-update="comboboxchange"></div>
         <div bn-control="tree" bn-event="filechange: onFileChange, loading: onLoadingSongs"></div>
     </div>
     <div class="laodingPanel" bn-show="loadingSongs">

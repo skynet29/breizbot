@@ -32,10 +32,12 @@
       overflow: hidden;
       flex-direction: column;
       width: 300px; }
-      .rootPage .bottom .left form {
+      .rootPage .bottom .left .search {
         display: flex; }
-        .rootPage .bottom .left form input {
+        .rootPage .bottom .left .search input {
           flex: 1; }
+      .rootPage .bottom .left span[role="combobox"] {
+        width: 100%; }
     .rootPage .bottom .laodingPanel {
       padding: 10px; }
     .rootPage .bottom .filelist {

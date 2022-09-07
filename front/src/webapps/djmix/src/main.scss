@@ -33,6 +33,11 @@
 
     }
 
+    .samplers {
+        display: flex;
+        align-items: center;
+    }
+
     .bottom {
         display: flex;
         flex: 1;
@@ -93,10 +98,7 @@
             padding: 5px;
             align-items: center;
 
-            .brainjs-audiopeakmeter {
-                width: 5em;
-                height: 200px;
-            }
+
 
 
 
@@ -122,6 +124,23 @@
 
 
 
+    }
+
+    .samplers {
+        margin-top: 5px;
+        button {
+            margin-left: 5px;
+        }
+    }
+
+    .area2 {
+        display: flex;
+        justify-content: space-around;
+
+        .brainjs-audiopeakmeter {
+            width: 5em;
+            height: 160px;
+        }        
     }
 
     .visualizer {

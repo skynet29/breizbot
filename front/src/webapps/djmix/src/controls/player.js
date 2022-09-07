@@ -90,6 +90,27 @@
 			const gainNode = audioCtx.createGain()
 			//sourceNode.connect(gainNode)
 
+			const lowNode = audioCtx.createBiquadFilter()
+			lowNode.type = "lowshelf"
+			lowNode.frequency.value = 320.0
+			lowNode.gain.value = 0
+
+			const midNode = audioCtx.createBiquadFilter()
+			midNode.type = "peaking"
+			midNode.frequency.value = 1000.0
+			midNode.Q.value = 0.5
+			midNode.gain.value = 0
+
+			const highNode = audioCtx.createBiquadFilter()
+			highNode.type = "highshelf"
+			highNode.frequency.value = 3200.0
+			highNode.gain.value = 0
+
+			gainNode.connect(highNode)
+			highNode.connect(midNode)
+			midNode.connect(lowNode)
+
+
 			const mapRate = $$.util.mapRange(0.92, 1.08, 1.08, 0.92)
 
 			let hotcues = {}
@@ -131,6 +152,18 @@
 
 				},
 				events: {
+					onLowTurn: function(ev, value) {
+						console.log('onLowTurn', value)
+						lowNode.gain.value = value
+					},
+					onMidTurn: function(ev, value) {
+						console.log('onMidTurn', value)
+						midNode.gain.value = value
+					},
+					onHighTurn: function(ev, value) {
+						console.log('onHighTurn', value)
+						highNode.gain.value = value
+					},
 					onPlaySampler: function () {
 						const combo = $(this).closest('.samplerPlayer').find('.brainjs-combobox')
 						const value = combo.getValue()
@@ -138,7 +171,7 @@
 						playSampler(value)
 					},
 					onVolumeChange: function (ev, value) {
-						console.log('onVolumeChange', value)
+						//console.log('onVolumeChange', value)
 						gainNode.gain.value = value
 					},
 
@@ -202,10 +235,6 @@
 				//audio.pause()
 				player.pause()
 
-			}
-
-			this.setSamplers = function (samplers) {
-				ctrl.setData({ samplers })
 			}
 
 			this.seek = function (offset) {
@@ -314,7 +343,7 @@
 			}
 
 			this.getOutputNode = function () {
-				return gainNode
+				return lowNode
 			}
 
 

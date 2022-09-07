@@ -21,6 +21,9 @@
         flex: 1;
         margin-left: 20px;
         margin-right: 20px; }
+  .rootPage .samplers {
+    display: flex;
+    align-items: center; }
   .rootPage .bottom {
     display: flex;
     flex: 1;
@@ -60,9 +63,6 @@
       margin-right: 10px;
       padding: 5px;
       align-items: center; }
-      .rootPage .center .mixer .brainjs-audiopeakmeter {
-        width: 5em;
-        height: 200px; }
       .rootPage .center .mixer .toolbar2 {
         display: flex;
         flex-direction: column;
@@ -75,6 +75,16 @@
         .rootPage .center .mixer .toolbar2 .brainjs-slider {
           margin-top: 20px;
           margin-bottom: 20px; }
+  .rootPage .samplers {
+    margin-top: 5px; }
+    .rootPage .samplers button {
+      margin-left: 5px; }
+  .rootPage .area2 {
+    display: flex;
+    justify-content: space-around; }
+    .rootPage .area2 .brainjs-audiopeakmeter {
+      width: 5em;
+      height: 160px; }
   .rootPage .visualizer {
     display: flex;
     justify-content: center; }

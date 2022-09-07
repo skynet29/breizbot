@@ -35,7 +35,7 @@ $$.control.registerControl('rootPage', {
 
 		const waitDlg = $$.ui.waitDialog('Loading samplers...')
 
-		const RUNNING_DISPLAY_WIDTH = 1300
+		const RUNNING_DISPLAY_WIDTH = 1200
 		const RUNNING_DISPLAY_HEIGHT = 80
 		const SECONDS_OF_RUNNING_DISPLAY = 10.0
 		const MAX_CANVAS_WIDTH = 32000
@@ -45,12 +45,24 @@ $$.control.registerControl('rootPage', {
 
 		const audioCtx = audioTools.getAudioContext()
 
+		/**@type {Array<{audioBuffer: AudioBuffer, value: number, label: string}>} */
+		let samplersInfo = []
+
+
+		/**@type {$$.FormDialogController} */
+		let sampleChoiceDlg = null
+
+		/**@type {DJMix.Service.AudioTools.CrossFaderWithMasterLevel} */
+		let masterCrossFader = null
+
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				genres: ['All'],
 				selGenre: 'All',
+				sampleInfo: new Array(4).fill(null),
 				loadingSongs: false,
+				samplers: [0, 1, 2, 3],
 				files: [],
 				getFiles: function () {
 					let files = this.files
@@ -85,13 +97,31 @@ $$.control.registerControl('rootPage', {
 				},
 				hotcueContainerStyle: {
 
+				},
+
+				getSampleTitle: function (scope) {
+					const sampleInfo = scope.$i
+					return (sampleInfo != null) ? sampleInfo.label : 'No selection'
 				}
 			},
 			events: {
-				onStopPreview: function() {
+				onPlaySample: function () {
+					const idx = $(this).index()
+					playSample(idx)
+				},
+				onSampleChoice: async function (ev) {
+					ev.preventDefault()
+					const idx = $(this).index()
+					//console.log('onSampleChoice', idx)
+					const data = await sampleChoiceDlg.show()
+					console.log('data', data)
+					ctrl.model.sampleInfo[idx] = samplersInfo[data.value]
+					ctrl.update()
+				},
+				onStopPreview: function () {
 					previewAudio.pause()
 				},
-				onPreview: function(ev, data) {
+				onPreview: function (ev, data) {
 					console.log('preview', data)
 					previewAudio.src = data.url
 					previewAudio.play()
@@ -151,6 +181,21 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
+		function playSample(idx) {
+			//console.log('playSample', idx)
+			const sampleInfo = ctrl.model.sampleInfo[idx]
+			if (sampleInfo != null) {
+				const sampleBufferSource = audioCtx.createBufferSource()
+				sampleBufferSource.buffer = sampleInfo.audioBuffer
+				sampleBufferSource.connect(masterCrossFader.getOutputNode())
+				sampleBufferSource.start()
+			}
+			else {
+				console.log('No sample selected')
+			}
+
+		}
+
 		async function laodSamplers() {
 			if (settings.samplersFolder) {
 				waitDlg.show()
@@ -158,8 +203,8 @@ $$.control.registerControl('rootPage', {
 					filterExtension: 'mp3',
 					filesOnly: true
 				})
-				console.log('files', files)
-				const samplersInfo = []
+				//console.log('files', files)
+				samplersInfo = []
 				for (const file of files) {
 					const url = srvFiles.fileUrl(settings.samplersFolder + file.name)
 					const audioBuffer = await $$.media.getAudioBuffer(url)
@@ -169,8 +214,14 @@ $$.control.registerControl('rootPage', {
 						label: file.name.replace('.mp3', '')
 					})
 				}
-				getAudioCtrl(1).setSamplers(samplersInfo)
-				getAudioCtrl(2).setSamplers(samplersInfo)
+
+				sampleChoiceDlg = $$.formDialogController({
+					title: 'Samples',
+					template: { gulp_inject: './controls/sampleChoiceDlg.html' },
+					data: {
+						samplersInfo
+					}
+				})
 				waitDlg.hide()
 			}
 		}
@@ -431,7 +482,7 @@ $$.control.registerControl('rootPage', {
 		})
 
 		midiCtrl.on('SAMPLER', ({ deck, key }) => {
-			getAudioCtrl(deck).playSample(key)
+			playSample(key - 1)
 		})
 
 		midiCtrl.on('LOOP_MANUAL', ({ deck, key }) => {
@@ -625,7 +676,7 @@ $$.control.registerControl('rootPage', {
 
 		ctrl.setData({ source1, source2 })
 
-		const masterCrossFader = audioTools.createCrossFaderWithMasterLevel(source1, source2)
+		masterCrossFader = audioTools.createCrossFaderWithMasterLevel(source1, source2)
 
 		const cueCrossFader = audioTools.createCrossFaderWithMasterLevel(source1, source2)
 		cueCrossFader.setFaderLevel(1)

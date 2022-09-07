@@ -22,6 +22,15 @@
 
 		}
 
+		td {
+			padding: 0;
+			vertical-align: middle;
+
+			button {
+				cursor: pointer;
+			}
+		}
+
 		.item {
 			cursor: pointer;
 

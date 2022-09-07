@@ -88,6 +88,14 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				onStopPreview: function() {
+					previewAudio.pause()
+				},
+				onPreview: function(ev, data) {
+					console.log('preview', data)
+					previewAudio.src = data.url
+					previewAudio.play()
+				},
 				onClearSearch: function () {
 					//console.log('onClearSearch')
 					ctrl.setData({ searchFilter: '' })
@@ -612,12 +620,17 @@ $$.control.registerControl('rootPage', {
 		const source1 = audio1.getOutputNode()
 		const source2 = audio2.getOutputNode()
 
+		const previewAudio = new Audio()
+		const previewSource = audioCtx.createMediaElementSource(previewAudio)
+
 		ctrl.setData({ source1, source2 })
 
 		const masterCrossFader = audioTools.createCrossFaderWithMasterLevel(source1, source2)
 
 		const cueCrossFader = audioTools.createCrossFaderWithMasterLevel(source1, source2)
 		cueCrossFader.setFaderLevel(1)
+
+		previewSource.connect(cueCrossFader.getOutputNode())
 
 		const merger = audioTools.createStereoMerger(masterCrossFader.getOutputNode(), cueCrossFader.getOutputNode())
 

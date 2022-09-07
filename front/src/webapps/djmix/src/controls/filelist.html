@@ -2,9 +2,10 @@
 	<table class="w3-table-all w3-hoverable w3-small">
 		<thead>
 			<tr>
+				<th></th>
 				<th class="sortedCol" bn-event="click: onSortArtist">
 					<i class="fas fa-sort-down" bn-show="isSortedByArtist"></i>
-					<span>Arist</span>
+					<span>Artist</span>
 				</th>
 				<th>Title</th>
 				<th class="sortedCol" bn-event="click: onSortGenre">
@@ -15,8 +16,9 @@
 				<th>BPM</th>
 			</tr>
 		</thead>
-		<tbody bn-each="files" bn-iter="f" bn-lazzy="10" bn-bind="files" bn-event="click.item: onItemClick">
+		<tbody bn-each="files" bn-iter="f" bn-lazzy="10" bn-bind="files" bn-event="click.item: onItemClick, click.preview: onItemPreview">
 			<tr class="item">
+				<td><button class="preview" bn-icon="fa fa-play" title="Preview"></button></td>
 				<td bn-text="$scope.f.artist"></td>
 				<td bn-text="$scope.f.title"></td>
 				<td bn-text="$scope.f.genre"></td>

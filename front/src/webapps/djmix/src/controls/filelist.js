@@ -77,6 +77,13 @@
 
 					},
 
+					onItemPreview: function() {
+						const idx = $(this).closest('tr').index()
+						const info = ctrl.model.files[idx]
+						console.log('onItemPreview', idx, info)
+						elt.trigger('preview', {url: info.url})
+					},
+
 					onItemClick: function (ev) {
 						ev.stopPropagation()
 

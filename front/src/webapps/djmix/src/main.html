@@ -67,15 +67,18 @@
     <div class="left">
         <div class="search">
             <input type="text" placeholder="Search..." bn-val="searchFilter" bn-update="change">
-            <button type="button" bn-icon="fas fa-times" bn-event="click: onClearSearch"></button>
+            <button bn-icon="fas fa-times" bn-event="click: onClearSearch" ></button>
         </div>
-        <div bn-control="brainjs.combobox" bn-data="{items: genres}" bn-val="selGenre" bn-update="comboboxchange"></div>
+        <div class="genre">
+            <button bn-icon="fas fa-stop" bn-event="click: onStopPreview" title="Stop preview"></button>
+            <div bn-control="brainjs.combobox" bn-data="{items: genres}" bn-val="selGenre" bn-update="comboboxchange"></div>
+        </div>
         <div bn-control="tree" bn-event="filechange: onFileChange, loading: onLoadingSongs"></div>
     </div>
     <div class="laodingPanel" bn-show="loadingSongs">
         <i class="fa fa-spinner fa-pulse" ></i>
         <span>Loading...</span>
     </div>
-    <div bn-control="filelist" bn-data="{files: getFiles}" bn-iface="filelist" bn-show="!loadingSongs"></div>
+    <div bn-control="filelist" bn-data="{files: getFiles}" bn-iface="filelist" bn-show="!loadingSongs" bn-event="preview: onPreview"></div>
 </div>
 

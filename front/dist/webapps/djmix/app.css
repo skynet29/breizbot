@@ -159,7 +159,7 @@
     margin-left: 10px; }
 
 .audioplayer {
-  padding: 10px; }
+  padding: 5px; }
   .audioplayer .content {
     display: flex;
     align-items: center;
@@ -195,10 +195,13 @@
   .audioplayer .slider {
     display: flex;
     align-items: center;
-    min-width: 500px; }
+    min-width: 500px;
+    margin: 5px 5px 0 0; }
     .audioplayer .slider .brainjs-slider {
       margin-left: 20px;
       flex: 1; }
+  .audioplayer .analyser {
+    margin-top: 5px; }
 
 .tree {
   overflow-y: auto; }

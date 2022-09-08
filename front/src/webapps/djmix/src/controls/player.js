@@ -84,6 +84,12 @@
 			/**@type {$$.media.AudioPlayerInterface} */
 			let player = null
 
+			/**@type {HTMLCanvasElement} */
+			const canvas = elt.find('.analyser').get(0)
+
+			const WIDTH = canvas.width
+			const HEIGHT = canvas.height
+			const canvasCtx = canvas.getContext("2d")
 
 			const audioCtx = audioTools.getAudioContext()
 
@@ -111,6 +117,18 @@
 			midNode.connect(lowNode)
 
 
+			const analyserNode = audioCtx.createAnalyser()
+			analyserNode.fftSize = 256
+			analyserNode.minDecibels = -90
+			analyserNode.maxDecibels = -10
+			analyserNode.smoothingTimeConstant = 0.85
+			lowNode.connect(analyserNode)
+
+			const bufferLength = analyserNode.frequencyBinCount
+			console.log('bufferLength', bufferLength)
+			const dataArray = new Uint8Array(bufferLength)
+
+
 			const mapRate = $$.util.mapRange(0.92, 1.08, 1.08, 0.92)
 
 			let hotcues = {}
@@ -121,13 +139,39 @@
 			let loopEndTime = 0
 			let jogTouchPressed = false
 
+			let reqAnimId = 0
+
+			function drawFrequencies() {
+
+				reqAnimId = requestAnimationFrame(drawFrequencies)
+
+				analyserNode.getByteFrequencyData(dataArray)
+
+				canvasCtx.fillStyle = 'rgb(0, 0, 0)'
+				canvasCtx.fillRect(0, 0, WIDTH, HEIGHT)
+
+				const barWidth = (WIDTH / bufferLength) * 2.5
+				let x = 0
+
+				for (let i = 0; i < bufferLength; i++) {
+					const barHeight = dataArray[i]
+
+					canvasCtx.fillStyle = `rgb(${barHeight + 100}, 50, 50)`
+					canvasCtx.fillRect(x, HEIGHT - barHeight / 2, barWidth, barHeight / 2)
+
+					x += barWidth + 1
+				}
+
+			}
+
 			const ctrl = $$.viewController(elt, {
 				data: {
+					showAnalyser: false,
 					samplers: [],
 					tempo: 0,
 					name: 'No Track loaded',
 					volume: 0.5,
-					getVolume: function() {
+					getVolume: function () {
 						return this.volume * 100
 					},
 					rate: 1,
@@ -152,15 +196,15 @@
 
 				},
 				events: {
-					onLowTurn: function(ev, value) {
+					onLowTurn: function (ev, value) {
 						console.log('onLowTurn', value)
 						lowNode.gain.value = value
 					},
-					onMidTurn: function(ev, value) {
+					onMidTurn: function (ev, value) {
 						console.log('onMidTurn', value)
 						midNode.gain.value = value
 					},
-					onHighTurn: function(ev, value) {
+					onHighTurn: function (ev, value) {
 						console.log('onHighTurn', value)
 						highNode.gain.value = value
 					},
@@ -237,6 +281,17 @@
 
 			}
 
+			this.toggleAnayser = function() {
+				ctrl.model.showAnalyser = !ctrl.model.showAnalyser 
+				ctrl.update()
+				if (ctrl.model.showAnalyser) {
+					drawFrequencies()
+				}
+				else {
+					cancelAnimationFrame(reqAnimId)
+				}
+			}
+
 			this.seek = function (offset) {
 				if (player && jogTouchPressed) {
 					//console.log('seek', elapsedTime)
@@ -244,7 +299,7 @@
 				}
 			}
 
-			this.jogTouch = function(isPressed) {
+			this.jogTouch = function (isPressed) {
 				//console.log('jogTouch', isPressed)
 
 				if (!isPressed && player) {
@@ -264,14 +319,14 @@
 
 			this.setInfo = async function (info) {
 				//console.log('setInnfo', info)
-				const  { artist, title, url } = info
+				const { artist, title, url } = info
 				const name = `${artist} - ${title}`
 				console.log('name', name)
 				ctrl.setData({ name: 'Loading...' })
 				const audioBuffer = await $$.media.getAudioBuffer(url, (data) => {
 					//console.log(data)
 					const percent = Math.trunc(data.percentComplete * 100)
-					ctrl.setData({ name:  `Loading (${percent} %)` })
+					ctrl.setData({ name: `Loading (${percent} %)` })
 				})
 				player = $$.media.createAudioPlayer(audioCtx, audioBuffer, gainNode)
 				player.setPlaybackRate(ctrl.model.rate)
@@ -426,7 +481,7 @@
 				return loopStartTime
 			}
 
-			this.getPlaybackRate = function() {
+			this.getPlaybackRate = function () {
 				return ctrl.model.rate
 			}
 

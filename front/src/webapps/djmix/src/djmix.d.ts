@@ -95,6 +95,7 @@ declare namespace DJMix {
                 getPlaybackRate():number;
                 getRealTime():number;
                 jogTouch(isPressed:boolean):void;
+                toggleAnayser():void;
             }
         }
     

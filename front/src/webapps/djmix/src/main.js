@@ -107,6 +107,10 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				onToggleAnalyser: function() {
+					getAudioCtrl(1).toggleAnayser()
+					getAudioCtrl(2).toggleAnayser()
+				},
 				onStopSample: function() {
 					if (sampleBufferSource != null) {
 						sampleBufferSource.stop()

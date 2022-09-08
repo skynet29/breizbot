@@ -193,13 +193,16 @@ $$.control.registerControl('rootPage', {
 			//console.log('playSample', idx)
 			const sampleInfo = ctrl.model.sampleInfo[idx]
 			if (sampleInfo != null) {
+				if (sampleBufferSource != null) {
+					sampleBufferSource.stop()
+				}
 				sampleBufferSource = audioCtx.createBufferSource()
 				sampleBufferSource.buffer = sampleInfo.audioBuffer
 				sampleBufferSource.connect(masterCrossFader.getOutputNode())
 				sampleBufferSource.start()
 			}
 			else {
-				console.log('No sample selected')
+				$.notify('No sample selected', 'error')
 			}
 
 		}

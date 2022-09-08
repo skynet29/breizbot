@@ -55,6 +55,8 @@ $$.control.registerControl('rootPage', {
 		/**@type {DJMix.Service.AudioTools.CrossFaderWithMasterLevel} */
 		let masterCrossFader = null
 
+		/**@type {AudioBufferSourceNode} */
+		let sampleBufferSource = null
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -105,6 +107,12 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				onStopSample: function() {
+					if (sampleBufferSource != null) {
+						sampleBufferSource.stop()
+						sampleBufferSource = null
+					}
+				},
 				onPlaySample: function () {
 					const idx = $(this).index()
 					playSample(idx)
@@ -114,7 +122,7 @@ $$.control.registerControl('rootPage', {
 					const idx = $(this).index()
 					//console.log('onSampleChoice', idx)
 					const data = await sampleChoiceDlg.show()
-					console.log('data', data)
+					//console.log('data', data)
 					ctrl.model.sampleInfo[idx] = samplersInfo[data.value]
 					ctrl.update()
 				},
@@ -185,7 +193,7 @@ $$.control.registerControl('rootPage', {
 			//console.log('playSample', idx)
 			const sampleInfo = ctrl.model.sampleInfo[idx]
 			if (sampleInfo != null) {
-				const sampleBufferSource = audioCtx.createBufferSource()
+				sampleBufferSource = audioCtx.createBufferSource()
 				sampleBufferSource.buffer = sampleInfo.audioBuffer
 				sampleBufferSource.connect(masterCrossFader.getOutputNode())
 				sampleBufferSource.start()
@@ -195,6 +203,8 @@ $$.control.registerControl('rootPage', {
 			}
 
 		}
+
+
 
 		async function laodSamplers() {
 			if (settings.samplersFolder) {

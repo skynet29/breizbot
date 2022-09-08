@@ -49,6 +49,8 @@
 
 <div class="samplers">
     <span>Samplers</span>
+    <button class="w3-button w3-blue w3-padding-small" bn-icon="fa fa-stop" title="Stop sample" bn-event="click: onStopSample"></button>
+
     <div bn-each="sampleInfo"  bn-event="contextmenu.sample: onSampleChoice, click.sample: onPlaySample">
         <button class="w3-button w3-blue w3-padding-small sample" bn-icon="fa fa-play" bn-attr="{title: getSampleTitle}"></button>
     </div>

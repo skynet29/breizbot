@@ -8,7 +8,7 @@
 	 */
 	function createBufferDisplay(bufferCanvas, onTimeUpdate) {
 		const { width, height } = bufferCanvas
-		console.log({ width, height })
+		//console.log({ width, height })
 		const bufferCanvasCtx = bufferCanvas.getContext('2d')
 
 		if (typeof onTimeUpdate == 'function') {

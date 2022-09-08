@@ -197,21 +197,21 @@
 				},
 				events: {
 					onLowTurn: function (ev, value) {
-						console.log('onLowTurn', value)
+						//console.log('onLowTurn', value)
 						lowNode.gain.value = value
 					},
 					onMidTurn: function (ev, value) {
-						console.log('onMidTurn', value)
+						//console.log('onMidTurn', value)
 						midNode.gain.value = value
 					},
 					onHighTurn: function (ev, value) {
-						console.log('onHighTurn', value)
+						//console.log('onHighTurn', value)
 						highNode.gain.value = value
 					},
 					onPlaySampler: function () {
 						const combo = $(this).closest('.samplerPlayer').find('.brainjs-combobox')
 						const value = combo.getValue()
-						console.log('onPlaySampler', value)
+						//console.log('onPlaySampler', value)
 						playSampler(value)
 					},
 					onVolumeChange: function (ev, value) {

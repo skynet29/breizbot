@@ -116,6 +116,21 @@
     border: 1px solid black;
     border-radius: 10px; }
 
+.settings {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center; }
+  .settings form {
+    width: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; }
+    .settings form label {
+      width: 200px; }
+    .settings form input {
+      width: 300px; }
+
 .filelist {
   overflow: hidden;
   display: flex;
@@ -205,18 +220,3 @@
 
 .tree {
   overflow-y: auto; }
-
-.settings {
-  padding: 10px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center; }
-  .settings form {
-    width: 600px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between; }
-    .settings form label {
-      width: 200px; }
-    .settings form input {
-      width: 300px; }

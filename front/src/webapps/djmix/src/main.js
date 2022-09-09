@@ -151,11 +151,19 @@ $$.control.registerControl('rootPage', {
 					let genres = {}
 					for (const file of data.files) {
 						if (file.genre) {
-							genres[file.genre] = 1
+							if (genres[file.genre] != undefined) {
+								genres[file.genre] += 1
+							}
+							else {
+								genres[file.genre] = 1
+							}
+							
 						}
 					}
-					genres = Object.keys(genres)
-					genres.unshift('All')
+					genres = Object.entries(genres).map(([genre, nb]) => {
+						return {label: `${genre} (${nb})`, value: genre}
+					})
+					genres.unshift({label: `All (${data.files.length})`, value:'All'})
 					ctrl.setData({ files: data.files, loadingSongs: false, genres, selGenre: 'All' })
 				},
 				onSettings: function () {

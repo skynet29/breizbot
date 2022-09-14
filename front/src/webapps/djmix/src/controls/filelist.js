@@ -20,6 +20,18 @@
 		})
 	}
 
+	function sortFilesByYear(files) {
+		files.sort((a, b) => {
+			const year1 = a.year || 9999
+			const year2 = b.year || 9999
+			let ret = (year1 < year2) ? -1 : 1
+			if (year1 == year2) ret = 0
+			if (ret == 0) {
+				ret = a.artist.localeCompare(b.artist)
+			}
+			return ret
+		})
+	}
 
 	$$.control.registerControl('filelist', {
 		deps: ['breizbot.files'],
@@ -55,6 +67,9 @@
 					isSortedByGenre: function() {
 						return this.sortField == 'genre'
 					},
+					isSortedByYear: function() {
+						return this.sortField == 'year'
+					},
 
 					getDuration: function (scope) {
 						const { length } = scope.f
@@ -73,6 +88,13 @@
 					onSortGenre: function() {
 						sortFilesByGenre(ctrl.model.files)
 						ctrl.model.sortField = 'genre'
+						ctrl.update()
+
+					},
+
+					onSortYear: function() {
+						sortFilesByYear(ctrl.model.files)
+						ctrl.model.sortField = 'year'
 						ctrl.update()
 
 					},

@@ -8,6 +8,10 @@
 					<span>Artist</span>
 				</th>
 				<th>Title</th>
+				<th class="sortedCol" bn-event="click: onSortYear">
+					<i class="fas fa-sort-down" bn-show="isSortedByYear"></i>
+					<span>Year</span>
+				</th>
 				<th class="sortedCol" bn-event="click: onSortGenre">
 					<i class="fas fa-sort-down" bn-show="isSortedByGenre"></i>
 					<span>Genre</span>
@@ -21,6 +25,7 @@
 				<td><button class="preview" bn-icon="fa fa-play" title="Preview"></button></td>
 				<td bn-text="$scope.f.artist"></td>
 				<td bn-text="$scope.f.title"></td>
+				<td bn-text="$scope.f.year"></td>
 				<td bn-text="$scope.f.genre"></td>
 				<td bn-text="getDuration"></td>
 				<td bn-text="$scope.f.bpm"></td>

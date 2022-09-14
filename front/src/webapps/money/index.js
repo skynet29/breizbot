@@ -354,7 +354,7 @@ module.exports = function (ctx, router) {
         const offset = parseInt(req.query.offset)
 
         try {
-            const data = await db.find({ type: 'transaction', accountId }).sort({ date: -1 }).skip(offset).limit(20).toArray()
+            const data = await db.find({ type: 'transaction', accountId }).sort({ date: -1, _id: 1 }).skip(offset).limit(20).toArray()
             res.json(data)
         }
         catch (e) {

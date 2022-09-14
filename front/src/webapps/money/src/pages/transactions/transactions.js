@@ -84,7 +84,7 @@ $$.control.registerControl('transactions', {
             offset = offset || 0
 
             const transactions = await http.get(`/account/${accountId}/transactions?offset=${offset}`)
-            //console.log('transactions', offset, transactions)
+            console.log('transactions', offset, transactions)
             if (offset == 0) {
                 ctrl.setData({ transactions })
             }

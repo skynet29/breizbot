@@ -11,11 +11,45 @@ const eslint = require('gulp-eslint')
 const browserify = require('gulp-browserify')
 const bro = require('gulp-bro')
 const babelify = require('babelify')
+const replace = require('gulp-replace')
+
 
 sass.compiler = require('node-sass')
 
 const isDev = process.env.NODE_ENV != 'production'
 console.log('isDev', isDev)
+
+console.log('agrs', process.argv)
+
+const arg = (argList => {
+
+	let arg = {}, a, opt, thisOpt, curOpt;
+	for (a = 0; a < argList.length; a++) {
+  
+	  thisOpt = argList[a].trim();
+	  opt = thisOpt.replace(/^\-+/, '');
+  
+	  if (opt === thisOpt) {
+  
+		// argument value
+		if (curOpt) arg[curOpt] = opt;
+		curOpt = null;
+  
+	  }
+	  else {
+  
+		// argument name
+		curOpt = opt;
+		arg[curOpt] = true;
+  
+	  }
+  
+	}
+  
+	return arg;
+  
+  })(process.argv);
+
 
 function source(dest, srcs, options) {
 
@@ -73,12 +107,86 @@ function source(dest, srcs, options) {
 }
 
 
-module.exports = function(dest) {
-	return function task(taskName, srcs, options) {
+module.exports = function(modulePath) {
+
+	console.log('modulePath', modulePath)
+
+	const dest = modulePath.replace('src', 'dist')
+
+	function replaceTemplateJS() {
+		const ctrlName = arg.name
+		return gulp.src(['../template/src/main.js'])
+			.pipe(replace('rootPage', ctrlName))
+			.pipe(replace('main.html', ctrlName + '.html'))
+			.pipe(rename(ctrlName + '.js'))
+			.pipe(gulp.dest('src/controls/' + ctrlName))
+	}
+	
+	function replaceTemplateSCSS() {
+		const ctrlName = arg.name
+		return gulp.src(['../template/src/main.scss'])
+			.pipe(replace('rootPage', ctrlName))
+			.pipe(rename(ctrlName + '.scss'))
+			.pipe(gulp.dest('src/controls/' + ctrlName))
+	}
+	
+	function replaceTemplateHTML() {
+		const ctrlName = arg.name
+		return gulp.src(['../template/src/main.html'])
+			.pipe(rename(ctrlName + '.html'))
+			.pipe(gulp.dest('src/controls/' + ctrlName))
+	}
+	
+	
+	function replaceFormTemplateJS() {
+		const ctrlName = arg.name
+		return gulp.src(['../../templates/form.js'])
+			.pipe(replace('form', ctrlName))
+			.pipe(replace('main.html', ctrlName + '.html'))
+			.pipe(rename(ctrlName + '.js'))
+			.pipe(gulp.dest('src'))
+	}
+	
+	function replaceFormTemplateSCSS() {
+		const ctrlName = arg.name
+		return gulp.src(['../../templates/form.scss'])
+			.pipe(replace('formCtrl', ctrlName))
+			.pipe(rename(ctrlName + '.scss'))
+			.pipe(gulp.dest('src'))
+	}
+	
+	function replaceFormTemplateHTML() {
+		const ctrlName = arg.name
+		return gulp.src(['../../templates/form.html'])
+			.pipe(rename(ctrlName + '.html'))
+			.pipe(gulp.dest('src'))
+	}
+	
+	function copyIndexJS()
+	{
+		return gulp.src(['../../templates/index.js'])
+			.pipe(gulp.dest('.'))	
+	}
+	
+
+	const addCtrl = gulp.series(replaceTemplateJS, replaceTemplateSCSS, replaceTemplateHTML)
+	
+	const addFormCtrl = gulp.series(replaceFormTemplateJS, replaceFormTemplateSCSS, replaceFormTemplateHTML)
+	
+	const addBack = copyIndexJS
+	
+	function task(taskName, srcs, options) {
 		return function() {
 			console.log('task', taskName)
 			return source(dest, srcs, options)
 
 		}
+	}
+	return {
+		task,
+		addCtrl,
+		addFormCtrl,
+		addBack
+
 	}
 }

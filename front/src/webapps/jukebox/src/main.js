@@ -35,7 +35,6 @@ $$.control.registerControl('rootPage', {
 
 		function openFilePage(title, friendUser) {
 			/**@type {Breizbot.Controls.Files.Props} */
-
 			const props = {
 				filterExtension: 'mp3',
 				getMP3Info: true,
@@ -44,9 +43,8 @@ $$.control.registerControl('rootPage', {
 
 			if (friendUser == '') {
 				props.menuItems = function(info) {
-					const { name, folder, isImage } = info
 					const ret = {}
-					if (!folder) {
+					if (!info.folder) {
 						ret.move = {name: 'Move', icon: 'fas fa-file-export'}
 					}
 					return ret
@@ -66,6 +64,10 @@ $$.control.registerControl('rootPage', {
 					}
 				},
 				events: {
+					/**
+					 * 
+					 * @param {Breizbot.Controls.Files.EventData.ContextMenuItem} info 
+					 */
 					contextmenuItem: function(ev, info) {
 						//console.log('contextmenuItem', info)
 						const {cmd, name, rootDir} = info

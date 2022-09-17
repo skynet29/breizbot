@@ -189,6 +189,7 @@ declare namespace Breizbot {
                 uploadFile(blob: Blob, saveAsfileName: string, destPath: string, checkExists: boolean, onUploadProgress: (percentComplete: number) => void): Promise<void>;
                 saveFile(blob: Blob, saveAsfileName: string, options?: {checkExists?: boolean, destPath?: string}): Promise<boolean>;
                 assetsUrl(fileName: string): string;
+                move(fileName: string, destPath: string):Promise<void>;
             }
     
     
@@ -525,6 +526,13 @@ declare namespace Breizbot {
                 enterSelFolder():void;
             }
            
+        }
+
+        declare namespace FolderTree {
+
+            interface Interface {
+                getSelPath(): string;
+            }
         }
 
         declare namespace Files {

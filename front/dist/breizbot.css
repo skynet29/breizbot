@@ -242,6 +242,9 @@
   .breizbot-files > .loading {
     margin-left: 10px; }
 
+.breizbot-foldertree {
+  overflow-y: auto; }
+
 @media (hover: none) {
   .w3-button:hover {
     background-color: inherit !important;

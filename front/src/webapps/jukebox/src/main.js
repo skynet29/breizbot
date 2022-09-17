@@ -34,15 +34,28 @@ $$.control.registerControl('rootPage', {
 		}
 
 		function openFilePage(title, friendUser) {
+			/**@type {Breizbot.Controls.Files.Props} */
+
+			const props = {
+				filterExtension: 'mp3',
+				getMP3Info: true,
+				friendUser
+			}
+
+			if (friendUser == '') {
+				props.menuItems = function(info) {
+					const { name, folder, isImage } = info
+					const ret = {}
+					if (!folder) {
+						ret.move = {name: 'Move', icon: 'fas fa-file-export'}
+					}
+					return ret
+				}
+			}
 			/**@type {Breizbot.Controls.Files.Interface} */
 			const fileCtrl = pager.pushPage('breizbot.files', {
 				title,
-				/**@type {Breizbot.Controls.Files.Props} */
-				props: {
-					filterExtension: 'mp3',
-					getMP3Info: true,
-					friendUser
-				},
+				props,
 				buttons: {
 					search: {
 						title: 'Filter',
@@ -53,6 +66,21 @@ $$.control.registerControl('rootPage', {
 					}
 				},
 				events: {
+					contextmenuItem: function(ev, info) {
+						//console.log('contextmenuItem', info)
+						const {cmd, name, rootDir} = info
+						if (cmd == 'move') {
+							pager.pushPage('fileTree', {
+								title: 'Select Target folder',
+								onReturn: async function(data) {
+									console.log('onReturn', data)
+									await files.move(rootDir + name, data.path)	
+									fileCtrl.reload()								
+								}
+							})
+						}
+
+					},
 					/**
 					 * 
 					 * @param {Breizbot.Controls.Files.EventData.FileClick} info 
@@ -107,7 +135,7 @@ $$.control.registerControl('rootPage', {
 						}
 					})
 				},
-				onPlaylist: function() {
+				onPlaylist: function () {
 					//console.log('onPlaylist')
 					pager.pushPage('playlist', {
 						title: 'Playlist'

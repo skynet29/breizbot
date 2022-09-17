@@ -147,11 +147,25 @@ router.post('/save', function (req, res) {
 
 
 
+router.post('/move', async function (req, res) {
+	const fileName = req.body.fileName
+	const destPath = req.body.destPath
 
+	const user = req.session.user
+	const fullPath = util.getFilePath(user, fileName)
+	const fullDest = path.join(util.getFilePath(user, destPath), path.basename(fileName))
+	console.log('fullDest', fullDest)
 
+	try {
+		await fs.move(fullPath, fullDest)
+		res.status(200).send('File moved !')
+	}
+	catch (e) {
+		console.log('error', e)
+		res.status(400).send(e.message)
+	}
 
-
-
+})
 
 
 

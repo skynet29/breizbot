@@ -22,6 +22,10 @@ $$.service.registerService('breizbot.files', {
 				return http.post('/list', { destPath, options, friendUser })
 			},
 
+			move: function(fileName, destPath) {
+				return http.post('/move', { destPath, fileName})
+			},
+
 			fileUrl: function (fileName, friendUser) {
 				return $$.url.getUrlParams('/api/files/load', { fileName, friendUser })
 			},

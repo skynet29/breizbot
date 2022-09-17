@@ -261,7 +261,7 @@
 					onContextMenu: async function (ev, data) {
 						const { cmd } = data
 						const idx = $(this).closest('.thumbnail').index()
-						const { name } = ctrl.model.files[idx]
+						const { name } = ctrl.model.getFiles()[idx]
 
 						const { rootDir } = ctrl.model
 						ev.stopPropagation()

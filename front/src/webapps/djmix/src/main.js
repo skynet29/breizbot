@@ -185,7 +185,7 @@ $$.control.registerControl('rootPage', {
 					masterCrossFader.setMasterLevel(value)
 				},
 				onCueVolumeChange: function (ev, value) {
-					masterCrossFader.setMasterLevel(value)
+					cueCrossFader.setMasterLevel(value)
 				},
 				onCrossFaderChange: function (ev, value) {
 					masterCrossFader.setFaderLevel(value)
@@ -697,6 +697,7 @@ $$.control.registerControl('rootPage', {
 		const source2 = audio2.getOutputNode()
 
 		const previewAudio = new Audio()
+		previewAudio.volume = 1
 		const previewSource = audioCtx.createMediaElementSource(previewAudio)
 
 		ctrl.setData({ source1, source2 })
@@ -710,7 +711,8 @@ $$.control.registerControl('rootPage', {
 
 		const merger = audioTools.createStereoMerger(masterCrossFader.getOutputNode(), cueCrossFader.getOutputNode())
 
-		audioTools.createDestination(4, merger)
+		const dest = audioTools.createDestination(4, merger)
+
 
 		init()
 

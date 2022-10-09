@@ -43,10 +43,12 @@ $$.service.registerService('AudioTools', {
             const dest = audioCtx.createMediaStreamDestination()
             dest.channelCount = channelCount
             const audio = new Audio()
+            audio.volume = 1
             //await audio.setSinkId(audioDevice[0].deviceId)
             audio.srcObject = dest.stream
             inputNode.connect(dest)
-            audio.play()            
+            audio.play()  
+            return dest          
         }
 
 

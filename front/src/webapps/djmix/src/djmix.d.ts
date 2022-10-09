@@ -33,7 +33,7 @@ declare namespace DJMix {
 
             interface Interface {
                 createStereoMerger(source1: AudioNode, source2: AudioNode): AudioNode;
-                createDestination(channelCount: number, inputNode: AudioNode): void;
+                createDestination(channelCount: number, inputNode: AudioNode): AudioNode;
                 createCrossFaderWithMasterLevel(source1: AudioNode, source2: AudioNode): CrossFaderWithMasterLevel;
                 getAudioContext():AudioContext;
                 getCurrentTime(): number;

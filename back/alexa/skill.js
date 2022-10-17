@@ -5,7 +5,22 @@ const Alexa = require('ask-sdk-core')
 const { SKILL_NOT_LINKED, USER_NOT_REGISTERED } = require('./constants')
 const audioPlayer = require('./audioPlayer.js')
 
-const { getPersistenceAdapter } = require('./persistence.js')
+const config = require('../lib/config')
+
+const { MongoDBPersistenceAdapter } = require('ask-sdk-mongodb-persistence-adapter');
+
+
+const options = {
+  collectionName: 'alexa',
+  mongoURI: config.dbUrl,
+  partitionKeyGenerator: (requestEnvelope) => {
+    const userId = Alexa.getUserId(requestEnvelope)
+    return userId.substr(userId.lastIndexOf(".") + 1)
+  }
+
+}
+
+const persistenceAdapter =  new MongoDBPersistenceAdapter(options)
 
 const ssml = require('./ssml.js')
 const util = require('./util.js')
@@ -267,7 +282,7 @@ skillBuilder
     .addRequestInterceptors(...require('./interceptors/request.js'))
     .addResponseInterceptors(...require('./interceptors/response.js'))
     .addErrorHandlers(ErrorHandler)
-    .withPersistenceAdapter(getPersistenceAdapter())
+    .withPersistenceAdapter(persistenceAdapter)
     .withApiClient(new Alexa.DefaultApiClient())
 
 

@@ -1,7 +1,6 @@
 //@ts-check
 
 const { MongoClient, ObjectID, Db } = require('mongodb')
-const redirectHttps = require('redirect-https')
 
 const config = require('./config')
 const util = require('./util.js')

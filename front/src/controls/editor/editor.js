@@ -180,6 +180,8 @@ $$.control.registerControl('breizbot.htmleditor', {
 			return $(`<${elt}>`).text(text)
 		}
 
+		let imgUrls = []
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				html: elt.val(),
@@ -227,6 +229,12 @@ $$.control.registerControl('breizbot.htmleditor', {
 							const td = $(this).find('td,th')
 							const text = []
 							td.each(function() {
+								$(this).find('img').each(function() {
+									const src = $(this).attr('src')
+									imgUrls.push(src)
+									$(this).replaceWith(`img(${imgUrls.length - 1})`)
+								})
+								
 								text.push($(this).text())
 							})
 							data.push(text.join(';'))
@@ -236,12 +244,13 @@ $$.control.registerControl('breizbot.htmleditor', {
 						range.deleteContents()
 						for(const text of data.reverse()) {
 							const div = document.createElement('div')
-							div.textContent = text
+							div.innerHTML = text
 							range.insertNode(div)
 						}
 						selObj.removeAllRanges()
 						return
 					}
+
 					const selRangeText = getTextNodesBetween(range.commonAncestorContainer, range.startContainer, range.endContainer)					
 					if (selRangeText.length == 0) {
 						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
@@ -250,7 +259,6 @@ $$.control.registerControl('breizbot.htmleditor', {
 					//document.execCommand('delete', false)
 					range.deleteContents()
 
-					console.log(selRangeText)
 					const table = document.createElement('table')
 					for(const row of selRangeText) {
 						const tr = document.createElement('tr')
@@ -258,9 +266,18 @@ $$.control.registerControl('breizbot.htmleditor', {
 						for(const text of row.split(';')) {
 							const td = document.createElement('td')
 							tr.appendChild(td)
-							td.textContent = text
+							if (text.startsWith('img(')) {
+								const urlId = text.replaceAll(')', '').substr(4)
+								const img = document.createElement('img')
+								img.src = imgUrls[urlId]
+								td.appendChild(img)
+							}
+							else {
+								td.textContent = text
+							}
 						}
 					}
+					imgUrls = []
 					range.insertNode(table)
 					selObj.removeAllRanges()
 
@@ -413,7 +430,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 				})
 			}
 
-		})
+		})		
 
 		/**
 		 * 
@@ -424,19 +441,31 @@ $$.control.registerControl('breizbot.htmleditor', {
 			return Array.from(node.childNodes).filter(entry => entry.nodeType == Node.TEXT_NODE).length != 0
 		}
 
+
+		/**
+		 * 
+		 * @param {Node} rootNode 
+		 * @param {Node} startNode 
+		 * @param {Node} endNode 
+		 * @returns 
+		 */
 		function getTextNodesBetween(rootNode, startNode, endNode) {
 			let pastStartNode = false
 			let reachedEndNode = false
 			const textNodes = []
 		
+			/**
+			 * 
+			 * @param {Node} node 
+			 */
 			function getTextNodes(node) {
 				if (node == startNode) {
 					pastStartNode = true
 				} 
 		
 				if (node.nodeType == Node.TEXT_NODE) {
-					if (pastStartNode && !reachedEndNode) {   
-     
+					if (pastStartNode && !reachedEndNode) { 
+						     
 						if (node.parentElement.tagName == 'SPAN' && node.parentElement.parentElement.tagName == 'DIV' && hasTextChildNode(node.parentElement.parentElement)) {
 							const length = textNodes.length
 							if (length > 0)

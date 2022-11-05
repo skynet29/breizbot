@@ -1,6 +1,7 @@
 var gulp = require('gulp')
 
-const task = require('./task')('./dist')
+const {task} = require('./task')('./dist')
+
 
 const beatDetectorJs = task('beatDetectorJs.worker.js', 
 [

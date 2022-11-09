@@ -280,34 +280,6 @@
           outline: none;
           user-select: none; }
 
-.breizbot-pager {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden; }
-  .breizbot-pager > .toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #128C7E;
-    color: white; }
-    .breizbot-pager > .toolbar > .right {
-      display: flex;
-      align-items: center; }
-    .breizbot-pager > .toolbar > .left {
-      display: flex;
-      align-items: center;
-      min-width: 0; }
-      .breizbot-pager > .toolbar > .left > .title {
-        margin-left: 5px;
-        margin-right: 5px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis; }
-  .breizbot-pager > .content {
-    flex: 1;
-    overflow: hidden; }
-
 .breizbot-pdf {
   display: flex;
   flex-direction: column; }
@@ -420,3 +392,31 @@
           border-collapse: collapse; }
         .breizbot-viewer .doc .scrollPanel .html td, .breizbot-viewer .doc .scrollPanel .html th {
           padding: 5px; }
+
+.breizbot-pager {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden; }
+  .breizbot-pager > .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #128C7E;
+    color: white; }
+    .breizbot-pager > .toolbar > .right {
+      display: flex;
+      align-items: center; }
+    .breizbot-pager > .toolbar > .left {
+      display: flex;
+      align-items: center;
+      min-width: 0; }
+      .breizbot-pager > .toolbar > .left > .title {
+        margin-left: 5px;
+        margin-right: 5px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis; }
+  .breizbot-pager > .content {
+    flex: 1;
+    overflow: hidden; }

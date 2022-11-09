@@ -125,7 +125,23 @@
 		<button class="w3-button cmd" title="Horizontal Rule" data-cmd="insertHorizontalRule"bn-icon="fas fa-minus"></button>
 		<button class="w3-button" title="Insert Link" bn-event="click: onCreateLink" bn-icon="fas fa-link"></button>		
 		<button title="Insert image" bn-event="click: onInsertImage" class="w3-button" bn-icon="fa fa-image"></button>
-		<button title="Insert Table from selection" bn-event="click: onInsertTable" class="w3-button" bn-icon="fa fa-th"></button>
+		<button title="Insert Table from selection" class="w3-button"
+			bn-control="brainjs.contextmenu" 
+			bn-event="contextmenuchange: onInsertTable" 
+			bn-data="{
+				trigger: 'left',
+				items: {
+					convertToTable: {name: 'Convert to table'},
+					convertToList: {name: 'Convert to list'},
+					addRow: {name: 'Add row'},
+					addCol: {name: 'Add Column'}
+				}
+
+			}">
+			<i class="fas fa fa-th"></i>
+			<i class="fas fa-caret-down"></i>
+
+		</button>
 
 	</div>
 

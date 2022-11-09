@@ -176,11 +176,135 @@ $$.control.registerControl('breizbot.htmleditor', {
 		 */
 		function div(text, tagName) {
 			//console.log('div', tagName, text)
-			const elt =  ['I', 'B', 'U', 'FONT'].includes(tagName) ? 'span': 'div'
+			const elt = ['I', 'B', 'U', 'FONT'].includes(tagName) ? 'span' : 'div'
 			return $(`<${elt}>`).text(text)
 		}
 
 		let imgUrls = []
+
+		/**
+		 * 
+		 * @param {Range} range 
+		 */
+		function convertToTable(range) {
+			const selRangeText = getTextNodesBetween(range.commonAncestorContainer, range.startContainer, range.endContainer)
+			if (selRangeText.length == 0) {
+				$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
+				return
+			}
+
+			range.deleteContents()
+
+			const table = document.createElement('table')
+			for (const row of selRangeText) {
+				const tr = document.createElement('tr')
+				table.appendChild(tr)
+				for (const text of row.split(';')) {
+					const td = document.createElement('td')
+					tr.appendChild(td)
+					if (text.startsWith('img(')) {
+						const urlId = text.replaceAll(')', '').substr(4)
+						const img = document.createElement('img')
+						img.src = imgUrls[urlId]
+						td.appendChild(img)
+					}
+					else {
+						td.textContent = text
+					}
+				}
+			}
+			imgUrls = []
+			range.insertNode(table)
+
+		}
+
+		/**
+		 * 
+		 * @param {Range} range 
+		 */
+		function convertToList(range) {
+			const parentElement = $(range.startContainer.parentElement)
+
+			if (['TD', 'TH'].includes(parentElement.get(0).tagName)) {
+				const table = parentElement.closest('table')
+				const tr = table.find('tr')
+				const data = []
+				tr.each(function () {
+					const td = $(this).find('td,th')
+					const text = []
+					td.each(function () {
+						$(this).find('img').each(function () {
+							const src = $(this).attr('src')
+							imgUrls.push(src)
+							$(this).replaceWith(`img(${imgUrls.length - 1})`)
+						})
+
+						text.push($(this).text())
+					})
+					data.push(text.join(';'))
+
+				})
+				table.remove()
+				range.deleteContents()
+				for (const text of data.reverse()) {
+					const div = document.createElement('div')
+					div.innerHTML = text
+					range.insertNode(div)
+				}
+			}
+			else {
+				$$.ui.showAlert({ title: 'Error', content: 'Please select a cell table' })
+
+			}
+
+		}
+
+		/**
+		 * 
+		 * @param {Range} range 
+		 */
+		function addRow(range) {
+			const parentElement = $(range.startContainer.parentElement)
+
+			if (['TD', 'TH'].includes(parentElement.get(0).tagName)) {
+				const tr = parentElement.closest('tr')
+				const nbCols = tr.find('td, th').length
+				//console.log('nb col', nbCols)
+				const newTr = document.createElement('tr')
+				for (let i = 0; i < nbCols; i++) {
+					const newTd = document.createElement('td')
+					newTr.appendChild(newTd)
+				}
+				tr.after(newTr)
+			}
+			else {
+				$$.ui.showAlert({ title: 'Error', content: 'Please select a cell table' })
+
+			}
+		}
+
+		/**
+		 * 
+		 * @param {Range} range 
+		 */
+		 function addColumn(range) {
+			//console.log('addColumn')
+			const parentElement = $(range.startContainer.parentElement)
+
+			if (['TD', 'TH'].includes(parentElement.get(0).tagName)) {
+				const selCol = parentElement.index()
+				//console.log('selCol', selCol)
+				const table = parentElement.closest('table')
+				table.find('tr').each(function() {
+					const td = document.createElement('td')
+					$(this).find('td,th').eq(selCol).after(td)
+				})
+			}
+			else {
+				$$.ui.showAlert({ title: 'Error', content: 'Please select a cell table' })
+
+			}
+		}		
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -199,7 +323,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 				color: defaultColor,
 				headingItems: getHeadingItems(),
 				showMicro: false,
-				isMicroVisible: function() {
+				isMicroVisible: function () {
 					return this.showMicro && this.speechRecoAvailable
 				},
 				speechRecoAvailable,
@@ -209,11 +333,12 @@ $$.control.registerControl('breizbot.htmleditor', {
 				}
 			},
 			events: {
-				onToogleMicro: function() {
-					ctrl.setData({showMicro: !ctrl.model.showMicro})
+				onToogleMicro: function () {
+					ctrl.setData({ showMicro: !ctrl.model.showMicro })
 				},
-				onInsertTable: function() {
-					//console.log('onInsertTable')
+				onInsertTable: function (ev, info) {
+					console.log('onInsertTable', info)
+					const { cmd } = info
 					if (!isEditable()) {
 						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
 						return
@@ -221,68 +346,23 @@ $$.control.registerControl('breizbot.htmleditor', {
 
 					const selObj = window.getSelection()
 					const range = selObj.getRangeAt(0)
-					if (['TD', 'TH'].includes(range.startContainer.parentElement.tagName)) {
-						const table = $(range.startContainer.parentElement).closest('table')
-						const tr = table.find('tr')
-						const data = []
-						tr.each(function() {
-							const td = $(this).find('td,th')
-							const text = []
-							td.each(function() {
-								$(this).find('img').each(function() {
-									const src = $(this).attr('src')
-									imgUrls.push(src)
-									$(this).replaceWith(`img(${imgUrls.length - 1})`)
-								})
-								
-								text.push($(this).text())
-							})
-							data.push(text.join(';'))
-
-						})
-						table.remove()
-						range.deleteContents()
-						for(const text of data.reverse()) {
-							const div = document.createElement('div')
-							div.innerHTML = text
-							range.insertNode(div)
-						}
+					if (cmd == 'convertToList') {
+						convertToList(range)
 						selObj.removeAllRanges()
-						return
 					}
-
-					const selRangeText = getTextNodesBetween(range.commonAncestorContainer, range.startContainer, range.endContainer)					
-					if (selRangeText.length == 0) {
-						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
-						return
+					else if (cmd == 'convertToTable') {
+						convertToTable(range)
+						selObj.removeAllRanges()
 					}
-					//document.execCommand('delete', false)
-					range.deleteContents()
-
-					const table = document.createElement('table')
-					for(const row of selRangeText) {
-						const tr = document.createElement('tr')
-						table.appendChild(tr)
-						for(const text of row.split(';')) {
-							const td = document.createElement('td')
-							tr.appendChild(td)
-							if (text.startsWith('img(')) {
-								const urlId = text.replaceAll(')', '').substr(4)
-								const img = document.createElement('img')
-								img.src = imgUrls[urlId]
-								td.appendChild(img)
-							}
-							else {
-								td.textContent = text
-							}
-						}
+					else if (cmd == 'addRow') {
+						addRow(range)
 					}
-					imgUrls = []
-					range.insertNode(table)
-					selObj.removeAllRanges()
+					else if (cmd == 'addCol') {
+						addColumn(range)
+					}
 
 				},
-				onRemoveFormat: function(ev) {
+				onRemoveFormat: function (ev) {
 					ev.stopPropagation()
 					//console.log('onRemoveFormat')
 					const selObj = window.getSelection()
@@ -291,7 +371,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
 						return
 					}
-					
+
 					const node = selObj.anchorNode
 					if (node.nodeType != node.TEXT_NODE) {
 						$$.ui.showAlert({ title: 'Error', content: 'Please select a text before' })
@@ -302,7 +382,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 					//console.log({text})
 					const parent = node.parentElement
 					const tagName = parent.tagName
-					
+
 					if ($(parent).hasClass('editor')) {
 						if (node.previousSibling != null) {
 							div(text, tagName).insertAfter(node.previousSibling)
@@ -349,7 +429,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 							label: 'Link Target',
 							attrs: { type: 'url' }
 						})
-									
+
 					})
 
 				},
@@ -430,7 +510,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 				})
 			}
 
-		})		
+		})
 
 		/**
 		 * 
@@ -453,7 +533,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 			let pastStartNode = false
 			let reachedEndNode = false
 			const textNodes = []
-		
+
 			/**
 			 * 
 			 * @param {Node} node 
@@ -461,16 +541,16 @@ $$.control.registerControl('breizbot.htmleditor', {
 			function getTextNodes(node) {
 				if (node == startNode) {
 					pastStartNode = true
-				} 
-		
+				}
+
 				if (node.nodeType == Node.TEXT_NODE) {
-					if (pastStartNode && !reachedEndNode) { 
-						     
+					if (pastStartNode && !reachedEndNode) {
+
 						if (node.parentElement.tagName == 'SPAN' && node.parentElement.parentElement.tagName == 'DIV' && hasTextChildNode(node.parentElement.parentElement)) {
 							const length = textNodes.length
 							if (length > 0)
-								textNodes[length-1] += node.textContent                        
-								
+								textNodes[length - 1] += node.textContent
+
 						}
 						else {
 							textNodes.push(node.textContent)
@@ -486,7 +566,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 					reachedEndNode = true
 				}
 			}
-		
+
 			getTextNodes(rootNode)
 			return textNodes
 		}
@@ -515,7 +595,7 @@ $$.control.registerControl('breizbot.htmleditor', {
 				if (href != null) {
 					selObj.removeAllRanges()
 					selObj.addRange(range)
-	
+
 					document.execCommand('createLink', false, href)
 				}
 			}

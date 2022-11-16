@@ -21,18 +21,20 @@ declare namespace HUB {
         capabilities: number;
     }
 
-    function getHubDevices(): {[portId: string]: string};
-    function on(eventName: EventName, cbk: (data: object) => void);
-    function connect(): Promise<void>;
-    function shutdown(): Promise<void>;
-    function getDeviceType(portId: PortMap): string;
-    function subscribe(portId: PortMap, mode: DeviceMode, deltaInterval?: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
-    function createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<void>;
-    function getPortInformation(portId: PortMap): Promise<PortInformation>;
-    function getPortIdFromName(portName: string): number;
-    function waitTestValue(portId: number, mode: number, testFn: (value: number) => boolean): Promise<void>;
-    
-    interface MotorInterface  {
+    interface HubDevice extends EventEmitter2 {
+        getHubDevices(): {[portId: string]: string};
+        connect(): Promise<void>;
+        shutdown(): Promise<void>;
+        getDeviceType(portId: PortMap): string;
+        subscribe(portId: PortMap, mode: DeviceMode, deltaInterval?: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
+        createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<void>;
+        getPortInformation(portId: PortMap): Promise<PortInformation>;
+        getPortIdFromName(portName: string): number;
+        waitTestValue(portId: number, mode: number, testFn: (value: number) => boolean): Promise<void>;
+        createMotor(portId): Motor;
+    }
+     
+    interface Motor {
         setPower(power: number): Promise<void>;
         resetZero(): Promise<void>;
         setSpeed(speed: number): Promise<void>;
@@ -43,20 +45,18 @@ declare namespace HUB {
 
     }
 
-    interface DoubleMotorInterface {
+    interface DoubleMotor {
         create(): Promise<void>;
         setSpeed(speed1: number, speed2: number): Promise<void>;
     }
 
-    function Motor(portId: PortMap): MotorInterface;
-    function DoubleMotor(portId1: PortMap, portId2: PortMap):DoubleMotorInterface;
 
-    interface LedInterface {
+    interface Led {
         setColor(color: Color): Promise<void>;
         setRGBColor(red: number, green: number, blue: number): Promise<void>;
     }
 
-    function Led(portId: PortMap): LedInterface;
+    function connect(): Promise<HubDevice>
 
     enum Color {
         BLACK,

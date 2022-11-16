@@ -24,85 +24,85 @@ $$.control.registerControl('rootPage', {
 		console.log('appData', appData)
 
 
-		const motorA = hub.Motor(hub.PortMap.A)
-		const motorB = hub.Motor(hub.PortMap.B)
-		const motorC = hub.Motor(hub.PortMap.C)
-		const motorD = hub.Motor(hub.PortMap.D)
-		const motorCD = hub.DoubleMotor(hub.PortMap.C, hub.PortMap.D)
-		const led = hub.Led(hub.PortMap.HUB_LED)
+		// const motorA = hub.Motor(hub.PortMap.A)
+		// const motorB = hub.Motor(hub.PortMap.B)
+		// const motorC = hub.Motor(hub.PortMap.C)
+		// const motorD = hub.Motor(hub.PortMap.D)
+		// const motorCD = hub.DoubleMotor(hub.PortMap.C, hub.PortMap.D)
+		// const led = hub.Led(hub.PortMap.HUB_LED)
 
-		const actions = [
-			{
-				name: 'Change Mode',
-				fn: onChangeMode
-			},
-			{
-				name: 'Move Forward',
-				mode: 'RUNNING',
-				value: [-100, -100],
-				key: 2
-			},
-			{
-				name: 'Move Backward',
-				mode: 'RUNNING',
-				value: [100, 100],
-				key: 1
-			},
-			{
-				name: 'Move Left',
-				mode: 'RUNNING',
-				value: [-100, 100],
-				key: 3
-			},
-			{
-				name: 'Move Right',
-				mode: 'RUNNING',
-				value: [100, -100],
-				key: 4
-			},
+		// const actions = [
+		// 	{
+		// 		name: 'Change Mode',
+		// 		fn: onChangeMode
+		// 	},
+		// 	{
+		// 		name: 'Move Forward',
+		// 		mode: 'RUNNING',
+		// 		value: [-100, -100],
+		// 		key: 2
+		// 	},
+		// 	{
+		// 		name: 'Move Backward',
+		// 		mode: 'RUNNING',
+		// 		value: [100, 100],
+		// 		key: 1
+		// 	},
+		// 	{
+		// 		name: 'Move Left',
+		// 		mode: 'RUNNING',
+		// 		value: [-100, 100],
+		// 		key: 3
+		// 	},
+		// 	{
+		// 		name: 'Move Right',
+		// 		mode: 'RUNNING',
+		// 		value: [100, -100],
+		// 		key: 4
+		// 	},
 
-			{
-				name: 'Arm Up',
-				mode: 'MANIPULATOR',
-				motor: motorC,
-				value: -100,
-				key: 1
-			},
-			{
-				name: 'Arm Down',
-				mode: 'MANIPULATOR',
-				motor: motorC,
-				value: 100,
-				key: 2
-			},
-			{
-				name: 'Elbow Up',
-				mode: 'MANIPULATOR',
-				motor: motorD,
-				value: 100,
-				key: 3
-			},
-			{
-				name: 'Elbow Down',
-				mode: 'MANIPULATOR',
-				motor: motorD,
-				value: -100,
-				key: 4
-			},
+		// 	{
+		// 		name: 'Arm Up',
+		// 		mode: 'MANIPULATOR',
+		// 		motor: motorC,
+		// 		value: -100,
+		// 		key: 1
+		// 	},
+		// 	{
+		// 		name: 'Arm Down',
+		// 		mode: 'MANIPULATOR',
+		// 		motor: motorC,
+		// 		value: 100,
+		// 		key: 2
+		// 	},
+		// 	{
+		// 		name: 'Elbow Up',
+		// 		mode: 'MANIPULATOR',
+		// 		motor: motorD,
+		// 		value: 100,
+		// 		key: 3
+		// 	},
+		// 	{
+		// 		name: 'Elbow Down',
+		// 		mode: 'MANIPULATOR',
+		// 		motor: motorD,
+		// 		value: -100,
+		// 		key: 4
+		// 	},
 
-			{
-				name: 'Hand Open',
-				motor: motorB,
-				value: -100,
-				key: 5
-			},
-			{
-				name: 'Hand Close',
-				motor: motorB,
-				value: 100,
-				key: 6
-			},
-		]
+		// 	{
+		// 		name: 'Hand Open',
+		// 		motor: motorB,
+		// 		value: -100,
+		// 		key: 5
+		// 	},
+		// 	{
+		// 		name: 'Hand Close',
+		// 		motor: motorB,
+		// 		value: 100,
+		// 		key: 6
+		// 	},
+		// ]
 
 
 		async function buttonDown(action) {
@@ -159,20 +159,7 @@ $$.control.registerControl('rootPage', {
 		})
 
 
-		hub.on('disconnected', () => {
-			ctrl.setData({ connected: false, mode: 'UNKNOWN' })
-		})
 
-
-		hub.on('error', (data) => {
-			console.log(data)
-		})
-
-		hub.on('batteryLevel', (data) => {
-			//console.log('batteryLevel', data)
-			const { batteryLevel } = data
-			ctrl.setData({ batteryLevel })
-		})
 
 		async function onChangeMode() {
 			const { mode } = ctrl.model
@@ -193,6 +180,9 @@ $$.control.registerControl('rootPage', {
 		}
 
 		elt.find('button').addClass('w3-btn w3-blue')
+
+		/**@type {HUB.HubDevice} */
+		let hubDevice = null
 		
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -239,9 +229,25 @@ $$.control.registerControl('rootPage', {
 				},
 
 				onConnect: async function () {
-					await hub.connect()
+					hubDevice = await hub.connect()
+					window.hubDevice = hubDevice
+					hubDevice.on('disconnected', () => {
+						ctrl.setData({ connected: false, mode: 'UNKNOWN' })
+						hubDevice = null
+					})
+			
+			
+					hubDevice.on('error', (data) => {
+						console.log(data)
+					})
+			
+					hubDevice.on('batteryLevel', (data) => {
+						//console.log('batteryLevel', data)
+						const { batteryLevel } = data
+						ctrl.setData({ batteryLevel })
+					})					
 					ctrl.setData({ connected: true })
-					await motorCD.create()
+					//await motorCD.create()
 					// await hub.subscribe(hub.PortMap.TILT_SENSOR, hub.DeviceMode.TILT_POS, 2, (data) => {
 					// 	console.log('TILT POS', data.value)
 					// })
@@ -280,16 +286,16 @@ $$.control.registerControl('rootPage', {
 				},
 				onChangeMode,
 				onHubInfo: async function () {
-					console.log('onHubInfo')
+					console.log('onHubInfo', hubDevice.getHubDevices())
 					pager.pushPage('hubinfo', {
 						title: 'Hub Info',
 						props: {
-							devices
+							hubDevice
 						}
 					})
 				},
 				onShutdown: async function () {
-					await hub.shutdown()
+					await hubDevice.shutdown()
 				}
 			}
 		})

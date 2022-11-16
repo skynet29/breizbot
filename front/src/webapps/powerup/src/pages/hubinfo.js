@@ -16,13 +16,15 @@ $$.control.registerControl('hubinfo', {
 	 */
 	init: function (elt, pager, hub) {
 
-		const devices = hub.getHubDevices()
+		/**@type {HUB.HubDevice} */
+		const hubDevice = this.props.hubDevice
+		const devices = hubDevice.getHubDevices()
 		console.log('devices', devices)
 
 		const internalDevices = []
 		const externalDevices = []
 
-		for(const [key, deviceTypeName] of Object.entries(devices)) {
+		for (const [key, deviceTypeName] of Object.entries(devices)) {
 			const portId = parseInt(key)
 			if (portId < 50) {
 				externalDevices.push({
@@ -45,11 +47,12 @@ $$.control.registerControl('hubinfo', {
 		 * @param {number} portId 
 		 * @param {string} deviceTypeName
 		 */
-		 function openInfoPage(portId, deviceTypeName) {
+		function openInfoPage(portId, deviceTypeName) {
 			pager.pushPage('info', {
 				title: deviceTypeName,
 				props: {
-					portId
+					portId,
+					hubDevice
 				}
 			})
 		}
@@ -58,29 +61,37 @@ $$.control.registerControl('hubinfo', {
 		 * 
 		 * @param {JQuery<HTMLElement>} elt 
 		 */
-		 function getExternalPortId(elt) {
+		function getExternalPortId(elt) {
 			const idx = elt.closest('tr').index()
 			return ctrl.model.externalDevices[idx].portId
 
-		}		
+		}
 
-		hub.on('attach', (data) => {
+		function attachCbk(data) {
 			console.log('attach', data)
 			const { portId, deviceTypeName } = data
 			devices[portId] = deviceTypeName
-		})
+		}
 
-		hub.on('detach', (data) => {
+		function detachCbk(data) {
 			console.log('detach', data)
-
 			delete devices[data.portId]
-		})
+		}
 
-		const ctrl = $$.viewController(elt, {			
+		hubDevice.on('attach', attachCbk)
+		hubDevice.on('detach', detachCbk)
+
+		this.dispose = function () {
+			console.log('hubInfo dispose')
+			hubDevice.off('attach', attachCbk)
+			hubDevice.off('detach', detachCbk)
+		}
+
+		const ctrl = $$.viewController(elt, {
 			data: {
 				internalDevices,
 				externalDevices
-		
+
 			},
 			events: {
 				onMouseUp: function () {
@@ -89,18 +100,18 @@ $$.control.registerControl('hubinfo', {
 					const portId = getExternalPortId($(this))
 					switch (action) {
 						case 'forward':
-							hub.Motor(portId).setPower(100)
+							hubDevice.createMotor(portId).setPower(100)
 							break
 						case 'backward':
-							hub.Motor(portId).setPower(-100)
+							hubDevice.createMotor(portId).setPower(-100)
 							break
 					}
 				},
 				onMouseDown: function () {
 					//console.log('onMouseDown')
 					const portId = getExternalPortId($(this))
-					hub.Motor(portId).setPower(0)
-				},				
+					hubDevice.createMotor(portId).setPower(0)
+				},
 				onInfo: function () {
 					const idx = $(this).closest('tr').index()
 					const { portId, deviceTypeName } = ctrl.model.internalDevices[idx]

@@ -18,6 +18,9 @@ $$.control.registerControl('info', {
 
 		const { portId } = this.props
 
+		/**@type {HUB.HubDevice} */
+		const hubDevice = this.props.hubDevice
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				modes: [],
@@ -28,7 +31,7 @@ $$.control.registerControl('info', {
 		})
 
 		async function init() {
-			const portInfo = await hub.getPortInformation(portId)
+			const portInfo = await hubDevice.getPortInformation(portId)
 			console.log('portInfo', portInfo)	
 			const { modes, capabilities } = portInfo
 			ctrl.setData({ modes, capabilities })

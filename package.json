@@ -14,7 +14,7 @@
     "ask-sdk-express-adapter": "^2.1.0",
     "ask-sdk-model": "^1.29.0",
     "ask-sdk-mongodb-persistence-adapter": "^1.0.3",
-    "aws-sdk": "^2.725.0",
+    "aws-sdk": "^2.814.0",
     "basic-auth": "^2.0.1",
     "bcrypt": "^4.0.1",
     "body-parser": "^1.18.3",

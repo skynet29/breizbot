@@ -45,7 +45,7 @@
     "ssml-builder": "^0.4.3",
     "uniqid": "^5.2.0",
     "wildcard": "^1.1.2",
-    "ws": "^7.3.0",
+    "ws": "^7.4.6",
     "xml-escape": "^1.1.0"
   },
   "devDependencies": {

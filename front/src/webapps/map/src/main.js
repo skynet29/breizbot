@@ -1,7 +1,7 @@
 //@ts-check
 $$.control.registerControl('rootPage', {
 
-	deps: ['breizbot.broker', 'breizbot.appData', 'breizbot.pager'],
+	deps: ['breizbot.broker', 'breizbot.appData', 'breizbot.pager', 'breizbot.radar'],
 
 	template: { gulp_inject: './main.html' },
 
@@ -10,8 +10,9 @@ $$.control.registerControl('rootPage', {
 	 * @param {Breizbot.Services.Broker.Interface} broker 
 	 * @param {Breizbot.Services.AppData.Interface} appData 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {Breizbot.Services.Radar.Interface} radarSrv
 	 */
-	init: function (elt, broker, appData, pager) {
+	init: function (elt, broker, appData, pager, radarSrv) {
 
 		let { zoom, center, markers } = appData.getData()
 		console.log('appData', appData.getData())
@@ -116,10 +117,17 @@ $$.control.registerControl('rootPage', {
 		/**@type {Brainjs.Controls.Map.Interface} */
 		const map = ctrl.scope.map
 
-		function initMarkers() {			
+		async function initMarkers() {		
+			
+			
 			for(let [id, data] of Object.entries(markers)) {
 				addMarker(id, data.latlng, data.tooltip)
 			}
+
+			const radars = await radarSrv.getRadar()
+			console.log({radars})
+
+			map.addGeoData(radars, 'radar')
 
 		}
 
@@ -234,7 +242,6 @@ $$.control.registerControl('rootPage', {
 					}
 				})
 			}
-
 
 		})
 

@@ -1,0 +1,1 @@
+/home/skynet/Documents/brainjs/src/brainjs.d.ts

@@ -3,6 +3,23 @@ declare namespace Breizbot {
 
     declare namespace Services {
 
+
+        declare namespace Radar {
+
+            interface RadarInfo {
+                location: {type: 'Point', coordinates: [longitude: number, latitude: number]};
+                type: string;
+                speed: number
+                equipement: string
+                departement: string
+                route: string
+            }
+
+            interface Interface {
+                getRadar(): Promise<RadarInfo[]>;
+            }
+        }
+
         declare namespace Playlists {
 
             interface FileInfo {

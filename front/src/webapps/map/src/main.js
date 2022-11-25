@@ -159,7 +159,9 @@ $$.control.registerControl('rootPage', {
 					ret.push(feature.properties.type)
 					const {speed} = feature.properties
 					if (typeof speed == 'number') {
-						ret.push(`Vitesse limitée à ${speed} km`)
+						//ret.push(`Vitesse limitée à ${speed} km`)
+						const speedUrl = filesSrv.assetsUrl(`vitesse-${speed}.png`)
+						ret.push(`<img src="${speedUrl}" style="margin-top: 10px">`)
 					}
 					return `<b>${ret.join('<br>')}</b>`
 				}

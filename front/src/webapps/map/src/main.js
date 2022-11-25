@@ -1,7 +1,7 @@
 //@ts-check
 $$.control.registerControl('rootPage', {
 
-	deps: ['breizbot.broker', 'breizbot.appData', 'breizbot.pager', 'breizbot.radar'],
+	deps: ['breizbot.broker', 'breizbot.appData', 'breizbot.pager', 'breizbot.radar', 'breizbot.files'],
 
 	template: { gulp_inject: './main.html' },
 
@@ -11,8 +11,9 @@ $$.control.registerControl('rootPage', {
 	 * @param {Breizbot.Services.AppData.Interface} appData 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {Breizbot.Services.Radar.Interface} radarSrv
+	 * @param {Breizbot.Services.Files.Interface} filesSrv
 	 */
-	init: function (elt, broker, appData, pager, radarSrv) {
+	init: function (elt, broker, appData, pager, radarSrv, filesSrv) {
 
 		let { zoom, center, markers } = appData.getData()
 		console.log('appData', appData.getData())
@@ -34,10 +35,10 @@ $$.control.registerControl('rootPage', {
 				 */
 				onShapeContextMenu: function (ev, data) {
 					//console.log('onShapeContextMenu', data)
-					const {id, cmd} = data
+					const { id, cmd } = data
 					if (cmd == 'remove') {
 						map.removeShape(id)
-						delete markers[id]	
+						delete markers[id]
 					}
 					if (cmd == "zoom") {
 						/**@type {Brainjs.Controls.Map.Shape.Marker} */
@@ -117,17 +118,52 @@ $$.control.registerControl('rootPage', {
 		/**@type {Brainjs.Controls.Map.Interface} */
 		const map = ctrl.scope.map
 
-		async function initMarkers() {		
-			
-			
-			for(let [id, data] of Object.entries(markers)) {
+		const radarTypeUrls = {
+			'Radar fixe': filesSrv.assetsUrl('radar_fixe.png'),
+			'Radar feu rouge': filesSrv.assetsUrl('radar_feu_rouge.png'),
+			'Radar discriminant': filesSrv.assetsUrl('radar_discriminant.png'),
+			'Radar Vitesse Moyenne': filesSrv.assetsUrl('radar_vitesse_moyenne.png'),
+
+		}
+
+
+
+		async function initMarkers() {
+
+			for (let [id, data] of Object.entries(markers)) {
 				addMarker(id, data.latlng, data.tooltip)
 			}
 
 			const radars = await radarSrv.getRadar()
-			console.log({radars})
+			console.log({ radars })
 
-			map.addGeoData(radars, 'radar')
+			map.addGeoData(radars, 'radar', {
+				pointToLayer: (feature, latlng) => {
+					const iconUrl = radarTypeUrls[feature.properties.type]
+					if (iconUrl != undefined) {
+						const iconOptions = {
+							iconSize: [91, 99],
+							iconAnchor: [40, 99],
+							popupAnchor: [20, -85],
+							iconUrl
+						}
+
+						return map.createMarkerIcon(latlng, iconOptions)
+					}
+				},
+				onPopup: (feature) => {
+					let ret = []
+					if (feature.properties.route)
+						ret.push(feature.properties.route)
+						
+					ret.push(feature.properties.type)
+					const {speed} = feature.properties
+					if (typeof speed == 'number') {
+						ret.push(`Vitesse limitée à ${speed} km`)
+					}
+					return `<b>${ret.join('<br>')}</b>`
+				}
+			})
 
 		}
 
@@ -171,7 +207,7 @@ $$.control.registerControl('rootPage', {
 				}
 			}
 			map.addShape(shapeId, shapeInfo)
-	
+
 		}
 
 
@@ -214,7 +250,7 @@ $$.control.registerControl('rootPage', {
 			/**@type {Breizbot.Services.Broker.Events.FriendPosition} */
 			const data = msg.data
 			//console.log('breizbot.friendPosition', msg)	
-			const time = new Date(msg.time).toLocaleTimeString('fr-FR')		
+			const time = new Date(msg.time).toLocaleTimeString('fr-FR')
 			const shapeId = 'friends.' + data.userName
 			const popupContent = data.userName + '<br>' + time
 			try {
@@ -267,11 +303,11 @@ $$.control.registerControl('rootPage', {
 
 		this.onAppExit = function () {
 			//console.log('[map] onAppExit')
-			return appData.saveData({ 
-				zoom: map.getZoom(), 
+			return appData.saveData({
+				zoom: map.getZoom(),
 				center: map.getCenter(),
 				markers
-			 })
+			})
 		}
 	}
 });

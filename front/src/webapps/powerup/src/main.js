@@ -24,85 +24,8 @@ $$.control.registerControl('rootPage', {
 		console.log('appData', appData)
 
 
-		// const motorA = hub.Motor(hub.PortMap.A)
-		// const motorB = hub.Motor(hub.PortMap.B)
-		// const motorC = hub.Motor(hub.PortMap.C)
-		// const motorD = hub.Motor(hub.PortMap.D)
-		// const motorCD = hub.DoubleMotor(hub.PortMap.C, hub.PortMap.D)
-		// const led = hub.Led(hub.PortMap.HUB_LED)
+		const actions = []
 
-		// const actions = [
-		// 	{
-		// 		name: 'Change Mode',
-		// 		fn: onChangeMode
-		// 	},
-		// 	{
-		// 		name: 'Move Forward',
-		// 		mode: 'RUNNING',
-		// 		value: [-100, -100],
-		// 		key: 2
-		// 	},
-		// 	{
-		// 		name: 'Move Backward',
-		// 		mode: 'RUNNING',
-		// 		value: [100, 100],
-		// 		key: 1
-		// 	},
-		// 	{
-		// 		name: 'Move Left',
-		// 		mode: 'RUNNING',
-		// 		value: [-100, 100],
-		// 		key: 3
-		// 	},
-		// 	{
-		// 		name: 'Move Right',
-		// 		mode: 'RUNNING',
-		// 		value: [100, -100],
-		// 		key: 4
-		// 	},
-
-		// 	{
-		// 		name: 'Arm Up',
-		// 		mode: 'MANIPULATOR',
-		// 		motor: motorC,
-		// 		value: -100,
-		// 		key: 1
-		// 	},
-		// 	{
-		// 		name: 'Arm Down',
-		// 		mode: 'MANIPULATOR',
-		// 		motor: motorC,
-		// 		value: 100,
-		// 		key: 2
-		// 	},
-		// 	{
-		// 		name: 'Elbow Up',
-		// 		mode: 'MANIPULATOR',
-		// 		motor: motorD,
-		// 		value: 100,
-		// 		key: 3
-		// 	},
-		// 	{
-		// 		name: 'Elbow Down',
-		// 		mode: 'MANIPULATOR',
-		// 		motor: motorD,
-		// 		value: -100,
-		// 		key: 4
-		// 	},
-
-		// 	{
-		// 		name: 'Hand Open',
-		// 		motor: motorB,
-		// 		value: -100,
-		// 		key: 5
-		// 	},
-		// 	{
-		// 		name: 'Hand Close',
-		// 		motor: motorB,
-		// 		value: 100,
-		// 		key: 6
-		// 	},
-		// ]
 
 
 		async function buttonDown(action) {
@@ -149,84 +72,45 @@ $$.control.registerControl('rootPage', {
 			return (action) ? action : null
 		}
 
-		gamepad.on('buttonDown', (data) => {
-			buttonDown(getGamepadAction(data.id))
-		})
-
-		gamepad.on('buttonUp', (data) => {
-			buttonUp(getGamepadAction(data.id))
-
-		})
-
-
-
-
-		async function onChangeMode() {
-			const { mode } = ctrl.model
-			await motorCD.setSpeed(0, 0)
-
-			if (mode == 'RUNNING') {
-				await led.setColor(hub.Color.YELLOW)
-				await motorA.rotateDegrees(180, 50)
-				await led.setColor(hub.Color.GREEN)
-				ctrl.setData({ mode: 'MANIPULATOR' })
-			}
-			else if (mode == 'MANIPULATOR') {
-				await led.setColor(hub.Color.YELLOW)
-				await motorA.rotateDegrees(180, -50)
-				await led.setColor(hub.Color.BLUE)
-				ctrl.setData({ mode: 'RUNNING' })
-			}
-		}
 
 		elt.find('button').addClass('w3-btn w3-blue')
 
 		/**@type {HUB.HubDevice} */
 		let hubDevice = null
+
+		let gamepadMapping = null
 		
 		const ctrl = $$.viewController(elt, {
 			data: {
 				connected: false,
 				batteryLevel: 0,
-				mode: 'UNKNOWN',
-				maxSpeed: 100,
 				gamepadConnected: false,
-				fmtMaxSpeed: function () {
-					return this.maxSpeed.toLocaleString().padStart(4)
-				},
-				isInit: function () {
-					return this.connected && ['RUNNING', 'MANIPULATOR'].includes(this.mode)
-				},
+
 				showGamepadButton: function() {
-					return this.connected && this.gamepadConnected
+					return this.gamepadConnected
 				}
 			},
 			events: {
 				onGamePad: function () {
+					gamepad.off('buttonUp', onGamepadButtonUp)
+					gamepad.off('buttonDown', onGamepadButtonDown)
+
 					pager.pushPage('gamepad', {
 						title: 'Gamepad',
 						props: {
-							actions
+							mapping: gamepadMapping
 						},
-						onReturn: async (gamepadMapping) => {
+						onBack: initCbk,
+						onReturn: async (mapping) => {
+							gamepadMapping = mapping
 							console.log('onReturn', gamepadMapping)
-							const gamepadId = gamepad.getGamepads()[0].id
-							appData[gamepadId] = gamepadMapping
+							appData[mapping.id] = gamepadMapping
 							await appDataSrv.saveData(appData)
+							initCbk()
 						}
 					})
 				},
-				onButtonDown: function () {
-					const cmdId = $(this).data('cmd')
-					//console.log('onButtonDown', cmdId)
-					buttonDown(getAction(cmdId))
-				},
-				onButtonUp: function () {
-					const cmdId = $(this).data('cmd')
-					//console.log('onButtonUp', cmdId)
-					buttonUp(getAction(cmdId))
 
-				},
 
 				onConnect: async function () {
 					hubDevice = await hub.connect()
@@ -252,39 +136,6 @@ $$.control.registerControl('rootPage', {
 					// 	console.log('TILT POS', data.value)
 					// })
 				},
-				onCalibrate: async function () {
-					console.log('onCalibrate')
-					ctrl.setData({ mode: 'CALIBRATING' })
-
-					console.log('step 1')
-
-					await led.setColor(hub.Color.RED)
-					await motorA.setSpeed(-20)
-					await $$.util.wait(200)
-					await motorA.setSpeed(20)
-
-					console.log('step 11')
-
-					await motorA.waitSpeed((speed) => {
-						//console.log({speed})
-						return speed > 5
-					})
-
-					console.log('step 2')
-					await motorA.waitSpeed((speed) => {
-						//console.log({speed})
-						return speed < 6
-					})
-					console.log('step 3')
-
-					await motorA.setPower(0)
-					await $$.util.wait(300)
-					await motorA.rotateDegrees(-220, -20)
-					await led.setColor(hub.Color.BLUE)
-					ctrl.setData({ mode: 'RUNNING' })
-
-				},
-				onChangeMode,
 				onHubInfo: async function () {
 					console.log('onHubInfo', hubDevice.getHubDevices())
 					pager.pushPage('hubinfo', {
@@ -300,23 +151,55 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
+		function onGamepadButtonDown(data) {
+			//console.log('onGamepadButtonDown', data)
+			if (gamepadMapping && ctrl.model.connected) {
+				const {port, action} = gamepadMapping.buttons[data.id]
+				console.log({port, action})
+				if (port != 'None') {
+					const motor = hubDevice.createMotor(hub.PortMap[port])
+					motor.setPower(action == 'FWD' ? 100 : -100)
+				}
+			}
+		} 
+
+		function onGamepadButtonUp(data) {
+			//console.log('onGamepadButtonUp', data)
+
+			if (gamepadMapping && ctrl.model.connected) {
+				const {port, action} = gamepadMapping.buttons[data.id]
+				console.log({port, action})
+				if (port != 'None') {
+					const motor = hubDevice.createMotor(hub.PortMap[port])
+					motor.setPower(0)
+				}
+			}
+		} 
+
+		function initCbk() {
+			console.log('initCbk')
+			gamepad.on('buttonUp', onGamepadButtonUp)
+			gamepad.on('buttonDown', onGamepadButtonDown)
+		}
+
+
 
 		gamepad.on('connected', (ev) => {
 			console.log('gamepad connnected', ev)
-			const gamepadMapping = appData[ev.id]
-			if (gamepadMapping) {
-				for(const {actionId, button} of gamepadMapping) {
-					actions[actionId].button = button
-				}
-			}
+			gamepadMapping = appData[ev.id]
+			console.log({gamepadMapping})
+
 			ctrl.setData({ gamepadConnected: true })
 			gamepad.checkGamePadStatus()
+			initCbk()
+
 
 		})
 
 		gamepad.on('disconnected', (ev) => {
 			console.log('gamepad disconnected')
 			ctrl.setData({ gamepadConnected: false })
+			gamepadMapping = null
 
 		})
 

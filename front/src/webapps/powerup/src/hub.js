@@ -2,7 +2,7 @@
 
 (function () {
 
-    const debug = true
+    const debug = false
 
     const log = function (...data) {
         if (debug) {
@@ -456,7 +456,7 @@
 
         async writePortCommand(portId, ...data) {
 
-            log('writePortCommand', { portId, data })
+            console.log('writePortCommand', { portId, data })
 
             return new Promise(async (resolve) => {
                 const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, data)
@@ -469,7 +469,7 @@
                     await this.sendBuffer(buffer)
                 }
                 else {
-                    log('Cmd mise en attente')
+                    console.log('Cmd mise en attente')
                     this.portCmdQueue[portId].push({ buffer, cbk: resolve })
                 }
 

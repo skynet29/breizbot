@@ -630,3 +630,7 @@ type NotifyType = 'success' | 'error'
 interface JQueryStatic {
     notify(text: string, type: NotifyType): void;
 }
+
+interface EventEmitter2 {
+    on(evtName: string, cbk: () => void): void;
+}

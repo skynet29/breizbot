@@ -9,17 +9,7 @@
             bn-event="click: onShutdown"
             bn-show="connected"
         >Shutdown</button>
-    
-        <button  
-            bn-event="click: onCalibrate"
-            bn-show="connected"
-        >Calibrate</button>
-
-        <button  
-            bn-event="click: onChangeMode"
-            bn-show="isInit"
-        >Change Mode</button>
-        
+            
         <button  
             bn-event="click: onHubInfo"
             bn-show="connected"
@@ -31,10 +21,6 @@
             bn-icon="fas fa-gamepad"
         ></button>
 
-    </div>
-    <div bn-show="connected" class="mode">
-        <div>Max Speed:<span bn-text="fmtMaxSpeed"></span></div>
-        <div>Mode: <span bn-text="mode"></span></div>
     </div>
 </div>
 

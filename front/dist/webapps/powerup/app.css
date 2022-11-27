@@ -36,7 +36,24 @@
         margin-left: 20px; }
 
 .gamepad {
-  padding: 10px; }
+  padding: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column; }
+  .gamepad .axeTable th {
+    background-color: #666; }
+  .gamepad .axeTable .pressed {
+    font-weight: bold; }
+  .gamepad .commandTable {
+    flex: 1;
+    overflow: auto; }
+    .gamepad .commandTable .pressed {
+      font-weight: bold; }
+    .gamepad .commandTable th {
+      position: sticky;
+      top: 0;
+      background-color: #666;
+      z-index: 2; }
 
 .hubinfo {
   margin: 5px;

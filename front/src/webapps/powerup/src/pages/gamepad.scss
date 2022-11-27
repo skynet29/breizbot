@@ -1,3 +1,32 @@
 .gamepad {
     padding: 10px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    .axeTable {
+        th {
+            background-color: #666;
+        }
+
+        .pressed {
+            font-weight: bold;
+        }
+    }
+
+    .commandTable {
+        flex: 1;
+        overflow: auto;
+
+        .pressed {
+            font-weight: bold;
+        }
+
+        th {
+            position: sticky;
+            top: 0;
+            background-color: #666;
+            z-index: 2;
+        }
+    }
 }

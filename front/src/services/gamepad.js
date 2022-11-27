@@ -1,71 +1,78 @@
 //@ts-check
-$$.service.registerService('breizbot.gamepad', {
+(function () {
 
-    init: function (config) {
+    class MyGamepad extends EventEmitter2 {
+        constructor() {
+            super()
 
-        const event = new EventEmitter2()
+            this.buttons = []
+            this.axes = []
 
-        let buttons = []
-        let axes = []
+            window.addEventListener('gamepadconnected', (ev) => {
+                //console.log('gamepadconnected', ev)
+                for (const { pressed } of ev.gamepad.buttons) {
+                    this.buttons.push(pressed)
+                }
 
-        window.addEventListener('gamepadconnected', (ev) => {
-            //console.log('gamepadconnected', ev)
-            for(const {pressed} of ev.gamepad.buttons) {
-                buttons.push(pressed)
-            }
+                for (const val of ev.gamepad.axes) {
+                    this.axes.push(val)
+                }
+                //console.log('buttons', buttons)
+                this.emit('connected', ev.gamepad)
+            })
 
-            for(const val of ev.gamepad.axes) {
-                axes.push(val)
-            }
-            //console.log('buttons', buttons)
-            event.emit('connected', ev.gamepad)
-        })
+            window.addEventListener('gamepaddisconnected', (ev) => {
+                //console.log('gamepaddisconnected', ev)
+                this.buttons = []
+                this.axes = []
 
-        window.addEventListener('gamepaddisconnected', (ev) => {
-            //console.log('gamepaddisconnected', ev)
-            buttons = []
-            axes = []
+                this.emit('disconnected', ev.gamepad)
+            })
+        }
 
-            event.emit('disconnected', ev.gamepad)
-        })
-
-        function checkGamePadStatus() {
-			const info = navigator.getGamepads()[0]
-			if (info) {
-                for(let i = 0; i < buttons.length; i++) {
-                    const {pressed} = info.buttons[i]
-                    if (pressed != buttons[i]) {
-                        event.emit(pressed ? 'buttonDown' : 'buttonUp', {id : i})
-                        buttons[i] = pressed
+        checkGamePadStatus() {
+            const info = navigator.getGamepads()[0]
+            if (info) {
+                for (let i = 0; i < this.buttons.length; i++) {
+                    const { pressed } = info.buttons[i]
+                    if (pressed != this.buttons[i]) {
+                        this.emit(pressed ? 'buttonDown' : 'buttonUp', { id: i })
+                        this.buttons[i] = pressed
                     }
                 }
-                for(let i = 0; i < axes.length; i++) {
+                for (let i = 0; i < this.axes.length; i++) {
                     const value = info.axes[i]
-                    if( value != axes[i]) {
-                        event.emit('axe', {id: i, value})
-                        axes[i] = value
+                    if (value != this.axes[i]) {
+                        this.emit('axe', { id: i, value })
+                        this.axes[i] = value
                     }
                 }
-				setTimeout(checkGamePadStatus, 50)
-			}
-		}
+                setTimeout(this.checkGamePadStatus.bind(this), 50)
+            }
+        }
 
-        function getButtonState(buttonId) {
+        getButtonState(buttonId) {
             return navigator.getGamepads()[0].buttons[buttonId].pressed
         }
 
-        function getAxeValue(axeId) {
+        getAxeValue(axeId) {
             return navigator.getGamepads()[0].axes[axeId]
         }
 
-        return {
-            on: event.on.bind(event),
-            getGamepads: function() {
-                return navigator.getGamepads()
-            },
-            checkGamePadStatus,
-            getButtonState,
-            getAxeValue
+        getGamepads() {
+            return navigator.getGamepads()
         }
     }
-});
+
+
+    $$.service.registerService('breizbot.gamepad', {
+
+        init: function (config) {
+
+            return new MyGamepad()
+        }
+    });
+
+})();
+
+

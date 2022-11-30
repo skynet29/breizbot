@@ -7,6 +7,7 @@ $$.control.registerControl('hubinfo', {
 	deps: ['breizbot.pager', 'hub'],
 
 	props: {
+		hubDevice: null
 	},
 
 	/**
@@ -24,19 +25,19 @@ $$.control.registerControl('hubinfo', {
 		const internalDevices = []
 		const externalDevices = []
 
-		for (const [key, deviceTypeName] of Object.entries(devices)) {
-			const portId = parseInt(key)
+		for (const device of devices) {
+			const portId = device.portId
 			if (portId < 50) {
 				externalDevices.push({
-					portName: hub.PortMapNames[portId],
+					portName: device.name,
 					portId,
-					deviceTypeName
+					deviceTypeName: device.type
 				})
 			}
 			else {
 				internalDevices.push({
 					portId,
-					deviceTypeName
+					deviceTypeName: device.type
 				})
 
 			}

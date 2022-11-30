@@ -21,8 +21,14 @@ declare namespace HUB {
         capabilities: number;
     }
 
+    interface DeviceInfo {
+        name: string;
+        type: string;
+        portId: number;
+    }
+
     interface HubDevice extends EventEmitter2 {
-        getHubDevices(): {[portId: string]: string};
+        getHubDevices(): DeviceInfo[];
         connect(): Promise<void>;
         shutdown(): Promise<void>;
         getDeviceType(portId: PortMap): string;
@@ -100,5 +106,9 @@ declare namespace HUB {
         FLOAT,
         HOLD,
         BRAKE
+    }
+
+    enum DeviceTypeNames {
+
     }
 }

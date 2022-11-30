@@ -1,0 +1,23 @@
+.action {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    form {
+
+        max-width: 400px;
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+
+        .group {
+            display: flex;
+            label {
+                width: 100px;
+            }
+            margin-top: 5px;
+        }
+
+    }
+}

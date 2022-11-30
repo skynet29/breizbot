@@ -2,7 +2,7 @@
 
 (function () {
 
-    const debug = false
+    const debug = true
 
     const log = function (...data) {
         if (debug) {
@@ -366,6 +366,13 @@
 
     }
 
+
+    function getVirtualPortName(portId1, portId2) {
+        const portIdA = PortMapNames[portId1]
+        const portIdB = PortMapNames[portId2]
+        return `${portIdA}_${portIdB}`
+    }
+
     class HubDevice extends EventEmitter2 {
 
         constructor() {
@@ -375,6 +382,8 @@
             this.portCmdQueue = {}
             this.portCmdCallback = {}
             this.hubDevices = {}
+            this.busy = false
+            this.cmdQueue = []
 
         }
 
@@ -389,16 +398,23 @@
             const service = await server.getPrimaryService(LPF2_SERVICE_UUID)
             this.charac = await service.getCharacteristic(LPF2_CHARAC_UUID)
 
+            const onCharacteristicvaluechanged = (event) => {
+                this.decodeMsg(event.target.value)
+            }
+
             device.addEventListener('gattserverdisconnected', () => {
-                log('onGattServerDisconnected')
+                console.log('onGattServerDisconnected', this)
+                this.charac.removeEventListener('characteristicvaluechanged', onCharacteristicvaluechanged)
+
+                this.charac = null
                 this.emit('disconnected')
             })
 
-            this.charac.addEventListener('characteristicvaluechanged', (event) => {
-                this.decodeMsg(event.target.value)
-            })
+            this.charac.addEventListener('characteristicvaluechanged', onCharacteristicvaluechanged)
             await this.charac.startNotifications()
+            await $$.util.wait(100)
         }
+
 
         /**
          * 
@@ -413,9 +429,22 @@
          * 
          * @param  {ArrayBuffer} buffer 
          */
-        sendBuffer(buffer) {
-            //log('sendBuffer', buffer)
-            return this.charac.writeValueWithoutResponse(buffer)
+        async sendBuffer(buffer) {
+            log('sendBuffer', buffer)
+            if (!this.busy) {
+                this.busy = true
+                await this.charac.writeValueWithoutResponse(buffer)
+                this.busy = false
+                if (this.cmdQueue.length > 0) {
+                    await this.sendBuffer(this.cmdQueue.shift())
+                }
+
+            }
+            else {
+                log('busy push in queue')
+                this.cmdQueue.push(buffer)
+            }
+
         }
 
         /**
@@ -447,6 +476,14 @@
         }
 
         createVirtualPort(portId1, portId2) {
+            const name = getVirtualPortName(portId1, portId2)
+            log('createVirtualPort', name)
+            for (const info of Object.values(this.hubDevices)) {
+                if (info.name == name) {
+                    console.log(`virtual port ${name} already created !`)
+                    return
+                }
+            }
             return this.sendMsg(MessageType.VIRTUAL_PORT_SETUP, 0x01, portId1, portId2)
         }
 
@@ -478,10 +515,9 @@
         }
 
         getHubDevices() {
-            console.log('getHubDevices', this.hubDevices)
-            const ret = {}
-            for (const [key, deviceType] of Object.entries(this.hubDevices)) {
-                ret[key] = DeviceTypeNames[deviceType]
+            const ret = []
+            for (const [key, info] of Object.entries(this.hubDevices)) {
+                ret.push($.extend({}, info, { portId: parseInt(key) }))
             }
             return ret
         }
@@ -775,13 +811,13 @@
 
             const portId = msg.getUint8(3)
             const eventType = msg.getUint8(4)
-            const deviceType = eventType ? msg.getUint16(5, true) : 0
-            const deviceTypeName = DeviceTypeNames[deviceType] || "Unknown"
+            const type = eventType ? msg.getUint16(5, true) : 0
+            const deviceTypeName = DeviceTypeNames[type] || "Unknown"
             const eventName = EventNames[eventType]
 
-            log('handlePortMsg', { portId, eventName, deviceTypeName })
+            console.log('handlePortMsg', { portId, eventName, deviceTypeName })
             if (eventType == Event.ATTACHED_IO) {
-                this.hubDevices[portId] = deviceType
+                this.hubDevices[portId] = { type: deviceTypeName, name: PortMapNames[portId] }
                 this.emit('attach', { portId, deviceTypeName })
             }
             else if (eventType == Event.DETACHED_IO) {
@@ -789,16 +825,14 @@
                 this.emit('detach', { portId })
             }
             else if (eventType == Event.ATTACHED_VIRTUAL_IO) {
-                const portIdA = PortMapNames[msg.getUint8(7)]
-                const portIdB = PortMapNames[msg.getUint8(8)]
-                PortMapNames[portId] = `${portIdA}_${portIdB}`
-                this.hubDevices[portId] = 100
+                const portId1 = msg.getUint8(7)
+                const portId2 = msg.getUint8(8)
+                this.hubDevices[portId] = { type: 'Virtual Port', name: getVirtualPortName(portId1, portId2) }
 
-                log({ portIdA, portIdB })
                 this.emit('attach', { portId, deviceTypeName: 'Virtual Port' })
             }
 
-            console.log('hubDevices', this.hubDevices)
+            console.log('hubDevices', this)
 
         }
     }
@@ -835,7 +869,8 @@
                 PortMap,
                 PortMapNames,
                 DeviceMode,
-                BrakingStyle
+                BrakingStyle,
+                DeviceTypeNames
             }
         }
     });

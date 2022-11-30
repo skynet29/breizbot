@@ -1,54 +1,42 @@
 <div class="toolbar">
     <div class="left">
-        <button  
-            bn-event="click: onConnect"
-            bn-show="!connected"
-        >Connect to HUB</button>
-    
-        <button  
-            bn-event="click: onShutdown"
-            bn-show="connected"
-        >Shutdown</button>
-            
-        <button  
-            bn-event="click: onHubInfo"
-            bn-show="connected"
-        >Info</button>
+        <button bn-event="click: onConnect" bn-show="!connected">Connect to HUB</button>
 
-        <button  
-            bn-event="click: onGamePad"
-            bn-show="showGamepadButton"
-            bn-icon="fas fa-gamepad"
-        ></button>
+        <button bn-event="click: onShutdown" bn-show="connected">Shutdown</button>
+
+        <button bn-event="click: onHubInfo" bn-show="connected">Info</button>
+
+        <button bn-event="click: onAction">Action</button>
+
+        <button bn-event="click: onGamePad" bn-show="showGamepadButton">Gamepad</button>
 
     </div>
 </div>
 
-<div class="controlBar" bn-event="mousedown.w3-btn: onButtonDown, mouseup.w3-btn: onButtonUp, touchstart.w3-btn: onButtonDown, touchend.w3-btn: onButtonUp"
+<div class="controlBar"
+    bn-event="mousedown.w3-btn: onButtonDown, mouseup.w3-btn: onButtonUp, touchstart.w3-btn: onButtonDown, touchend.w3-btn: onButtonUp"
     bn-show="isInit">
     <div class="controlBarItem1">
         <div class="top">
-            <button  bn-icon="fas fa-angle-up" data-cmd="2"></button>
+            <button bn-icon="fas fa-angle-up" data-cmd="2"></button>
         </div>
         <div class="middle">
-            <button  bn-icon="fas fa-angle-left" data-cmd="3"></button>
-            <button  bn-icon="fas fa-angle-right" data-cmd="4"></button>
+            <button bn-icon="fas fa-angle-left" data-cmd="3"></button>
+            <button bn-icon="fas fa-angle-right" data-cmd="4"></button>
         </div>
         <div class="bottom">
-            <button  bn-icon="fas fa-angle-down" data-cmd="1"></button>
+            <button bn-icon="fas fa-angle-down" data-cmd="1"></button>
         </div>
-    
+
     </div>
     <div class="controlBarItem2">
         <div class="top">
-            <button  bn-icon="fas fa-angle-up" data-cmd="5"></button>
+            <button bn-icon="fas fa-angle-up" data-cmd="5"></button>
         </div>
         <div class="bottom">
-            <button  bn-icon="fas fa-angle-down" data-cmd="6"></button>
+            <button bn-icon="fas fa-angle-down" data-cmd="6"></button>
         </div>
-    
+
     </div>
-    
+
 </div>
-
-

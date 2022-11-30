@@ -24,53 +24,7 @@ $$.control.registerControl('rootPage', {
 		console.log('appData', appData)
 
 
-		const actions = []
-
-
-
-		async function buttonDown(action) {
-			//console.log('buttonDown', action)
-			if (action != null) {
-				console.log(action)
-				const { motor, value, fn } = action
-				if (typeof fn == 'function') {
-					fn()
-				}
-				else {
-					if (Array.isArray(value)) {
-						const [speed1, speed2] = value
-						await motorCD.setSpeed(speed1, speed2)
-					}
-					else {
-						await motor.setSpeed(value)
-					}
-				}
-			}
-		}
-
-		async function buttonUp(action) {
-			//console.log('buttonUp', action)
-			if (action != null) {
-				const { value, motor } = action
-				if (Array.isArray(value)) {
-					await motorCD.setSpeed(0, 0)
-				} else if (motor != undefined) {
-					await motor.setSpeed(0)
-				}
-			}
-		}
-
-		function getAction(cmdId) {
-			const { mode } = ctrl.model
-			const action = actions.find((e) => (e.mode == undefined || e.mode == mode) && e.key == cmdId)
-			return (action) ? action : null
-		}
-
-		function getGamepadAction(buttonId) {
-			const { mode } = ctrl.model
-			const action = actions.find((e) => (e.mode == undefined || e.mode == mode) && e.button == buttonId)
-			return (action) ? action : null
-		}
+		let action = null
 
 
 		elt.find('button').addClass('w3-btn w3-blue')
@@ -91,6 +45,18 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
+				onAction: function() {
+
+					pager.pushPage('action', {
+						title: 'Action',
+						props: {
+							data: action
+						},
+						onReturn: function(data) {
+							action = data
+						}
+					})
+				},
 				onGamePad: function () {
 					gamepad.off('buttonUp', onGamepadButtonUp)
 					gamepad.off('buttonDown', onGamepadButtonDown)
@@ -114,9 +80,11 @@ $$.control.registerControl('rootPage', {
 
 				onConnect: async function () {
 					hubDevice = await hub.connect()
-					window.hubDevice = hubDevice
+
+					await hubDevice.createVirtualPort(hub.PortMap.D, hub.PortMap.B)
 					hubDevice.on('disconnected', () => {
-						ctrl.setData({ connected: false, mode: 'UNKNOWN' })
+						console.log('disconnected', hubDevice)
+						ctrl.setData({ connected: false})
 						hubDevice = null
 					})
 			
@@ -147,6 +115,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onShutdown: async function () {
 					await hubDevice.shutdown()
+					hubDevice = null
 				}
 			}
 		})

@@ -35,6 +35,22 @@
       .rootPage .toolbar .mode > div {
         margin-left: 20px; }
 
+.action {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center; }
+  .action form {
+    max-width: 400px;
+    width: 400px;
+    display: flex;
+    flex-direction: column; }
+    .action form .group {
+      display: flex;
+      margin-top: 5px; }
+      .action form .group label {
+        width: 100px; }
+
 .gamepad {
   padding: 10px;
   overflow: hidden;

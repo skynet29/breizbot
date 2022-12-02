@@ -1,13 +1,13 @@
 // @ts-check
 
-$$.control.registerControl('action', {
+$$.control.registerControl('actionCtrl', {
 
     template: { gulp_inject: './action.html' },
 
     deps: ['breizbot.pager'],
 
     props: {
-        data: {}
+        data: null
     },
 
     /**
@@ -19,6 +19,8 @@ $$.control.registerControl('action', {
         console.log('props', this.props)
         let { data } = this.props
 
+        const isEdit = (data != null)
+
         data = data || {}
 
         const actionTypes = ['SPEED', 'POWER', 'DBLSPEED']
@@ -26,16 +28,20 @@ $$.control.registerControl('action', {
 
         const ctrl = $$.viewController(elt, {
             data: {
+                isEdit,
                 type: data.type || 'SPEED',
                 actionTypes,
                 ports,
-                isType: function(type) {
+                isType: function (type) {
                     return this.type == type
                 },
-                isSpeed: function() {
+                isPower: function () {
+                    return this.isType('POWER')
+                }, 
+                isSpeed: function () {
                     return this.isType('SPEED')
                 },
-                isDblSpeed: function() {
+                isDblSpeed: function () {
                     return this.isType('DBLSPEED')
                 }
             },

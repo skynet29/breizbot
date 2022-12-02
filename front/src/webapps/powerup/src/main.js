@@ -21,11 +21,13 @@ $$.control.registerControl('rootPage', {
 
 		let devices = {}
 		const appData = appDataSrv.getData()
+		//const appData = {}
 		console.log('appData', appData)
 
-
-		let action = null
-
+		if (Object.keys(appData).length == 0) {
+			appData.actions = []
+			appData.mappings = {}
+		}
 
 		elt.find('button').addClass('w3-btn w3-blue')
 
@@ -45,16 +47,19 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			events: {
-				onAction: function() {
+				onActions: function() {
 
-					pager.pushPage('action', {
-						title: 'Action',
+					pager.pushPage('actionsCtrl', {
+						title: 'Actions',
 						props: {
-							data: action
+							actions: appData.actions
 						},
-						onReturn: function(data) {
-							action = data
+						onReturn: async function(data) {
+							console.log('onReturn', data)
+							appData.actions = data
+							await appDataSrv.saveData(appData)
 						}
+
 					})
 				},
 				onGamePad: function () {
@@ -64,13 +69,15 @@ $$.control.registerControl('rootPage', {
 					pager.pushPage('gamepad', {
 						title: 'Gamepad',
 						props: {
-							mapping: gamepadMapping
+							mapping: gamepadMapping,
+							actions: appData.actions
 						},
 						onBack: initCbk,
 						onReturn: async (mapping) => {
 							gamepadMapping = mapping
 							console.log('onReturn', gamepadMapping)
-							appData[mapping.id] = gamepadMapping
+							console.log('appData', appData)
+							appData.mappings[mapping.id] = gamepadMapping
 							await appDataSrv.saveData(appData)
 							initCbk()
 						}
@@ -81,7 +88,6 @@ $$.control.registerControl('rootPage', {
 				onConnect: async function () {
 					hubDevice = await hub.connect()
 
-					await hubDevice.createVirtualPort(hub.PortMap.D, hub.PortMap.B)
 					hubDevice.on('disconnected', () => {
 						console.log('disconnected', hubDevice)
 						ctrl.setData({ connected: false})
@@ -120,14 +126,33 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
+		async function execAction(actionName) {
+			console.log('execAction', actionName)
+			const actionDesc = appData.actions.find(e => e.name == actionName)
+			//console.log({actionDesc})
+			if (actionDesc.type == 'POWER') {
+				const motor = hubDevice.createMotor(hub.PortMap[actionDesc.port])
+				motor.setPower(actionDesc.power)				
+			}
+			else if (actionDesc.type == 'SPEED') {
+				const motor = hubDevice.createMotor(hub.PortMap[actionDesc.port])
+				motor.setSpeed(actionDesc.speed)				
+			}
+			else if (actionDesc.type == 'DBLSPEED') {
+				const portId1 = hub.PortMap[actionDesc.port1]
+				const portId2 = hub.PortMap[actionDesc.port2]
+
+				const motor = await hubDevice.createDblMotor(portId1, portId2)
+				motor.setSpeed(actionDesc.speed1, actionDesc.speed2)				
+			}
+		}
+
 		function onGamepadButtonDown(data) {
 			//console.log('onGamepadButtonDown', data)
 			if (gamepadMapping && ctrl.model.connected) {
-				const {port, action} = gamepadMapping.buttons[data.id]
-				console.log({port, action})
-				if (port != 'None') {
-					const motor = hubDevice.createMotor(hub.PortMap[port])
-					motor.setPower(action == 'FWD' ? 100 : -100)
+				const {down} = gamepadMapping.buttons[data.id]
+				if (down != 'None') {
+					execAction(down)
 				}
 			}
 		} 
@@ -136,11 +161,9 @@ $$.control.registerControl('rootPage', {
 			//console.log('onGamepadButtonUp', data)
 
 			if (gamepadMapping && ctrl.model.connected) {
-				const {port, action} = gamepadMapping.buttons[data.id]
-				console.log({port, action})
-				if (port != 'None') {
-					const motor = hubDevice.createMotor(hub.PortMap[port])
-					motor.setPower(0)
+				const {up} = gamepadMapping.buttons[data.id]
+				if (up != 'None') {
+					execAction(up)
 				}
 			}
 		} 
@@ -155,7 +178,7 @@ $$.control.registerControl('rootPage', {
 
 		gamepad.on('connected', (ev) => {
 			console.log('gamepad connnected', ev)
-			gamepadMapping = appData[ev.id]
+			gamepadMapping = appData.mappings[ev.id]
 			console.log({gamepadMapping})
 
 			ctrl.setData({ gamepadConnected: true })

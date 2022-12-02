@@ -33,11 +33,13 @@ declare namespace HUB {
         shutdown(): Promise<void>;
         getDeviceType(portId: PortMap): string;
         subscribe(portId: PortMap, mode: DeviceMode, deltaInterval?: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
-        createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<void>;
+        createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<string>;
         getPortInformation(portId: PortMap): Promise<PortInformation>;
         getPortIdFromName(portName: string): number;
         waitTestValue(portId: number, mode: number, testFn: (value: number) => boolean): Promise<void>;
-        createMotor(portId): Motor;
+        createMotor(portId: number): Motor;
+        createDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>
+        getPortIdFromName(name: string): number;
     }
      
     interface Motor {

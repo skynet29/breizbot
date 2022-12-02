@@ -7,7 +7,8 @@ $$.control.registerControl('gamepad', {
 	deps: ['breizbot.pager', 'breizbot.gamepad'],
 
 	props: {
-		mapping: null
+		mapping: null,
+		actions: null
 	},
 
 	/**
@@ -17,8 +18,8 @@ $$.control.registerControl('gamepad', {
 	 */
 	init: function (elt, pager, gamepad) {
 
-		const {mapping} = this.props
-		console.log({ mapping })
+		const {mapping, actions} = this.props
+		console.log(this.props)
 
 		let axes = []
 		let buttons = []
@@ -32,25 +33,13 @@ $$.control.registerControl('gamepad', {
 		}
 		else {
 			for (let i = 0; i < info.axes.length; i++) {
-				axes.push({ port: 'None', hub: 'HUB1' })
+				axes.push({ up: 'None', down: 'None' })
 			}
 	
 			for (let i = 0; i < info.buttons.length; i++) {
-				buttons.push({ port: 'None', action: 'FWD', hub: 'HUB1' })
+				buttons.push({ up: 'None', down: 'None' })
 			}
 		}
-
-
-
-
-		const ports = 'ABCD'.split('')
-		ports.unshift('None')
-
-		const actions = ['FWD', 'REV']
-
-		const hubs = ['HUB1', 'HUB2']
-
-
 
 		
 		function onGamepadAxe(data) {
@@ -92,9 +81,6 @@ $$.control.registerControl('gamepad', {
 				id: info.id,
 				axes,
 				buttons,
-				ports,
-				actions,
-				hubs,
 				getButtonLabel: function(scope) {
 					return `Button ${scope.idx + 1}`
 				},
@@ -103,6 +89,23 @@ $$.control.registerControl('gamepad', {
 				}
 			},
 			events: {
+				onItemClick: function() {
+					const idx = $(this).closest('tr').index()
+					const cmd = $(this).data('cmd')
+					//console.log('onItemClick', idx, cmd)
+					pager.pushPage('actionsCtrl', {
+						title: 'Select an action',
+						props: {
+							isEdition: false,
+							actions
+						},
+						onReturn: function(actionName) {
+							//console.log({actionName})
+							ctrl.model.buttons[idx][cmd] = actionName
+							ctrl.update()
+						}
+					})
+				}
 			}
 		})
 
@@ -118,27 +121,27 @@ $$.control.registerControl('gamepad', {
 				axes: [],
 				buttons: []
 			}
-			axesElt.find('tr').each(function (idx) {
-				const hub = $(this).find('.hub').getValue()
-				const port = $(this).find('.port').getValue()
+			// axesElt.find('tr').each(function (idx) {
+			// 	const up = $(this).find('.up').getValue()
+			// 	const down = $(this).find('.down').getValue()
 
-				ret.axes.push({
-					hub,
-					port
-				})
-			})
+			// 	ret.axes.push({
+			// 		hub,
+			// 		port
+			// 	})
+			// })
 
 			buttonsElt.find('tr').each(function (idx) {
-				const hub = $(this).find('.hub').getValue()
-				const port = $(this).find('.port').getValue()
-				const action = $(this).find('.action').getValue()
+				const up = $(this).find('[data-cmd="up"]').text()
+				const down = $(this).find('[data-cmd="down"]').text()
 
 				ret.buttons.push({
-					hub,
-					port,
-					action
+					up,
+					down
 				})
-			})			
+			})		
+			
+			console.log({ret})
 
 			return ret
 		}
@@ -149,7 +152,6 @@ $$.control.registerControl('gamepad', {
 					icon: 'fa fa-check',
 					title: 'Apply',
 					onClick: function () {
-						console.log(getInfo())
 						pager.popPage(getInfo())
 					}
 				}

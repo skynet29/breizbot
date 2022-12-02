@@ -35,21 +35,37 @@
       .rootPage .toolbar .mode > div {
         margin-left: 20px; }
 
-.action {
+.actionCtrl {
   padding: 10px;
   display: flex;
   flex-direction: row;
   justify-content: center; }
-  .action form {
+  .actionCtrl form {
     max-width: 400px;
     width: 400px;
     display: flex;
     flex-direction: column; }
-    .action form .group {
+    .actionCtrl form .group {
       display: flex;
       margin-top: 5px; }
-      .action form .group label {
+      .actionCtrl form .group label {
         width: 100px; }
+
+.actionsCtrl {
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  justify-content: center; }
+  .actionsCtrl .scrollPanel {
+    max-width: 500px;
+    padding: 10px;
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid lightgray; }
+    .actionsCtrl .scrollPanel .item {
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer; }
 
 .gamepad {
   padding: 10px;
@@ -70,6 +86,8 @@
       top: 0;
       background-color: #666;
       z-index: 2; }
+    .gamepad .commandTable .item {
+      cursor: pointer; }
 
 .hubinfo {
   margin: 5px;

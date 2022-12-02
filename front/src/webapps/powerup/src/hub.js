@@ -2,7 +2,7 @@
 
 (function () {
 
-    const debug = true
+    const debug = false
 
     const log = function (...data) {
         if (debug) {
@@ -348,18 +348,21 @@
             this.hubDevice = hubDevice
             this.portId1 = portId1
             this.portId2 = portId2
-            this.name = `${PortMapNames[portId1]}_${PortMapNames[portId2]}`
         }
 
 
 
-        create() {
-            return this.hubDevice.createVirtualPort(this.portId1, this.portId2)
+        async create() {
+            const name = await this.hubDevice.createVirtualPort(this.portId1, this.portId2)
+            await $$.util.wait(100)
+            this.portId = this.hubDevice.getPortIdFromName(name)
+            console.log('portId', this.portId)
 
         }
 
         setSpeed(speed1, speed2) {
-            return this.hubDevice.writePortCommand(getPortIdFromName(this.name), 0x08, speed1, speed2, maxPower, 0)
+            const portId = this.hubDevice
+            return this.hubDevice.writePortCommand(this.portId, 0x08, speed1, speed2, maxPower, 0)
         }
 
 
@@ -398,6 +401,9 @@
             const service = await server.getPrimaryService(LPF2_SERVICE_UUID)
             this.charac = await service.getCharacteristic(LPF2_CHARAC_UUID)
 
+            const buff = await this.charac.readValue()
+            console.log('buff', buff)
+
             const onCharacteristicvaluechanged = (event) => {
                 this.decodeMsg(event.target.value)
             }
@@ -423,6 +429,12 @@
          */
         createMotor(portId) {
             return new Motor(this, portId)
+        }
+
+        async createDblMotor(portId1, portId2) {
+            const motor = new DoubleMotor(this, portId1, portId2)
+            await motor.create()
+            return motor
         }
 
         /**
@@ -475,16 +487,25 @@
                 portId, mode, toUint32(deltaInterval), 0x01)
         }
 
-        createVirtualPort(portId1, portId2) {
+        getPortIdFromName(name) {
+            for (const [portId, info] of Object.entries(this.hubDevices)) {
+                if (info.name == name) {
+                    return portId
+                }
+            }           
+        }
+
+        async createVirtualPort(portId1, portId2) {
             const name = getVirtualPortName(portId1, portId2)
-            log('createVirtualPort', name)
+            console.log('createVirtualPort', portId1, portId2)
             for (const info of Object.values(this.hubDevices)) {
                 if (info.name == name) {
                     console.log(`virtual port ${name} already created !`)
-                    return
+                    return name
                 }
             }
-            return this.sendMsg(MessageType.VIRTUAL_PORT_SETUP, 0x01, portId1, portId2)
+            await this.sendMsg(MessageType.VIRTUAL_PORT_SETUP, 0x01, portId1, portId2)
+            return name
         }
 
         shutdown() {
@@ -832,7 +853,7 @@
                 this.emit('attach', { portId, deviceTypeName: 'Virtual Port' })
             }
 
-            console.log('hubDevices', this)
+            //console.log('hubDevices', this)
 
         }
     }

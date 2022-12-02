@@ -2,7 +2,7 @@
     <h2 bn-text="id"></h2>
 </div>
 
-<h3>Axes</h3>
+<!-- <h3>Axes</h3>
 <div>
     <table class="w3-table-all axeTable">
         <thead>
@@ -23,7 +23,7 @@
                 </td>
             </tr>
         </tbody>
-    </table>
+    </table> -->
 </div>
 
 <h3>Buttons</h3>
@@ -31,24 +31,23 @@
     <table class="w3-table-all">
         <thead>
             <tr>
-                <th>Command</th>
-                <th>Hub</th>
-                <th>Port</th>
-                <th>Action</th>
+                <th>Button</th>
+                <th>Down</th>
+                <th>Up</th>
             </tr>
         </thead>
-        <tbody bn-each="buttons" bn-bind="buttons" bn-index="idx">
+        <tbody bn-each="buttons" bn-bind="buttons" bn-index="idx" bn-event="click.item: onItemClick">
             <tr>
                 <td bn-text="getButtonLabel"></td>
                 <td>
-                    <div bn-control="brainjs.combobox" bn-data="{items: hubs}" bn-val="$scope.$i.hub" class="hub"></div>
-                </td>                 
-                <td>
-                    <div bn-control="brainjs.combobox" bn-data="{items: ports}" bn-val="$scope.$i.port" class="port"></div>
+                    <div bn-text="$scope.$i.down" class="item" data-cmd="down">
+                    </div>
                 </td>
                 <td>
-                    <div bn-control="brainjs.combobox" bn-data="{items: actions}" bn-val="$scope.$i.action" class="action"></div>
+                    <div bn-text="$scope.$i.up" class="item" data-cmd="up">
+                    </div>
                 </td>
+
             </tr>
         </tbody>
     </table>

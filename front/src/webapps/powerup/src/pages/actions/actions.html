@@ -6,6 +6,7 @@
     <div bn-each="actions" class="items" bn-event="click.item: onItemClick, contextmenuchange.item:onItemContextMenu">
         <div class="w3-card-2 item" bn-control="brainjs.contextmenu" bn-data="{
                     items: {
+                        edit: {name: 'Edit', icon: 'fas fa-edit'},
                         delete: {name: 'Remove', icon: 'fas fa-trash-alt'}
                     }
                 }">

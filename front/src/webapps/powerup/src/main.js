@@ -5,7 +5,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'hub', 'breizbot.gamepad', 'breizbot.appData'],
+	deps: ['breizbot.pager', 'hub', 'breizbot.gamepad', 'breizbot.appData', 'actionSrv'],
 
 	props: {
 	},
@@ -16,8 +16,9 @@ $$.control.registerControl('rootPage', {
 	 * @param {HUB} hub
 	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
 	 * @param {Breizbot.Services.AppData.Interface} appDataSrv
+	 * 
 	 */
-	init: async function (elt, pager, hub, gamepad, appDataSrv) {
+	init: async function (elt, pager, hub, gamepad, appDataSrv, actionSrv) {
 
 		let devices = {}
 		const appData = appDataSrv.getData()
@@ -52,7 +53,8 @@ $$.control.registerControl('rootPage', {
 					pager.pushPage('actionsCtrl', {
 						title: 'Actions',
 						props: {
-							actions: appData.actions
+							actions: appData.actions,
+							hubDevice
 						},
 						onReturn: async function(data) {
 							console.log('onReturn', data)
@@ -126,25 +128,10 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		async function execAction(actionName) {
-			console.log('execAction', actionName)
-			const actionDesc = appData.actions.find(e => e.name == actionName)
-			//console.log({actionDesc})
-			if (actionDesc.type == 'POWER') {
-				const motor = hubDevice.createMotor(hub.PortMap[actionDesc.port])
-				motor.setPower(actionDesc.power)				
-			}
-			else if (actionDesc.type == 'SPEED') {
-				const motor = hubDevice.createMotor(hub.PortMap[actionDesc.port])
-				motor.setSpeed(actionDesc.speed)				
-			}
-			else if (actionDesc.type == 'DBLSPEED') {
-				const portId1 = hub.PortMap[actionDesc.port1]
-				const portId2 = hub.PortMap[actionDesc.port2]
+		function execAction(actionName) {
 
-				const motor = await hubDevice.createDblMotor(portId1, portId2)
-				motor.setSpeed(actionDesc.speed1, actionDesc.speed2)				
-			}
+			actionSrv.execAction(hubDevice, appData.actions, actionName)
+
 		}
 
 		function onGamepadButtonDown(data) {

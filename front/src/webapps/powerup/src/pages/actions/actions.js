@@ -4,22 +4,23 @@ $$.control.registerControl('actionsCtrl', {
 
 	template: { gulp_inject: './actions.html' },
 
-	deps: ['breizbot.pager'],
+	deps: ['breizbot.pager', 'actionSrv'],
 
 	props: {
 		actions: null,
-		isEdition: true
+		isEdition: true,
+		hubDevice: null
 	},
 
 	/**
 	 * 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 */
-	init: function (elt, pager) {
+	init: function (elt, pager, actionSrv) {
 
 		//console.log('props', this.props)
 
-		const {isEdition} = this.props
+		const {isEdition, hubDevice} = this.props
 
 		const actions = Array.from(this.props.actions || [])
 
@@ -37,16 +38,13 @@ $$.control.registerControl('actionsCtrl', {
 			events: {
 				onItemContextMenu: function(ev, data) {
 					const idx = $(this).closest('.item').index()
-					console.log('onItemContextMenu', idx, data)
-					ctrl.model.actions.splice(idx, 1)
-					ctrl.update()
-
-				},
-                onItemClick: function (ev) {
-                    const idx = $(this).closest('.item').index()
-					//console.log('onItemClick', idx)
-                    const action = ctrl.model.actions[idx]
-					if (isEdition) {
+					//console.log('onItemContextMenu', idx, data)
+					const action = ctrl.model.actions[idx]
+					if (data.cmd == 'delete') {
+						ctrl.model.actions.splice(idx, 1)
+						ctrl.update()
+					}
+					if (data.cmd == 'edit') {
 						pager.pushPage('actionCtrl', {
 							title: 'Edit Action',
 							props : {
@@ -56,6 +54,21 @@ $$.control.registerControl('actionsCtrl', {
 								ctrl.model.actions[idx] = data
 							}
 						})
+					}					
+
+				},
+                onItemClick: function (ev) {
+                    const idx = $(this).closest('.item').index()
+					//console.log('onItemClick', idx)
+                    const action = ctrl.model.actions[idx]
+					if (isEdition) {
+						if (hubDevice != null) {
+							actionSrv.execAction(hubDevice, ctrl.model.actions, action.name)
+						}
+						else {
+							$.notify('Hub not connected', 'error')
+						}
+						
 					}
 					else {
 						pager.popPage(action.name)

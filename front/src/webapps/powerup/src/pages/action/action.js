@@ -25,13 +25,16 @@ $$.control.registerControl('actionCtrl', {
 
         const actionTypes = ['SPEED', 'POWER', 'DBLSPEED']
         const ports = 'ABCD'.split('')
+        const hubs = ['HUB1', 'HUB2']
 
         const ctrl = $$.viewController(elt, {
             data: {
                 isEdit,
                 type: data.type || 'SPEED',
+                hub: data.hub || 'HUB1',
                 actionTypes,
                 ports,
+                hubs,
                 isType: function (type) {
                     return this.type == type
                 },

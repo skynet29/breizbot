@@ -7,7 +7,12 @@
     justify-content: space-around;
     background-color: grey;
     margin-top: 10px;
-    padding: 5px 0; }
+    padding: 5px 0;
+    align-items: center; }
+  .rootPage table {
+    margin-top: 10px; }
+    .rootPage table th {
+      background-color: #666; }
   .rootPage .toolbar {
     display: flex;
     justify-content: space-between;

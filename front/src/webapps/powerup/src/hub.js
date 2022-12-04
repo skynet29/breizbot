@@ -401,9 +401,6 @@
             const service = await server.getPrimaryService(LPF2_SERVICE_UUID)
             this.charac = await service.getCharacteristic(LPF2_CHARAC_UUID)
 
-            const buff = await this.charac.readValue()
-            console.log('buff', buff)
-
             const onCharacteristicvaluechanged = (event) => {
                 this.decodeMsg(event.target.value)
             }
@@ -419,6 +416,13 @@
             this.charac.addEventListener('characteristicvaluechanged', onCharacteristicvaluechanged)
             await this.charac.startNotifications()
             await $$.util.wait(100)
+        }
+
+        async startNotification() {
+            await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02)
+            await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.SYSTEM_TYPE_ID, 0x05)
+            await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.PRIMARY_MAC_ADDRESS, 0x05)
+            
         }
 
 
@@ -517,19 +521,22 @@
             console.log('writePortCommand', { portId, data })
 
             return new Promise(async (resolve) => {
-                const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, data)
-                if (this.portCmdQueue[portId] == undefined) {
-                    this.portCmdQueue[portId] = []
-                }
+                const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x10, data)
 
-                if (this.portCmdQueue[portId].length == 0) { // la queue de cmd est vide
-                    this.portCmdQueue[portId].push({ buffer, cbk: resolve })
-                    await this.sendBuffer(buffer)
-                }
-                else {
-                    console.log('Cmd mise en attente')
-                    this.portCmdQueue[portId].push({ buffer, cbk: resolve })
-                }
+                await this.sendBuffer(buffer)
+
+                // if (this.portCmdQueue[portId] == undefined) {
+                //     this.portCmdQueue[portId] = []
+                // }
+
+                // if (this.portCmdQueue[portId].length == 0) { // la queue de cmd est vide
+                //     this.portCmdQueue[portId].push({ buffer, cbk: resolve })
+                //     await this.sendBuffer(buffer)
+                // }
+                // else {
+                //     console.log('Cmd mise en attente')
+                //     this.portCmdQueue[portId].push({ buffer, cbk: resolve })
+                // }
 
             })
 
@@ -788,6 +795,19 @@
                 const buttonState = msg.getUint8(5)
                 log({ buttonState })
                 this.emit('buttonState', { buttonState })
+            }
+            else if (property == HubPropertyPayload.SYSTEM_TYPE_ID) {
+                const systemType = msg.getUint8(5)
+                log({ systemType })
+                //this.emit('buttonState', { buttonState })
+            }
+            else if (property == HubPropertyPayload.PRIMARY_MAC_ADDRESS) {
+                const bytes = []
+                for(let i = 0; i < 6; i++) {
+                    bytes.push(msg.getUint8(5 + i).toString(16).toLocaleUpperCase().padStart(2, '0'))
+                }
+                log({ bytes })
+                this.emit('address', { address: bytes.join(':') })
             }
         }
         /**

@@ -45,13 +45,13 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onHubChange: function () {
-					const idx = $(this).closest('.item').index()
+					const idx = $(this).closest('tr').index()
 
 					console.log('onHubChange', idx, $(this).getValue())
 					ctrl.model.hubDevices[idx].hubId = $(this).getValue()
 				},
 				onShutDown: function () {
-					const idx = $(this).closest('.item').index()
+					const idx = $(this).closest('tr').index()
 					console.log('onShutDown', idx)
 
 					/**@type {ActionSrv.HubDesc} */
@@ -59,7 +59,7 @@ $$.control.registerControl('rootPage', {
 					hubDesc.hubDevice.shutdown()
 				},
 				onInfo: function () {
-					const idx = $(this).closest('.item').index()
+					const idx = $(this).closest('tr').index()
 					console.log('onInfo', idx)
 					/**@type {ActionSrv.HubDesc} */
 					const hubDesc = ctrl.model.hubDevices[idx]
@@ -121,14 +121,24 @@ $$.control.registerControl('rootPage', {
 						console.log(data)
 					})
 
-					hubDevice.on('batteryLevel', (data) => {
-						//console.log('batteryLevel', data)
-						const { batteryLevel } = data
-						ctrl.setData({ batteryLevel })
-					})
+
 					const nbHubs = ctrl.model.hubDevices.length
-					ctrl.model.hubDevices.push({ hubDevice, hubId: `HUB${nbHubs + 1}` })
+					ctrl.model.hubDevices.push({ hubDevice, hubId: `HUB${nbHubs + 1}`, batteryLevel: 0, address: 'Unknown' })
 					ctrl.update()
+
+					hubDevice.on('batteryLevel', (data) => {
+						console.log('batteryLevel', data, nbHubs)
+						ctrl.model.hubDevices[nbHubs].batteryLevel = data.batteryLevel
+						ctrl.update()
+					})			
+
+					hubDevice.on('address', (data) => {
+						console.log('address', data, nbHubs)
+						ctrl.model.hubDevices[nbHubs].address = data.address
+						ctrl.update()
+					})		
+					
+					hubDevice.startNotification()
 
 					hubDevice.on('disconnected', () => {
 						console.log('disconnected', nbHubs)

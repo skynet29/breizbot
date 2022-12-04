@@ -40,6 +40,7 @@ declare namespace HUB {
         createMotor(portId: number): Motor;
         createDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>
         getPortIdFromName(name: string): number;
+        startNotification(): Promise<void>;
     }
      
     interface Motor {
@@ -121,6 +122,8 @@ declare namespace ActionSrv {
     interface HubDesc {
         hubDevice: HUB.HubDevice;
         hubId: string;
+        batteryLevel: number;
+        address: string;
     }
 
     interface ActionDesc {

@@ -2,24 +2,12 @@
   margin: 5px;
   display: flex;
   flex-direction: column; }
-  .rootPage .controlBar {
+  .rootPage .item {
     display: flex;
-    justify-content: center;
-    margin-top: 40px;
-    margin-bottom: 40px; }
-    .rootPage .controlBar .controlBarItem1 {
-      width: 150px; }
-      .rootPage .controlBar .controlBarItem1 .top, .rootPage .controlBar .controlBarItem1 .bottom {
-        display: flex;
-        justify-content: center; }
-      .rootPage .controlBar .controlBarItem1 .middle {
-        display: flex;
-        justify-content: space-between; }
-    .rootPage .controlBar .controlBarItem2 {
-      margin-left: 60px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between; }
+    justify-content: space-around;
+    background-color: grey;
+    margin-top: 10px;
+    padding: 5px 0; }
   .rootPage .toolbar {
     display: flex;
     justify-content: space-between;
@@ -76,6 +64,8 @@
     background-color: #666; }
   .gamepad .axeTable .pressed {
     font-weight: bold; }
+  .gamepad .axeTable .item {
+    cursor: pointer; }
   .gamepad .commandTable {
     flex: 1;
     overflow: auto; }

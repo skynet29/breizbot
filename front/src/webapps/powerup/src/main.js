@@ -16,11 +16,11 @@ $$.control.registerControl('rootPage', {
 	 * @param {HUB} hub
 	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
 	 * @param {Breizbot.Services.AppData.Interface} appDataSrv
+	 * @param {ActionSrv.Interface} actionSrv
 	 * 
 	 */
 	init: async function (elt, pager, hub, gamepad, appDataSrv, actionSrv) {
 
-		let devices = {}
 		const appData = appDataSrv.getData()
 		//const appData = {}
 		console.log('appData', appData)
@@ -32,31 +32,54 @@ $$.control.registerControl('rootPage', {
 
 		elt.find('button').addClass('w3-btn w3-blue')
 
-		/**@type {HUB.HubDevice} */
-		let hubDevice = null
+		/**@type {Array<HUB.HubDevice>} */
+		const hubDevices = []
 
 		let gamepadMapping = null
-		
+
 		const ctrl = $$.viewController(elt, {
 			data: {
-				connected: false,
-				batteryLevel: 0,
 				gamepadConnected: false,
-
-				showGamepadButton: function() {
-					return this.gamepadConnected
-				}
+				hubDevices,
+				hubs: ['HUB1', 'HUB2']
 			},
 			events: {
-				onActions: function() {
+				onHubChange: function () {
+					const idx = $(this).closest('.item').index()
+
+					console.log('onHubChange', idx, $(this).getValue())
+					ctrl.model.hubDevices[idx].hubId = $(this).getValue()
+				},
+				onShutDown: function () {
+					const idx = $(this).closest('.item').index()
+					console.log('onShutDown', idx)
+
+					/**@type {ActionSrv.HubDesc} */
+					const hubDesc = ctrl.model.hubDevices[idx]
+					hubDesc.hubDevice.shutdown()
+				},
+				onInfo: function () {
+					const idx = $(this).closest('.item').index()
+					console.log('onInfo', idx)
+					/**@type {ActionSrv.HubDesc} */
+					const hubDesc = ctrl.model.hubDevices[idx]
+
+					pager.pushPage('hubinfo', {
+						title: hubDesc.hubId,
+						props: {
+							hubDevice: hubDesc.hubDevice
+						}
+					})
+				},
+				onActions: function () {
 
 					pager.pushPage('actionsCtrl', {
 						title: 'Actions',
 						props: {
 							actions: appData.actions,
-							hubDevice
+							hubDevices: ctrl.model.hubDevices
 						},
-						onReturn: async function(data) {
+						onReturn: async function (data) {
 							console.log('onReturn', data)
 							appData.actions = data
 							await appDataSrv.saveData(appData)
@@ -67,6 +90,7 @@ $$.control.registerControl('rootPage', {
 				onGamePad: function () {
 					gamepad.off('buttonUp', onGamepadButtonUp)
 					gamepad.off('buttonDown', onGamepadButtonDown)
+					gamepad.off('axe', onGamepadAxe)
 
 					pager.pushPage('gamepad', {
 						title: 'Gamepad',
@@ -88,77 +112,89 @@ $$.control.registerControl('rootPage', {
 
 
 				onConnect: async function () {
-					hubDevice = await hub.connect()
+					const hubDevice = await hub.connect()
 
-					hubDevice.on('disconnected', () => {
-						console.log('disconnected', hubDevice)
-						ctrl.setData({ connected: false})
-						hubDevice = null
-					})
-			
-			
+
+
+
 					hubDevice.on('error', (data) => {
 						console.log(data)
 					})
-			
+
 					hubDevice.on('batteryLevel', (data) => {
 						//console.log('batteryLevel', data)
 						const { batteryLevel } = data
 						ctrl.setData({ batteryLevel })
-					})					
-					ctrl.setData({ connected: true })
+					})
+					const nbHubs = ctrl.model.hubDevices.length
+					ctrl.model.hubDevices.push({ hubDevice, hubId: `HUB${nbHubs + 1}` })
+					ctrl.update()
+
+					hubDevice.on('disconnected', () => {
+						console.log('disconnected', nbHubs)
+
+						ctrl.model.hubDevices.splice(nbHubs, 1)
+						ctrl.update()
+					})
 					//await motorCD.create()
 					// await hub.subscribe(hub.PortMap.TILT_SENSOR, hub.DeviceMode.TILT_POS, 2, (data) => {
 					// 	console.log('TILT POS', data.value)
 					// })
-				},
-				onHubInfo: async function () {
-					console.log('onHubInfo', hubDevice.getHubDevices())
-					pager.pushPage('hubinfo', {
-						title: 'Hub Info',
-						props: {
-							hubDevice
-						}
-					})
-				},
-				onShutdown: async function () {
-					await hubDevice.shutdown()
-					hubDevice = null
 				}
+
+
 			}
 		})
 
-		function execAction(actionName) {
+		/**
+		 * 
+		 * @param {string} actionName 
+		 * @param {number} factor 
+		 */
+		function execAction(actionName, factor) {
 
-			actionSrv.execAction(hubDevice, appData.actions, actionName)
+			actionSrv.execAction(ctrl.model.hubDevices, appData.actions, actionName, factor)
 
 		}
 
 		function onGamepadButtonDown(data) {
 			//console.log('onGamepadButtonDown', data)
-			if (gamepadMapping && ctrl.model.connected) {
-				const {down} = gamepadMapping.buttons[data.id]
+			if (gamepadMapping) {
+				const { down } = gamepadMapping.buttons[data.id]
 				if (down != 'None') {
-					execAction(down)
+					execAction(down, 1)
 				}
 			}
-		} 
+		}
 
 		function onGamepadButtonUp(data) {
 			//console.log('onGamepadButtonUp', data)
 
-			if (gamepadMapping && ctrl.model.connected) {
-				const {up} = gamepadMapping.buttons[data.id]
+			if (gamepadMapping) {
+				const { up } = gamepadMapping.buttons[data.id]
 				if (up != 'None') {
-					execAction(up)
+					execAction(up, 1)
 				}
 			}
-		} 
+		}
+
+		function onGamepadAxe(data) {
+			console.log('onGamepadAxe', data)
+			if (gamepadMapping) {
+				const { action } = gamepadMapping.axes[data.id]
+				if (action != 'None') {
+					execAction(action, data.value)
+				}
+			}
+		}
+
 
 		function initCbk() {
 			console.log('initCbk')
 			gamepad.on('buttonUp', onGamepadButtonUp)
 			gamepad.on('buttonDown', onGamepadButtonDown)
+			gamepad.on('axe', onGamepadAxe)
+
 		}
 
 
@@ -166,7 +202,7 @@ $$.control.registerControl('rootPage', {
 		gamepad.on('connected', (ev) => {
 			console.log('gamepad connnected', ev)
 			gamepadMapping = appData.mappings[ev.id]
-			console.log({gamepadMapping})
+			console.log({ gamepadMapping })
 
 			ctrl.setData({ gamepadConnected: true })
 			gamepad.checkGamePadStatus()

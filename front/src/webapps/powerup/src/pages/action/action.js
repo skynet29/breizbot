@@ -16,7 +16,7 @@ $$.control.registerControl('actionCtrl', {
      */
     init: function (elt, pager) {
 
-        console.log('props', this.props)
+        //console.log('props', this.props)
         let { data } = this.props
 
         const isEdit = (data != null)

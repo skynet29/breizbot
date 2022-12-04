@@ -9,18 +9,19 @@ $$.control.registerControl('actionsCtrl', {
 	props: {
 		actions: null,
 		isEdition: true,
-		hubDevice: null
+		hubDevices: null
 	},
 
 	/**
 	 * 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @param {ActionSrv.Interface} actionSrv
 	 */
 	init: function (elt, pager, actionSrv) {
 
 		//console.log('props', this.props)
 
-		const {isEdition, hubDevice} = this.props
+		const {isEdition, hubDevices} = this.props
 
 		const actions = Array.from(this.props.actions || [])
 
@@ -62,19 +63,13 @@ $$.control.registerControl('actionsCtrl', {
 					//console.log('onItemClick', idx)
                     const action = ctrl.model.actions[idx]
 					if (isEdition) {
-						if (hubDevice != null) {
-							actionSrv.execAction(hubDevice, ctrl.model.actions, action.name)
-						}
-						else {
-							$.notify('Hub not connected', 'error')
-						}
-						
+						actionSrv.execAction(hubDevices, ctrl.model.actions, action.name, 1)						
 					}
 					else {
 						pager.popPage(action.name)
 					}
 
-                },				
+                }			
 			}
 		})
 

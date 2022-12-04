@@ -31,11 +31,14 @@ $$.control.registerControl('gamepad', {
 			axes = mapping.axes
 			buttons = mapping.buttons
 		}
-		else {
+
+		if (axes.length == 0) {
 			for (let i = 0; i < info.axes.length; i++) {
-				axes.push({ up: 'None', down: 'None' })
+				axes.push({ action: 'None' })
 			}
-	
+		}
+
+		if (buttons.length) {	
 			for (let i = 0; i < info.buttons.length; i++) {
 				buttons.push({ up: 'None', down: 'None' })
 			}
@@ -89,10 +92,10 @@ $$.control.registerControl('gamepad', {
 				}
 			},
 			events: {
-				onItemClick: function() {
+				onButtonClick: function() {
 					const idx = $(this).closest('tr').index()
 					const cmd = $(this).data('cmd')
-					//console.log('onItemClick', idx, cmd)
+					//console.log('onButtonClick', idx, cmd)
 					pager.pushPage('actionsCtrl', {
 						title: 'Select an action',
 						props: {
@@ -102,6 +105,22 @@ $$.control.registerControl('gamepad', {
 						onReturn: function(actionName) {
 							//console.log({actionName})
 							ctrl.model.buttons[idx][cmd] = actionName
+							ctrl.update()
+						}
+					})
+				},
+				onAxeClick: function() {
+					const idx = $(this).closest('tr').index()
+					console.log('onAxeClick', idx)
+					pager.pushPage('actionsCtrl', {
+						title: 'Select an action',
+						props: {
+							isEdition: false,
+							actions
+						},
+						onReturn: function(actionName) {
+							//console.log({actionName})
+							ctrl.model.axes[idx].action = actionName
 							ctrl.update()
 						}
 					})
@@ -121,15 +140,13 @@ $$.control.registerControl('gamepad', {
 				axes: [],
 				buttons: []
 			}
-			// axesElt.find('tr').each(function (idx) {
-			// 	const up = $(this).find('.up').getValue()
-			// 	const down = $(this).find('.down').getValue()
+			axesElt.find('tr').each(function (idx) {
+				const action = $(this).find('.item').text()
 
-			// 	ret.axes.push({
-			// 		hub,
-			// 		port
-			// 	})
-			// })
+				ret.axes.push({
+					action
+				})
+			})
 
 			buttonsElt.find('tr').each(function (idx) {
 				const up = $(this).find('[data-cmd="up"]').text()

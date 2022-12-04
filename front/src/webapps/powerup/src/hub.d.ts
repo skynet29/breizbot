@@ -114,3 +114,29 @@ declare namespace HUB {
 
     }
 }
+
+
+declare namespace ActionSrv {
+
+    interface HubDesc {
+        hubDevice: HUB.HubDevice;
+        hubId: string;
+    }
+
+    interface ActionDesc {
+        name: string;
+        type: 'SPEED' | 'DBLSPEED' | 'POWER';
+        hub: string;
+        port?: string;
+        speed?: number;
+        port1?: string;
+        port2?: string;
+        speed1?: number;
+        speed2?: number;
+        power?: number;
+    }
+
+    interface Interface {
+        execAction(hubDevices: Array<HubDesc>, actions: Array<ActionDesc>, actionName: string, factor: number):Promise<void>;
+    }
+}

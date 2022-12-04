@@ -21,10 +21,10 @@ $$.service.registerService('actionSrv', {
         async function execAction(hubDevices, actions, actionName, factor) {
             console.log('execAction', actionName, factor)
             const actionDesc = actions.find(e => e.name == actionName)
-            console.log({actionDesc})
+            //console.log({actionDesc})
             const hubDesc = hubDevices.find(e => e.hubId == actionDesc.hub)
             if (hubDesc) {
-                console.log({hubDesc})
+                //console.log({hubDesc})
                 const { hubDevice } = hubDesc
 
                 if (actionDesc.type == 'POWER') {

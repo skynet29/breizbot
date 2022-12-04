@@ -115,35 +115,34 @@ $$.control.registerControl('rootPage', {
 					const hubDevice = await hub.connect()
 
 
-
-
 					hubDevice.on('error', (data) => {
 						console.log(data)
 					})
-
 
 					const nbHubs = ctrl.model.hubDevices.length
 					ctrl.model.hubDevices.push({ hubDevice, hubId: `HUB${nbHubs + 1}`, batteryLevel: 0, address: 'Unknown' })
 					ctrl.update()
 
 					hubDevice.on('batteryLevel', (data) => {
-						console.log('batteryLevel', data, nbHubs)
-						ctrl.model.hubDevices[nbHubs].batteryLevel = data.batteryLevel
+						//console.log('batteryLevel', data)
+						const hubDesc = ctrl.model.hubDevices.find((e) => e.hubDevice == hubDevice)
+						hubDesc.batteryLevel = data.batteryLevel
 						ctrl.update()
 					})			
 
 					hubDevice.on('address', (data) => {
-						console.log('address', data, nbHubs)
-						ctrl.model.hubDevices[nbHubs].address = data.address
+						console.log('address', data)
+						const hubDesc = ctrl.model.hubDevices.find((e) => e.hubDevice == hubDevice)
+						hubDesc.address = data.address
 						ctrl.update()
 					})		
 					
 					hubDevice.startNotification()
 
 					hubDevice.on('disconnected', () => {
-						console.log('disconnected', nbHubs)
-
-						ctrl.model.hubDevices.splice(nbHubs, 1)
+						console.log('disconnected')
+						const idx = ctrl.model.hubDevices.findIndex((e) => e.hubDevice == hubDevice)
+						ctrl.model.hubDevices.splice(idx, 1)
 						ctrl.update()
 					})
 					//await motorCD.create()

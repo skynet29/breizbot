@@ -19,7 +19,7 @@ $$.control.registerControl('gamepad', {
 	init: function (elt, pager, gamepad) {
 
 		const {mapping, actions} = this.props
-		//console.log(this.props)
+		console.log(this.props)
 
 		let axes = []
 		let buttons = []

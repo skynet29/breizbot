@@ -49,6 +49,7 @@ $$.control.registerControl('rootPage', {
 						actions: [],
 						mappings: {}
 					}
+					gamepadMapping = null
 					ctrl.setData({currentConfig: ''})
 				},
 				onSaveConfig: async function() {

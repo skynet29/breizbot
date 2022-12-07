@@ -64,6 +64,7 @@ $$.control.registerControl('rootPage', {
 					}
 					else {
 						await http.post('/update', config)
+						$.notify(`Config '${config.name}' updated`, 'success')
 					}
 
 				},

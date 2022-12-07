@@ -5,7 +5,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'hub', 'breizbot.gamepad', 'breizbot.appData', 'actionSrv'],
+	deps: ['breizbot.pager', 'hub', 'breizbot.gamepad', 'actionSrv', 'breizbot.http'],
 
 	props: {
 	},
@@ -15,19 +15,17 @@ $$.control.registerControl('rootPage', {
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {HUB} hub
 	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
-	 * @param {Breizbot.Services.AppData.Interface} appDataSrv
 	 * @param {ActionSrv.Interface} actionSrv
+	 * @param {Breizbot.Services.Http.Interface} http
 	 * 
 	 */
-	init: async function (elt, pager, hub, gamepad, appDataSrv, actionSrv) {
+	init: async function (elt, pager, hub, gamepad, actionSrv, http) {
 
-		const appData = appDataSrv.getData()
-		//const appData = {}
-		console.log('appData', appData)
+		//const config = {}
 
-		if (Object.keys(appData).length == 0) {
-			appData.actions = []
-			appData.mappings = {}
+		let config = {
+			actions: [],
+			mappings: {}
 		}
 
 		elt.find('button').addClass('w3-btn w3-blue')
@@ -36,23 +34,62 @@ $$.control.registerControl('rootPage', {
 		const hubDevices = []
 
 		let gamepadMapping = null
+		let gamepadId = ''
 
 		const ctrl = $$.viewController(elt, {
 			data: {
+				currentConfig: '',
 				gamepadConnected: false,
 				hubDevices,
 				hubs: ['HUB1', 'HUB2']
 			},
 			events: {
+				onNewConfig: function() {
+					config = {
+						actions: [],
+						mappings: {}
+					}
+					ctrl.setData({currentConfig: ''})
+				},
+				onSaveConfig: async function() {
+					//console.log('onSaveConfig', config)
+					if (ctrl.model.currentConfig == '') {
+						const currentConfig = await $$.ui.showPrompt({title: 'Save Config', label: 'Config Name:'})
+						//console.log({currentConfig})
+						if (currentConfig) {
+							await http.post('/add', {name: currentConfig, actions: config.actions, mappings: config.mappings})
+							ctrl.setData({currentConfig})
+						}
+					}
+					else {
+						await http.post('/update', config)
+					}
+
+				},
+				onConfig: function() {
+					//console.log('onConfig')
+					pager.pushPage('configCtrl', {
+						title: 'Configurations',
+						props: {
+							currentConfig: ctrl.model.currentConfig
+						},	
+						onReturn: function(data) {
+							config = data
+							ctrl.setData({currentConfig: data.name})
+							gamepadMapping = config.mappings[gamepadId]
+							//console.log({gamepadMapping})
+						}
+					})
+				},
 				onHubChange: function () {
 					const idx = $(this).closest('tr').index()
 
-					console.log('onHubChange', idx, $(this).getValue())
+					//console.log('onHubChange', idx, $(this).getValue())
 					ctrl.model.hubDevices[idx].hubId = $(this).getValue()
 				},
 				onShutDown: function () {
 					const idx = $(this).closest('tr').index()
-					console.log('onShutDown', idx)
+					//console.log('onShutDown', idx)
 
 					/**@type {ActionSrv.HubDesc} */
 					const hubDesc = ctrl.model.hubDevices[idx]
@@ -60,7 +97,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onInfo: function () {
 					const idx = $(this).closest('tr').index()
-					console.log('onInfo', idx)
+					//console.log('onInfo', idx)
 					/**@type {ActionSrv.HubDesc} */
 					const hubDesc = ctrl.model.hubDevices[idx]
 
@@ -76,13 +113,12 @@ $$.control.registerControl('rootPage', {
 					pager.pushPage('actionsCtrl', {
 						title: 'Actions',
 						props: {
-							actions: appData.actions,
+							actions: config.actions,
 							hubDevices: ctrl.model.hubDevices
 						},
 						onReturn: async function (data) {
 							console.log('onReturn', data)
-							appData.actions = data
-							await appDataSrv.saveData(appData)
+							config.actions = data
 						}
 
 					})
@@ -96,15 +132,14 @@ $$.control.registerControl('rootPage', {
 						title: 'Gamepad',
 						props: {
 							mapping: gamepadMapping,
-							actions: appData.actions
+							actions: config.actions
 						},
 						onBack: initCbk,
 						onReturn: async (mapping) => {
 							gamepadMapping = mapping
 							console.log('onReturn', gamepadMapping)
-							console.log('appData', appData)
-							appData.mappings[mapping.id] = gamepadMapping
-							await appDataSrv.saveData(appData)
+							console.log('config', config)
+							config.mappings[mapping.id] = gamepadMapping
 							initCbk()
 						}
 					})
@@ -162,7 +197,7 @@ $$.control.registerControl('rootPage', {
 		 */
 		function execAction(actionName, factor) {
 
-			actionSrv.execAction(ctrl.model.hubDevices, appData.actions, actionName, factor)
+			actionSrv.execAction(ctrl.model.hubDevices, config.actions, actionName, factor)
 
 		}
 
@@ -210,7 +245,8 @@ $$.control.registerControl('rootPage', {
 
 		gamepad.on('connected', (ev) => {
 			console.log('gamepad connnected', ev)
-			gamepadMapping = appData.mappings[ev.id]
+			gamepadId = ev.id
+			gamepadMapping = config.mappings[gamepadId]
 			console.log({ gamepadMapping })
 
 			ctrl.setData({ gamepadConnected: true })

@@ -92,7 +92,7 @@ $$.control.registerControl('actionsCtrl', {
 					},
 					save: {
 						title: 'Save',
-						icon: 'fa fa-save',
+						icon: 'fa fa-check',
 						onClick: function() {
 							pager.popPage(ctrl.model.actions)
 						}

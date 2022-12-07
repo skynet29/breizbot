@@ -1,0 +1,17 @@
+<div bn-show="!hasConfigs" class="message">
+    No configurations defined
+</div>
+
+<div class="scrollPanel" bn-show="hasConfigs">
+    <div bn-each="configs" class="items" bn-event="click.item: onItemClick, contextmenuchange.item:onItemContextMenu">
+        <div class="w3-card-2 item" bn-control="brainjs.contextmenu" bn-data="{
+                    items: {
+                        delete: {name: 'Remove', icon: 'fas fa-trash-alt'}
+                    }
+                }">
+            <div>
+                <strong bn-text="$scope.$i.name"></strong>
+            </div>
+        </div>
+    </div>
+</div>

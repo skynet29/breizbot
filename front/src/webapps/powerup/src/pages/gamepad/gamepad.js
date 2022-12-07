@@ -19,13 +19,13 @@ $$.control.registerControl('gamepad', {
 	init: function (elt, pager, gamepad) {
 
 		const {mapping, actions} = this.props
-		console.log(this.props)
+		//console.log(this.props)
 
 		let axes = []
 		let buttons = []
 
 		const info = gamepad.getGamepads()[0]
-		console.log({ info })
+		//console.log({ info })
 
 		if (mapping != null) {
 			axes = mapping.axes
@@ -38,7 +38,7 @@ $$.control.registerControl('gamepad', {
 			}
 		}
 
-		if (buttons.length) {	
+		if (buttons.length == 0) {	
 			for (let i = 0; i < info.buttons.length; i++) {
 				buttons.push({ up: 'None', down: 'None' })
 			}

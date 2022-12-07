@@ -77,7 +77,7 @@ declare namespace Breizbot {
 
             interface Info {
                 index: number;
-                id: number;
+                id: string;
                 axes: Array<number>;
                 buttons: Array<{presses: boolean}>;
             }

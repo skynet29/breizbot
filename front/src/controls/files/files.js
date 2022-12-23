@@ -9,22 +9,27 @@
 	function getIconClass(name) {
 		name = name.toLowerCase()
 		if (name.endsWith('.pdf')) {
-			return 'fa-file-pdf w3-text-red'
+			return 'fa fa-file-pdf w3-text-red'
 		}
 		if (name.endsWith('.hdoc')) {
-			return 'fa-file-word w3-text-blue'
+			return 'fa fa-file-word w3-text-blue'
 		}
 		if (name.endsWith('.ogg') || name.endsWith('.mp3')) {
-			return 'fa-file-audio w3-text-purple'
+			return 'fa fa-file-audio w3-text-purple'
 		}
 		if (name.endsWith('.mp4') || name.endsWith('.webm') || name.endsWith('.3gp')) {
-			return 'fa-file-video w3-text-orange'
+			return 'fa fa-file-video w3-text-orange'
 		}
 		if (name.endsWith('.zip')) {
-			return 'fa-file-archive w3-text-amber'
+			return 'fa fa-file-archive w3-text-amber'
 		}
-
-		return 'fa-file w3-text-blue-grey'
+		if (name.endsWith('.js')) {
+			return 'fab fa-js w3-text-yellow'
+		}
+		if (name.endsWith('.html')) {
+			return 'fab fa-html5 w3-text-blue'
+		}	
+		return 'fa fa-file w3-text-blue-grey'
 	}
 
 	/**
@@ -203,7 +208,7 @@
 						return !scope.f.folder && scope.f.isImage
 					},
 					class1: function (scope) {
-						return `fa fa-4x ${getIconClass(scope.f.name)}`
+						return `fa-4x ${getIconClass(scope.f.name)}`
 					},
 					getSize: function (scope) {
 						let size = scope.f.size

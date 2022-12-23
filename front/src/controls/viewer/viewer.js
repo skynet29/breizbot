@@ -18,6 +18,7 @@ $$.control.registerControl('breizbot.viewer', {
 			data: {
 				url,
 				type,
+				language: `language-${type}`,
 				isImage: function() {
 					return this.type == 'image'
 				},
@@ -32,6 +33,9 @@ $$.control.registerControl('breizbot.viewer', {
 				},
 				isDoc: function() {
 					return this.type == 'hdoc'
+				},
+				isCode: function() {
+					return ['javascript', 'html'].includes(this.type)
 				}
 
 			},
@@ -43,17 +47,33 @@ $$.control.registerControl('breizbot.viewer', {
 			}
 		})
 
-		async function readHtml() {
+
+		async function readText() {
 			const ret = await fetch(url)			
-			const htmlDoc = await ret.text()
+			return await ret.text()
+		}
+
+		async function readHtml() {
+			const htmlDoc = await readText()
 			//console.log('htmlDoc', htmlDoc)
 			const htmlElt = ctrl.scope.doc.find('.html')
 			htmlElt.html(htmlDoc)
 			htmlElt.find('a[href^=http]').attr('target', '_blank') // open external link in new navigator tab
 		}
 
+		async function readCode() {
+			const code = await readText()
+			const codeElt = ctrl.scope.code
+			codeElt.find('code').text(code)
+			Prism.highlightAllUnder(codeElt.get(0))
+		}
+
 		if (type == 'hdoc') {
 			readHtml()
+		}
+
+		if (ctrl.model.isCode()) {
+			readCode()
 		}
 
 

@@ -14,6 +14,7 @@ const breizbotJs = task('breizbot.js',
 	[
 		'./externals/eventemitter2.js',
 		'./externals/notify.min.js',
+		'./externals/prism.js',
 		'./src/controls/**/*.js',
 		'./src/services/**/*.js',
 	],
@@ -23,6 +24,7 @@ const breizbotJs = task('breizbot.js',
 
 const breizbotCss = task('breizbot.css',
 	[
+		'./externals/prism.css',
 		'./src/controls/**/*.scss',
 	],
 	{concat: 'breizbot.css', isSass:true}

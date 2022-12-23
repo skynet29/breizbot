@@ -24,6 +24,12 @@ $$.control.registerControl('rootPage', {
 			if (fileName.endsWith('.hdoc')) {
 				type = 'hdoc'
 			}
+			if (fileName.endsWith('.js')) {
+				type = 'javascript'
+			}
+			if (fileName.endsWith('.html')) {
+				type = 'html'
+			}
 			return type
 		}
 

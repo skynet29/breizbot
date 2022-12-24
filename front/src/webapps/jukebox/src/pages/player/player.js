@@ -13,6 +13,7 @@ $$.control.registerControl('player', {
 		friendUser: '',
 		fileCtrl: null,
 		isPlaylist: false,
+		isDatabaseSongs: false,
 		worker: null
 	},
 
@@ -32,7 +33,7 @@ $$.control.registerControl('player', {
 		 * fileCtrl: Breizbot.Controls.Files.Interface,
 		 * isPlaylist: boolean,
 		 * }} */
-		const { rootDir, files, firstIdx, friendUser, fileCtrl, isPlaylist } = this.props
+		const { rootDir, files, firstIdx, friendUser, fileCtrl, isPlaylist, isDatabaseSongs } = this.props
 
 		const getTime = $$.media.getFormatedTime
 
@@ -198,25 +199,31 @@ $$.control.registerControl('player', {
 		}
 
 		function getTitle(idx) {
-			return files[idx].mp3.title || ''
+			return files[idx].title || files[idx].mp3.title || ''
 		}
 
 		function getArtist(idx) {
-			return files[idx].mp3.artist || ''
+			return files[idx].artist || files[idx].mp3.artist ||  ''
 		}
 
 		function getGenre(idx) {
-			return files[idx].mp3.genre || ''
+			const mp3 = files[idx].mp3 || {}
+			return mp3.genre || ''
 		}
 
 		function getYear(idx) {
-			return files[idx].mp3.year || ''
+			const mp3 = files[idx].mp3 || {}
+
+			return mp3.year || ''
 		}
 
 		function getFileUrl(idx) {
 			if (isPlaylist) {
 				const { rootDir, fileName, friendUser } = files[idx].fileInfo
 				return filesSrv.fileUrl(rootDir + fileName, friendUser)
+			}
+			if (isDatabaseSongs) {
+				return filesSrv.fileUrl(files[idx].fileName)
 			}
 			return filesSrv.fileUrl(rootDir + files[idx].name, friendUser)
 		}

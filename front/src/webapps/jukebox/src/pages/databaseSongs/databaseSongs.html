@@ -1,0 +1,17 @@
+<div class="content">
+    <div class="scrollPanel">
+        <div bn-each="songs" 
+            bn-lazzy="20"
+            bn-iter="f" 
+            bn-bind="songs"
+            class="items"
+            bn-event="click.item: onItemClick">
+            <div class="w3-card-2 item">
+
+                <div>Title:&nbsp;<strong bn-text="$scope.f.title"></strong></div>    
+                <div>Artist:&nbsp;<strong bn-text="$scope.f.artist"></strong></div>
+
+            </div>
+        </div>
+    </div>
+</div>

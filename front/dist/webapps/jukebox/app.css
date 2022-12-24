@@ -1,3 +1,47 @@
+.rootPage {
+  padding: 10px; }
+  .rootPage .w3-bar {
+    cursor: pointer; }
+  .rootPage .w3-bar-item {
+    display: flex;
+    align-items: center; }
+    .rootPage .w3-bar-item span {
+      margin-left: 20px; }
+
+.database {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center; }
+  .database form {
+    max-width: 400px;
+    width: 400px;
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 10px; }
+    .database form label {
+      grid-column: 1/2; }
+    .database form input {
+      grid-column: 2/3; }
+
+.databaseSongs {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  align-items: center; }
+  .databaseSongs .scrollPanel {
+    margin-top: 5px;
+    max-width: 500px;
+    min-width: 500px;
+    padding: 10px;
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid lightgray; }
+    .databaseSongs .scrollPanel .item {
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer; }
+
 .editDlg {
   padding: 10px;
   display: flex;
@@ -33,16 +77,6 @@
       grid-column: 1 / 2; }
     .filterDlg form .brainjs-selectmenu {
       grid-column: 2 / 3; }
-
-.rootPage {
-  padding: 10px; }
-  .rootPage .w3-bar {
-    cursor: pointer; }
-  .rootPage .w3-bar-item {
-    display: flex;
-    align-items: center; }
-    .rootPage .w3-bar-item span {
-      margin-left: 20px; }
 
 .player {
   padding: 10px; }

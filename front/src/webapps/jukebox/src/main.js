@@ -114,6 +114,11 @@ $$.control.registerControl('rootPage', {
 			data: {
 			},
 			events: {
+				onDatabase: function() {
+					pager.pushPage('database', {
+						title: 'Database'
+					})
+				},
 				onHome: function () {
 					openFilePage('Home files', '')
 				},

@@ -370,6 +370,7 @@ declare namespace Breizbot {
         declare namespace Songs {
             interface Interface {
                 generateDb():Promise<void>;
+                querySongs(query: string): Promise<void>;
             }
         }
     

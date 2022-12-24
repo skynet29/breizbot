@@ -15,17 +15,17 @@ const cloudPath = config.CLOUD_HOME
 async function findFiles(owner) {
     const filterPath = path.join(cloudPath, owner, '**/*.mp3')
     const entries = await fg(filterPath)
-    const ret = []	
+    const ret = []
     for await (const entry of entries) {
         const filePath = entry.replace(cloudPath, '')
         const fileName = filePath.replace('/' + owner, '')
-        const info = await getFileInfo(entry, {getMP3Info: true})
+        const info = await getFileInfo(entry, { getMP3Info: true })
         if (info.mp3) {
-            const {title, artist} = info.mp3
+            const { title, artist } = info.mp3
             if (title != undefined && artist != undefined) {
                 ret.push({
                     owner,
-                    fileName,       
+                    fileName,
                     title,
                     artist
                 })
@@ -37,11 +37,16 @@ async function findFiles(owner) {
 
 }
 
+
+function find(query) {
+    return { $regex: `\w*${query}\w*`, $options: 'i' }
+}
+
 module.exports = {
 
-    generateDb: async function(owner) {
+    generateDb: async function (owner) {
         const entries = await findFiles(owner)
-        await db.deleteMany({owner})
+        await db.deleteMany({ owner })
         await db.insertMany(entries)
     },
 
@@ -49,28 +54,42 @@ module.exports = {
         return db.find({ owner }).toArray()
     },
 
-	getMusicByArtist(owner, artist) {
-		return db.find({ owner, artist: { $regex: artist, $options: 'i' } }).toArray()
-	},
+    getMusicByArtist(owner, artist) {
+        return db.find({ owner, artist: { $regex: artist, $options: 'i' } }).toArray()
+    },
 
-	getMusicByTitleAndArtist(owner, title, artist) {
-		return db.findOne({ 
-            owner, 
+    getMusicByTitleAndArtist(owner, title, artist) {
+        return db.findOne({
+            owner,
             artist: { $regex: artist, $options: 'i' },
             title: { $regex: title, $options: 'i' }
-         })
-	},
+        })
+    },
 
-	getMusicByTitle(owner, title) {
-		return db.findOne({ 
-            owner, 
+    getMusicByTitle(owner, title) {
+        return db.findOne({
+            owner,
             title: { $regex: title, $options: 'i' }
-         })
-	},
+        })
+    },
 
-	getSongById(id) {
-		return db.findOne(buildDbId(id))
-	}
+    getSongById(id) {
+        return db.findOne(buildDbId(id))
+    },
+
+    querySongs(owner, query) {
+
+        const filter = {
+            owner,
+            $or: [
+                { title: find(query) },
+                { artist: find(query) }
+            ]
+        }
+
+        //console.log('querySongs')
+        return db.find(filter).toArray()
+    }
 
 }
 

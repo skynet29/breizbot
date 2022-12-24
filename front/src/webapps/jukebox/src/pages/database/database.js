@@ -26,7 +26,7 @@ $$.control.registerControl('database', {
                     //console.log({songs})
                     if (songs.length > 0){
                         pager.pushPage('databaseSongs', {
-                            title: 'Query results',
+                            title: `Query results (${songs.length} match)`,
                             props: {
                                 songs
                             }

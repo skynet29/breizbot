@@ -8,22 +8,6 @@
     .rootPage .w3-bar-item span {
       margin-left: 20px; }
 
-.database {
-  padding: 10px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center; }
-  .database form {
-    max-width: 400px;
-    width: 400px;
-    display: grid;
-    grid-template-columns: 70px 1fr;
-    gap: 10px; }
-    .database form label {
-      grid-column: 1/2; }
-    .database form input {
-      grid-column: 2/3; }
-
 .databaseSongs {
   display: flex;
   flex-direction: column;
@@ -77,6 +61,22 @@
       grid-column: 1 / 2; }
     .filterDlg form .brainjs-selectmenu {
       grid-column: 2 / 3; }
+
+.database {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center; }
+  .database form {
+    max-width: 400px;
+    width: 400px;
+    display: grid;
+    grid-template-columns: 70px 1fr;
+    gap: 10px; }
+    .database form label {
+      grid-column: 1/2; }
+    .database form input {
+      grid-column: 2/3; }
 
 .player {
   padding: 10px; }

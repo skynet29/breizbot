@@ -2,22 +2,15 @@
     padding: 10px;
     display: flex;
     flex-direction: row;
-    justify-content: center;
 
     form {
 
-        max-width: 400px;
-        width: 400px;
-        display: grid;
-        grid-template-columns: 70px 1fr;
-        gap: 10px;
-
+        display: flex;
+        padding: 10px;
+        align-items: center;
         label {
-            grid-column: 1/2;
+            margin-right: 10px;
         }
 
-        input {
-            grid-column: 2/3;
-        }
     }
 }

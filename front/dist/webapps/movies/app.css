@@ -21,21 +21,14 @@
 .filter {
   padding: 10px;
   display: flex;
-  flex-direction: row;
-  justify-content: center; }
-  .filter form {
-    max-width: 400px;
-    width: 400px;
-    display: grid;
-    grid-template-columns: 70px 1fr;
-    gap: 10px;
-    align-items: center; }
-    .filter form label {
-      grid-column: 1/2; }
-    .filter form .year {
-      grid-column: 2/3; }
-      .filter form .year input {
-        max-width: 80px; }
+  flex-direction: row; }
+  .filter form .group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 10px; }
+    .filter form .group label {
+      width: 80px; }
 
 .rootPage {
   display: flex;

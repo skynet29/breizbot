@@ -1,21 +1,28 @@
 <div>
     <form bn-event="submit: onSubmit" bn-form="filters">
-        <label>Style</label>
-        <div bn-control="brainjs.combobox" bn-data="{items: styles}" name="style"></div>    
+        <div class="group">
+            <label>Style</label>
+            <div bn-control="brainjs.combobox" bn-data="{items: styles}" name="style"></div>
 
-        <label>Franchise</label>
-        <div bn-control="brainjs.combobox" bn-data="{items: franchises}" name="franchise"></div>    
-        
-        <label>Actor</label>
-        <div bn-control="brainjs.combobox" bn-data="{items: actors}" name="actor"></div>    
+        </div>
 
-        <label>Director</label>
-        <div bn-control="brainjs.combobox" bn-data="{items: directors}" name="director"></div>    
+        <div class="group">
 
-        <label>Year</label>
-        
-        <div class="year"><input type="number" name="year" min="1950"></div>
-        
+            <label>Actor</label>
+            <div bn-control="brainjs.combobox" bn-data="{items: actors}" name="actor"></div>
+        </div>
+
+        <div class="group">
+            <label>Director</label>
+            <div bn-control="brainjs.combobox" bn-data="{items: directors}" name="director"></div>
+        </div>
+
+        <div class="group">
+            <label>Year</label>
+
+            <div class="year"><input type="number" name="year" min="1950"></div>
+        </div>
+
         <button class="w3-btn w3-blue" type="button" bn-event="click: onReset">Reset</button>
 
         <input type="submit" hidden bn-bind="submit">

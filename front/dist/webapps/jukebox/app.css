@@ -8,15 +8,23 @@
     .rootPage .w3-bar-item span {
       margin-left: 20px; }
 
+.database {
+  padding: 10px;
+  display: flex;
+  flex-direction: row; }
+  .database form {
+    display: flex;
+    padding: 10px;
+    align-items: center; }
+    .database form label {
+      margin-right: 10px; }
+
 .databaseSongs {
   display: flex;
   flex-direction: column;
-  padding: 10px;
-  align-items: center; }
+  padding: 10px; }
   .databaseSongs .scrollPanel {
     margin-top: 5px;
-    max-width: 500px;
-    min-width: 500px;
     padding: 10px;
     flex: 1;
     overflow-y: auto;
@@ -61,22 +69,6 @@
       grid-column: 1 / 2; }
     .filterDlg form .brainjs-selectmenu {
       grid-column: 2 / 3; }
-
-.database {
-  padding: 10px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center; }
-  .database form {
-    max-width: 400px;
-    width: 400px;
-    display: grid;
-    grid-template-columns: 70px 1fr;
-    gap: 10px; }
-    .database form label {
-      grid-column: 1/2; }
-    .database form input {
-      grid-column: 2/3; }
 
 .player {
   padding: 10px; }

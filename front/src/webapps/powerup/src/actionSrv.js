@@ -35,6 +35,10 @@ $$.service.registerService('actionSrv', {
                     const motor = hubDevice.createMotor(hub.PortMap[actionDesc.port])
                     motor.setSpeed(actionDesc.speed * factor)
                 }
+                else if (actionDesc.type == 'ROTATE') {
+                    const motor = hubDevice.createMotor(hub.PortMap[actionDesc.port])
+                    motor.rotateDegrees(actionDesc.angle, actionDesc.speed)
+                }
                 else if (actionDesc.type == 'DBLSPEED') {
                     const portId1 = hub.PortMap[actionDesc.port1]
                     const portId2 = hub.PortMap[actionDesc.port2]

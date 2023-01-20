@@ -128,7 +128,7 @@ declare namespace ActionSrv {
 
     interface ActionDesc {
         name: string;
-        type: 'SPEED' | 'DBLSPEED' | 'POWER';
+        type: 'SPEED' | 'DBLSPEED' | 'POWER' | 'ROTATE';
         hub: string;
         port?: string;
         speed?: number;
@@ -137,6 +137,7 @@ declare namespace ActionSrv {
         speed1?: number;
         speed2?: number;
         power?: number;
+        angle?: number;
     }
 
     interface Interface {

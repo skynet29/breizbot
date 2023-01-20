@@ -98,13 +98,19 @@ $$.control.registerControl('breizbot.pdf', {
 
 			ctrl.setData({ wait: true })
 
-			const numPages = await pdf.openFile(url)
-			console.log('file loaded')
-			ctrl.setData({
-				title,
-				numPages,
-				wait: false
-			})
+			try {
+				const numPages = await pdf.openFile(url)
+				console.log('file loaded')
+				ctrl.setData({
+					title,
+					numPages,
+					wait: false
+				})
+			}
+			catch(e) {
+				
+			}
+
 		}
 
 		if (url != '') {

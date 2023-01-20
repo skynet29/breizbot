@@ -23,7 +23,7 @@ $$.control.registerControl('actionCtrl', {
 
         data = data || {}
 
-        const actionTypes = ['SPEED', 'POWER', 'DBLSPEED']
+        const actionTypes = ['SPEED', 'POWER', 'DBLSPEED', 'ROTATE']
         const ports = 'ABCD'.split('')
         const hubs = ['HUB1', 'HUB2']
 
@@ -46,6 +46,9 @@ $$.control.registerControl('actionCtrl', {
                 },
                 isDblSpeed: function () {
                     return this.isType('DBLSPEED')
+                },
+                isRotate: function () {
+                    return this.isType('ROTATE')
                 }
             },
             events: {

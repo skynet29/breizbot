@@ -25,18 +25,31 @@ $$.control.registerControl('databaseSongs', {
 			events: {
 				onItemClick: function() {
 					const firstIdx = $(this).index()
-					console.log({firstIdx})
-					pager.pushPage('player', {
-						title: 'Player',
-						props: {
-							files: ctrl.model.songs,
-							isDatabaseSongs: true,
-							firstIdx
-						}
-					})
+					launchPlayer(firstIdx)
 				}
 			}
 		})
+
+		function launchPlayer(firstIdx = 0) {
+			//console.log('launchPlayer', firstIdx)
+			pager.pushPage('player', {
+				title: 'Player',
+				props: {
+					firstIdx,
+					canAddToPlaylist: true,
+					files: ctrl.model.songs.map(e => {
+						return {
+							rootDir: $$.path.getDirName(e.fileName),
+							fileName: $$.path.getFileName(e.fileName),
+							mp3: {
+								artist: e.artist,
+								title: e.title
+							}
+						}
+					})
+				}
+			})			
+		}
 
         this.getButtons = function () {
             return {	
@@ -44,13 +57,7 @@ $$.control.registerControl('databaseSongs', {
                     title: 'Play',
                     icon: 'fa fa-play',
                     onClick: function () {
-                        pager.pushPage('player', {
-                            title: 'Player',
-                            props: {
-                                files: ctrl.model.songs,
-								isDatabaseSongs: true
-                            }
-                        })
+                        launchPlayer()
                     }
 
                 }				

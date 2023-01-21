@@ -194,8 +194,16 @@ $$.control.registerControl('playlistSongs', {
                         pager.pushPage('player', {
                             title: 'Player',
                             props: {
-                                isPlaylist: true,
-                                files: ctrl.model.songs,
+                                files: ctrl.model.songs.map(e => {
+                                    const {fileName, rootDir, friendUser} = e.fileInfo
+                                    const {mp3} = e
+                                    return {
+                                        mp3,
+                                        fileName,
+                                        rootDir,
+                                        friendUser
+                                    }
+                                }),
                                 firstIdx: Math.max(0, selectedIndex)
                             }
                         })

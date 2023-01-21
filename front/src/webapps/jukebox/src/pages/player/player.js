@@ -7,14 +7,12 @@ $$.control.registerControl('player', {
 	deps: ['breizbot.files', 'app.jukebox', 'breizbot.pager'],
 
 	props: {
-		rootDir: '',
 		files: [],
 		firstIdx: 0,
-		friendUser: '',
 		fileCtrl: null,
-		isPlaylist: false,
-		isDatabaseSongs: false,
-		worker: null
+		canEdit: false,
+		canAddToPlaylist: false
+
 	},
 
 	/**
@@ -25,21 +23,23 @@ $$.control.registerControl('player', {
 	 */
 	init: function (elt, filesSrv, srvApp, pager) {
 
-		/**@type {{
-		 * rootDir: string, 
-		 * files: Breizbot.Services.Files.FileInfo[] | AppJukebox.PlaylistInfo[], 
-		 * firstIdx: number,
-		 * friendUser: string,
-		 * fileCtrl: Breizbot.Controls.Files.Interface,
-		 * isPlaylist: boolean,
-		 * }} */
-		const { rootDir, files, firstIdx, friendUser, fileCtrl, isPlaylist, isDatabaseSongs } = this.props
+
+		/**@type {AppJukebox.PlayerInfo[]} */
+		const files = this.props.files
+
+		/**@type {Breizbot.Controls.Files.Interface} */
+		const fileCtrl = this.props.fileCtrl
+
+		//console.log('files', files)
+		
+
+		const { firstIdx, canEdit, canAddToPlaylist } = this.props
 
 		const getTime = $$.media.getFormatedTime
 
 		let shuffleIndexes = null
 		let playlist = []
-		pager.setButtonVisible({ playlist: !isPlaylist })
+		//pager.setButtonVisible({ playlist: !isPlaylist })
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -171,17 +171,18 @@ $$.control.registerControl('player', {
 			//console.log('setIndex', idx)
 			ctrl.setData({
 				src: getFileUrl(idx),
-				title: getTitle(idx),
-				name: getName(idx),
-				artist: getArtist(idx),
-				genre: getGenre(idx),
-				year: getYear(idx),
+				title: files[idx].mp3.title,
+				name: files[idx].fileName,
+				rootDir: files[idx].rootDir,
+				artist: files[idx].mp3.artist,
+				genre: files[idx].mp3.genre,
+				year: files[idx].mp3.year,
 				idx
 			})
 			if (navigator.mediaSession) {
 				navigator.mediaSession.metadata = new MediaMetadata({
-					title: getTitle(idx),
-					artist: getArtist(idx)
+					title: ctrl.model.title,
+					artist: ctrl.model.artist
 				})
 
 				navigator.mediaSession.setActionHandler('previoustrack', isFirst() ? null : prev)
@@ -194,38 +195,10 @@ $$.control.registerControl('player', {
 		/**@type {HTMLAudioElement} */
 		const audio = ctrl.scope.audio.get(0)
 
-		function getName(idx) {
-			return (isPlaylist) ? files[idx].fileInfo.fileName : files[idx].name
-		}
-
-		function getTitle(idx) {
-			return files[idx].title || files[idx].mp3.title || ''
-		}
-
-		function getArtist(idx) {
-			return files[idx].artist || files[idx].mp3.artist ||  ''
-		}
-
-		function getGenre(idx) {
-			const mp3 = files[idx].mp3 || {}
-			return mp3.genre || ''
-		}
-
-		function getYear(idx) {
-			const mp3 = files[idx].mp3 || {}
-
-			return mp3.year || ''
-		}
 
 		function getFileUrl(idx) {
-			if (isPlaylist) {
-				const { rootDir, fileName, friendUser } = files[idx].fileInfo
-				return filesSrv.fileUrl(rootDir + fileName, friendUser)
-			}
-			if (isDatabaseSongs) {
-				return filesSrv.fileUrl(files[idx].fileName)
-			}
-			return filesSrv.fileUrl(rootDir + files[idx].name, friendUser)
+
+			return filesSrv.fileUrl($$.path.getFullPath(files[idx].rootDir, files[idx].fileName), files[idx].friendUser)
 		}
 
 		async function getPlaylist() {
@@ -237,9 +210,11 @@ $$.control.registerControl('player', {
 		getPlaylist()
 
 		this.getButtons = function () {
-			const ret = {
-				playlist: {
-					visible: !isPlaylist,
+			const ret = {}
+
+
+			if (canAddToPlaylist) {
+				ret.playlist = {
 					title: 'Add to playlist',
 					icon: 'fas fa-star',
 					items: function () {
@@ -259,7 +234,9 @@ $$.control.registerControl('player', {
 					},
 					onClick: async function (cmd) {
 						//console.log('onClick', cmd)
-						const fileInfo = { rootDir, friendUser, fileName: ctrl.model.name }
+						const {fileName, rootDir, friendUser} = files[ctrl.model.idx]
+						
+						const fileInfo = { fileName, rootDir, friendUser }
 
 						if (cmd == 'new') {
 							const name = await $$.ui.showPrompt({ title: 'Add Playlist', label: 'Name:' })
@@ -269,39 +246,41 @@ $$.control.registerControl('player', {
 									$$.ui.showAlert({ title: 'Error', content: 'Playlist already exists' })
 								}
 								else {
+									$.notify(`song added to playlst '${name}'`, 'success')
 									await getPlaylist()
 								}
 							}
 						}
 						else {
 							await srvApp.addSong(cmd, fileInfo, false)
+							$.notify(`song added to playlst '${cmd}'`, 'success')
 						}
 					}
 				}
 			}
 
-			if (friendUser === '') {
+			if (canEdit) {
 				ret.editInfo = {
-					visible: !isPlaylist,
+					//visible: !isPlaylist,
 					title: 'Edit Info',
 					icon: 'fa fa-edit',
 					onClick: function () {
-						const { idx, name } = ctrl.model
-						const mp3 = files[idx].mp3
+						const { idx } = ctrl.model
+						const {mp3, fileName, rootDir, friendUser} = files[idx]
 						mp3.length = ctrl.model.duration
 						pager.pushPage('editDlg', {
 							title: 'Edit MP3 Info',
 							props: {
-								mp3: files[idx].mp3,
+								mp3,
 								fileName: name,
 								url: ctrl.model.src,
 							},
 							onReturn: async function (tags) {
-								//console.group('onReturn', tags)
+								console.group('onReturn', tags)
 								files[idx].mp3 = tags
 								ctrl.setData(tags)
-								await srvApp.saveInfo(rootDir + name, friendUser, tags)
-								await fileCtrl.updateFileInfo(name, { getMP3Info: true })
+								await srvApp.saveInfo(rootDir + fileName, friendUser, tags)
+								await fileCtrl.updateFileInfo(fileName, { getMP3Info: true })
 							}
 						})
 

@@ -97,9 +97,18 @@ $$.control.registerControl('rootPage', {
 							title: 'Player',
 							props: {
 								firstIdx,
-								files,
-								rootDir,
-								friendUser,
+								canEdit: friendUser == '',
+								canAddToPlaylist: true,
+								files: files.map(e => {
+
+									return {
+										friendUser,
+										rootDir,
+										fileName: e.name,
+										mp3: e.mp3 || {}
+									}
+
+								}),
 								fileCtrl
 							}
 						})

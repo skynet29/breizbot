@@ -4,7 +4,7 @@ const { collection } = require('../lib/dbUtil.js')
 const util = require('../lib/util.js')
 
 const db = collection('app.jukebox')
-
+const path = require('path')
 
 
 module.exports = {
@@ -21,7 +21,7 @@ module.exports = {
             .sort({ idx: 1 }).toArray()
         const promises = records.map(async (f) => {
             const { fileName, rootDir, friendUser } = f.fileInfo
-            const filePath = util.getFilePath(userName, rootDir + fileName, friendUser)
+            const filePath = util.getFilePath(userName, path.join(rootDir, fileName), friendUser)
             //console.log('filePath', filePath)
             try {
                 const info = await util.getFileInfo(filePath, { getMP3Info: true })

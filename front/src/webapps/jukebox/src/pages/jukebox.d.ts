@@ -9,6 +9,14 @@ declare namespace AppJukebox {
     interface PlaylistInfo {
         fileInfo: FileInfo;
         mp3: Breizbot.Services.Files.Mp3Info;
+        status: 'ok' | 'ko';
+    }
+
+    interface PlayerInfo {
+        fileName: string;
+        rootDir: string;
+        friendUser: string;
+        mp3: Breizbot.Services.Files.Mp3Info;
     }
 
     interface Interface {

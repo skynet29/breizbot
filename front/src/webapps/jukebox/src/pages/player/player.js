@@ -172,11 +172,11 @@ $$.control.registerControl('player', {
 			const {fileName, mp3} = files[idx]
 			ctrl.setData({
 				src: getFileUrl(idx),
-				title: mp3.title,
+				title: mp3.title || '',
 				name: fileName,
-				artist: mp3.artist,
-				genre: mp3.genre,
-				year: mp3.year,
+				artist: mp3.artist || '',
+				genre: mp3.genre || '',
+				year: mp3.year || '',
 				idx
 			})
 			if (navigator.mediaSession) {

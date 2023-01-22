@@ -168,15 +168,15 @@ $$.control.registerControl('player', {
 		}
 
 		function setIndex(idx) {
-			//console.log('setIndex', idx)
+			console.log('setIndex', idx, files[idx])
+			const {fileName, mp3} = files[idx]
 			ctrl.setData({
 				src: getFileUrl(idx),
-				title: files[idx].mp3.title,
-				name: files[idx].fileName,
-				rootDir: files[idx].rootDir,
-				artist: files[idx].mp3.artist,
-				genre: files[idx].mp3.genre,
-				year: files[idx].mp3.year,
+				title: mp3.title,
+				name: fileName,
+				artist: mp3.artist,
+				genre: mp3.genre,
+				year: mp3.year,
 				idx
 			})
 			if (navigator.mediaSession) {

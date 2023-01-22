@@ -168,7 +168,7 @@ $$.control.registerControl('player', {
 		}
 
 		function setIndex(idx) {
-			console.log('setIndex', idx, files[idx])
+			//console.log('setIndex', idx, files[idx])
 			const {fileName, mp3} = files[idx]
 			ctrl.setData({
 				src: getFileUrl(idx),
@@ -272,7 +272,7 @@ $$.control.registerControl('player', {
 							title: 'Edit MP3 Info',
 							props: {
 								mp3,
-								fileName: name,
+								fileName,
 								url: ctrl.model.src,
 							},
 							onReturn: async function (tags) {

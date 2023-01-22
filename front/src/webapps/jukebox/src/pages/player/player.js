@@ -220,7 +220,7 @@ $$.control.registerControl('player', {
 					items: function () {
 
 						const ret = {
-							new: { name: 'Add to new playlist' }
+							$new: { name: 'Add to new playlist' }
 						}
 
 						if (playlist.length != 0) {
@@ -238,7 +238,7 @@ $$.control.registerControl('player', {
 						
 						const fileInfo = { fileName, rootDir, friendUser }
 
-						if (cmd == 'new') {
+						if (cmd == '$new') {
 							const name = await $$.ui.showPrompt({ title: 'Add Playlist', label: 'Name:' })
 							if (name != null) {
 								const ret = await srvApp.addSong(name, fileInfo, true)

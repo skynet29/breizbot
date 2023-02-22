@@ -22,9 +22,10 @@ declare namespace HUB {
     }
 
     interface DeviceInfo {
-        name: string;
+        portName: string;
         type: string;
         portId: number;
+        deviceTypeName: string;
     }
 
     interface HubDevice extends EventEmitter2 {
@@ -32,7 +33,7 @@ declare namespace HUB {
         connect(): Promise<void>;
         shutdown(): Promise<void>;
         getDeviceType(portId: PortMap): string;
-        subscribe(portId: PortMap, mode: DeviceMode, deltaInterval?: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
+        setPortFormat(portId: PortMap, mode: DeviceMode, notificationEnabled: boolean, deltaInterval?: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
         createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<string>;
         getPortInformation(portId: PortMap): Promise<PortInformation>;
         getPortIdFromName(portName: string): number;
@@ -41,6 +42,7 @@ declare namespace HUB {
         createDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>
         getPortIdFromName(name: string): number;
         startNotification(): Promise<void>;
+        getPortValue(portId):Promise<number>;
     }
      
     interface Motor {
@@ -50,7 +52,7 @@ declare namespace HUB {
         setSpeedForTime(speed: number, time: number, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
         rotateDegrees(degrees: number, speed: number, brakingStyle = BrakingStyle.BRAKE): Promise<void>; 
         gotoAngle(angle: number, speed: number, brakingStyle = BrakingStyle.BRAKE): Promise<void>;
-        waitSpeed(testFn: (speed: number) => boolean): Promise<void>;
+        calibrate():Promise<void>;
 
     }
 

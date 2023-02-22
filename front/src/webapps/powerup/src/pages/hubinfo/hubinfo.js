@@ -26,18 +26,18 @@ $$.control.registerControl('hubinfo', {
 		const externalDevices = []
 
 		for (const device of devices) {
-			const portId = device.portId
+			const {portId, deviceTypeName, portName} = device
 			if (portId < 50) {
 				externalDevices.push({
-					portName: device.name,
+					portName,
 					portId,
-					deviceTypeName: device.type
+					deviceTypeName
 				})
 			}
 			else {
 				internalDevices.push({
 					portId,
-					deviceTypeName: device.type
+					deviceTypeName
 				})
 
 			}
@@ -88,6 +88,7 @@ $$.control.registerControl('hubinfo', {
 			hubDevice.off('detach', detachCbk)
 		}
 
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				internalDevices,
@@ -95,6 +96,11 @@ $$.control.registerControl('hubinfo', {
 
 			},
 			events: {
+				onCalibrate: async function() {
+					const portId = getExternalPortId($(this))
+					console.log('onCalibrate', portId)
+					await hubDevice.createMotor(portId).calibrate()
+				},
 				onMouseUp: function () {
 					//console.log('onMouseUp')
 					const action = $(this).data('action')

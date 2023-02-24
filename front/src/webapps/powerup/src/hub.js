@@ -365,7 +365,7 @@
             console.log(value)	
             const offset = Math.floor(value / 2)
             console.log( {offset})
-            await this.gotoAngle(offset, 10)	
+            await this.gotoAngle(offset, 10, true)	
             await this.resetZero()
         }        
 

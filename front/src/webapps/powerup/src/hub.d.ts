@@ -33,7 +33,7 @@ declare namespace HUB {
         connect(): Promise<void>;
         shutdown(): Promise<void>;
         getDeviceType(portId: PortMap): string;
-        setPortFormat(portId: PortMap, mode: DeviceMode, notificationEnabled: boolean, deltaInterval?: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
+        setPortFormat(portId: PortMap, mode: DeviceMode, cbk?: (data)=>void, deltaInterval?: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
         createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<string>;
         getPortInformation(portId: PortMap): Promise<PortInformation>;
         getPortIdFromName(portName: string): number;
@@ -42,7 +42,8 @@ declare namespace HUB {
         createDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>
         getPortIdFromName(name: string): number;
         startNotification(): Promise<void>;
-        getPortValue(portId):Promise<number>;
+        getPortValue(portId: number):Promise<number>;
+        waitTestValue(portId: number, mode: number, testFn: (value: number) => boolean):Promise<void>;
     }
      
     interface Motor {

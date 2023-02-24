@@ -317,6 +317,7 @@
         }
 
         setSpeed(speed) {
+            console.log('setSpeed', speed)
             return this.hubDevice.writePortCommand(this.portId, false, 0x07, speed, maxPower, 0)
         }
 
@@ -325,7 +326,22 @@
         }
 
         gotoAngle(angle, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
-            return this.hubDevice.writePortCommand(this.portId, waitFeedback, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
+            console.log('gotoAngle', {angle, speed})
+            const portValue = this.hubDevice.portValue[this.portId]
+            this.hubDevice.portValue[this.portId] = angle
+            console.log({portValue})
+            if (portValue != undefined) {
+                if (Math.abs(angle - portValue) > 1) {
+                    return this.hubDevice.writePortCommand(this.portId, waitFeedback, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
+                }
+            }
+            else {
+                return this.hubDevice.writePortCommand(this.portId, waitFeedback, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
+
+            }
+
+
+            return Promise.resolve()
         }
 
         setSpeedForTime(speed, time, brakingStyle = BrakingStyle.BRAKE) {
@@ -348,25 +364,41 @@
 
 
         async calibrate() {
-            this.hubDevice.setPortFormat(this.portId, DeviceMode.ROTATION, false)
-            this.setPower(100)
-            await this.waitAlert()
+            
+            this.setPower(50)
+            await this.hubDevice.waitTestValue(this.portId, DeviceMode.SPEED, (value) => value > 10)
+            await this.hubDevice.waitTestValue(this.portId, DeviceMode.SPEED, (value) => value == 0)
+
+
             this.setPower(0)
-            await this.waitAlert()
+
+            await $$.util.wait(1000)
+
+            // await this.hubDevice.setPortFormat(this.portId, DeviceMode.ROTATION)
+            // let value = await this.hubDevice.getPortValue(this.portId)
+            // console.log(value)	
 
             await this.resetZero()
 
+            await this.hubDevice.setPortFormat(this.portId, DeviceMode.ROTATION)
+            let value = await this.hubDevice.getPortValue(this.portId)
+            console.log(value)	
 
-            this.setPower(-100)
-            await this.waitAlert()
+            this.setPower(-50)
+            await this.hubDevice.waitTestValue(this.portId, DeviceMode.SPEED, (value) => Math.abs(value) > 10)
+            await this.hubDevice.waitTestValue(this.portId, DeviceMode.SPEED, (value) => value == 0)
+
             this.setPower(0)
-            await this.waitAlert()
-            const value = await this.hubDevice.getPortValue(this.portId)
+            await this.hubDevice.setPortFormat(this.portId, DeviceMode.ROTATION)
+            value = await this.hubDevice.getPortValue(this.portId)
             console.log(value)	
             const offset = Math.floor(value / 2)
             console.log( {offset})
             await this.gotoAngle(offset, 10, true)	
+            value = await this.hubDevice.getPortValue(this.portId)
+            console.log(value)	
             await this.resetZero()
+            this.hubDevice.calibration[this.portId] = Math.abs(offset)
         }        
 
     }
@@ -422,6 +454,7 @@
             this.portCmdCallback = {}
             this.calibration = {}
             this.hubDevices = {}
+            this.portValue = {}
             this.busy = false
             this.cmdQueue = []
 
@@ -538,10 +571,11 @@
          }} cbk 
          * @returns 
          */
-        setPortFormat(portId, mode, notificationEnabled, deltaInterval = 1) {
+        setPortFormat(portId, mode, cbk = null, deltaInterval = 1) {
+            const notificationEnabled = (typeof cbk == 'function')
 
             console.log('setPortFormat', {portId, mode, notificationEnabled})
-            this.deviceModes[portId] = {mode, notificationEnabled}
+            this.deviceModes[portId] = {mode, cbk}
 
             return this.sendMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
                 portId, mode, toUint32(deltaInterval), notificationEnabled ? 0x01 : 0)
@@ -639,7 +673,7 @@
         }
 
         getPortValue(portId) {
-            console.log('getPortValue', {portId})
+            console.log('getPortValue', {portId, mode: this.deviceModes[portId].mode})
             return new Promise(async (resolve) => {
                 await this.sendMsg(MessageType.PORT_INFORMATION_REQUEST, portId, 0x00)
                 this.portCmdCallback[portId] = resolve
@@ -732,6 +766,20 @@
 
         }
 
+        async waitTestValue(portId, mode, testFn) {
+            return new Promise(async (resolve) => {
+                await this.setPortFormat(portId, mode, async (value) => {
+                    log('waitTestValue', value)
+                    if (testFn(value)) {
+                        log('waitTestValue OK')
+                        delete this.deviceModes[portId]
+                        await this.setPortFormat(portId, mode, null)
+                        resolve()
+                    }
+                })
+            })
+        }
+
         /**
           * 
           * @param {DataView} msg 
@@ -739,12 +787,13 @@
         handlePortValueSingle(msg) {
             //log('msg', msg)
             const portId = msg.getUint8(3)
+            const msgLen = msg.getUint8(0)
             const device = this.hubDevices[portId]
-            log('handlePortValueSingle', { portId, device })
+            log('handlePortValueSingle', { msgLen, portId, device })
 
             if (this.deviceModes[portId] != undefined) {
-                const {mode, notificationEnabled} = this.deviceModes[portId]
-                log({mode, notificationEnabled})
+                const {mode, cbk} = this.deviceModes[portId]
+                log({mode, cbk: typeof cbk == 'function'})
                 let value = null
 
                 switch (device.type) {
@@ -761,10 +810,11 @@
                 log({value})
                 const cb = this.portCmdCallback[portId]
                 if (value != null) {
-                    if (notificationEnabled) {
-                        this.emit('portValue', {portId, value})
+                    if (typeof cbk == 'function') {
+                        cbk(value)
                     }
                     else if (typeof cb == 'function') {
+                        log('getPortValue OK', value)
                         cb(value)
                         delete this.portCmdCallback[portId]
                     }

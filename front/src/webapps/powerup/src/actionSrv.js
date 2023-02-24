@@ -33,11 +33,13 @@ $$.service.registerService('actionSrv', {
                 }
                 else if (stepDesc.type == 'ROTATE') {
                     const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])
-                    await motor.rotateDegrees(stepDesc.angle, stepDesc.speed, stepDesc.waitFeedback)
+                    await motor.rotateDegrees(stepDesc.angle * factor, stepDesc.speed, stepDesc.waitFeedback)
                 }
                 else if (stepDesc.type == 'POSITION') {
                     const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])
-                    await motor.gotoAngle(stepDesc.angle, stepDesc.speed, stepDesc.waitFeedback)
+                    const calibFactor = hubDevice.calibration[hub.PortMap[stepDesc.port]] || 1
+                    console.log({calibFactor})
+                    await motor.gotoAngle(stepDesc.angle * factor * calibFactor, stepDesc.speed, stepDesc.waitFeedback)
                 }
                 else if (stepDesc.type == 'ZERO') {
                     const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])

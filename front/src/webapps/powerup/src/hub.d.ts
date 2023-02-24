@@ -50,8 +50,8 @@ declare namespace HUB {
         resetZero(): Promise<void>;
         setSpeed(speed: number): Promise<void>;
         setSpeedForTime(speed: number, time: number, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
-        rotateDegrees(degrees: number, speed: number, brakingStyle = BrakingStyle.BRAKE): Promise<void>; 
-        gotoAngle(angle: number, speed: number, brakingStyle = BrakingStyle.BRAKE): Promise<void>;
+        rotateDegrees(degrees: number, speed: number, waitFeedback: boolean, brakingStyle = BrakingStyle.BRAKE): Promise<void>; 
+        gotoAngle(angle: number, speed: number, waitFeedback: boolean, brakingStyle = BrakingStyle.BRAKE): Promise<void>;
         calibrate():Promise<void>;
 
     }
@@ -128,9 +128,8 @@ declare namespace ActionSrv {
         address: string;
     }
 
-    interface ActionDesc {
-        name: string;
-        type: 'SPEED' | 'DBLSPEED' | 'POWER' | 'ROTATE';
+    interface StepDesc {
+        type: 'SPEED' | 'DBLSPEED' | 'POWER' | 'ROTATE' | 'POSITION' | 'CALIBRATE' | 'ZERO';
         hub: string;
         port?: string;
         speed?: number;
@@ -140,7 +139,14 @@ declare namespace ActionSrv {
         speed2?: number;
         power?: number;
         angle?: number;
+        waitFeedback?: boolean;
     }
+
+    interface ActionDesc {
+        name: string;
+        steps: Array<StepDesc>;
+    }
+
 
     interface Interface {
         execAction(hubDevices: Array<HubDesc>, actions: Array<ActionDesc>, actionName: string, factor: number):Promise<void>;

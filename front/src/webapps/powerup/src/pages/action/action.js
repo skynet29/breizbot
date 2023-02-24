@@ -7,7 +7,7 @@ $$.control.registerControl('actionCtrl', {
     deps: ['breizbot.pager'],
 
     props: {
-        data: null
+        steps: []
     },
 
     /**
@@ -16,62 +16,56 @@ $$.control.registerControl('actionCtrl', {
      */
     init: function (elt, pager) {
 
-        //console.log('props', this.props)
-        let { data } = this.props
-
-        const isEdit = (data != null)
-
-        data = data || {}
-
-        const actionTypes = ['SPEED', 'POWER', 'DBLSPEED', 'ROTATE']
-        const ports = 'ABCD'.split('')
-        const hubs = ['HUB1', 'HUB2']
+        //console.log('actionCtrl props', this.props)
+        const { steps } = this.props
 
         const ctrl = $$.viewController(elt, {
             data: {
-                isEdit,
-                type: data.type || 'SPEED',
-                hub: data.hub || 'HUB1',
-                actionTypes,
-                ports,
-                hubs,
-                isType: function (type) {
-                    return this.type == type
-                },
-                isPower: function () {
-                    return this.isType('POWER')
-                }, 
-                isSpeed: function () {
-                    return this.isType('SPEED')
-                },
-                isDblSpeed: function () {
-                    return this.isType('DBLSPEED')
-                },
-                isRotate: function () {
-                    return this.isType('ROTATE')
+                steps,
+                showMenubar: function(scope) {
+                    return scope.idx > 0
                 }
+
             },
             events: {
-                onSubmit: function (ev) {
-                    ev.preventDefault()
-                    console.log('data', $(this).getFormData())
-                    pager.popPage($(this).getFormData())
-
+                onRemoveStep: function() {
+                    const idx = $(this).closest('.stepItem').index()
+                    console.log('onRemoveStep', idx)
+                    ctrl.model.steps.splice(idx, 1)
+                    ctrl.update()
                 }
             }
         })
 
-        ctrl.scope.form.setFormData(data)
+        function getSteps() {
+            const steps = []
+            elt.find('.stepCtrl').each(function() {
+                steps.push($(this).getFormData())
+            })
+            //console.log('steps', steps)
+            return steps
+        }
 
         this.getButtons = function () {
             return {
+                addStep: {
+					title: 'Add Step',
+					icon: 'fa fa-plus',
+					onClick: function() {
+						//console.log('Add step')
+                        ctrl.model.steps = getSteps()
+                        ctrl.model.steps.push({})
+                        ctrl.update()
+					}
+				},           
                 apply: {
                     title: 'Apply',
                     icon: 'fas fa-check',
                     onClick: function () {
-                        ctrl.scope.submit.click()
+                        pager.popPage(getSteps())
                     }
                 }
+
             }
         }
     }

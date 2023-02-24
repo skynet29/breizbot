@@ -1,0 +1,119 @@
+<div class="group">
+    <label>HUB</label>
+    <div bn-control="brainjs.combobox" bn-data="{items: hubs}" name="hub" bn-update="comboboxchange" bn-val="hub"></div>
+</div>
+
+<div class="group">
+    <label>Type</label>
+    <div bn-control="brainjs.combobox" bn-data="{items: actionTypes}" name="type" bn-update="comboboxchange"
+        bn-val="type"></div>
+</div>
+
+
+<div bn-if="isSpeed">
+    <div class="group">
+        <label>Port</label>
+        <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port"></div>
+    </div>
+
+    <div class="group">
+        <label>Speed</label>
+        <input type="number" required name="speed" min="-100" max="100">
+    </div>
+</div>
+
+<div bn-if="isPower">
+    <div class="group">
+        <label>Port</label>
+        <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port"></div>
+    </div>
+
+    <div class="group">
+        <label>Power</label>
+        <input type="number" required name="power" min="-100" max="100">
+    </div>
+</div>
+
+<div bn-if="isRotate">
+    <div class="group">
+        <label>Port</label>
+        <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port"></div>
+    </div>
+
+    <div class="group">
+        <label>Speed</label>
+        <input type="number" required name="speed" min="-100" max="100">
+    </div>
+
+    <div class="group">
+        <label>Angle (°)</label>
+        <input type="number" required name="angle" step="1">
+    </div>
+
+    <div class="group">
+        <label>Wait</label>
+        <input type="checkbox" required name="waitFeedback">
+    </div>
+</div>
+
+<div bn-if="isPosition">
+    <div class="group">
+        <label>Port</label>
+        <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port"></div>
+    </div>
+
+    <div class="group">
+        <label>Speed</label>
+        <input type="number" required name="speed" min="-100" max="100">
+    </div>
+
+    <div class="group">
+        <label>Angle (°)</label>
+        <input type="number" required name="angle" step="1">
+    </div>
+
+    <div class="group">
+        <label>Wait</label>
+        <input type="checkbox" required name="waitFeedback">
+    </div>
+</div>
+
+
+<div bn-if="isCalibrate">
+    <div class="group">
+        <label>Port</label>
+        <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port"></div>
+    </div>
+
+</div>
+
+
+<div bn-if="isZero">
+    <div class="group">
+        <label>Port</label>
+        <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port"></div>
+    </div>
+
+</div>
+
+<div bn-if="isDblSpeed">
+    <div class="group">
+        <label>Port1</label>
+        <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port1"></div>
+    </div>
+
+    <div class="group">
+        <label>Speed1</label>
+        <input type="number" required name="speed1" min="-100" max="100">
+    </div>
+
+    <div class="group">
+        <label>Port2</label>
+        <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port2"></div>
+    </div>
+
+    <div class="group">
+        <label>Speed2</label>
+        <input type="number" required name="speed2" min="-100" max="100">
+    </div>
+</div>

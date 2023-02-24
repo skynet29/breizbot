@@ -320,12 +320,12 @@
             return this.hubDevice.writePortCommand(this.portId, false, 0x07, speed, maxPower, 0)
         }
 
-        rotateDegrees(degrees, speed, brakingStyle = BrakingStyle.BRAKE) {
-            return this.hubDevice.writePortCommand(this.portId, true, 0x0B, toInt32(degrees), speed, maxPower, brakingStyle)
+        rotateDegrees(degrees, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
+            return this.hubDevice.writePortCommand(this.portId, waitFeedback, 0x0B, toInt32(degrees), speed, maxPower, brakingStyle)
         }
 
-        gotoAngle(angle, speed, brakingStyle = BrakingStyle.BRAKE) {
-            return this.hubDevice.writePortCommand(this.portId, true, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
+        gotoAngle(angle, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
+            return this.hubDevice.writePortCommand(this.portId, waitFeedback, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
         }
 
         setSpeedForTime(speed, time, brakingStyle = BrakingStyle.BRAKE) {
@@ -420,6 +420,7 @@
             this.deviceModes = {}
             this.portCmdQueue = {}
             this.portCmdCallback = {}
+            this.calibration = {}
             this.hubDevices = {}
             this.busy = false
             this.cmdQueue = []
@@ -594,15 +595,11 @@
         }
 
         getHubDevices() {
-            const ret = []
-            for (const [key, info] of Object.entries(this.hubDevices)) {
-                ret.push($.extend({}, info, { portId: parseInt(key) }))
-            }
-            return ret
+            return Object.values(this.hubDevices)
         }
 
         getDeviceType(portId) {
-            return DeviceTypeNames[this.hubDevices[portId]]
+            return DeviceTypeNames[this.hubDevices[portId].type]
         }
 
         async getPortInformation(portId) {
@@ -633,18 +630,7 @@
             return { modes, capabilities }
         }
 
-        async waitTestValue(portId, mode, testFn) {
-            return new Promise(async (resolve) => {
-                await this.subscribe(portId, mode, 1, (data) => {
-                    log('waitTestValue', data)
-                    if (testFn(data.value)) {
-                        delete this.deviceModes[portId]
-                        resolve()
-                    }
-                })
-            })
-        }
-
+    
         getPortInformationRequest(portId) {
             return new Promise(async (resolve) => {
                 await this.sendMsg(MessageType.PORT_INFORMATION_REQUEST, portId, 0x01)
@@ -954,7 +940,7 @@
             else if (eventType == Event.ATTACHED_VIRTUAL_IO) {
                 const portId1 = msg.getUint8(7)
                 const portId2 = msg.getUint8(8)
-                const info = { deviceTypeName: 'Virtual Port', portName: PortMapNames[portId], portId }
+                const info = { deviceTypeName: 'Virtual Port', portName: getVirtualPortName(portId1, portId2), portId }
 
                 this.hubDevices[portId] = info
 

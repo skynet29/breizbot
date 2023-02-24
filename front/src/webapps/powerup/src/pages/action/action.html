@@ -1,87 +1,13 @@
-<div>
-    <form bn-event="submit: onSubmit" bn-bind="form">
+<div class="scrollPanel">
 
-        <div class="group">
-            <label>Name</label>
-            <input type="text" required name="name" bn-prop="{disabled: isEdit}">
+    <div bn-each="steps" bn-index="idx" bn-event="click.removeBtn: onRemoveStep">
+
+        <div class="stepItem">
+            <div class="menubar" bn-show="showMenubar">
+                <button bn-icon="fa fa-trash-alt" class="removeBtn" title="Remove"></button>
+            </div>
+            <div bn-control="stepCtrl" bn-data="{data: $scope.$i}"></div>
         </div>
 
-        <div class="group">
-            <label>HUB</label>
-            <div bn-control="brainjs.combobox" bn-data="{items: hubs}" name="hub" bn-update="comboboxchange"
-                bn-val="hub"></div>
-        </div>        
-
-        <div class="group">
-            <label>Type</label>
-            <div bn-control="brainjs.combobox" bn-data="{items: actionTypes}" name="type" bn-update="comboboxchange"
-                bn-val="type"></div>
-        </div>
-
-
-        <div bn-if="isSpeed">
-            <div class="group">
-                <label>Port</label>
-                <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port"></div>
-            </div>
-
-            <div class="group">
-                <label>Speed</label>
-                <input type="number" required name="speed" min="-100" max="100">
-            </div>
-        </div>
-
-        <div bn-if="isPower">
-            <div class="group">
-                <label>Port</label>
-                <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port"></div>
-            </div>
-
-            <div class="group">
-                <label>Power</label>
-                <input type="number" required name="power" min="-100" max="100">
-            </div>
-        </div>
-
-        <div bn-if="isRotate">
-            <div class="group">
-                <label>Port</label>
-                <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port"></div>
-            </div>
-
-            <div class="group">
-                <label>Speed</label>
-                <input type="number" required name="speed" min="-100" max="100">
-            </div>
-
-            <div class="group">
-                <label>Angle (°)</label>
-                <input type="number" required name="angle" step="1">
-            </div>
-        </div>       
-
-        <div bn-if="isDblSpeed">
-            <div class="group">
-                <label>Port1</label>
-                <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port1"></div>
-            </div>
-
-            <div class="group">
-                <label>Speed1</label>
-                <input type="number" required name="speed1" min="-100" max="100">
-            </div>
-
-            <div class="group">
-                <label>Port2</label>
-                <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port2"></div>
-            </div>
-
-            <div class="group">
-                <label>Speed2</label>
-                <input type="number" required name="speed2" min="-100" max="100">
-            </div>           
-        </div>
-
-        <input type="submit" hidden bn-bind="submit">
-    </form>
+    </div>
 </div>

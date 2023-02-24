@@ -4,20 +4,20 @@
     flex-direction: row;
     justify-content: center;
 
-    form {
+    .scrollPanel {
+        flex: 1;
+        overflow: auto;
 
-        max-width: 400px;
-        width: 400px;
-        display: flex;
-        flex-direction: column;
+    }
 
-        .group {
+    .stepItem{
+        margin-top: 10px;
+        border: 1px solid lightgrey;
+        padding: 10px;
+
+        .menubar {
             display: flex;
-            label {
-                width: 100px;
-            }
-            margin-top: 5px;
+            justify-content: flex-end;
         }
-
     }
 }

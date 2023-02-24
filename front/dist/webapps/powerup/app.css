@@ -28,21 +28,33 @@
       .rootPage .toolbar .mode > div {
         margin-left: 20px; }
 
+.stepCtrl .group {
+  display: flex;
+  align-items: center;
+  margin-top: 5px; }
+  .stepCtrl .group label {
+    width: 100px; }
+  .stepCtrl .group input[type="number"] {
+    padding-left: 5px; }
+  .stepCtrl .group input[type="checkbox"] {
+    width: 24px;
+    height: 24px; }
+
 .actionCtrl {
   padding: 10px;
   display: flex;
   flex-direction: row;
   justify-content: center; }
-  .actionCtrl form {
-    max-width: 400px;
-    width: 400px;
-    display: flex;
-    flex-direction: column; }
-    .actionCtrl form .group {
+  .actionCtrl .scrollPanel {
+    flex: 1;
+    overflow: auto; }
+  .actionCtrl .stepItem {
+    margin-top: 10px;
+    border: 1px solid lightgrey;
+    padding: 10px; }
+    .actionCtrl .stepItem .menubar {
       display: flex;
-      margin-top: 5px; }
-      .actionCtrl form .group label {
-        width: 100px; }
+      justify-content: flex-end; }
 
 .actionsCtrl {
   display: flex;

@@ -43,6 +43,10 @@ $$.service.registerService('actionSrv', {
                     const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])
                     await motor.resetZero()
                 }
+                else if (stepDesc.type == 'CALIBRATE') {
+                    const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])
+                    await motor.calibrate()
+                }
                 else if (stepDesc.type == 'DBLSPEED') {
                     const portId1 = hub.PortMap[stepDesc.port1]
                     const portId2 = hub.PortMap[stepDesc.port2]

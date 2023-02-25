@@ -583,7 +583,7 @@
 
         getPortIdFromName(name) {
             for (const [portId, info] of Object.entries(this.hubDevices)) {
-                if (info.name == name) {
+                if (info.portName == name) {
                     return portId
                 }
             }           
@@ -593,7 +593,7 @@
             const name = getVirtualPortName(portId1, portId2)
             console.log('createVirtualPort', portId1, portId2)
             for (const info of Object.values(this.hubDevices)) {
-                if (info.name == name) {
+                if (info.portName == name) {
                     console.log(`virtual port ${name} already created !`)
                     return name
                 }

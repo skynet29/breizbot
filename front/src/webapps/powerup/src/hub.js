@@ -327,6 +327,14 @@
             return this.hubDevice.writePortCommand(this.portId, waitFeedback, 0x0B, toInt32(degrees), speed, maxPower, brakingStyle)
         }
 
+        /**
+         * 
+         * @param {number} angle 
+         * @param {number} speed 
+         * @param {boolean} waitFeedback 
+         * @param {number} brakingStyle 
+         * @returns 
+         */
         gotoAngle(angle, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
             console.log('gotoAngle', { angle, speed })
             const portValue = this.hubDevice.portValue[this.portId]
@@ -382,23 +390,17 @@
 
             await this.resetZero()
 
-            await this.hubDevice.setPortFormat(this.portId, DeviceMode.ROTATION)
-            let value = await this.hubDevice.getPortValue(this.portId)
-            console.log(value)
 
             this.setPower(-50)
             await this.hubDevice.waitTestValue(this.portId, DeviceMode.SPEED, (value) => Math.abs(value) > 10)
             await this.hubDevice.waitTestValue(this.portId, DeviceMode.SPEED, (value) => value == 0)
 
             this.setPower(0)
-            await this.hubDevice.setPortFormat(this.portId, DeviceMode.ROTATION)
-            value = await this.hubDevice.getPortValue(this.portId)
+            const value = await this.hubDevice.getPortValue(this.portId, DeviceMode.ROTATION)
             console.log(value)
             const offset = Math.floor(value / 2)
             console.log({ offset })
             await this.gotoAngle(offset, 10, true)
-            value = await this.hubDevice.getPortValue(this.portId)
-            console.log(value)
             await this.resetZero()
             this.hubDevice.calibration[this.portId] = Math.abs(offset)
         }
@@ -430,6 +432,12 @@
 
         }
 
+        /**
+         * 
+         * @param {number} speed1 
+         * @param {number} speed2 
+         * @returns 
+         */
         setSpeed(speed1, speed2) {
             const portId = this.hubDevice
             return this.hubDevice.writePortCommand(this.portId, false, 0x08, speed1, speed2, maxPower, 0)
@@ -678,6 +686,12 @@
             })
         }
 
+        /**
+         * 
+         * @param {number} portId 
+         * @param {number} mode 
+         * @returns 
+         */
         async getPortValue(portId, mode) {
             console.log('getPortValue', { portId, mode })
             await this.setPortFormat(portId, mode)

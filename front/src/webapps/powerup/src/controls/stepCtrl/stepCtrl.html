@@ -96,7 +96,30 @@
 
 </div>
 
-<div bn-if="isDblSpeed">
+<div bn-if="isColor">
+    <div class="group">
+        <label>Color</label>
+        <div bn-control="brainjs.combobox" bn-data="{items: ledColors}" name="color"></div>
+    </div>
+
+</div>
+
+<div bn-if="isRgb">
+    <div class="group">
+        <label>Red</label>
+        <input type="number" min="0" max="255" name="red">
+    </div>
+    <div class="group">
+        <label>Green</label>
+        <input type="number" min="0" max="255" name="green">
+    </div>
+    <div class="group">
+        <label>Blue</label>
+        <input type="number" min="0" max="255" name="blue">
+    </div>
+</div>
+
+<div bn-if="isDblspeed" >
     <div class="group">
         <label>Port1</label>
         <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port1"></div>

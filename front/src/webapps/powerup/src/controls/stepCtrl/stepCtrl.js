@@ -2,61 +2,60 @@
 
 $$.control.registerControl('stepCtrl', {
 
-	template: { gulp_inject: './stepCtrl.html' },
+    template: { gulp_inject: './stepCtrl.html' },
 
-	deps: ['breizbot.pager'],
+    deps: ['breizbot.pager', 'hub'],
 
-	props: {
-		data: null
-	},
+    props: {
+        data: null
+    },
 
-	/**
-	 * 
-	 * @param {Breizbot.Services.Pager.Interface} pager 
-	 */
-	init: function (elt, pager) {
-	
+    /**
+     * 
+     * @param {Breizbot.Services.Pager.Interface} pager 
+     * @param {HUB} hub
+     */
+    init: function (elt, pager, hub) {
+
         //console.log('stepCtrl props', this.props)
         let { data } = this.props
 
         data = data || {}
 
-        const actionTypes = ['SPEED', 'POWER', 'DBLSPEED', 'ROTATE', 'POSITION', 'CALIBRATE', 'ZERO']
+        const actionTypes = [
+            'SPEED',
+            'POWER',
+            'DBLSPEED',
+            'ROTATE',
+            'POSITION',
+            'CALIBRATE',
+            'ZERO',
+            'COLOR',
+            'RGB'
+        ]
         const ports = 'ABCD'.split('')
         const hubs = ['HUB1', 'HUB2']
+        const ledColors = Object.entries(hub.Color).map(([label, value]) => {
+            return {label, value}
+        })
+        console.log(ledColors)
 
+        const dataInfo = {
+            type: data.type || 'SPEED',
+            hub: data.hub || 'HUB1',
+            actionTypes,
+            ledColors,
+            ports,
+            hubs
+        }
+        for(const a of actionTypes) {
+            const name = a.charAt(0) + a.slice(1).toLowerCase()
+            dataInfo['is' + name] = function() {
+                return this.type == a
+            }
+        }
         const ctrl = $$.viewController(elt, {
-            data: {
-                type: data.type || 'SPEED',
-                hub: data.hub || 'HUB1',
-                actionTypes,
-                ports,
-                hubs,
-                isType: function (type) {
-                    return this.type == type
-                },
-                isPower: function () {
-                    return this.isType('POWER')
-                }, 
-                isSpeed: function () {
-                    return this.isType('SPEED')
-                },
-                isDblSpeed: function () {
-                    return this.isType('DBLSPEED')
-                },
-                isRotate: function () {
-                    return this.isType('ROTATE')
-                },
-                isPosition: function () {
-                    return this.isType('POSITION')
-                },
-                isCalibrate: function () {
-                    return this.isType('CALIBRATE')
-                },
-				isZero: function () {
-                    return this.isType('ZERO')
-                }
-            },
+            data: dataInfo,
             events: {
 
             }

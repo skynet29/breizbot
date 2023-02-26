@@ -275,27 +275,29 @@
     const maxPower = 100
 
 
-    /**
-     * 
-     * @param {HubDevice} hubDevice 
-     * @param {number} portId 
-     * @returns 
-     */
+
     class Led {
 
+        /**
+        * 
+        * @param {HubDevice} hubDevice 
+        * @param {number} portId 
+        */
         constructor(hubDevice, portId) {
             this.hubDevice = hubDevice
             this.portId = portId
         }
 
         async setColor(color) {
-            await this.hubDevice.subscribe(this.portId, DeviceMode.COLOR)
-            return this.hubDevice.writeDirect(this.portId, DeviceMode.COLOR, color)
+            console.log('setColor', this.portId, color)
+            await this.hubDevice.setPortFormat(this.portId, DeviceMode.COLOR)
+            return this.hubDevice.writeDirect(this.portId, DeviceMode.COLOR, false, color)
         }
 
         async setRGBColor(r, g, b) {
-            await this.hubDevice.subscribe(this.portId, DeviceMode.RGB)
-            return this.hubDevice.writeDirect(this.portId, DeviceMode.RGB, r, g, b)
+            console.log('setColor', this.portId, r, g, b)
+            await this.hubDevice.setPortFormat(this.portId, DeviceMode.RGB)
+            return this.hubDevice.writeDirect(this.portId, DeviceMode.RGB, false, r, g, b)
         }
     }
 
@@ -312,7 +314,7 @@
         }
 
         setPower(power) {
-            console.log('setPower', {power})
+            console.log('setPower', { power })
             return this.hubDevice.writeDirect(this.portId, DeviceMode.POWER, false, power)
         }
 
@@ -326,10 +328,10 @@
         }
 
         gotoAngle(angle, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
-            console.log('gotoAngle', {angle, speed})
+            console.log('gotoAngle', { angle, speed })
             const portValue = this.hubDevice.portValue[this.portId]
             this.hubDevice.portValue[this.portId] = angle
-            console.log({portValue})
+            console.log({ portValue })
             if (portValue != undefined) {
                 if (Math.abs(angle - portValue) > 1) {
                     return this.hubDevice.writePortCommand(this.portId, waitFeedback, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
@@ -354,17 +356,17 @@
         }
 
         waitAlert() {
-			return new Promise((resolve) => {
-				this.hubDevice.once('hubAlerts', async (data) => {
-					console.log('hubAlerts', data)
-					resolve()
-				})
-			})
-		}
+            return new Promise((resolve) => {
+                this.hubDevice.once('hubAlerts', async (data) => {
+                    console.log('hubAlerts', data)
+                    resolve()
+                })
+            })
+        }
 
 
         async calibrate() {
-            
+
             this.setPower(50)
             await this.hubDevice.waitTestValue(this.portId, DeviceMode.SPEED, (value) => value > 10)
             await this.hubDevice.waitTestValue(this.portId, DeviceMode.SPEED, (value) => value == 0)
@@ -382,7 +384,7 @@
 
             await this.hubDevice.setPortFormat(this.portId, DeviceMode.ROTATION)
             let value = await this.hubDevice.getPortValue(this.portId)
-            console.log(value)	
+            console.log(value)
 
             this.setPower(-50)
             await this.hubDevice.waitTestValue(this.portId, DeviceMode.SPEED, (value) => Math.abs(value) > 10)
@@ -391,15 +393,15 @@
             this.setPower(0)
             await this.hubDevice.setPortFormat(this.portId, DeviceMode.ROTATION)
             value = await this.hubDevice.getPortValue(this.portId)
-            console.log(value)	
+            console.log(value)
             const offset = Math.floor(value / 2)
-            console.log( {offset})
-            await this.gotoAngle(offset, 10, true)	
+            console.log({ offset })
+            await this.gotoAngle(offset, 10, true)
             value = await this.hubDevice.getPortValue(this.portId)
-            console.log(value)	
+            console.log(value)
             await this.resetZero()
             this.hubDevice.calibration[this.portId] = Math.abs(offset)
-        }        
+        }
 
     }
 
@@ -496,7 +498,7 @@
             // await this.sendMsg(MessageType.HUB_ALERTS, 0x02, 0x01)
             // await this.sendMsg(MessageType.HUB_ALERTS, 0x03, 0x01)
             // await this.sendMsg(MessageType.HUB_ALERTS, 0x04, 0x01)
-            
+
         }
 
 
@@ -507,6 +509,10 @@
          */
         createMotor(portId) {
             return new Motor(this, portId)
+        }
+
+        createLed(portId) {
+            return new Led(this, portId)
         }
 
         async createDblMotor(portId1, portId2) {
@@ -556,7 +562,7 @@
          * @returns 
          */
         writeDirect(portId, mode, waitFeedback, ...data) {
-            log('writeDirect', {portId, mode, waitFeedback})
+            log('writeDirect', { portId, mode, waitFeedback })
             return this.writePortCommand(portId, waitFeedback, 0x51, mode, data)
         }
 
@@ -574,8 +580,8 @@
         setPortFormat(portId, mode, cbk = null, deltaInterval = 1) {
             const notificationEnabled = (typeof cbk == 'function')
 
-            console.log('setPortFormat', {portId, mode, notificationEnabled})
-            this.deviceModes[portId] = {mode, cbk}
+            console.log('setPortFormat', { portId, mode, notificationEnabled })
+            this.deviceModes[portId] = { mode, cbk }
 
             return this.sendMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
                 portId, mode, toUint32(deltaInterval), notificationEnabled ? 0x01 : 0)
@@ -586,7 +592,7 @@
                 if (info.portName == name) {
                     return portId
                 }
-            }           
+            }
         }
 
         async createVirtualPort(portId1, portId2) {
@@ -614,12 +620,12 @@
 
                 return new Promise(async (resolve) => {
                     const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, data)
-    
+
                     await this.sendBuffer(buffer)
 
                     this.portCmdCallback[portId] = resolve
-    
-                })                
+
+                })
             }
             else {
                 const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x10, data)
@@ -664,7 +670,7 @@
             return { modes, capabilities }
         }
 
-    
+
         getPortInformationRequest(portId) {
             return new Promise(async (resolve) => {
                 await this.sendMsg(MessageType.PORT_INFORMATION_REQUEST, portId, 0x01)
@@ -672,12 +678,13 @@
             })
         }
 
-        getPortValue(portId) {
-            console.log('getPortValue', {portId, mode: this.deviceModes[portId].mode})
+        async getPortValue(portId, mode) {
+            console.log('getPortValue', { portId, mode })
+            await this.setPortFormat(portId, mode)
             return new Promise(async (resolve) => {
                 await this.sendMsg(MessageType.PORT_INFORMATION_REQUEST, portId, 0x00)
                 this.portCmdCallback[portId] = resolve
-            })          
+            })
         }
 
         getPortModeInformationRequest(portId, mode, type) {
@@ -792,8 +799,8 @@
             log('handlePortValueSingle', { msgLen, portId, device })
 
             if (this.deviceModes[portId] != undefined) {
-                const {mode, cbk} = this.deviceModes[portId]
-                log({mode, cbk: typeof cbk == 'function'})
+                const { mode, cbk } = this.deviceModes[portId]
+                log({ mode, cbk: typeof cbk == 'function' })
                 let value = null
 
                 switch (device.type) {
@@ -807,7 +814,7 @@
                         break
                 }
 
-                log({value})
+                log({ value })
                 const cb = this.portCmdCallback[portId]
                 if (value != null) {
                     if (typeof cbk == 'function') {
@@ -912,7 +919,7 @@
             }
             else if (property == HubPropertyPayload.PRIMARY_MAC_ADDRESS) {
                 const bytes = []
-                for(let i = 0; i < 6; i++) {
+                for (let i = 0; i < 6; i++) {
                     bytes.push(msg.getUint8(5 + i).toString(16).toLocaleUpperCase().padStart(2, '0'))
                 }
                 log({ bytes })
@@ -941,7 +948,7 @@
             const operation = msg.getUint8(4)
             const payload = msg.getUint8(5)
 
-            log('handleHubAlerts', {bufferLen, msgLen, type, operation, payload})
+            log('handleHubAlerts', { bufferLen, msgLen, type, operation, payload })
             this.emit('hubAlerts', { type, payload })
         }
 
@@ -985,7 +992,7 @@
             }
             else if (eventType == Event.DETACHED_IO) {
                 delete this.hubDevices[portId]
-                this.emit('detach', {portId})
+                this.emit('detach', { portId })
             }
             else if (eventType == Event.ATTACHED_VIRTUAL_IO) {
                 const portId1 = msg.getUint8(7)

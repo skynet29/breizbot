@@ -45,6 +45,14 @@ $$.service.registerService('actionSrv', {
                     const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])
                     await motor.resetZero()
                 }
+                else if (stepDesc.type == 'COLOR') {
+                    const led = hubDevice.createLed(hub.PortMap.HUB_LED)
+                    await led.setColor(stepDesc.color)
+                }
+                else if (stepDesc.type == 'RGB') {
+                    const led = hubDevice.createLed(hub.PortMap.HUB_LED)
+                    await led.setRGBColor(stepDesc.red, stepDesc.green, stepDesc.blue)
+                }
                 else if (stepDesc.type == 'CALIBRATE') {
                     const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])
                     await motor.calibrate()

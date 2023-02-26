@@ -36,13 +36,13 @@ declare namespace HUB {
         setPortFormat(portId: PortMap, mode: DeviceMode, cbk?: (data)=>void, deltaInterval?: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
         createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<string>;
         getPortInformation(portId: PortMap): Promise<PortInformation>;
-        getPortIdFromName(portName: string): number;
         waitTestValue(portId: number, mode: number, testFn: (value: number) => boolean): Promise<void>;
         createMotor(portId: number): Motor;
         createDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>
+        createLed(portId: number):Led;
         getPortIdFromName(name: string): number;
         startNotification(): Promise<void>;
-        getPortValue(portId: number):Promise<number>;
+        getPortValue(portId: number, mode: number):Promise<number>;
         waitTestValue(portId: number, mode: number, testFn: (value: number) => boolean):Promise<void>;
     }
      
@@ -130,7 +130,7 @@ declare namespace ActionSrv {
     }
 
     interface StepDesc {
-        type: 'SPEED' | 'DBLSPEED' | 'POWER' | 'ROTATE' | 'POSITION' | 'CALIBRATE' | 'ZERO';
+        type: 'SPEED' | 'DBLSPEED' | 'POWER' | 'ROTATE' | 'POSITION' | 'CALIBRATE' | 'ZERO' | 'COLOR' | 'RGB';
         hub: string;
         port?: string;
         speed?: number;
@@ -141,6 +141,10 @@ declare namespace ActionSrv {
         power?: number;
         angle?: number;
         waitFeedback?: boolean;
+        color?: number;
+        red?: number;
+        green?: number;
+        blue?: number;
     }
 
     interface ActionDesc {

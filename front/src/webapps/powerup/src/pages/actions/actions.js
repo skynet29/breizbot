@@ -95,7 +95,6 @@ $$.control.registerControl('actionsCtrl', {
 									steps: [{}]
 								},
 								onReturn: function (data) {
-									//console.log('onReturn', data)
 									ctrl.model.actions.push({ name, steps: data })
 									ctrl.update()
 								}

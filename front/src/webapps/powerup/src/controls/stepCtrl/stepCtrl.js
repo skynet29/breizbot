@@ -24,6 +24,7 @@ $$.control.registerControl('stepCtrl', {
 
         const actionTypes = [
             'SPEED',
+            'SPEEDTIME',
             'POWER',
             'DBLSPEED',
             'ROTATE',
@@ -35,15 +36,18 @@ $$.control.registerControl('stepCtrl', {
         ]
         const ports = 'ABCD'.split('')
         const hubs = ['HUB1', 'HUB2']
-        const ledColors = Object.entries(hub.Color).map(([label, value]) => {
-            return {label, value}
-        })
+        const ledColors = Object.entries(hub.Color).map(([label, value]) => Object.assign({label, value}))
         console.log(ledColors)
+
+        const brakeStyles = Object.entries(hub.BrakingStyle).map(([label, value]) => Object.assign({label, value}))
+        console.log(brakeStyles)
 
         const dataInfo = {
             type: data.type || 'SPEED',
             hub: data.hub || 'HUB1',
+            brakeStyle: data.brakeStyle || hub.BrakingStyle.BRAKE,
             actionTypes,
+            brakeStyles,
             ledColors,
             ports,
             hubs

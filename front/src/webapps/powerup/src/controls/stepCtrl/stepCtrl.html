@@ -22,6 +22,32 @@
     </div>
 </div>
 
+<div bn-if="isSpeedtime">
+    <div class="group">
+        <label>Port</label>
+        <div bn-control="brainjs.combobox" bn-data="{items: ports}" name="port"></div>
+    </div>
+
+    <div class="group">
+        <label>Speed</label>
+        <input type="number" required name="speed" min="-100" max="100">
+    </div>
+    <div class="group">
+        <label>Time (ms)</label>
+        <input type="number" required name="time" min="0">
+    </div>
+    <div class="group">
+        <label>Wait End</label>
+        <input type="checkbox" required name="waitFeedback">
+    </div>
+    <div class="group">
+        <label>Braking Style</label>
+        <div bn-control="brainjs.combobox" 
+            bn-data="{items: brakeStyles}" name="brakeStyle" bn-val="brakeStyle"></div>
+    </div>
+</div>
+
+
 <div bn-if="isPower">
     <div class="group">
         <label>Port</label>
@@ -51,9 +77,15 @@
     </div>
 
     <div class="group">
-        <label>Wait</label>
+        <label>Wait End</label>
         <input type="checkbox" required name="waitFeedback">
     </div>
+
+    <div class="group">
+        <label>Braking Style</label>
+        <div bn-control="brainjs.combobox" 
+            bn-data="{items: brakeStyles}" name="brakeStyle" bn-val="brakeStyle"></div>
+    </div>    
 </div>
 
 <div bn-if="isPosition">
@@ -73,8 +105,14 @@
     </div>
 
     <div class="group">
-        <label>Wait</label>
+        <label>Wait End</label>
         <input type="checkbox" required name="waitFeedback">
+    </div>
+
+    <div class="group">
+        <label>Braking Style</label>
+        <div bn-control="brainjs.combobox" 
+            bn-data="{items: brakeStyles}" name="brakeStyle" bn-val="brakeStyle"></div>
     </div>
 </div>
 

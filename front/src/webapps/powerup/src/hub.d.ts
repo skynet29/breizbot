@@ -30,16 +30,16 @@ declare namespace HUB {
 
     interface HubDevice extends EventEmitter2 {
         getHubDevices(): DeviceInfo[];
-        connect(): Promise<void>;
+        init(device: BluetoothDevice): Promise<void>;
         shutdown(): Promise<void>;
         getDeviceType(portId: PortMap): string;
         setPortFormat(portId: PortMap, mode: DeviceMode, cbk?: (data)=>void, deltaInterval?: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
         createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<string>;
         getPortInformation(portId: PortMap): Promise<PortInformation>;
         waitTestValue(portId: number, mode: number, testFn: (value: number) => boolean): Promise<void>;
-        createMotor(portId: number): Motor;
-        createDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>
-        createLed(portId: number):Led;
+        getMotor(portId: number): Motor;
+        getDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>
+        getLed(portId: number):Led;
         getPortIdFromName(name: string): number;
         startNotification(): Promise<void>;
         getPortValue(portId: number, mode: number):Promise<number>;
@@ -50,7 +50,7 @@ declare namespace HUB {
         setPower(power: number): Promise<void>;
         resetZero(): Promise<void>;
         setSpeed(speed: number): Promise<void>;
-        setSpeedForTime(speed: number, time: number, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
+        setSpeedForTime(speed: number, time: number, waitFeedback: boolean = false, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
         rotateDegrees(degrees: number, speed: number, waitFeedback: boolean, brakingStyle = BrakingStyle.BRAKE): Promise<void>; 
         gotoAngle(angle: number, speed: number, waitFeedback: boolean, brakingStyle = BrakingStyle.BRAKE): Promise<void>;
         calibrate():Promise<void>;
@@ -130,7 +130,8 @@ declare namespace ActionSrv {
     }
 
     interface StepDesc {
-        type: 'SPEED' | 'DBLSPEED' | 'POWER' | 'ROTATE' | 'POSITION' | 'CALIBRATE' | 'ZERO' | 'COLOR' | 'RGB';
+        type: 'SPEED' | 'DBLSPEED' | 'POWER' | 'ROTATE' |
+         'POSITION' | 'CALIBRATE' | 'ZERO' | 'COLOR' | 'RGB' | 'SPEEDTIME';
         hub: string;
         port?: string;
         speed?: number;
@@ -145,6 +146,8 @@ declare namespace ActionSrv {
         red?: number;
         green?: number;
         blue?: number;
+        time?: number;
+        brakeStyle?: HUB.BrakingStyle;
     }
 
     interface ActionDesc {

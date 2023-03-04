@@ -24,44 +24,48 @@ $$.service.registerService('actionSrv', {
                 const { hubDevice } = hubDesc
 
                 if (stepDesc.type == 'POWER') {
-                    const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])
+                    const motor = hubDevice.getMotor(hub.PortMap[stepDesc.port])
                     await motor.setPower(stepDesc.power * factor)
                 }
                 else if (stepDesc.type == 'SPEED') {
-                    const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])
+                    const motor = hubDevice.getMotor(hub.PortMap[stepDesc.port])
                     await motor.setSpeed(stepDesc.speed * factor)
                 }
+                else if (stepDesc.type == 'SPEEDTIME') {
+                    const motor = hubDevice.getMotor(hub.PortMap[stepDesc.port])
+                    await motor.setSpeedForTime(stepDesc.speed, stepDesc.time, stepDesc.waitFeedback, stepDesc.brakeStyle)
+                }               
                 else if (stepDesc.type == 'ROTATE') {
-                    const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])
+                    const motor = hubDevice.getMotor(hub.PortMap[stepDesc.port])
                     await motor.rotateDegrees(stepDesc.angle * factor, stepDesc.speed, stepDesc.waitFeedback)
                 }
                 else if (stepDesc.type == 'POSITION') {
-                    const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])
+                    const motor = hubDevice.getMotor(hub.PortMap[stepDesc.port])
                     const calibFactor = hubDevice.calibration[hub.PortMap[stepDesc.port]] || 1
                     console.log({calibFactor})
                     await motor.gotoAngle(stepDesc.angle * factor * calibFactor, stepDesc.speed, stepDesc.waitFeedback)
                 }
                 else if (stepDesc.type == 'ZERO') {
-                    const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])
+                    const motor = hubDevice.getMotor(hub.PortMap[stepDesc.port])
                     await motor.resetZero()
                 }
                 else if (stepDesc.type == 'COLOR') {
-                    const led = hubDevice.createLed(hub.PortMap.HUB_LED)
+                    const led = hubDevice.getLed(hub.PortMap.HUB_LED)
                     await led.setColor(stepDesc.color)
                 }
                 else if (stepDesc.type == 'RGB') {
-                    const led = hubDevice.createLed(hub.PortMap.HUB_LED)
+                    const led = hubDevice.getLed(hub.PortMap.HUB_LED)
                     await led.setRGBColor(stepDesc.red, stepDesc.green, stepDesc.blue)
                 }
                 else if (stepDesc.type == 'CALIBRATE') {
-                    const motor = hubDevice.createMotor(hub.PortMap[stepDesc.port])
+                    const motor = hubDevice.getMotor(hub.PortMap[stepDesc.port])
                     await motor.calibrate()
                 }
                 else if (stepDesc.type == 'DBLSPEED') {
                     const portId1 = hub.PortMap[stepDesc.port1]
                     const portId2 = hub.PortMap[stepDesc.port2]
 
-                    const motor = await hubDevice.createDblMotor(portId1, portId2)
+                    const motor = await hubDevice.getDblMotor(portId1, portId2)
                     await motor.setSpeed(stepDesc.speed1 *factor, stepDesc.speed2 * factor)
                 }
                 else {

@@ -289,19 +289,19 @@
         }
 
         async setColor(color) {
-            console.log('setColor', this.portId, color)
+            console.log('setColor', this.portId, {color})
             await this.hubDevice.setPortFormat(this.portId, DeviceMode.COLOR)
             return this.hubDevice.writeDirect(this.portId, DeviceMode.COLOR, false, color)
         }
 
         async setRGBColor(r, g, b) {
-            console.log('setColor', this.portId, r, g, b)
+            console.log('setColor', this.portId, {r, g, b})
             await this.hubDevice.setPortFormat(this.portId, DeviceMode.RGB)
             return this.hubDevice.writeDirect(this.portId, DeviceMode.RGB, false, r, g, b)
         }
     }
 
-
+    /**@implements HUB.Motor */
     class Motor {
         /**
          * 
@@ -314,16 +314,17 @@
         }
 
         setPower(power) {
-            console.log('setPower', { power })
+            console.log('setPower', this.portId, { power })
             return this.hubDevice.writeDirect(this.portId, DeviceMode.POWER, false, power)
         }
 
         setSpeed(speed) {
-            console.log('setSpeed', speed)
+            console.log('setSpeed', this.portId, {speed})
             return this.hubDevice.writePortCommand(this.portId, false, 0x07, speed, maxPower, 0)
         }
 
         rotateDegrees(degrees, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
+            console.log('rotateDegrees', this.portId, {degrees, speed, waitFeedback, brakingStyle})
             return this.hubDevice.writePortCommand(this.portId, waitFeedback, 0x0B, toInt32(degrees), speed, maxPower, brakingStyle)
         }
 
@@ -336,7 +337,7 @@
          * @returns 
          */
         gotoAngle(angle, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
-            console.log('gotoAngle', { angle, speed })
+            console.log('gotoAngle', this.portId, { angle, speed, waitFeedback, brakingStyle })
             const portValue = this.hubDevice.portValue[this.portId]
             this.hubDevice.portValue[this.portId] = angle
             console.log({ portValue })
@@ -354,12 +355,14 @@
             return Promise.resolve()
         }
 
-        setSpeedForTime(speed, time, brakingStyle = BrakingStyle.BRAKE) {
-            return this.hubDevice.writePortCommand(this.portId, false, 0x09, toInt16(time), speed, maxPower, brakingStyle)
+        setSpeedForTime(speed, time, waitFeedback = false, brakingStyle = BrakingStyle.BRAKE) {
+
+            console.log('setSpeedForTime', this.portId, {speed, time, waitFeedback, brakingStyle})
+            return this.hubDevice.writePortCommand(this.portId, waitFeedback, 0x09, toInt16(time), speed, maxPower, brakingStyle)
         }
 
         resetZero() {
-            console.log('resetZero')
+            console.log('resetZero', this.portId)
             return this.hubDevice.writeDirect(this.portId, DeviceMode.ROTATION, true, 0x00, 0x00, 0x00, 0x00)
         }
 
@@ -375,6 +378,7 @@
 
         async calibrate() {
 
+            console.log('calibrate', this.portId)
             this.setPower(50)
             await this.hubDevice.waitTestValue(this.portId, DeviceMode.SPEED, (value) => value > 10)
             await this.hubDevice.waitTestValue(this.portId, DeviceMode.SPEED, (value) => value == 0)
@@ -407,7 +411,7 @@
 
     }
 
-
+    /**@implements HUB.DoubleMotor */
     class DoubleMotor {
 
         /**
@@ -454,6 +458,7 @@
         return `${portIdA}_${portIdB}`
     }
 
+    /**@implements HUB.HubDevice */
     class HubDevice extends EventEmitter2 {
 
         constructor() {
@@ -515,15 +520,15 @@
          * @param {number} portId 
          * @returns {Motor}
          */
-        createMotor(portId) {
+        getMotor(portId) {
             return new Motor(this, portId)
         }
 
-        createLed(portId) {
+        getLed(portId) {
             return new Led(this, portId)
         }
 
-        async createDblMotor(portId1, portId2) {
+        async getDblMotor(portId1, portId2) {
             const motor = new DoubleMotor(this, portId1, portId2)
             await motor.create()
             return motor
@@ -578,9 +583,8 @@
          * 
          * @param {number} portId 
          * @param {number} mode 
-         * @param {boolean} notificationEnabled 
          * @param {number} deltaInterval 
-         * @param {function name(params) {
+         * @param {function(data):void} cbk
             
          }} cbk 
          * @returns 
@@ -595,14 +599,23 @@
                 portId, mode, toUint32(deltaInterval), notificationEnabled ? 0x01 : 0)
         }
 
+        /**
+         * 
+         * @param {string} name 
+         * @returns {number}
+         */
         getPortIdFromName(name) {
             for (const [portId, info] of Object.entries(this.hubDevices)) {
                 if (info.portName == name) {
-                    return portId
+                    return parseInt(portId)
                 }
             }
         }
 
+        /**
+         * @param {number} portId1
+         * @param {number} portId2
+         */
         async createVirtualPort(portId1, portId2) {
             const name = getVirtualPortName(portId1, portId2)
             console.log('createVirtualPort', portId1, portId2)
@@ -650,6 +663,11 @@
             return DeviceTypeNames[this.hubDevices[portId].type]
         }
 
+        /**
+         * 
+         * @param {number} portId 
+         * @returns {Promise<HUB.PortInformation>}
+         */
         async getPortInformation(portId) {
             const portInfo = await this.getPortInformationRequest(portId)
             const { capabilities, count, output, input } = portInfo

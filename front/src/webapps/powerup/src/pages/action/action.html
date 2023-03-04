@@ -1,10 +1,19 @@
 <div class="scrollPanel">
 
-    <div bn-each="steps" bn-index="idx" bn-event="click.removeBtn: onRemoveStep">
+    <div bn-each="steps" bn-index="idx" 
+        bn-event="click.removeBtn: onRemoveStep, click.upBtn: onMoveUp, click.downBtn: onMoveDown">
 
         <div class="stepItem">
-            <div class="menubar" bn-show="showMenubar">
-                <button bn-icon="fa fa-trash-alt" class="removeBtn" title="Remove"></button>
+            <div class="menubar" >
+                <div>
+                    <button bn-icon="fas fa-level-up-alt" class="upBtn" title="MoveUp"
+                        bn-show="canMoveUp"></button>
+                    <button bn-icon="fas fa-level-down-alt" class="downBtn" title="MoveDown"
+                        bn-show="canMoveDown"></button>
+                    <button bn-icon="fa fa-trash-alt" class="removeBtn" title="Remove" 
+                    bn-show="showMenubar"></button>
+
+                </div>
             </div>
             <div bn-control="stepCtrl" bn-data="{data: $scope.$i}"></div>
         </div>

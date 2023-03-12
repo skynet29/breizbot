@@ -60,6 +60,10 @@ declare namespace HUB {
     interface DoubleMotor {
         create(): Promise<void>;
         setSpeed(speed1: number, speed2: number): Promise<void>;
+        setSpeedForTime(speed1: number, speed2: number, time: number, waitFeedback: boolean = false, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
+        rotateDegrees(degrees: number, speed1: number, speed2: number, waitFeedback: boolean, brakingStyle = BrakingStyle.BRAKE): Promise<void>; 
+        gotoAngle(angle1: number, angle2: number, speed: number, waitFeedback: boolean, brakingStyle = BrakingStyle.BRAKE): Promise<void>;
+
     }
 
 
@@ -148,6 +152,8 @@ declare namespace ActionSrv {
         blue?: number;
         time?: number;
         brakeStyle?: HUB.BrakingStyle;
+        angle1?: number;
+        angle2?: number;
     }
 
     interface ActionDesc {

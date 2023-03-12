@@ -36,6 +36,7 @@ $$.control.registerControl('actionCtrl', {
                 onMoveUp: function () {
                     //console.log('onMoveUp')
                     const idx = $(this).closest('.stepItem').index()
+                    ctrl.model.steps = getSteps()
                     const temp = ctrl.model.steps[idx]
                     ctrl.model.steps[idx] = ctrl.model.steps[idx - 1]
                     ctrl.model.steps[idx - 1] = temp
@@ -44,6 +45,7 @@ $$.control.registerControl('actionCtrl', {
                 onMoveDown: function () {
                     //console.log('onMoveDown')
                     const idx = $(this).closest('.stepItem').index()
+                    ctrl.model.steps = getSteps()
                     const temp = ctrl.model.steps[idx]
                     ctrl.model.steps[idx] = ctrl.model.steps[idx + 1]
                     ctrl.model.steps[idx + 1] = temp
@@ -60,7 +62,7 @@ $$.control.registerControl('actionCtrl', {
 
         function getSteps() {
             const steps = []
-            elt.find('.stepCtrl').each(function () {
+            elt.find('form').each(function () {
                 steps.push($(this).getFormData())
             })
             //console.log('steps', steps)
@@ -83,7 +85,17 @@ $$.control.registerControl('actionCtrl', {
                     title: 'Apply',
                     icon: 'fas fa-check',
                     onClick: function () {
-                        pager.popPage(getSteps())
+                        let isOk = true
+                        elt.find('form').each(function () {
+                            /**@type {HTMLFormElement} */
+                            const form = $(this).get(0)
+                            //console.log('isOk', form.checkValidity())
+                            isOk = isOk && form.reportValidity()
+                        })
+                        if (isOk) {
+                            pager.popPage(getSteps())
+                        }
+                        
                     }
                 }
 

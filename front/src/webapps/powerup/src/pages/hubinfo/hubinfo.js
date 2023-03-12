@@ -99,7 +99,7 @@ $$.control.registerControl('hubinfo', {
 				onCalibrate: async function() {
 					const portId = getExternalPortId($(this))
 					console.log('onCalibrate', portId)
-					await hubDevice.createMotor(portId).calibrate()
+					await hubDevice.getMotor(portId).calibrate()
 				},
 				onMouseUp: function () {
 					//console.log('onMouseUp')
@@ -107,17 +107,17 @@ $$.control.registerControl('hubinfo', {
 					const portId = getExternalPortId($(this))
 					switch (action) {
 						case 'forward':
-							hubDevice.createMotor(portId).setPower(100)
+							hubDevice.getMotor(portId).setPower(100)
 							break
 						case 'backward':
-							hubDevice.createMotor(portId).setPower(-100)
+							hubDevice.getMotor(portId).setPower(-100)
 							break
 					}
 				},
 				onMouseDown: function () {
 					//console.log('onMouseDown')
 					const portId = getExternalPortId($(this))
-					hubDevice.createMotor(portId).setPower(0)
+					hubDevice.getMotor(portId).setPower(0)
 				},
 				onInfo: function () {
 					const idx = $(this).closest('tr').index()

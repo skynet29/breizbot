@@ -18,6 +18,11 @@ $$.service.registerService('actionSrv', {
          * @param {number} factor
          */
         async function execStep(hubDevices, stepDesc, factor) {
+            if (stepDesc.type == 'SLEEP') {
+                await $$.util.wait(stepDesc.time)
+                return
+            }
+
             const hubDesc = hubDevices.find(e => e.hubId == stepDesc.hub)
             if (hubDesc) {
                 //console.log({hubDesc})
@@ -67,6 +72,30 @@ $$.service.registerService('actionSrv', {
 
                     const motor = await hubDevice.getDblMotor(portId1, portId2)
                     await motor.setSpeed(stepDesc.speed1 *factor, stepDesc.speed2 * factor)
+                }
+                else if (stepDesc.type == 'DBLSPEEDTIME') {
+                    const portId1 = hub.PortMap[stepDesc.port1]
+                    const portId2 = hub.PortMap[stepDesc.port2]
+
+                    const motor = await hubDevice.getDblMotor(portId1, portId2)
+                    await motor.setSpeedForTime(stepDesc.speed1 *factor, stepDesc.speed2 * factor, 
+                        stepDesc.time, stepDesc.waitFeedback, stepDesc.brakeStyle)
+                }
+                else if (stepDesc.type == 'DBLROTATE') {
+                    const portId1 = hub.PortMap[stepDesc.port1]
+                    const portId2 = hub.PortMap[stepDesc.port2]
+
+                    const motor = await hubDevice.getDblMotor(portId1, portId2)
+                    await motor.rotateDegrees(stepDesc.angle, stepDesc.speed1 *factor, stepDesc.speed2 * factor, 
+                        stepDesc.waitFeedback, stepDesc.brakeStyle)
+                }
+                else if (stepDesc.type == 'DBLPOSITION') {
+                    const portId1 = hub.PortMap[stepDesc.port1]
+                    const portId2 = hub.PortMap[stepDesc.port2]
+
+                    const motor = await hubDevice.getDblMotor(portId1, portId2)
+                    await motor.gotoAngle(stepDesc.angle1, stepDesc.angle2, stepDesc.speed * factor,
+                        stepDesc.waitFeedback, stepDesc.brakeStyle)
                 }
                 else {
                     return `type ${stepDesc.type} not implemented`

@@ -23,12 +23,16 @@ $$.control.registerControl('stepCtrl', {
         data = data || {}
 
         const actionTypes = [
-            'SPEED',
-            'SPEEDTIME',
+            'SLEEP',
             'POWER',
+            'SPEED',
             'DBLSPEED',
+            'SPEEDTIME',
+            'DBLSPEEDTIME',
             'ROTATE',
+            'DBLROTATE',
             'POSITION',
+            'DBLPOSITION',
             'CALIBRATE',
             'ZERO',
             'COLOR',
@@ -43,6 +47,9 @@ $$.control.registerControl('stepCtrl', {
         //console.log(brakeStyles)
 
         const dataInfo = {
+            port: data.port || 'A',
+            port1: data.port1 || 'A',
+            port2: data.port2 || 'B',
             type: data.type || 'SPEED',
             hub: data.hub || 'HUB1',
             brakeStyle: data.brakeStyle || hub.BrakingStyle.BRAKE,
@@ -61,7 +68,10 @@ $$.control.registerControl('stepCtrl', {
         const ctrl = $$.viewController(elt, {
             data: dataInfo,
             events: {
-
+                onSubmit: function(ev) {
+                    console.log('onSubmit')
+                    ev.preventDefault()
+                }
             }
         })
 

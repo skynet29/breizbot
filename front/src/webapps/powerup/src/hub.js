@@ -447,8 +447,23 @@
             return this.hubDevice.writePortCommand(this.portId, false, 0x08, speed1, speed2, maxPower, 0)
         }
 
+        setSpeedForTime(speed1, speed2, time, waitFeedback = false, brakingStyle = BrakingStyle.BRAKE) {
 
+            console.log('setSpeedForTime', this.portId, {speed1, speed2, time, waitFeedback, brakingStyle})
+            return this.hubDevice.writePortCommand(this.portId, waitFeedback, 0x0A, toInt16(time), speed1, speed2, maxPower, brakingStyle)
+        }
 
+        rotateDegrees(degrees, speed1, speed2, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
+            console.log('rotateDegrees', this.portId, {degrees, speed1, speed2, waitFeedback, brakingStyle})
+            return this.hubDevice.writePortCommand(this.portId, waitFeedback, 0x0C, toInt32(degrees), speed1, speed2, maxPower, brakingStyle)
+        }
+
+        gotoAngle(angle1, angle2, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
+            console.log('gotoAngle', this.portId, { angle1, angle2, speed, waitFeedback, brakingStyle })
+            const portValue = this.hubDevice.portValue[this.portId]
+
+            return this.hubDevice.writePortCommand(this.portId, waitFeedback, 0x0E, toInt32(angle1), toInt32(angle2), speed, maxPower, brakingStyle)
+        }
     }
 
 
@@ -592,7 +607,7 @@
         setPortFormat(portId, mode, cbk = null, deltaInterval = 1) {
             const notificationEnabled = (typeof cbk == 'function')
 
-            console.log('setPortFormat', { portId, mode, notificationEnabled })
+            log('setPortFormat', { portId, mode, notificationEnabled })
             this.deviceModes[portId] = { mode, cbk }
 
             return this.sendMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,

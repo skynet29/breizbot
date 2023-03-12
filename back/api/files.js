@@ -47,7 +47,7 @@ router.post('/list', async function (req, res) {
 		const files = await fs.readdir(rootPath)
 		//console.log('files', files)
 		let ret = []
-		for(const file of files) {
+		for (const file of files) {
 			const filePath = path.join(rootPath, file)
 			const info = await getFileInfo(filePath, options)
 			ret.push(info)
@@ -68,7 +68,7 @@ router.post('/list', async function (req, res) {
 
 			const regex = new RegExp(`\\.(${ext.join('|')})$`, 'i')
 			const results = []
-			for(const info of ret) {
+			for (const info of ret) {
 				if (info.folder) {
 					const filter = (ext.length == 1) ? ext[0] : `{${ext.join(',')}}`
 					const filterPath = path.join(rootPath, info.name, '**/*.' + filter)
@@ -77,7 +77,7 @@ router.post('/list', async function (req, res) {
 				}
 				else {
 					results.push(regex.test(info.name))
-				}				
+				}
 			}
 
 			ret = ret.filter((f, idx) => results[idx])
@@ -181,6 +181,39 @@ router.get('/load', async function (req, res) {
 		if (util.isImage(filePath) && autoImageResizing === true) {
 			//console.log('resize image')
 			genThumbnail(filePath, res, '90%')
+		}
+		else if (filePath.endsWith('.mp4')) {
+			// Ensure there is a range given for the video
+			const range = req.headers.range;
+			console.log('range', range)
+			if (!range) {
+				res.status(400).send("Requires Range header");
+			}
+
+			const videoSize = (await getFileInfo(filePath)).size
+
+			const CHUNK_SIZE = 10 ** 6; // 1MB
+			const start = Number(range.replace(/\D/g, ""));
+			const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+
+			// Create headers
+			const contentLength = end - start + 1;
+			const headers = {
+				"Content-Range": `bytes ${start}-${end}/${videoSize}`,
+				"Accept-Ranges": "bytes",
+				"Content-Length": contentLength,
+				"Content-Type": "video/mp4",
+			};
+			//console.log('headers', headers)
+
+			// HTTP Status 206 for Partial Content
+			res.writeHead(206, headers);
+
+			// create video read stream for this particular chunk
+			const videoStream = fs.createReadStream(filePath, { start, end });
+
+			// Stream the video chunk to the client
+			videoStream.pipe(res);
 		}
 		else {
 			res.sendFile(filePath)

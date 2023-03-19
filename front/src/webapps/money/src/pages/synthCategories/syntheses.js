@@ -87,9 +87,9 @@ $$.control.registerControl('synthCategories', {
             },
             events: {
                 onYearChange: async function (ev, data) {
-                    //console.log('onYearChange', data)
+                    console.log('onYearChange', $(this).getValue())
                     ctrl.setData({ syntheses: [] })
-                    await loadSyntheses(parseInt(data.item.value))
+                    await loadSyntheses(parseInt($(this).getValue()))
                     ctrl.scope.scrollPanel.scrollTop(0)
                 },
                 onCellClick: async function () {

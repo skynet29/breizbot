@@ -38,9 +38,9 @@ $$.control.registerControl('globalSynthesis', {
             },
             events: {
                 onYearChange: async function(ev, data) {
-                    //console.log('onYearChange', data)
+                    //console.log('onYearChange', $(this).getValue())
                     ctrl.setData({syntheses: []})
-                    loadSyntheses(parseInt(data.item.value))
+                    loadSyntheses(parseInt($(this).getValue()))
                 }
             }
 

@@ -47,7 +47,7 @@ $$.control.registerControl('syntheses', {
                 onYearChange: async function(ev, data) {
                     //console.log('onYearChange', data)
                     ctrl.setData({syntheses: []})
-                    loadSyntheses(parseInt(data.item.value))
+                    loadSyntheses(parseInt($(this).getValue()))
                 }
             }
 

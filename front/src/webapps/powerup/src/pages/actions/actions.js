@@ -26,6 +26,7 @@ $$.control.registerControl('actionsCtrl', {
 		const actions = Array.from(this.props.actions || [])
 
 		if (!isEdition) {
+			actions.unshift({ name: 'Zero' })
 			actions.unshift({ name: 'None' })
 		}
 

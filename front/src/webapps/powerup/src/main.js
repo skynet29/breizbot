@@ -217,15 +217,20 @@ $$.control.registerControl('rootPage', {
 			//console.log('onGamepadButtonUp', data)
 
 			if (gamepadMapping) {
-				const { up } = gamepadMapping.buttons[data.id]
-				if (up != 'None') {
+				const { up, down } = gamepadMapping.buttons[data.id]
+				if (up == 'Zero') {
+					if (down != 'None') {
+						execAction(down, 0)
+					}
+				}
+				else if (up != 'None') {
 					execAction(up, 1)
 				}
 			}
 		}
 
 		function onGamepadAxe(data) {
-			console.log('onGamepadAxe', data)
+			//console.log('onGamepadAxe', data)
 			if (gamepadMapping) {
 				const { action } = gamepadMapping.axes[data.id]
 				if (action != 'None') {

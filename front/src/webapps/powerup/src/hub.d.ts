@@ -135,7 +135,7 @@ declare namespace ActionSrv {
 
     interface StepDesc {
         type: 'SPEED' | 'DBLSPEED' | 'POWER' | 'ROTATE' |
-         'POSITION' | 'CALIBRATE' | 'ZERO' | 'COLOR' | 'RGB' | 'SPEEDTIME';
+         'POSITION' | 'CALIBRATE' | 'ZERO' | 'COLOR' | 'RGB' | 'SPEEDTIME' | 'IFSTATE' | 'SETSTATE';
         hub: string;
         port?: string;
         speed?: number;
@@ -154,6 +154,9 @@ declare namespace ActionSrv {
         brakeStyle?: HUB.BrakingStyle;
         angle1?: number;
         angle2?: number;
+        state?: string;
+        eqAction?: string;
+        neqAction?: string;
     }
 
     interface ActionDesc {

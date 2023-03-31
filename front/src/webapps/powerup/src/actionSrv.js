@@ -11,6 +11,9 @@ $$.service.registerService('actionSrv', {
      */
     init: function (config, hub) {
 
+        let curState = 'IDLE'
+        const events = new EventEmitter2()
+
         /**
          * 
          * @param {Array<ActionSrv.HubDesc>} hubDevices
@@ -78,7 +81,7 @@ $$.service.registerService('actionSrv', {
                     const portId2 = hub.PortMap[stepDesc.port2]
 
                     const motor = await hubDevice.getDblMotor(portId1, portId2)
-                    await motor.setSpeedForTime(stepDesc.speed1 *factor, stepDesc.speed2 * factor, 
+                    await motor.setSpeedForTime(stepDesc.speed1, stepDesc.speed2, 
                         stepDesc.time, stepDesc.waitFeedback, stepDesc.brakeStyle)
                 }
                 else if (stepDesc.type == 'DBLROTATE') {
@@ -122,10 +125,26 @@ $$.service.registerService('actionSrv', {
             }
 
             for(const step of steps) {
-                const ret = await execStep(hubDevices, step, factor)
-                if (ret != null) {
-                    $.notify(ret, 'error')
-                    break
+                if (step.type == 'SETSTATE') {
+                    curState = step.state
+                    console.log('newState', curState)
+                    events.emit('stateChange', curState)
+                }
+                else if (step.type == 'IFSTATE') {
+                    console.log('curState', curState)
+                    if (curState == step.state && step.eqAction != 'None') {
+                        execAction(hubDevices, actions, step.eqAction, factor)
+                    }
+                    if (curState != step.state && step.neqAction != 'None') {
+                        execAction(hubDevices, actions, step.neqAction, factor)
+                    }
+                }
+                else {
+                    const ret = await execStep(hubDevices, step, factor)
+                    if (ret != null) {
+                        $.notify(ret, 'error')
+                        break
+                    }
                 }
 
             }
@@ -137,7 +156,8 @@ $$.service.registerService('actionSrv', {
         }
 
         return {
-            execAction
+            execAction,
+            on: events.on.bind(events)
         }
 
     }

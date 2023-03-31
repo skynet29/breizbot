@@ -18,9 +18,11 @@ $$.control.registerControl('stepCtrl', {
     init: function (elt, pager, hub) {
 
         //console.log('stepCtrl props', this.props)
-        let { data } = this.props
+        let { data, availableActions } = this.props
 
         data = data || {}
+
+        availableActions.unshift('None')
 
         const actionTypes = [
             'SLEEP',
@@ -36,7 +38,9 @@ $$.control.registerControl('stepCtrl', {
             'CALIBRATE',
             'ZERO',
             'COLOR',
-            'RGB'
+            'RGB',
+            'IFSTATE',
+            'SETSTATE'
         ]
         const ports = 'ABCD'.split('')
         const hubs = ['HUB1', 'HUB2']
@@ -57,7 +61,12 @@ $$.control.registerControl('stepCtrl', {
             brakeStyles,
             ledColors,
             ports,
-            hubs
+            states: ['STATE1', 'STATE2', 'STATE3'],
+            hubs,
+            availableActions,
+            eqAction: data.eqAction || 'None',
+            neqAction: data.neqAction || 'None',
+            state: data.state || 'STATE1'
         }
         for(const a of actionTypes) {
             const name = a.charAt(0) + a.slice(1).toLowerCase()

@@ -36,12 +36,17 @@ $$.control.registerControl('rootPage', {
 		let gamepadMapping = null
 		let gamepadId = ''
 
+		actionSrv.on('stateChange', (curState) => {
+			ctrl.setData({curState})
+		})
+
 		const ctrl = $$.viewController(elt, {
 			data: {
 				currentConfig: '',
 				gamepadConnected: false,
 				hubDevices,
-				hubs: ['HUB1', 'HUB2']
+				hubs: ['HUB1', 'HUB2'],
+				curState: 'IDLE'
 			},
 			events: {
 				onNewConfig: function() {

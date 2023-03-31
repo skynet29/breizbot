@@ -38,7 +38,7 @@ $$.control.registerControl('actionsCtrl', {
 				}
 			},
 			events: {
-				onItemContextMenu: function (ev, data) {
+				onItemContextMenu: async function (ev, data) {
 					const idx = $(this).closest('.item').index()
 					const action = ctrl.model.actions[idx]
 					//console.log('onItemContextMenu', idx, action)
@@ -47,15 +47,27 @@ $$.control.registerControl('actionsCtrl', {
 						ctrl.model.actions.splice(idx, 1)
 						ctrl.update()
 					}
+					if (data.cmd == 'duplicate') {
+						const name = await $$.ui.showPrompt({ label: 'New Name', title: 'Add action' })
+						if (name == null) return
+						const newAction = Object.assign({}, action, {name})
+						//console.log('newAction', newAction)
+						ctrl.model.actions.push(newAction)
+						ctrl.update()
+					}
 					if (data.cmd == 'edit') {
 						let { steps } = action
 						if (!Array.isArray(steps)) {
 							steps = [action]
 						}
+						const availableActions = ctrl.model.actions.map((e) =>  e.name)
+						//console.log('availableActions', availableActions)
+
 						pager.pushPage('actionCtrl', {
 							title: action.name,
 							props: {
-								steps
+								steps,
+								availableActions
 							},
 							onReturn: function (data) {
 								//console.log('onReturn', data)
@@ -90,10 +102,13 @@ $$.control.registerControl('actionsCtrl', {
 							//console.log('Add action')
 							const name = await $$.ui.showPrompt({ label: 'Name', title: 'Add action' })
 							if (name == null) return
+							const availableActions = ctrl.model.actions.map((e) =>  e.name)
+							//console.log('availableActions', availableActions)
 							pager.pushPage('actionCtrl', {
 								title: name,
 								props: {
-									steps: [{}]
+									steps: [{}],
+									availableActions
 								},
 								onReturn: function (data) {
 									ctrl.model.actions.push({ name, steps: data })

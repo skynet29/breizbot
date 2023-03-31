@@ -353,4 +353,28 @@
             <input type="number" required name="speed2" min="-100" max="100">
         </div>
     </div>
+
+    <div bn-if="isIfstate">
+        <div class="group">
+            <label>IF State =</label>
+            <div bn-control="brainjs.combobox" bn-data="{items: states}" name="state" bn-val="state">
+            </div>
+        </div>
+        <div class="group">
+            <label>Action</label>
+            <div bn-control="brainjs.combobox" bn-data="{items: availableActions}" name="eqAction" bn-val="eqAction"></div>
+        </div>
+        <div class="group">
+            <label>Else Action</label>
+            <div bn-control="brainjs.combobox" bn-data="{items: availableActions}" name="neqAction" bn-val="neqAction"></div>
+        </div>
+    </div>
+
+    <div bn-if="isSetstate">
+        <div class="group">
+            <label>New State</label>
+            <div bn-control="brainjs.combobox" bn-data="{items: states}" name="state" bn-val="state">
+            </div>
+        </div>
+    </div>
 </form>

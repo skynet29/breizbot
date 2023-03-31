@@ -7,7 +7,8 @@ $$.control.registerControl('actionCtrl', {
     deps: ['breizbot.pager'],
 
     props: {
-        steps: []
+        steps: [],
+        availableActions: []
     },
 
     /**
@@ -16,12 +17,13 @@ $$.control.registerControl('actionCtrl', {
      */
     init: function (elt, pager) {
 
-        //console.log('actionCtrl props', this.props)
-        const { steps } = this.props
+        console.log('actionCtrl props', this.props)
+        const { steps, availableActions } = this.props
 
         const ctrl = $$.viewController(elt, {
             data: {
                 steps,
+                availableActions,
                 showMenubar: function (scope) {
                     return scope.idx > 0
                 },

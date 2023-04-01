@@ -135,7 +135,7 @@ declare namespace ActionSrv {
 
     interface StepDesc {
         type: 'SPEED' | 'DBLSPEED' | 'POWER' | 'ROTATE' |
-         'POSITION' | 'CALIBRATE' | 'ZERO' | 'COLOR' | 'RGB' | 'SPEEDTIME' | 'IFSTATE' | 'SETSTATE';
+         'POSITION' | 'CALIBRATE' | 'ZERO' | 'COLOR' | 'RGB' | 'SPEEDTIME' | 'SLEEP' | 'TESTVAR' | 'SETVAR';
         hub: string;
         port?: string;
         speed?: number;
@@ -154,7 +154,8 @@ declare namespace ActionSrv {
         brakeStyle?: HUB.BrakingStyle;
         angle1?: number;
         angle2?: number;
-        state?: string;
+        varName?: string;
+        varValue?: string;
         eqAction?: string;
         neqAction?: string;
     }
@@ -164,8 +165,15 @@ declare namespace ActionSrv {
         steps: Array<StepDesc>;
     }
 
+    interface VarDesc {
+        name: string;
+        value: string;
+    }
 
     interface Interface {
         execAction(hubDevices: Array<HubDesc>, actions: Array<ActionDesc>, actionName: string, factor: number):Promise<void>;
+        getVariables(): Array<VarDesc>;
+        resetVariables():void;
+
     }
 }

@@ -36,8 +36,11 @@ $$.control.registerControl('rootPage', {
 		let gamepadMapping = null
 		let gamepadId = ''
 
-		actionSrv.on('stateChange', (curState) => {
-			ctrl.setData({curState})
+		actionSrv.on('varChange', (data) => {
+			console.log('onVarChange', data)
+			const variables = actionSrv.getVariables()
+			console.log('variables', variables)
+			ctrl.setData({variables})
 		})
 
 		const ctrl = $$.viewController(elt, {
@@ -46,7 +49,10 @@ $$.control.registerControl('rootPage', {
 				gamepadConnected: false,
 				hubDevices,
 				hubs: ['HUB1', 'HUB2'],
-				curState: 'IDLE'
+				variables: [],
+				hasVariables: function() {
+					return this.variables.length > 0
+				}
 			},
 			events: {
 				onNewConfig: function() {
@@ -56,6 +62,7 @@ $$.control.registerControl('rootPage', {
 					}
 					gamepadMapping = null
 					ctrl.setData({currentConfig: ''})
+					actionSrv.resetVariables()
 				},
 				onSaveConfig: async function() {
 					//console.log('onSaveConfig', config)
@@ -84,6 +91,7 @@ $$.control.registerControl('rootPage', {
 							config = data
 							ctrl.setData({currentConfig: data.name})
 							gamepadMapping = config.mappings[gamepadId]
+							actionSrv.resetVariables()
 							//console.log({gamepadMapping})
 						}
 					})

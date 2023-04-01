@@ -12,17 +12,9 @@
             <span bn-text="currentConfig"></span>
         </div>
 
-
-        
-
     </div>
-    <div>
-        <label>Current State:</label>
-        <span bn-text="curState"></span>
-    </div>
-    <div>
 
-    </div>
+    <div></div>
 </div>
 
 <div class="toolbar">
@@ -36,6 +28,21 @@
 
 
     </div>
+</div>
+
+<div bn-show="hasVariables" class="variables">
+    <table class="w3-table-all">
+        <thead>
+            <th>Variable Name</th>
+            <th>Value</th>
+        </thead>
+        <tbody bn-each="variables">
+            <tr>
+                <td bn-text="$scope.$i.name"></td>
+                <td bn-text="$scope.$i.value"></td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <div>

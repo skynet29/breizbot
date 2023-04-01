@@ -39,8 +39,8 @@ $$.control.registerControl('stepCtrl', {
             'ZERO',
             'COLOR',
             'RGB',
-            'IFSTATE',
-            'SETSTATE'
+            'TESTVAR',
+            'SETVAR'
         ]
         const ports = 'ABCD'.split('')
         const hubs = ['HUB1', 'HUB2']

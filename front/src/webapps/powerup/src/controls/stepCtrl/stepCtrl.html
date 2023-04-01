@@ -354,11 +354,14 @@
         </div>
     </div>
 
-    <div bn-if="isIfstate">
+    <div bn-if="isTestvar">
         <div class="group">
-            <label>IF State =</label>
-            <div bn-control="brainjs.combobox" bn-data="{items: states}" name="state" bn-val="state">
-            </div>
+            <label>Variable Name</label>
+            <input type="text" name="varName" required>
+        </div>
+        <div class="group">
+            <label>If variable =</label>
+            <input type="text" name="varValue" required>
         </div>
         <div class="group">
             <label>Action</label>
@@ -370,11 +373,14 @@
         </div>
     </div>
 
-    <div bn-if="isSetstate">
+    <div bn-if="isSetvar">
         <div class="group">
-            <label>New State</label>
-            <div bn-control="brainjs.combobox" bn-data="{items: states}" name="state" bn-val="state">
-            </div>
+            <label>Variable Name</label>
+            <input type="text" name="varName" required>
+        </div>
+        <div class="group">
+            <label>Value</label>
+            <input type="text" name="varValue" required>
         </div>
     </div>
 </form>

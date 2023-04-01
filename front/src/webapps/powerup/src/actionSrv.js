@@ -11,7 +11,7 @@ $$.service.registerService('actionSrv', {
      */
     init: function (config, hub) {
 
-        let curState = 'IDLE'
+        let variables = {}
         const events = new EventEmitter2()
 
         /**
@@ -117,7 +117,7 @@ $$.service.registerService('actionSrv', {
          * @param {number} factor
          */
         async function execAction(hubDevices, actions, actionName, factor) {
-            console.log('execAction', actionName, factor)
+            //console.log('execAction', actionName, factor)
             const actionDesc = actions.find(e => e.name == actionName)
             let {steps} = actionDesc
             if (!Array.isArray(steps)) {
@@ -125,18 +125,21 @@ $$.service.registerService('actionSrv', {
             }
 
             for(const step of steps) {
-                if (step.type == 'SETSTATE') {
-                    curState = step.state
-                    console.log('newState', curState)
-                    events.emit('stateChange', curState)
+                if (step.type == 'SETVAR') {
+                    const {varName, varValue} = step
+                    variables[varName] = varValue
+                    //console.log('varChange', {varName, varValue})
+                    events.emit('varChange', {varName, varValue})
                 }
-                else if (step.type == 'IFSTATE') {
-                    console.log('curState', curState)
-                    if (curState == step.state && step.eqAction != 'None') {
-                        execAction(hubDevices, actions, step.eqAction, factor)
+                else if (step.type == 'TESTVAR') {
+                    const {varName} = step
+                    const varValue = variables[varName]
+                    //console.log('Variable', {varName, varValue})
+                    if (varValue == step.varValue && step.eqAction != 'None') {
+                        execAction(hubDevices, actions, step.eqAction, 1)
                     }
-                    if (curState != step.state && step.neqAction != 'None') {
-                        execAction(hubDevices, actions, step.neqAction, factor)
+                    if (varValue != step.varValue && step.neqAction != 'None') {
+                        execAction(hubDevices, actions, step.neqAction, 1)
                     }
                 }
                 else {
@@ -155,9 +158,22 @@ $$.service.registerService('actionSrv', {
 
         }
 
+        function getVariables() {
+            return Object.entries(variables).map(([name, value]) => {
+                return {name, value}
+            })
+        }
+
+        function resetVariables() {
+            variables = {}
+            events.emit('varChange')
+        }
+
         return {
             execAction,
-            on: events.on.bind(events)
+            on: events.on.bind(events),
+            getVariables,
+            resetVariables
         }
 
     }

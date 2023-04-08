@@ -27,12 +27,14 @@
     <table class="w3-table-all">
         <thead>
             <tr>
+                <th>Port ID</th>
                 <th>Device Type</th>
                 <th>Action</th>
             </tr>
         </thead>
         <tbody bn-each="internalDevices" bn-event="click.w3-btn: onInfo">
             <tr>
+                <td bn-text="$scope.$i.portId"></td>
                 <td bn-text="$scope.$i.deviceTypeName"></td>
                 <td>
                     <button class="w3-btn w3-blue">MODE</button>

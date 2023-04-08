@@ -52,6 +52,7 @@
                 <th>Hub</th>
                 <th>Actions</th>
                 <th>Battery Level</th>
+                <th>Angle</th>
                 <th>Address</th>
             </tr>
         </thead>
@@ -65,6 +66,20 @@
                     <button class="btnInfo">Info</button>
                 </td>
                 <td bn-text="$scope.$i.batteryLevel"></td>
+                <td >
+                    <div class="angleInfo">
+                        <label>Roll</label>
+                        <span bn-text="$scope.$i.tilt.roll"></span>
+                    </div>
+                    <div class="angleInfo">
+                        <label>Pitch</label>
+                        <span bn-text="$scope.$i.tilt.pitch"></span>
+                    </div>
+                    <div class="angleInfo">
+                        <label>Yaw</label>
+                        <span bn-text="$scope.$i.tilt.yaw"></span>
+                    </div>                    
+                </td>
                 <td bn-text="$scope.$i.address"></td>
             </tr>
         </tbody>

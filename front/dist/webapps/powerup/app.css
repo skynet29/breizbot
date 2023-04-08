@@ -13,6 +13,10 @@
     margin-top: 10px; }
     .rootPage table th {
       background-color: #666; }
+  .rootPage .angleInfo {
+    display: flex;
+    justify-content: space-between;
+    width: 100px; }
   .rootPage .variables {
     margin-bottom: 20px; }
   .rootPage .toolbar {

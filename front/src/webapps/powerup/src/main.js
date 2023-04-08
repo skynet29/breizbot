@@ -195,10 +195,14 @@ $$.control.registerControl('rootPage', {
 						ctrl.model.hubDevices.splice(idx, 1)
 						ctrl.update()
 					})
-					//await motorCD.create()
-					// await hub.subscribe(hub.PortMap.TILT_SENSOR, hub.DeviceMode.TILT_POS, 2, (data) => {
-					// 	console.log('TILT POS', data.value)
-					// })
+
+					await hubDevice.setPortFormat(hub.PortMap.TILT_SENSOR, hub.DeviceMode.TILT_POS, (data) => {
+						//console.log('Tilt', data)
+						const hubDesc = ctrl.model.hubDevices.find((e) => e.hubDevice == hubDevice)
+						hubDesc.tilt = data
+						ctrl.update()
+					})
+
 				}
 
 

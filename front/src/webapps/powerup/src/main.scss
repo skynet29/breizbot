@@ -19,6 +19,12 @@
         }
     }
 
+    .angleInfo {
+        display: flex;
+        justify-content: space-between;
+        width: 100px;
+    }
+
     .variables {
         margin-bottom: 20px;
     }

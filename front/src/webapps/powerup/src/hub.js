@@ -504,6 +504,10 @@
         gotoAngle(angle, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
             console.log('gotoAngle', this.portId, { angle, speed, waitFeedback, brakingStyle })
 
+            if (this.calibrationValue) {
+                angle *= this.calibrationValue
+            }
+
             return this.writePortCommand(waitFeedback, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
         }
 

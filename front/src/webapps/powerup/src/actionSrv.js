@@ -48,9 +48,7 @@ $$.service.registerService('actionSrv', {
                 }
                 else if (stepDesc.type == 'POSITION') {
                     const motor = await hubDevice.getMotor(hub.PortMap[stepDesc.port])
-                    const calibFactor = hubDevice.calibration[hub.PortMap[stepDesc.port]] || 1
-                    console.log({calibFactor})
-                    await motor.gotoAngle(stepDesc.angle * factor * calibFactor, stepDesc.speed, stepDesc.waitFeedback)
+                    await motor.gotoAngle(stepDesc.angle * factor, stepDesc.speed, stepDesc.waitFeedback)
                 }
                 else if (stepDesc.type == 'ZERO') {
                     const motor = await hubDevice.getMotor(hub.PortMap[stepDesc.port])
@@ -110,13 +108,13 @@ $$.service.registerService('actionSrv', {
         }
         /**
          * 
-         * @param {Array<ActionSrv.HubDesc>} hubDevices
+         * @param {Array<HUB.HubDevice>} hubDevices
          * @param {Array<ActionSrv.ActionDesc>} actions 
          * @param {string} actionName 
          * @param {number} factor
          */
         async function execAction(hubDevices, actions, actionName, factor) {
-            //console.log('execAction', hubDevices, actionName, factor)
+            console.log('execAction', hubDevices, actionName, factor)
             const actionDesc = actions.find(e => e.name == actionName)
             let {steps} = actionDesc
             if (!Array.isArray(steps)) {
@@ -125,6 +123,7 @@ $$.service.registerService('actionSrv', {
 
             for(const step of steps) {
                 if (step.type == 'SETVAR') {
+                    console.log('SETVAR', step)
                     const {varName, varValue} = step
                     variables[varName] = varValue
                     //console.log('varChange', {varName, varValue})

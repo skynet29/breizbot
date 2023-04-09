@@ -215,7 +215,7 @@ $$.control.registerControl('rootPage', {
 						const hubDesc = ctrl.model.hubDevices.find((e) => e.UUID == id)
 						hubDesc.tilt = data
 						ctrl.update()
-					})
+					}, 10)
 					
 
 				}

@@ -432,8 +432,8 @@
             })
         }
 
-        async subscribe(mode, cbk) {
-            await this.setMode(mode, true)
+        async subscribe(mode, cbk, deltaInterval = 1) {
+            await this.setMode(mode, true, deltaInterval)
             this.valueCallbacks.on((data) => {
                 cbk(data)
                 return false

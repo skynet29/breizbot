@@ -56,7 +56,7 @@ declare namespace HUB {
         getValue(mode: DeviceMode):Promise<number>;
         waitTestValue(mode: DeviceMode, testFn: (value: number) => boolean):Promise<void>;
         setMode(mode: DeviceMode, notificationEnabled: boolean, deltaInterval?: number):Promise<void>;
-        subscribe(mode: DeviceMode, cbk: (value) => void)
+        subscribe(mode: DeviceMode, cbk: (value) => void, deltaInterval?: number):Promise<void>;
     }
 
     interface TiltSensor extends Device {

@@ -30,8 +30,9 @@ $$.control.registerControl('rootPage', {
 
 		elt.find('button').addClass('w3-btn w3-blue')
 
-		/**@type {Array<HUB.HubDevice>} */
-		const hubDevices = []
+		/**@type {{[UUID: string]: HUB.HubDevice}} */
+		const hubDevices = {}
+		let UUID = 1
 
 		let gamepadMapping = null
 		let gamepadId = ''
@@ -47,7 +48,7 @@ $$.control.registerControl('rootPage', {
 			data: {
 				currentConfig: '',
 				gamepadConnected: false,
-				hubDevices,
+				hubDevices: [],
 				hubs: ['HUB1', 'HUB2'],
 				variables: [],
 				hasVariables: function() {
@@ -99,8 +100,13 @@ $$.control.registerControl('rootPage', {
 				onHubChange: function () {
 					const idx = $(this).closest('tr').index()
 
-					//console.log('onHubChange', idx, $(this).getValue())
-					ctrl.model.hubDevices[idx].hubId = $(this).getValue()
+					const hubId = $(this).getValue()
+					//console.log('onHubChange', idx, hubId)
+
+					const hubDevice = hubDevices[ctrl.model.hubDevices[idx].UUID]
+					console.log('hubDevice', hubDevice)
+					hubDevice.name = hubId
+					ctrl.model.hubDevices[idx].hubId = hubId
 				},
 				onShutDown: function () {
 					const idx = $(this).closest('tr').index()
@@ -108,18 +114,21 @@ $$.control.registerControl('rootPage', {
 
 					/**@type {ActionSrv.HubDesc} */
 					const hubDesc = ctrl.model.hubDevices[idx]
-					hubDesc.hubDevice.shutdown()
+					const hubDevice = hubDevices[hubDesc.UUID]
+					hubDevice.shutdown()
 				},
 				onInfo: function () {
 					const idx = $(this).closest('tr').index()
 					//console.log('onInfo', idx)
 					/**@type {ActionSrv.HubDesc} */
 					const hubDesc = ctrl.model.hubDevices[idx]
+					const hubDevice = hubDevices[hubDesc.UUID]
+					console.log('hubDevice', hubDevice)
 
 					pager.pushPage('hubinfo', {
 						title: hubDesc.hubId,
 						props: {
-							hubDevice: hubDesc.hubDevice
+							hubDevice
 						}
 					})
 				},
@@ -129,7 +138,7 @@ $$.control.registerControl('rootPage', {
 						title: 'Actions',
 						props: {
 							actions: config.actions,
-							hubDevices: ctrl.model.hubDevices
+							hubDevices: Object.values(hubDevices)
 						},
 						onReturn: async function (data) {
 							console.log('onReturn', data)
@@ -163,26 +172,30 @@ $$.control.registerControl('rootPage', {
 
 				onConnect: async function () {
 					const hubDevice = await hub.connect()
+					const id = UUID++
 
+					hubDevices[id] = hubDevice
 
 					hubDevice.on('error', (data) => {
 						console.log(data)
 					})
 
 					const nbHubs = ctrl.model.hubDevices.length
-					ctrl.model.hubDevices.push({ hubDevice, hubId: `HUB${nbHubs + 1}`, batteryLevel: 0, address: 'Unknown' })
+					const hubId = `HUB${nbHubs + 1}`
+					hubDevice.name = hubId
+					ctrl.model.hubDevices.push({ UUID: id, hubId, batteryLevel: 0, address: 'Unknown' })
 					ctrl.update()
 
 					hubDevice.on('batteryLevel', (data) => {
 						//console.log('batteryLevel', data)
-						const hubDesc = ctrl.model.hubDevices.find((e) => e.hubDevice == hubDevice)
+						const hubDesc = ctrl.model.hubDevices.find((e) => e.UUID == id)
 						hubDesc.batteryLevel = data.batteryLevel
 						ctrl.update()
 					})			
 
 					hubDevice.on('address', (data) => {
 						console.log('address', data)
-						const hubDesc = ctrl.model.hubDevices.find((e) => e.hubDevice == hubDevice)
+						const hubDesc = ctrl.model.hubDevices.find((e) => e.UUID == id)
 						hubDesc.address = data.address
 						ctrl.update()
 					})		
@@ -191,17 +204,19 @@ $$.control.registerControl('rootPage', {
 
 					hubDevice.on('disconnected', () => {
 						console.log('disconnected')
-						const idx = ctrl.model.hubDevices.findIndex((e) => e.hubDevice == hubDevice)
+						const idx = ctrl.model.hubDevices.findIndex((e) => e.UUID == id)
 						ctrl.model.hubDevices.splice(idx, 1)
 						ctrl.update()
+						delete hubDevices[id]
 					})
 
-					await hubDevice.setPortFormat(hub.PortMap.TILT_SENSOR, hub.DeviceMode.TILT_POS, (data) => {
-						//console.log('Tilt', data)
-						const hubDesc = ctrl.model.hubDevices.find((e) => e.hubDevice == hubDevice)
+					const tiltSensor = await hubDevice.getTiltSensor(hub.PortMap.TILT_SENSOR)
+					await tiltSensor.subscribe(hub.DeviceMode.TILT_POS, (data) => {
+						const hubDesc = ctrl.model.hubDevices.find((e) => e.UUID == id)
 						hubDesc.tilt = data
 						ctrl.update()
 					})
+					
 
 				}
 
@@ -216,7 +231,7 @@ $$.control.registerControl('rootPage', {
 		 */
 		function execAction(actionName, factor) {
 
-			actionSrv.execAction(ctrl.model.hubDevices, config.actions, actionName, factor)
+			actionSrv.execAction(Object.values(hubDevices), config.actions, actionName, factor)
 
 		}
 

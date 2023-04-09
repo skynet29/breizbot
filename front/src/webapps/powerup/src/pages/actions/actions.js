@@ -19,7 +19,7 @@ $$.control.registerControl('actionsCtrl', {
 	 */
 	init: function (elt, pager, actionSrv) {
 
-		//console.log('props', this.props)
+		console.log('props', this.props)
 
 		const { isEdition, hubDevices } = this.props
 

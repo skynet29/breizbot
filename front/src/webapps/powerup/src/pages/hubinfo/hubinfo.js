@@ -26,18 +26,18 @@ $$.control.registerControl('hubinfo', {
 		const externalDevices = []
 
 		for (const device of devices) {
-			const {portId, deviceTypeName, portName} = device
+			const {portId, type, name} = device
 			if (portId < 50) {
 				externalDevices.push({
-					portName,
+					name,
 					portId,
-					deviceTypeName
+					type
 				})
 			}
 			else {
 				internalDevices.push({
 					portId,
-					deviceTypeName
+					type
 				})
 
 			}
@@ -99,25 +99,28 @@ $$.control.registerControl('hubinfo', {
 				onCalibrate: async function() {
 					const portId = getExternalPortId($(this))
 					console.log('onCalibrate', portId)
-					await hubDevice.getMotor(portId).calibrate()
+					const motor = await hubDevice.getMotor(portId)
+					await motor.calibrate()
 				},
-				onMouseUp: function () {
+				onMouseUp: async function () {
 					//console.log('onMouseUp')
 					const action = $(this).data('action')
 					const portId = getExternalPortId($(this))
+					const motor = await hubDevice.getMotor(portId)
 					switch (action) {
 						case 'forward':
-							hubDevice.getMotor(portId).setPower(100)
+							motor.setPower(100)
 							break
 						case 'backward':
-							hubDevice.getMotor(portId).setPower(-100)
+							motor.setPower(-100)
 							break
 					}
 				},
-				onMouseDown: function () {
+				onMouseDown: async function () {
 					//console.log('onMouseDown')
 					const portId = getExternalPortId($(this))
-					hubDevice.getMotor(portId).setPower(0)
+					const motor = await hubDevice.getMotor(portId)
+					motor.setPower(0)
 				},
 				onInfo: function () {
 					const idx = $(this).closest('tr').index()

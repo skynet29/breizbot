@@ -10,8 +10,8 @@
         </thead>
         <tbody bn-each="externalDevices" bn-event="mousedown.action: onMouseUp, mouseup.action:onMouseDown, click.portInfo: onInfo2, click.calibrate:onCalibrate">
             <tr>
-                <td bn-text="$scope.$i.portName"></td>
-                <td bn-text="$scope.$i.deviceTypeName"></td>
+                <td bn-text="$scope.$i.name"></td>
+                <td bn-text="$scope.$i.type"></td>
                 <td>
                     <button class="w3-btn w3-green action" data-action="forward">FWD</button>
                     <button class="w3-btn w3-green action" data-action="backward">BKWD</button>
@@ -35,7 +35,7 @@
         <tbody bn-each="internalDevices" bn-event="click.w3-btn: onInfo">
             <tr>
                 <td bn-text="$scope.$i.portId"></td>
-                <td bn-text="$scope.$i.deviceTypeName"></td>
+                <td bn-text="$scope.$i.type"></td>
                 <td>
                     <button class="w3-btn w3-blue">MODE</button>
                 </td>

@@ -29,24 +29,41 @@ declare namespace HUB {
     }
 
     interface HubDevice extends EventEmitter2 {
-        getHubDevices(): DeviceInfo[];
+        name: string;
+
+        getHubDevices(): Device[];
         init(device: BluetoothDevice): Promise<void>;
         shutdown(): Promise<void>;
         getDeviceType(portId: PortMap): string;
-        setPortFormat(portId: PortMap, mode: DeviceMode, cbk?: (data)=>void, deltaInterval?: number, ckb?: (data: {portId: number, mode: number, value: number}) => void): Promise<void>;
-        createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<string>;
+        createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<void>;
         getPortInformation(portId: PortMap): Promise<PortInformation>;
-        waitTestValue(portId: number, mode: number, testFn: (value: number) => boolean): Promise<void>;
-        getMotor(portId: number): Motor;
+
+        getMotor(portId: number): Promise<Motor>;
         getDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>
-        getLed(portId: number):Led;
+        getLed(portId: number):Promise<Led>;
+        getTiltSensor(portId: number):Promise<TiltSensor>; 
+
         getPortIdFromName(name: string): number;
         startNotification(): Promise<void>;
-        getPortValue(portId: number, mode: number):Promise<number>;
-        waitTestValue(portId: number, mode: number, testFn: (value: number) => boolean):Promise<void>;
+        
+    }
+
+    interface Device {
+        name: string;
+        type: string;
+        portId: number;
+
+        getValue(mode: DeviceMode):Promise<number>;
+        waitTestValue(mode: DeviceMode, testFn: (value: number) => boolean):Promise<void>;
+        setMode(mode: DeviceMode, notificationEnabled: boolean, deltaInterval?: number):Promise<void>;
+        subscribe(mode: DeviceMode, cbk: (value) => void)
+    }
+
+    interface TiltSensor extends Device {
+
     }
      
-    interface Motor {
+    interface Motor extends Device {
         setPower(power: number): Promise<void>;
         resetZero(): Promise<void>;
         setSpeed(speed: number): Promise<void>;
@@ -57,8 +74,7 @@ declare namespace HUB {
 
     }
 
-    interface DoubleMotor {
-        create(): Promise<void>;
+    interface DoubleMotor extends Device {
         setSpeed(speed1: number, speed2: number): Promise<void>;
         setSpeedForTime(speed1: number, speed2: number, time: number, waitFeedback: boolean = false, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
         rotateDegrees(degrees: number, speed1: number, speed2: number, waitFeedback: boolean, brakingStyle = BrakingStyle.BRAKE): Promise<void>; 
@@ -67,7 +83,7 @@ declare namespace HUB {
     }
 
 
-    interface Led {
+    interface Led extends Device {
         setColor(color: Color): Promise<void>;
         setRGBColor(red: number, green: number, blue: number): Promise<void>;
     }
@@ -127,7 +143,7 @@ declare namespace HUB {
 declare namespace ActionSrv {
 
     interface HubDesc {
-        hubDevice: HUB.HubDevice;
+        UUID: number;
         hubId: string;
         batteryLevel: number;
         address: string;
@@ -171,7 +187,7 @@ declare namespace ActionSrv {
     }
 
     interface Interface {
-        execAction(hubDevices: Array<HubDesc>, actions: Array<ActionDesc>, actionName: string, factor: number):Promise<void>;
+        execAction(hubDevices: Array<HUB.HubDevice>, actions: Array<ActionDesc>, actionName: string, factor: number):Promise<void>;
         getVariables(): Array<VarDesc>;
         resetVariables():void;
 

@@ -35,9 +35,15 @@ const assets = task('assets',
 	{dest: 'assets'}
 )
 
+const hubJs = task('hub.js', 
+		'./lib/hub.js'
+	,
+	{browserify: true, concat: 'hub.js'}
+
+)
 
 
-const app = gulp.series(appJs, appCss, assets, workerJs)
+const app = gulp.series(appJs, appCss, assets, workerJs, hubJs)
 exports.default = app
 
 exports.addCtrl = addCtrl
@@ -51,5 +57,7 @@ exports.watch = gulp.series(app, function() {
 	gulp.watch(['./src/**/*.js', './src/**/*.html'], appJs)
 	gulp.watch(['./src/**/*.scss'], appCss)
 	gulp.watch(['./assets/*'], assets)
+	gulp.watch(['./lib/*.js'], hubJs)
+
 
 })

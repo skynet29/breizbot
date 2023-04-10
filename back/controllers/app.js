@@ -36,7 +36,7 @@ module.exports = function (app) {
 			})
 			let scripts = appInfo.scripts || []
 			scripts = scripts.map((fileName) => {
-				return (fileName.startsWith('/')) ? fileName : path.join(appPath, 'assets', fileName)
+				return (fileName.startsWith('/')) ? fileName : path.join(appPath, fileName)
 			})
 
 			const brainjs = appInfo.brainjs || []

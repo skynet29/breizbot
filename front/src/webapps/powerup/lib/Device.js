@@ -7,7 +7,7 @@ const {log, toUint32} = require('./Util')
 class Device {
     /**
      * 
-     * @param {HubDevice} hubDevice 
+     * @param {HUB.HubDevice} hubDevice 
      * @param {number} portId 
      * @param {string} type 
      * @param {string} [name] 

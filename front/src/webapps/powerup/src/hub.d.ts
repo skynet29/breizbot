@@ -31,6 +31,8 @@ declare namespace HUB {
     interface HubDevice extends EventEmitter2 {
         name: string;
 
+        sendMsg(msgType: number, ...data):Promise<void>;
+
         getHubDevices(): Device[];
         init(device: BluetoothDevice): Promise<void>;
         shutdown(): Promise<void>;

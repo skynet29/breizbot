@@ -8,8 +8,6 @@ var sass = require('gulp-sass')
 var uglify = require('gulp-uglify-es').default
 var rename = require("gulp-rename")
 const eslint = require('gulp-eslint')
-const bro = require('gulp-bro')
-const babelify = require('babelify')
 const replace = require('gulp-replace')
 const browserify = require('browserify');
 const source = require('vinyl-source-stream');
@@ -65,7 +63,14 @@ function compute(dest, srcs, options) {
 
 		stream = b.bundle()
 			.pipe(source(options.concat))
-			.pipe(buffer())	
+			.pipe(buffer())
+			.pipe(sourcemaps.init({loadMaps: true}))
+
+		if (!isDev) {
+			stream = stream.pipe(uglify())
+		}
+
+		stream = stream.pipe(sourcemaps.write('./'))
 	}
 	else {
 		stream = gulp.src(srcs)

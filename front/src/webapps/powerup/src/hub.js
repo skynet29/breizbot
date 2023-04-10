@@ -613,16 +613,6 @@
 
         }
 
-
-
-        async create() {
-            const name = await this.hubDevice.createVirtualPort(this.portId1, this.portId2)
-            await $$.util.wait(100)
-            this.portId = this.hubDevice.getPortIdFromName(name)
-            console.log('portId', this.portId)
-
-        }
-
         /**
          * 
          * @param {number} speed1 
@@ -630,7 +620,6 @@
          * @returns 
          */
         setSpeed(speed1, speed2) {
-            const portId = this.hubDevice
             return this.writePortCommand(false, 0x08, speed1, speed2, maxPower, 0)
         }
 
@@ -647,7 +636,6 @@
 
         gotoAngle(angle1, angle2, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
             console.log('gotoAngle', this.portId, { angle1, angle2, speed, waitFeedback, brakingStyle })
-            const portValue = this.hubDevice.portValue[this.portId]
 
             return this.writePortCommand(waitFeedback, 0x0E, toInt32(angle1), toInt32(angle2), speed, maxPower, brakingStyle)
         }

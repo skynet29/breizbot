@@ -4,5 +4,5 @@
 	"title": "Apollo AGC",
 	"styles": ["app.css"],
 	"description": "Apollo guidance computer simulation",
-	"scripts": ["agc.js"]
+	"scripts": ["assets/agc.js"]
 }

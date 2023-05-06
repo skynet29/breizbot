@@ -36,18 +36,26 @@ $$.control.registerControl('rootPage', {
 		  }]
 		}
 
+		/**@type {HTMLVideoElement} */
 		const localVideo = ctrl.scope.localVideo.on('canplay', function(){
 			console.log('canplay', this.videoHeight, this.videoWidth)
 			ctrl.setData({videoSize: this.videoWidth + 'x' + this.videoHeight})
 		}).get(0)
 
+		/**@type {HTMLVideoElement} */
 		const remoteVideo = ctrl.scope.remoteVideo.get(0)
-		let pc
-		let localStream
-		let remoteStream
+
+		/**@type {RTCPeerConnection} */
+		let pc = null
+
+		/**@type {MediaStream} */
+		let localStream = null
+
+		/**@type {MediaStream} */
+		let remoteStream = null
 
 		function createPeerConnection() {
-			//console.log('createPeerConnection')
+			console.log('createPeerConnection')
 			try {
 			  pc = new RTCPeerConnection(pcConfig)
 
@@ -64,11 +72,21 @@ $$.control.registerControl('rootPage', {
 		  		
 			  	}
 			  }
-			  pc.onaddstream = function(event) {
-			  	//console.log('onaddstream', event)
-			  	remoteStream = event.stream
+			  pc.ontrack = function(event) {
+			  	console.log('ontrack', event)
+			  	remoteStream = event.streams[0]
 			  	remoteVideo.srcObject = remoteStream			  	
 			  }
+
+			  pc.onnegotiationneeded = async function(event) {
+				console.log('onnegotiationneeded', event)
+				const offer = await pc.createOffer()
+				//console.log('createOffer', sessionDescription)
+				pc.setLocalDescription(offer)
+				console.log('send offer', offer)
+				rtc.sendData('offer', offer)
+			  }
+			
 			  //pc.onremovestream = handleRemoteStreamRemoved
 			  //console.log('Created RTCPeerConnnection')
 			} catch (e) {
@@ -79,7 +97,10 @@ $$.control.registerControl('rootPage', {
 
 		function stop() {
 		  pc.close()
-		  pc = null		  
+		  pc = null	
+		  if (remoteStream) {
+			remoteStream.getTracks().forEach((track) => track.stop())
+		  }	  
 		}	
 			
 		async function openMedia() {
@@ -96,8 +117,6 @@ $$.control.registerControl('rootPage', {
 
 				if (rtc.isCallee()) {
 					rtc.accept()
-					createPeerConnection()	
-					pc.addStream(localStream)				
 				}	
 			}
 			catch (e) {
@@ -109,12 +128,13 @@ $$.control.registerControl('rootPage', {
 		}
 
 		rtc.on('accept', async function() {
+			console.log('receive accept')
 			createPeerConnection()
-			pc.addStream(localStream)
-			const sessionDescription = await pc.createOffer()
-			//console.log('createOffer', sessionDescription)
-			pc.setLocalDescription(sessionDescription)
-			rtc.sendData('offer', sessionDescription)
+			localStream.getTracks().forEach((track) => {
+				console.log('addTrack', track)
+				pc.addTrack(track, localStream)
+			})
+
 		})
 
 
@@ -128,14 +148,23 @@ $$.control.registerControl('rootPage', {
 		})		
 
 		rtc.onData('offer', async function(data) {
+			console.log('receive offer', data)
+			createPeerConnection()	
+
 			pc.setRemoteDescription(new RTCSessionDescription(data))
 			//console.log('Sending answer to peer.')
-			const sessionDescription = await pc.createAnswer()
-			pc.setLocalDescription(sessionDescription)
-			rtc.sendData('answer', sessionDescription)
+			localStream.getTracks().forEach((track) => {
+				console.log('addTrack', track)
+				pc.addTrack(track, localStream)
+			})
+			const answer = await pc.createAnswer()
+			pc.setLocalDescription(answer)
+			console.log('send answer', answer)
+			rtc.sendData('answer', answer)
 		})	
 
 		rtc.onData('answer', function(data) {
+			console.log('receive answer', data)
 			pc.setRemoteDescription(new RTCSessionDescription(data))
 
 		})	

@@ -30,6 +30,9 @@ $$.control.registerControl('rootPage', {
 			if (fileName.endsWith('.html')) {
 				type = 'html'
 			}
+			if (fileName.endsWith('.svg')) {
+				type = 'image'
+			}
 			return type
 		}
 

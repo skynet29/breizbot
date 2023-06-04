@@ -7,6 +7,7 @@
     const Motor = require('./Motor')
     const DoubleMotor = require('./DoubleMotor')
     const Device = require('./Device')
+    const RgbLed = require('./RgbLed')
     const Led = require('./Led')
     const TiltSensor = require('./TiltSensor')
     const {log} = require('./Util')
@@ -75,7 +76,8 @@
         [DeviceType.TECHNIC_LARGE_ANGULAR_MOTOR_GREY]: Motor,
         [DeviceType.TECHNIC_XLARGE_LINEAR_MOTOR]: Motor,
         [DeviceType.TECHNIC_MEDIUM_HUB_TILT_SENSOR]: TiltSensor,
-        [DeviceType.HUB_LED]: Led
+        [DeviceType.HUB_LED]: RgbLed,
+        [DeviceType.LIGHT]: Led
     }
 
     /**@implements HUB.HubDevice */
@@ -192,6 +194,30 @@
 
         }
 
+        getRgbLed(portId) {
+            return new Promise((resolve, reject) => {
+                const device = this.hubDevices[portId]
+                if (device) {
+                    if (device instanceof RgbLed) {
+                        resolve(device)
+                    }
+                    else {
+                        reject()
+                    }
+                }
+                else {
+                    this.attachCallbacks.on((device) => {
+                        if (device.portId == portId) {
+                            log(`device on portId ${portId} is ready`)
+                            resolve(device)
+                            return true
+                        }
+                        return false
+                    })
+                }
+            })    
+        }
+
         getLed(portId) {
             return new Promise((resolve, reject) => {
                 const device = this.hubDevices[portId]
@@ -215,7 +241,6 @@
                 }
             })    
         }
-
         async getDblMotor(portId1, portId2) {
             return new Promise(async (resolve) => {
                 const name = getVirtualPortName(portId1, portId2)

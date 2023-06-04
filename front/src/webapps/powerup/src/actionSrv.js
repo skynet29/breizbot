@@ -34,6 +34,10 @@ $$.service.registerService('actionSrv', {
                     const motor = await hubDevice.getMotor(hub.PortMap[stepDesc.port])
                     await motor.setPower(stepDesc.power * factor)
                 }
+                else if (stepDesc.type == 'BRIGHTNESS') {
+                    const led = await hubDevice.getLed(hub.PortMap[stepDesc.port])
+                    await led.setBrightness(stepDesc.brightness * factor)
+                }
                 else if (stepDesc.type == 'SPEED') {
                     const motor = await hubDevice.getMotor(hub.PortMap[stepDesc.port])
                     await motor.setSpeed(stepDesc.speed * factor)
@@ -55,11 +59,11 @@ $$.service.registerService('actionSrv', {
                     await motor.resetZero()
                 }
                 else if (stepDesc.type == 'COLOR') {
-                    const led = await hubDevice.getLed(hub.PortMap.HUB_LED)
+                    const led = await hubDevice.getRgbLed(hub.PortMap.HUB_LED)
                     await led.setColor(stepDesc.color)
                 }
                 else if (stepDesc.type == 'RGB') {
-                    const led = await hubDevice.getLed(hub.PortMap.HUB_LED)
+                    const led = await hubDevice.getRgbLed(hub.PortMap.HUB_LED)
                     await led.setRGBColor(stepDesc.red, stepDesc.green, stepDesc.blue)
                 }
                 else if (stepDesc.type == 'CALIBRATE') {

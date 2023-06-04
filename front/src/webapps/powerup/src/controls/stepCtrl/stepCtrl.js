@@ -39,6 +39,7 @@ $$.control.registerControl('stepCtrl', {
             'ZERO',
             'COLOR',
             'RGB',
+            'BRIGHTNESS',
             'TESTVAR',
             'SETVAR'
         ]

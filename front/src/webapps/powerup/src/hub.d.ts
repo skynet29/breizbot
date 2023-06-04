@@ -1,3 +1,5 @@
+import RgbLed from "../lib/RgbLed";
+
 declare namespace HUB {
 
     type EventName = 'disconnected' | 'attach' | 'detach' | 'batteryLevel' | 'buttonState' | 'error'
@@ -42,8 +44,9 @@ declare namespace HUB {
 
         getMotor(portId: number): Promise<Motor>;
         getDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>
-        getLed(portId: number):Promise<Led>;
+        getRbgLed(portId: number):Promise<RgbLed>;
         getTiltSensor(portId: number):Promise<TiltSensor>; 
+        getSinpleLed(portId: number):Promise<Led>;
 
         getPortIdFromName(name: string): number;
         startNotification(): Promise<void>;
@@ -84,8 +87,11 @@ declare namespace HUB {
 
     }
 
-
     interface Led extends Device {
+        setBrightness(brightness: number): Promise<void>;
+    }
+
+    interface RgbLed extends Device {
         setColor(color: Color): Promise<void>;
         setRGBColor(red: number, green: number, blue: number): Promise<void>;
     }

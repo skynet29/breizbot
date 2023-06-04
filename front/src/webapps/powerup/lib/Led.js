@@ -15,17 +15,12 @@ class Led extends Device {
 
     }
 
-    async setColor(color) {
-        console.log('setColor', this.portId, { color })
-        await this.setMode(DeviceMode.COLOR, false)
-        return this.writeDirectMode(DeviceMode.COLOR, false, color)
+    setBrightness(brightness) {
+        console.log('setBrightness', this.portId, { brightness })
+        return this.writeDirectMode(DeviceMode.POWER, false, brightness)
     }
 
-    async setRGBColor(r, g, b) {
-        console.log('setColor', this.portId, { r, g, b })
-        await this.setMode(DeviceMode.RGB, false)
-        return this.writeDirectMode(DeviceMode.RGB, false, r, g, b)
-    }
+
 }
 
 module.exports = Led

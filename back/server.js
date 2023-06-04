@@ -214,6 +214,7 @@ function dbReady() {
 
 
 	if (config.USESSL) {
+		console.log('Use SSL')
 		const Greenlock = require('greenlock');
 		const redir = require('redirect-https')();
 		const https = require('https')
@@ -237,6 +238,8 @@ function dbReady() {
 		websocket.init(server, store)
 	}
 	else {
+		console.log('No use SSL')
+
 		const server = http.createServer(app).listen(config.httpPort)
 
 		websocket.init(server, store)

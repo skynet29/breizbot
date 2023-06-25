@@ -19,29 +19,44 @@ $$.control.registerControl('hubinfo', {
 
 		/**@type {HUB.HubDevice} */
 		const hubDevice = this.props.hubDevice
-		const devices = hubDevice.getHubDevices()
-		console.log('devices', devices)
 
-		const internalDevices = []
-		const externalDevices = []
 
-		for (const device of devices) {
-			const {portId, type, name} = device
-			if (portId < 50) {
-				externalDevices.push({
-					name,
-					portId,
-					type
-				})
+		async function initDevices() {
+			const devices = hubDevice.getHubDevices()
+			console.log('devices', devices)
+	
+			const internalDevices = []
+			const externalDevices = []
+	
+			for (const device of devices) {
+				const {portId, type, name} = device
+				if (portId < 50) {
+					const info = {name, portId, type}
+					externalDevices.push(info)
+
+					if (hubDevice.isTachoMotor(portId)) {
+						const motor = await hubDevice.getTachoMotor(portId)
+						motor.subscribe(hub.DeviceMode.ROTATION, (value) => {
+							//console.log('rotation', value)
+							//const info = ctrl.model.externalDevices.find(dev => dev.portId == portId)
+							//console.log('info', info)
+							info.value = value
+							ctrl.update()
+						}, 2)
+					}
+				}
+				else {
+					internalDevices.push({
+						portId,
+						type
+					})
+	
+				}
 			}
-			else {
-				internalDevices.push({
-					portId,
-					type
-				})
 
-			}
+			ctrl.setData({internalDevices, externalDevices})
 		}
+
 
 		/**
 		 * 
@@ -68,15 +83,31 @@ $$.control.registerControl('hubinfo', {
 
 		}
 
-		function attachCbk(data) {
+		async function attachCbk(data) {
 			console.log('attach', data)
-			const { portId, deviceTypeName } = data
-			devices[portId] = deviceTypeName
+			const { portId, name, type } = data
+			const info = {portId, name, type}
+			ctrl.model.externalDevices.push(info)
+			ctrl.update()
+			if (hubDevice.isTachoMotor(portId)) {
+				const motor = await hubDevice.getTachoMotor(portId)
+				motor.subscribe(hub.DeviceMode.ROTATION, (value) => {
+					//console.log('rotation', value)
+					//const info = ctrl.model.externalDevices.find(dev => dev.portId == portId)
+					//console.log('info', info)
+					info.value = value
+					ctrl.update()
+				}, 2)
+			}
 		}
 
 		function detachCbk(data) {
 			console.log('detach', data)
-			delete devices[data.portId]
+			const idx = ctrl.model.externalDevices.findIndex((dev) => dev.portId == data.portId)
+			//console.log('idx', idx)
+			ctrl.model.externalDevices.splice(idx, 1)
+			ctrl.update()
+
 		}
 
 		hubDevice.on('attach', attachCbk)
@@ -91,11 +122,41 @@ $$.control.registerControl('hubinfo', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				internalDevices,
-				externalDevices
-
+				internalDevices: [],
+				externalDevices: [],
+				isMotor: function(scope) {
+					return hubDevice.isMotor(scope.$i.portId)
+				},
+				isLed: function(scope) {
+					return hubDevice.isLed(scope.$i.portId)
+				},
+				isTachoMotor: function(scope) {
+					return hubDevice.isTachoMotor(scope.$i.portId)
+				}
 			},
 			events: {
+				onMotorAction: async function() {
+					const portId = getExternalPortId($(this))
+					const action = $(this).data('action')
+					console.log('onMotorAction', portId, action)
+					const motor = await hubDevice.getTachoMotor(portId)
+					switch(action) {
+						case 'reset':
+							motor.resetZero()
+							break
+						case 'gozero':
+							motor.gotoAngle(0, 50, false)
+
+					}
+
+				},
+				onLedAction: async function() {
+					const portId = getExternalPortId($(this))
+					const action = $(this).data('action')
+					console.log('onLedAction', portId, action)
+					const led = await hubDevice.getLed(portId)
+					led.setBrightness((action == 'on' ? 100 : 0))
+				},
 				onCalibrate: async function() {
 					const portId = getExternalPortId($(this))
 					console.log('onCalibrate', portId)
@@ -136,6 +197,8 @@ $$.control.registerControl('hubinfo', {
 
 			}
 		})
+
+		initDevices()
 
 	}
 

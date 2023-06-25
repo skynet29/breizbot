@@ -1,16 +1,18 @@
 //@ts-check
 
+
 (function () {
 
     const CallbackEmitter = require('./CallbackEmitter')
-    const {EventNames, DeviceMode, DeviceTypeNames, BrakingStyle, PortMap, HubPropertyPayloadNames, ModeInformationTypeNames, Event, DeviceType, PortMapNames, MessageType, HubPropertyPayload, ModeInformationType, ErrorCodeNames, MessageTypeNames} = require('./Const')
+    const { EventNames, DeviceMode, DeviceTypeNames, BrakingStyle, PortMap, HubPropertyPayloadNames, ModeInformationTypeNames, Event, DeviceType, PortMapNames, MessageType, HubPropertyPayload, ModeInformationType, ErrorCodeNames, MessageTypeNames } = require('./Const')
     const Motor = require('./Motor')
     const DoubleMotor = require('./DoubleMotor')
+    const TachoMotor = require('./TachoMotor');
     const Device = require('./Device')
     const RgbLed = require('./RgbLed')
     const Led = require('./Led')
     const TiltSensor = require('./TiltSensor')
-    const {log} = require('./Util')
+    const { log } = require('./Util')
 
     const Color = {
         BLACK: 0,
@@ -30,7 +32,7 @@
     const LPF2_SERVICE_UUID = '00001623-1212-efde-1623-785feabcd123'
     const LPF2_CHARAC_UUID = '00001624-1212-efde-1623-785feabcd123'
 
- 
+
     /**
      * 
      * @param {ArrayBuffer} buf 
@@ -45,7 +47,7 @@
     }
 
 
- 
+
 
     /**
      * 
@@ -72,9 +74,9 @@
     }
 
     const constructorMap = {
-        [DeviceType.TECHNIC_LARGE_LINEAR_MOTOR]: Motor,
-        [DeviceType.TECHNIC_LARGE_ANGULAR_MOTOR_GREY]: Motor,
-        [DeviceType.TECHNIC_XLARGE_LINEAR_MOTOR]: Motor,
+        [DeviceType.TECHNIC_LARGE_LINEAR_MOTOR]: TachoMotor,
+        [DeviceType.TECHNIC_LARGE_ANGULAR_MOTOR_GREY]: TachoMotor,
+        [DeviceType.TECHNIC_XLARGE_LINEAR_MOTOR]: TachoMotor,
         [DeviceType.TECHNIC_MEDIUM_HUB_TILT_SENSOR]: TiltSensor,
         [DeviceType.HUB_LED]: RgbLed,
         [DeviceType.LIGHT]: Led
@@ -164,6 +166,75 @@
             })
         }
 
+
+        /**
+         * 
+         * @param {number} portId 
+         * @returns {Promise<Motor>}
+         */
+        getTachoMotor(portId) {
+            return new Promise((resolve, reject) => {
+                const device = this.hubDevices[portId]
+                if (device) {
+                    if (device instanceof TachoMotor) {
+                        resolve(device)
+                    }
+                    else {
+                        reject()
+                    }
+                }
+                else {
+                    this.attachCallbacks.on((device) => {
+                        if (device.portId == portId) {
+                            log(`device on portId ${portId} is ready`)
+                            resolve(device)
+                            return true
+                        }
+                        return false
+                    })
+                }
+            })
+        }
+
+        /**
+         * 
+         * @param {number} portId 
+         * @returns {boolean}
+         */
+        isMotor(portId) {
+            const device = this.hubDevices[portId]
+            if (device) {
+                return device instanceof Motor
+            }
+            return false
+        }
+
+        /**
+         * 
+         * @param {number} portId 
+         * @returns {boolean}
+         */
+        isLed(portId) {
+            const device = this.hubDevices[portId]
+            if (device) {
+                return device instanceof Led
+            }
+            return false
+        }
+
+        /**
+         * 
+         * @param {number} portId 
+         * @returns {boolean}
+         */
+        isTachoMotor(portId) {
+            const device = this.hubDevices[portId]
+            if (device) {
+                return device instanceof TachoMotor
+            }
+            return false
+        }
+
         /**
          * 
          * @param {number} portId 
@@ -215,7 +286,7 @@
                         return false
                     })
                 }
-            })    
+            })
         }
 
         getLed(portId) {
@@ -239,7 +310,7 @@
                         return false
                     })
                 }
-            })    
+            })
         }
         async getDblMotor(portId1, portId2) {
             return new Promise(async (resolve) => {

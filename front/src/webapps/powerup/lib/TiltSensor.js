@@ -5,7 +5,7 @@ const {PortMapNames, DeviceMode} = require('./Const')
 
 class TiltSensor extends Device {
     constructor(hubDevice, portId, type) {
-        super(hubDevice, portId, type, PortMapNames[portId])
+        super(hubDevice, portId, type)
     }
 
     /**

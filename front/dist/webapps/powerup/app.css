@@ -131,6 +131,8 @@
     .hubinfo .scrollBar h1 {
       font-size: 16px;
       font-weight: bold; }
+    .hubinfo .scrollBar .spanButtons button {
+      margin-left: 5px; }
 
 .info {
   padding: 5px; }

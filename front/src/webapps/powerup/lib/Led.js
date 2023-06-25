@@ -11,7 +11,7 @@ class Led extends Device {
     * @param {number} portId 
     */
     constructor(hubDevice, portId, type) {
-        super(hubDevice, portId, type, PortMapNames[portId])
+        super(hubDevice, portId, type)
 
     }
 

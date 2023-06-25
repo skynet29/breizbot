@@ -1,4 +1,3 @@
-import RgbLed from "../lib/RgbLed";
 
 declare namespace HUB {
 
@@ -43,10 +42,15 @@ declare namespace HUB {
         getPortInformation(portId: PortMap): Promise<PortInformation>;
 
         getMotor(portId: number): Promise<Motor>;
-        getDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>
+        getTachoMotor(portId: number): Promise<TachoMotor>;
+        getDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>;
         getRbgLed(portId: number):Promise<RgbLed>;
         getTiltSensor(portId: number):Promise<TiltSensor>; 
         getSinpleLed(portId: number):Promise<Led>;
+
+        isMotor(portId: number):boolean;
+        isLed(portId: number):boolean;
+        isTachoMotor(portId: number):boolean;
 
         getPortIdFromName(name: string): number;
         startNotification(): Promise<void>;
@@ -70,6 +74,10 @@ declare namespace HUB {
      
     interface Motor extends Device {
         setPower(power: number): Promise<void>;
+    }
+
+    interface TachoMotor extends Motor {
+        setPower(power: number): Promise<void>;
         resetZero(): Promise<void>;
         setSpeed(speed: number): Promise<void>;
         setSpeedForTime(speed: number, time: number, waitFeedback: boolean = false, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
@@ -79,7 +87,7 @@ declare namespace HUB {
 
     }
 
-    interface DoubleMotor extends Device {
+    interface DoubleMotor extends Motor {
         setSpeed(speed1: number, speed2: number): Promise<void>;
         setSpeedForTime(speed1: number, speed2: number, time: number, waitFeedback: boolean = false, brakingStyle:BrakingStyle = BrakingStyle.BRAKE): Promise<void>;
         rotateDegrees(degrees: number, speed1: number, speed2: number, waitFeedback: boolean, brakingStyle = BrakingStyle.BRAKE): Promise<void>; 

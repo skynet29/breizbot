@@ -1,7 +1,7 @@
 //@ts-check
 
 const CallbackEmitter = require('./CallbackEmitter')
-const {MessageType} = require('./Const')
+const {MessageType, PortMapNames} = require('./Const')
 const {log, toUint32} = require('./Util')
 
 class Device {
@@ -10,13 +10,12 @@ class Device {
      * @param {HUB.HubDevice} hubDevice 
      * @param {number} portId 
      * @param {string} type 
-     * @param {string} [name] 
      */
-    constructor(hubDevice, portId, type, name) {
+    constructor(hubDevice, portId, type) {
         this.hubDevice = hubDevice
         this.portId = portId
         this.type = type
-        this.name = name
+        this.name = PortMapNames[portId]
         this.feedbackCallback = null
         this.valueCallbacks = new CallbackEmitter()
         this.mode = undefined

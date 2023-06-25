@@ -6,18 +6,39 @@
                 <th>Port</th>
                 <th>Device Type</th>
                 <th>Action</th>
+                <th>Value</th>
             </tr>
         </thead>
-        <tbody bn-each="externalDevices" bn-event="mousedown.action: onMouseUp, mouseup.action:onMouseDown, click.portInfo: onInfo2, click.calibrate:onCalibrate">
+        <tbody bn-each="externalDevices" bn-event="
+            mousedown.motorMouseAction: onMouseUp, 
+            mouseup.motorMouseAction:onMouseDown, 
+            click.motorAction:onMotorAction, 
+            click.ledAction: onLedAction,
+            click.portInfo: onInfo2, 
+            click.calibrate:onCalibrate">
             <tr>
                 <td bn-text="$scope.$i.name"></td>
                 <td bn-text="$scope.$i.type"></td>
                 <td>
-                    <button class="w3-btn w3-green action" data-action="forward">FWD</button>
-                    <button class="w3-btn w3-green action" data-action="backward">BKWD</button>
-                    <button class="w3-btn w3-green calibrate">CALIBRATE</button>
+                    <span bn-if="isMotor" class="spanButtons">
+                        <button class="w3-btn w3-green motorMouseAction" data-action="forward">FWD</button>
+                        <button class="w3-btn w3-green motorMouseAction" data-action="backward">BKWD</button>
+                    </span>
+                    <span bn-if="isTachoMotor" class="spanButtons">
+                        <button class="w3-btn w3-green motorAction" data-action="reset">RESET</button>
+                        <button class="w3-btn w3-green motorAction" data-action="gozero">GO ZERO</button>
+                    </span>
+                    <span bn-if="isLed" class="spanButtons">
+                        <button class="w3-btn w3-green ledAction" data-action="on">ON</button>
+                        <button class="w3-btn w3-green ledAction" data-action="off">OFF</button>
+                    </span>
 
                     <button class="w3-btn w3-blue portInfo">MODE</button>
+                </td>
+                <td>
+                    <div bn-if="isTachoMotor">
+                        <span bn-text="$scope.$i.value"></span>
+                    </div>
                 </td>
             </tr>
 

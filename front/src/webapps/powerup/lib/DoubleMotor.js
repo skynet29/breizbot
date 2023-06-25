@@ -1,16 +1,17 @@
 //@ts-check
 
-const Device = require('./Device')
+const Motor = require('./Motor')
 const {BrakingStyle} = require('./Const')
 const {toInt16, toInt32} = require('./Util')
 
 const maxPower = 100
 
-class DoubleMotor extends Device {
+class DoubleMotor extends Motor {
 
 
     constructor(hubDevice, portId, name) {
-        super(hubDevice, portId, 'Virtual Device', name)
+        super(hubDevice, portId, 'Virtual Device')
+        this.name = name
 
     }
 

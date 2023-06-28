@@ -95,12 +95,29 @@ $$.control.registerControl('rootPage', {
 
 		async function checkBalanceCmd(accountInfo) {
 			const accountId = accountInfo._id.toString()
-			console.log('checkBalanceCmd', accountInfo, accountId)
+			//console.log('checkBalanceCmd', accountInfo, accountId)
 
 			const ret = await http.get(`/account/${accountId}/checkBalance`)
-			console.log('ret', ret)
+			//console.log('ret', ret)
 			const balance = accountInfo.initialBalance + ret.totalTransactions
 			console.log('balance', balance)
+			if (Math.abs(accountInfo.finalBalance - balance) > 0.0001) {
+				$$.ui.showConfirm({
+					title: 'Check Balance', 
+					okText: 'Fix Balance',
+					content: `Stored Balance: ${accountInfo.finalBalance.toFixed(2)}<br>
+						Computed Balance: ${balance.toFixed(2)}`
+				}, async () => {
+					//console.log('update balance')
+					await http.put(`/account/${accountId}`, {finalBalance: parseFloat(balance.toFixed(2))})
+					loadAccounts()
+				})
+
+			}
+			else {
+				$$.ui.showAlert({title: 'Check Balance', 'content': 'All is OK'})
+			}
+
 		}
 
 		async function balanceCmd(accountInfo) {

@@ -98,7 +98,7 @@ class DbWrapper {
 		filter.userName = this.userName
 		const $group = { _id: '' }
 		$group[fieldName] = { $sum: '$' + fieldName }
-		console.log('sum', {filter, fieldName, $group})
+		//console.log('sum', {filter, fieldName, $group})
 		const ret = await this.collection.aggregate([{ $match: filter }, { $group }]).toArray()
 		//console.log('sum', ret)
 		return ret[0][fieldName]

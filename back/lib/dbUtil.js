@@ -60,7 +60,7 @@ class DbWrapper {
 	 * @param {Array<object>} docs 
 	 */
 	insertMany(docs) {
-		docs.forEach(doc => {doc.userName = this.userName})
+		docs.forEach(doc => { doc.userName = this.userName })
 		return this.collection.insertMany(docs)
 	}
 
@@ -94,16 +94,26 @@ class DbWrapper {
 		return this.collection.countDocuments(filter)
 	}
 
+	async sum(filter, fieldName) {
+		filter.userName = this.userName
+		const $group = { _id: '' }
+		$group[fieldName] = { $sum: '$' + fieldName }
+		console.log('sum', {filter, fieldName, $group})
+		const ret = await this.collection.aggregate([{ $match: filter }, { $group }]).toArray()
+		//console.log('sum', ret)
+		return ret[0][fieldName]
+	}
+
 	getFilePath(filePath, friendUser) {
 		return util.getFilePath(this.userName, filePath, friendUser)
 	}
 
-	static  buildDbId(ids) {
+	static buildDbId(ids) {
 		if (Array.isArray(ids)) {
 			return { _id: { $in: ids.map((id) => new ObjectID(id)) } }
-	
+
 		}
-	
+
 		return { _id: new ObjectID(ids) }
 	}
 
@@ -112,7 +122,7 @@ class DbWrapper {
 module.exports = {
 	init: function () {
 		return new Promise((resolve, reject) => {
-			MongoClient.connect(config.dbUrl, {useUnifiedTopology: true}, (err, client) => {
+			MongoClient.connect(config.dbUrl, { useUnifiedTopology: true }, (err, client) => {
 				if (err) {
 					reject(err)
 					return

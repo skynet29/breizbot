@@ -126,6 +126,19 @@ module.exports = function (ctx, router) {
 
     })
 
+    router.get('/account/:accountId/checkBalance', async function(req, res) {
+        const { accountId } = req.params
+
+        try {
+            const ret = await db.sum({accountId, type: 'transaction'}, 'amount')
+            //console.log('ret', ret)
+            res.json({totalTransactions: ret})
+        }
+        catch(e) {
+            console.log(e)
+            res.status(400).send(e.message)
+        }        
+    })
 
     router.get('/account/:accountId/unclearedTransactions', async function (req, res) {
 

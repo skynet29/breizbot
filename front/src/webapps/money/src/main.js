@@ -18,7 +18,8 @@ $$.control.registerControl('rootPage', {
 			recurringTrans: recurringTransCmd,
 			synthBalance: synthBalanceCmd,
 			synthCategories: synthCategoriesCmd,
-			balance: balanceCmd
+			balance: balanceCmd,
+			checkBalance: checkBalanceCmd
 		}
 
 
@@ -91,6 +92,16 @@ $$.control.registerControl('rootPage', {
 			}
 
 		})
+
+		async function checkBalanceCmd(accountInfo) {
+			const accountId = accountInfo._id.toString()
+			console.log('checkBalanceCmd', accountInfo, accountId)
+
+			const ret = await http.get(`/account/${accountId}/checkBalance`)
+			console.log('ret', ret)
+			const balance = accountInfo.initialBalance + ret.totalTransactions
+			console.log('balance', balance)
+		}
 
 		async function balanceCmd(accountInfo) {
 			const accountId = accountInfo._id.toString()

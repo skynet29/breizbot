@@ -43,7 +43,7 @@ $$.control.registerControl('recurringTransactions', {
                     //console.log('info', info)
                     if (cmd == 'del') {
                         $$.ui.showConfirm({ title: 'Delete Transaction', content: 'Are you sure ?' }, async () => {
-                            await http.delete('/transaction/', info)
+                            await http.delete('/recurringTransactions/', info)
                             loadTransactions()
                         })
                     }

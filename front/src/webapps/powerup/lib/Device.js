@@ -60,7 +60,7 @@ class Device {
      * @returns 
      */
     setMode(mode, notificationEnabled, deltaInterval = 1) {
-        log('setMode', this.portId, { mode, notificationEnabled })
+        console.log('setMode', this.portId, { mode, notificationEnabled })
 
         this.mode = mode
 

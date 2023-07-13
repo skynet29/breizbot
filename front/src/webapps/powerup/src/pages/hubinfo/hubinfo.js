@@ -36,7 +36,7 @@ $$.control.registerControl('hubinfo', {
 
 					if (hubDevice.isTachoMotor(portId)) {
 						const motor = await hubDevice.getTachoMotor(portId)
-						motor.subscribe(hub.DeviceMode.ROTATION, (value) => {
+						await motor.subscribe(hub.DeviceMode.ROTATION, (value) => {
 							//console.log('rotation', value)
 							//const info = ctrl.model.externalDevices.find(dev => dev.portId == portId)
 							//console.log('info', info)
@@ -127,7 +127,7 @@ $$.control.registerControl('hubinfo', {
 
 					if (hubDevice.isTachoMotor(portId)) {
 						const motor = await hubDevice.getTachoMotor(portId)
-						motor.setMode(hub.DeviceMode.ROTATION, false)
+						await motor.setMode(hub.DeviceMode.ROTATION, false)
 					}
 				}
 

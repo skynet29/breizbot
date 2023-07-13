@@ -351,7 +351,7 @@
 
             }
             else {
-                log('busy push in queue')
+                console.log('busy! push in queue')
                 this.cmdQueue.push(buffer)
             }
 

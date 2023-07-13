@@ -200,7 +200,7 @@ $$.control.registerControl('rootPage', {
 						ctrl.update()
 					})		
 					
-					hubDevice.startNotification()
+					await hubDevice.startNotification()
 
 					hubDevice.on('disconnected', () => {
 						console.log('disconnected')

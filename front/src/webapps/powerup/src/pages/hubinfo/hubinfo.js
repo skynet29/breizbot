@@ -24,14 +24,14 @@ $$.control.registerControl('hubinfo', {
 		async function initDevices() {
 			const devices = hubDevice.getHubDevices()
 			console.log('devices', devices)
-	
+
 			const internalDevices = []
 			const externalDevices = []
-	
+
 			for (const device of devices) {
-				const {portId, type, name} = device
+				const { portId, type, name } = device
 				if (portId < 50) {
-					const info = {name, portId, type}
+					const info = { name, portId, type }
 					externalDevices.push(info)
 
 					if (hubDevice.isTachoMotor(portId)) {
@@ -50,11 +50,11 @@ $$.control.registerControl('hubinfo', {
 						portId,
 						type
 					})
-	
+
 				}
 			}
 
-			ctrl.setData({internalDevices, externalDevices})
+			ctrl.setData({ internalDevices, externalDevices })
 		}
 
 
@@ -86,7 +86,7 @@ $$.control.registerControl('hubinfo', {
 		async function attachCbk(data) {
 			console.log('attach', data)
 			const { portId, name, type } = data
-			const info = {portId, name, type}
+			const info = { portId, name, type }
 			ctrl.model.externalDevices.push(info)
 			ctrl.update()
 			if (hubDevice.isTachoMotor(portId)) {
@@ -113,10 +113,25 @@ $$.control.registerControl('hubinfo', {
 		hubDevice.on('attach', attachCbk)
 		hubDevice.on('detach', detachCbk)
 
-		this.dispose = function () {
+		this.dispose = async function () {
 			console.log('hubInfo dispose')
 			hubDevice.off('attach', attachCbk)
 			hubDevice.off('detach', detachCbk)
+
+			const devices = hubDevice.getHubDevices()
+			console.log('devices', devices)
+
+			for (const device of devices) {
+				const { portId } = device
+				if (portId < 50) {
+
+					if (hubDevice.isTachoMotor(portId)) {
+						const motor = await hubDevice.getTachoMotor(portId)
+						motor.setMode(hub.DeviceMode.ROTATION, false)
+					}
+				}
+
+			}
 		}
 
 
@@ -124,23 +139,23 @@ $$.control.registerControl('hubinfo', {
 			data: {
 				internalDevices: [],
 				externalDevices: [],
-				isMotor: function(scope) {
+				isMotor: function (scope) {
 					return hubDevice.isMotor(scope.$i.portId)
 				},
-				isLed: function(scope) {
+				isLed: function (scope) {
 					return hubDevice.isLed(scope.$i.portId)
 				},
-				isTachoMotor: function(scope) {
+				isTachoMotor: function (scope) {
 					return hubDevice.isTachoMotor(scope.$i.portId)
 				}
 			},
 			events: {
-				onMotorAction: async function() {
+				onMotorAction: async function () {
 					const portId = getExternalPortId($(this))
 					const action = $(this).data('action')
 					console.log('onMotorAction', portId, action)
 					const motor = await hubDevice.getTachoMotor(portId)
-					switch(action) {
+					switch (action) {
 						case 'reset':
 							motor.resetZero()
 							break
@@ -150,14 +165,14 @@ $$.control.registerControl('hubinfo', {
 					}
 
 				},
-				onLedAction: async function() {
+				onLedAction: async function () {
 					const portId = getExternalPortId($(this))
 					const action = $(this).data('action')
 					console.log('onLedAction', portId, action)
 					const led = await hubDevice.getLed(portId)
 					led.setBrightness((action == 'on' ? 100 : 0))
 				},
-				onCalibrate: async function() {
+				onCalibrate: async function () {
 					const portId = getExternalPortId($(this))
 					console.log('onCalibrate', portId)
 					const motor = await hubDevice.getMotor(portId)

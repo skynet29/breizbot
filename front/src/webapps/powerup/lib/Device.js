@@ -80,6 +80,7 @@ class Device {
      * @param {DataView} msg 
      */
     handleValue(msg) {
+        console.log('handleValue', this.portId, msg)
         let value = this.decodeValue(msg)
 
         if (value != undefined) {

@@ -25,6 +25,7 @@ module.exports = function (app) {
 	})
 
 	app.post('/', async function (req, res) {
+		console.log('login', req.body, req.socket.remoteAddress)
 		const { user, pwd } = req.body
 
 		if (user == config.ADMIN_USER) {

@@ -75,7 +75,7 @@ class Device {
      * @param {DataView} msg 
      */
     decodeValue(msg) {
-        if (this.modes.length != 0) {
+        if (this.modes != undefined) {
             const {VALUE_FORMAT, RAW, SI} = this.modes[this.mode]
             const range = $$.util.mapRange(RAW.min, RAW.max, SI.min, SI.max)
             log('info', this.modes[this.mode])

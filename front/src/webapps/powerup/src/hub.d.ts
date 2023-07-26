@@ -38,6 +38,7 @@ declare namespace HUB {
         init(device: BluetoothDevice): Promise<void>;
         shutdown(): Promise<void>;
         getDeviceType(portId: PortMap): string;
+        getDevice(portId: PortMap): Device;
         createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<void>;
         getPortInformation(portId: PortMap): Promise<PortInformation>;
 

@@ -402,16 +402,26 @@
             return this.hubDevices[portId].type
         }
 
+        getDevice(portId) {
+            return this.hubDevices[portId]
+        }
+
         /**
          * 
          * @param {number} portId 
          * @returns {Promise<HUB.PortInformation>}
          */
         async getPortInformation(portId) {
+            let {modes, capabilities} = this.hubDevices[portId]
+            if (modes != undefined || capabilities != undefined)
+            {
+                return {modes, capabilities}
+            }
             const portInfo = await this.getPortInformationRequest(portId)
-            const { capabilities, count, output, input } = portInfo
+            const { count, output, input } = portInfo
+            capabilities = portInfo.capabilities
             const bitSet = Math.max(input, output)
-            const modes = []
+            modes = []
             for (let mode = 0; mode < count; mode++) {
                 const data = {}
                 if (bitSet >> mode) {
@@ -432,6 +442,9 @@
                 }
                 modes.push(data)
             }
+            this.hubDevices[portId].modes = modes
+            this.hubDevices[portId].capabilities = capabilities
+
             return { modes, capabilities }
         }
 
@@ -653,7 +666,7 @@
             const deviceTypeName = DeviceTypeNames[type] || "Unknown"
             const eventName = EventNames[eventType]
 
-            log('handlePortMsg', { portId, eventName, deviceTypeName })
+            console.log('handlePortMsg', { portId, eventName, deviceTypeName })
             if (eventType == Event.ATTACHED_IO) {
 
                 let constructor = constructorMap[type]

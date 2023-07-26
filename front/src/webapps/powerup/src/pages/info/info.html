@@ -11,9 +11,10 @@
                 <th>PCT</th>
                 <th>SI</th>
                 <th>VALUE FORMAT</th>
+                <th>Value</th>
             </tr>
         </thead>
-        <tbody bn-each="modes">
+        <tbody bn-each="modes" bn-event="click.btnGet: onBtnGet">
             <tr>
                 <td bn-text="$scope.$i.name"></td>
                 <td bn-text="$scope.$i.unit"></td>
@@ -32,6 +33,10 @@
                 <td>
                     dataType: <span bn-text="$scope.$i.VALUE_FORMAT.dataType"></span><br>
                     numValues: <span bn-text="$scope.$i.VALUE_FORMAT.numValues"></span>
+                </td>
+                <td>
+                    <button class="w3-btn w3-green btnGet">Get</button>
+                    <span>Unknown</span>
                 </td>
             </tr>
         </tbody>

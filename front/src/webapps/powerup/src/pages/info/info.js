@@ -27,6 +27,15 @@ $$.control.registerControl('info', {
 				capabilities: ''
 			},
 			events: {
+				onBtnGet: async function(scope) {
+					const mode = $(this).closest('tr').index()
+					console.log('onBtnGet', mode)
+					const device = hubDevice.getDevice(portId)
+					const values = await device.getValue(mode)
+					console.log('values', values)
+					$(this).closest('td').find('span').text(JSON.stringify(values, null, 4))
+					
+				}
 			}
 		})
 

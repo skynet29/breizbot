@@ -64,22 +64,6 @@
       display: flex;
       justify-content: flex-end; }
 
-.actionsCtrl {
-  display: flex;
-  flex-direction: row;
-  padding: 10px;
-  justify-content: center; }
-  .actionsCtrl .scrollPanel {
-    max-width: 500px;
-    padding: 10px;
-    flex: 1;
-    overflow-y: auto;
-    border: 1px solid lightgray; }
-    .actionsCtrl .scrollPanel .item {
-      padding: 10px;
-      margin-top: 10px;
-      cursor: pointer; }
-
 .configCtrl {
   display: flex;
   flex-direction: row;
@@ -118,6 +102,22 @@
       background-color: #666;
       z-index: 2; }
     .gamepad .commandTable .item {
+      cursor: pointer; }
+
+.actionsCtrl {
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  justify-content: center; }
+  .actionsCtrl .scrollPanel {
+    max-width: 500px;
+    padding: 10px;
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid lightgray; }
+    .actionsCtrl .scrollPanel .item {
+      padding: 10px;
+      margin-top: 10px;
       cursor: pointer; }
 
 .hubinfo {

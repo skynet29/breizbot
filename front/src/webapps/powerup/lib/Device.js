@@ -19,6 +19,8 @@ class Device {
         this.feedbackCallback = null
         this.valueCallbacks = new CallbackEmitter()
         this.mode = undefined
+        this.modes = undefined
+        this.capabilities = undefined
     }
 
     async writePortCommand(waitFeedback, ...data) {
@@ -73,14 +75,47 @@ class Device {
      * @param {DataView} msg 
      */
     decodeValue(msg) {
+        if (this.modes.length != 0) {
+            const {VALUE_FORMAT, RAW, SI} = this.modes[this.mode]
+            const range = $$.util.mapRange(RAW.min, RAW.max, SI.min, SI.max)
+            log('info', this.modes[this.mode])
+            const {dataType, numValues} = VALUE_FORMAT
+            const ret = []
+            let offset = 4
+            let val
+            for(let idx = 0; idx < numValues; idx++) {
+                switch(dataType) {
+                    case '16bit':
+                        val = msg.getInt16(offset, true)
+                        offset += 2
+                        break;
+                    case '8bit':
+                        val = msg.getInt8(offset)
+                        offset += 1
+                        break;
+                    case '32bit':
+                        val = msg.getInt32(offset, true)
+                        offset += 4
+                        break;
+                    case 'float':
+                        val = msg.getFloat32(offset, true)
+                        offset += 4
+                        break;    
 
+                }
+                log('val', val)
+                ret.push(Math.trunc(range(val)))
+            }
+            return ret
+
+        }
     }
     /**
      * 
      * @param {DataView} msg 
      */
     handleValue(msg) {
-        console.log('handleValue', this.portId, msg)
+        log('handleValue', this.portId, msg)
         let value = this.decodeValue(msg)
 
         if (value != undefined) {

@@ -27,8 +27,10 @@ module.exports = function (app) {
 	app.post('/', async function (req, res) {
 		console.log('login', req.body, req.socket.remoteAddress)
 		const { user, pwd } = req.body
-
-		if (user == config.ADMIN_USER) {
+		if (user == undefined || pwd == undefined) {
+			res.sendStatus(403)
+		}
+		else if (user == config.ADMIN_USER) {
 			if (pwd == config.ADMIN_PWD) {
 				req.session.connected = true
 				req.session.user = user

@@ -24,7 +24,21 @@ $$.control.registerControl('info', {
 		const ctrl = $$.viewController(elt, {
 			data: {
 				modes: [],
-				capabilities: ''
+				capabilities: '',
+				isInput: function(scope) {
+					return (scope.$i.mode & 0x1) != 0
+				},
+				getCapabilites: function(scope) {
+					if (scope.$i.mode == 2) {
+						return 'OUT'
+					}
+					else if (scope.$i.mode == 1) {
+						return 'IN'
+					}
+					else if (scope.$i.mode == 3) {
+						return 'IN/OUT'
+					}				
+				}
 			},
 			events: {
 				onBtnGet: async function(scope) {

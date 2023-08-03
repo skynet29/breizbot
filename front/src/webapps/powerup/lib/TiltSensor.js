@@ -22,6 +22,9 @@ class TiltSensor extends Device {
                     roll: msg.getInt16(8, true)
                 }
                 break
+            default:
+                value = super.decodeValue(msg)
+                break
         }
         return value
     }

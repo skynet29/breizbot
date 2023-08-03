@@ -208,15 +208,7 @@ $$.control.registerControl('rootPage', {
 						ctrl.model.hubDevices.splice(idx, 1)
 						ctrl.update()
 						delete hubDevices[id]
-					})
-
-					const tiltSensor = await hubDevice.getTiltSensor(hub.PortMap.TILT_SENSOR)
-					await tiltSensor.subscribe(hub.DeviceMode.TILT_POS, (data) => {
-						const hubDesc = ctrl.model.hubDevices.find((e) => e.UUID == id)
-						hubDesc.tilt = data
-						ctrl.update()
-					}, 10)
-					
+					})					
 
 				}
 

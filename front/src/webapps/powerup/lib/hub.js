@@ -420,25 +420,27 @@
             const portInfo = await this.getPortInformationRequest(portId)
             const { count, output, input } = portInfo
             capabilities = portInfo.capabilities
-            const bitSet = Math.max(input, output)
             modes = []
             for (let mode = 0; mode < count; mode++) {
                 const data = {}
-                if (bitSet >> mode) {
-                    let ret
-                    ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.NAME)
-                    data.name = ret.name
-                    ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.RAW)
-                    data[ret.type] = { min: ret.min, max: ret.max }
-                    ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.PCT)
-                    data[ret.type] = { min: ret.min, max: ret.max }
-                    ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.SI)
-                    data[ret.type] = { min: ret.min, max: ret.max }
-                    ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.SYMBOL)
-                    data.unit = ret.symbol
-                    ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.VALUE_FORMAT)
-                    const { numValues, dataType, totalFigures, decimals } = ret
-                    data[ret.type] = { numValues, dataType, totalFigures, decimals }
+                let ret
+                data.mode = 0
+                ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.NAME)
+                data.name = ret.name
+                ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.RAW)
+                data[ret.type] = { min: ret.min, max: ret.max }
+                ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.SI)
+                data[ret.type] = { min: ret.min, max: ret.max }
+                ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.SYMBOL)
+                data.unit = ret.symbol
+                ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.VALUE_FORMAT)
+                const { numValues, dataType, totalFigures, decimals } = ret
+                data[ret.type] = { numValues, dataType, totalFigures, decimals }
+                if ((input >> mode) & 0x1) {
+                    data.mode |= 1
+                }
+                if ((output >> mode) & 0x1) {
+                    data.mode |= 2
                 }
                 modes.push(data)
             }

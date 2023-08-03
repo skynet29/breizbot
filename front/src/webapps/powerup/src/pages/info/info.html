@@ -6,9 +6,9 @@
         <thead>
             <tr>
                 <th>MODE</th>
+                <th>CAPABILITIES</th>
                 <th>UNIT</th>
                 <th>RAW</th>
-                <th>PCT</th>
                 <th>SI</th>
                 <th>VALUE FORMAT</th>
                 <th>Value</th>
@@ -17,6 +17,7 @@
         <tbody bn-each="modes" bn-event="click.btnGet: onBtnGet">
             <tr>
                 <td bn-text="$scope.$i.name"></td>
+                <td bn-text="getCapabilites"></td>
                 <td bn-text="$scope.$i.unit"></td>
                 <td>
                     <span bn-text="$scope.$i.RAW.min"></span><br>
@@ -35,8 +36,11 @@
                     numValues: <span bn-text="$scope.$i.VALUE_FORMAT.numValues"></span>
                 </td>
                 <td>
-                    <button class="w3-btn w3-green btnGet">Get</button>
-                    <span>Unknown</span>
+                    <div bn-if="isInput">
+                        <button class="w3-btn w3-green btnGet">Get</button>
+                        <span></span>
+                    </div>
+
                 </td>
             </tr>
         </tbody>

@@ -13,7 +13,7 @@ const PlayRequestHandler = {
     },
     async handle(handlerInput) {
         const { responseBuilder } = handlerInput
-        const userName  = util.getUserName(handlerInput)
+        const userName = util.getUserName(handlerInput)
         //console.log('userName', userName)
 
         const title = util.getSlotValue(handlerInput, 'song')
@@ -108,7 +108,7 @@ const PlayShuffleMusicHandler = {
     },
     async handle(handlerInput) {
         const { responseBuilder } = handlerInput
-        const userName  = util.getUserName(handlerInput)
+        const userName = util.getUserName(handlerInput)
         //console.log('userName', userName)
 
 
@@ -186,6 +186,12 @@ const AudioPlayerEventHandler = {
     canHandle(handlerInput) {
         return util.isAudioPlayerEvent(handlerInput)
     },
+
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput 
+     * @returns 
+     */
     async handle(handlerInput) {
         const { requestEnvelope, responseBuilder } = handlerInput
 

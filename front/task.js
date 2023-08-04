@@ -1,19 +1,19 @@
-var gulp = require('gulp')
-var path = require('path')
+const gulp = require('gulp')
+const path = require('path')
 
-var concat = require('gulp-concat')
-var sourcemaps = require('gulp-sourcemaps')
-var injectHTML = require('gulp-inject-stringified-html')
-var sass = require('gulp-sass')
-var uglify = require('gulp-uglify-es').default
-var rename = require("gulp-rename")
+const concat = require('gulp-concat')
+const sourcemaps = require('gulp-sourcemaps')
+const injectHTML = require('gulp-inject-stringified-html')
+const sass = require('gulp-sass')(require('sass'))
+const uglify = require('gulp-uglify-es').default
+const rename = require("gulp-rename")
 const eslint = require('gulp-eslint')
 const replace = require('gulp-replace')
 const browserify = require('browserify');
 const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 
-sass.compiler = require('node-sass')
+//sass.compiler = require('node-sass')
 
 const isDev = process.env.NODE_ENV != 'production'
 console.log('isDev', isDev)

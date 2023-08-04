@@ -1,0 +1,10 @@
+.rootPage {
+    display: flex;
+    flex-direction: column;
+    #blocklyDiv {
+        flex: 1
+    }
+    .toolbar {
+        padding: 5px;
+    }
+}

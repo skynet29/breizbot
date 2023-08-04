@@ -59,10 +59,10 @@
     "gulp-inject-stringified-html": "^1.0.3",
     "gulp-rename": "^1.4.0",
     "gulp-replace": "^1.1.3",
-    "gulp-sass": "^4.1.0",
+    "gulp-sass": "^5.1.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify-es": "^1.0.4",
-    "node-sass": "^4.14.1",
+    "sass": "^1.64.2",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
   }

@@ -37,4 +37,10 @@ module.exports = function(libName, scripts, styles) {
 		scripts.push('/brainjs/brainjs-audiopeakmeter.js')
 	}
 
+	if (libName.includes('blockly')) {
+		scripts.push("/lib/blockly/blockly_compressed.js")
+		scripts.push("/lib/blockly/blocks_compressed.js")
+		scripts.push("/lib/blockly/msg/en.js")
+		scripts.push('/lib/blockly/javascript_compressed.js')
+	}
 }

@@ -7,6 +7,10 @@ const dbUsers = require('../../db/users.js')
 const constants = require('../constants')
 
 const RequestInterceptor = {
+    /**
+     * 
+     * @param {import('ask-sdk-core').HandlerInput} handlerInput
+     */
     async process(handlerInput) {
         const { requestEnvelope, attributesManager } = handlerInput
         //console.log('requestEnvelope', requestEnvelope)

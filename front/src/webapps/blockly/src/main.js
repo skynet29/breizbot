@@ -130,6 +130,9 @@ $$.control.registerControl('rootPage', {
 			}
 		)
 		let variablesValue
+		let procedureBlock
+		let variablesDef
+		let breakState = ''
 
 		const blockTypeMap = {
 			'math_number': function (block) {
@@ -138,6 +141,15 @@ $$.control.registerControl('rootPage', {
 			'text': function (block) {
 				return block.fields.TEXT
 			},
+			'text_append': function(block) {
+				const varId = block.fields.VAR.id
+				const text = evalCode(block.inputs.TEXT)
+				variablesValue[varId] += text
+			},
+			'text_length': function(block) {
+				return evalCode(block.inputs.VALUE).length
+			},
+			
 			'variables_set': function (block) {
 				const varId = block.fields.VAR.id
 				const value = evalCode(block.inputs.VALUE)
@@ -173,10 +185,23 @@ $$.control.registerControl('rootPage', {
 				console.log('TIMES', times)
 				for (let i = 0; i < times; i++) {
 					evalCode(block.inputs.DO)
+					if (breakState == 'BREAK') {
+						breakState = ''
+						break
+					}
+					else if (breakState == 'CONTINUE') {
+						breakState = ''
+					}
 				}
 			},
 			'text_print': function (block) {
 				log(evalCode(block.inputs.TEXT))
+			},
+			'text_changeCase': function(block) {
+				const charCase = block.fields.CASE
+				console.log({charCase})
+				const value = evalCode(block.inputs.TEXT)
+				return (charCase == 'UPPERCASE') ? value.toUpperCase() : value.toLowerCase()
 			},
 			'logic_compare': function (block) {
 				const operator = block.fields.OP
@@ -221,11 +246,11 @@ $$.control.registerControl('rootPage', {
 				console.log('test', test)
 				return (test == 'TRUE')
 			},
-			'logic_negate': function(block) {
+			'logic_negate': function (block) {
 				const test = evalCode(block.inputs.BOOL)
 				return !test
 			},
-			'logic_ternary': function(block) {
+			'logic_ternary': function (block) {
 				const test = evalCode(block.inputs.IF)
 				if (test) {
 					return evalCode(block.inputs.THEN)
@@ -296,25 +321,68 @@ $$.control.registerControl('rootPage', {
 				for (let i = from; i <= to; i += by) {
 					variablesValue[varId] = i
 					evalCode(block.inputs.DO)
+					if (breakState == 'BREAK') {
+						breakState = ''
+						break
+					}
+					else if (breakState == 'CONTINUE') {
+						breakState = ''
+					}
 				}
+			},
+			'procedures_callnoreturn': function (block) {
+				const { extraState } = block
+				const functionName = extraState.name
+				let nbArgs = 0
+				if (extraState.params != undefined) {
+					nbArgs = extraState.params.length
+				}
+				const args = []
+				for (let i = 0; i < nbArgs; i++) {
+					const argName = `ARG${i}`
+					const val = evalCode(block.inputs[argName])
+					args.push(val)
+					const varId = getVarId(extraState.params[i])
+					variablesValue[varId] = val
+				}
+				console.log({ functionName, args })
+
+				const { inputs } = procedureBlock[functionName]
+
+				if (inputs != undefined) {
+					if (inputs.STACK != undefined) {
+						evalCode(inputs.STACK)
+					}
+
+					if (inputs.RETURN != undefined) {
+						return evalCode(inputs.RETURN)
+					}
+				}
+
+
+			},
+			'procedures_callreturn': function (block) {
+				return this.procedures_callnoreturn(block)
+			},
+			'controls_flow_statements': function(block) {
+				const flow = block.fields.FLOW
+				console.log({flow})
+				breakState = flow
 			}
 		}
 
-		/**
-		 * 
-		 * @param {string} varId 
-		 * @param {Array<{name: string, id: string}>} variables 
-		 * @returns 
-		 */
-		function getVarName(varId, variables) {
-			return variables.find((e) => e.id == varId).name
+
+		function getVarId(name) {
+			return variablesDef.find((e) => e.name == name).id
 		}
 
-		function dumpVariables(variables) {
+		function dumpVariables() {
 			console.log('dumpVariables:')
-			for (const [varId, value] of Object.entries(variablesValue)) {
-				const varName = getVarName(varId, variables)
-				console.log(`${varName}=${value}`)
+			if (variablesDef != undefined) {
+				for (const { id, name } of variablesDef) {
+					const value = variablesValue[id]
+					console.log(`${name}=${value}`)
+				}
 			}
 		}
 
@@ -339,8 +407,8 @@ $$.control.registerControl('rootPage', {
 			if (typeof fn != 'function') {
 				throw `function '${block.type}' not implemented yet`
 			}
-			const ret = fn(block)
-			if (ret == undefined) {
+			const ret = fn.call(blockTypeMap, block)
+			if (ret == undefined && breakState == '') {
 				evalCode(block.next)
 			}
 			return ret
@@ -350,10 +418,25 @@ $$.control.registerControl('rootPage', {
 			console.log('startCode', blocks, variables)
 			ctrl.setData({ logs: [] })
 			variablesValue = {}
+			procedureBlock = {}
+			variablesDef = variables
+			breakState = ''
 			for (let block of blocks.blocks) {
-				evalCode(block)
+				if (block.type == 'procedures_defnoreturn' || block.type == 'procedures_defreturn') {
+					const procedureName = block.fields.NAME
+					procedureBlock[procedureName] = block
+				}
 			}
-			dumpVariables(variables)
+			console.log('procedures:')
+			for (const procedureName of Object.keys(procedureBlock)) {
+				console.log(procedureName)
+			}
+			for (let block of blocks.blocks) {
+				if (block.type != 'procedures_defnoreturn' && block.type != 'procedures_defreturn') {
+					evalCode(block)
+				}
+			}
+			dumpVariables()
 		}
 
 		function log(text) {

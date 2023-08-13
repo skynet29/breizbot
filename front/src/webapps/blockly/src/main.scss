@@ -7,4 +7,10 @@
     .toolbar {
         padding: 5px;
     }
+    .logPanel {
+        height: 100px;
+        overflow-y: auto;
+        border: 1px solid lightgray;
+        padding: 5px;
+    }
 }

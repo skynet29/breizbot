@@ -176,12 +176,13 @@ $$.control.registerControl('rootPage', {
 				}
 			},
 			'text_print': function (block) {
-				console.log('PRINT', evalCode(block.inputs.TEXT))
+				log(evalCode(block.inputs.TEXT))
 			},
 			'logic_compare': function (block) {
 				const operator = block.fields.OP
 				const val1 = evalCode(block.inputs.A)
 				const val2 = evalCode(block.inputs.B)
+				console.log({ operator, val1, val2 })
 				switch (operator) {
 					case 'EQ':
 						return val1 === val2
@@ -200,17 +201,45 @@ $$.control.registerControl('rootPage', {
 
 				}
 			},
-			'logic_boolean': function(block) {
+			'logic_operation': function (block) {
+				const operator = block.fields.OP
+				const val1 = evalCode(block.inputs.A)
+				const val2 = evalCode(block.inputs.B)
+				console.log({ operator, val1, val2 })
+				switch (operator) {
+					case 'AND':
+						return val1 && val2
+					case 'OR':
+						return val1 || val2
+					default:
+						throw (`Unknown operator '${operator}'`)
+				}
+
+			},
+			'logic_boolean': function (block) {
 				const test = block.fields.BOOL
 				console.log('test', test)
 				return (test == 'TRUE')
 			},
-			'controls_if': function(block) {
+			'logic_negate': function(block) {
+				const test = evalCode(block.inputs.BOOL)
+				return !test
+			},
+			'logic_ternary': function(block) {
+				const test = evalCode(block.inputs.IF)
+				if (test) {
+					return evalCode(block.inputs.THEN)
+				}
+				else {
+					return evalCode(block.inputs.ELSE)
+				}
+			},
+			'controls_if': function (block) {
 
 				let hasElse = false
 				let nbIf = 1
 
-				const {extraState} = block
+				const { extraState } = block
 				if (extraState != undefined) {
 					if (extraState.hasElse != undefined) {
 						hasElse = extraState.hasElse
@@ -219,9 +248,9 @@ $$.control.registerControl('rootPage', {
 						nbIf += extraState.elseIfCount
 					}
 				}
-				console.log({hasElse, nbIf})
+				console.log({ hasElse, nbIf })
 				let test = false
-				for(let i = 0; i < nbIf; i++) {
+				for (let i = 0; i < nbIf; i++) {
 					const ifName = `IF${i}`
 					const doName = `DO${i}`
 					test = evalCode(block.inputs[ifName])
@@ -236,6 +265,38 @@ $$.control.registerControl('rootPage', {
 					evalCode(block.inputs.ELSE)
 				}
 
+			},
+			'controls_whileUntil': function (block) {
+				const mode = block.fields.MODE
+				console.log({ mode })
+				if (mode == 'WHILE') {
+					let test = evalCode(block.inputs.BOOL)
+					while (test) {
+						evalCode(block.inputs.DO)
+						test = evalCode(block.inputs.BOOL)
+					}
+				}
+				else if (mode == 'UNTIL') {
+					let test = evalCode(block.inputs.BOOL)
+					while (!test) {
+						evalCode(block.inputs.DO)
+						test = evalCode(block.inputs.BOOL)
+					}
+				}
+				else {
+					throw `Unknown mode '${mode}'`
+				}
+			},
+			'controls_for': function (block) {
+				const varId = block.fields.VAR.id
+				const from = evalCode(block.inputs.FROM)
+				const to = evalCode(block.inputs.TO)
+				const by = evalCode(block.inputs.BY)
+				console.log({ from, to, by })
+				for (let i = from; i <= to; i += by) {
+					variablesValue[varId] = i
+					evalCode(block.inputs.DO)
+				}
 			}
 		}
 
@@ -262,7 +323,16 @@ $$.control.registerControl('rootPage', {
 				return
 			}
 			if (block.type == undefined) {
-				block = block.block
+				if (block.block != undefined) {
+					block = block.block
+				}
+				else if (block.shadow != undefined) {
+					block = block.shadow
+				}
+				else {
+					throw `Missig parameter block or shadow`
+				}
+
 			}
 			console.log('evalCode', block.type)
 			const fn = blockTypeMap[block.type]
@@ -278,6 +348,7 @@ $$.control.registerControl('rootPage', {
 
 		function startCode({ blocks, variables }) {
 			console.log('startCode', blocks, variables)
+			ctrl.setData({ logs: [] })
 			variablesValue = {}
 			for (let block of blocks.blocks) {
 				evalCode(block)
@@ -285,10 +356,18 @@ $$.control.registerControl('rootPage', {
 			dumpVariables(variables)
 		}
 
+		function log(text) {
+			ctrl.model.logs.push(text)
+			ctrl.update()
+		}
 
-
-		$$.viewController(elt, {
-			data: {},
+		const ctrl = $$.viewController(elt, {
+			data: {
+				logs: [],
+				getLogs: function () {
+					return this.logs.join('<br>')
+				}
+			},
 			events: {
 				onSave: function () {
 					console.log('onSave')

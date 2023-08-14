@@ -70,56 +70,6 @@ $$.control.registerControl('rootPage', {
 		//   ]);
 
 
-		const toolbox = {
-			"kind": "flyoutToolbox",
-			"contents": [
-				{
-					kind: 'block',
-					type: 'play_sound'
-				},
-				{
-					"kind": "block",
-					"type": "controls_if"
-				},
-				{
-					"kind": "block",
-					"type": "logic_compare"
-				},
-				{
-					"kind": "block",
-					"type": "controls_repeat_ext",
-					"inputs": {
-						TIMES: {
-							shadow: {
-								type: 'math_number',
-								fields: {
-									NUM: 5
-								}
-							}
-						}
-					}
-				},
-				{
-					"kind": "block",
-					"type": "math_number",
-					"fields": {
-						"NUM": 123
-					}
-				},
-				{
-					"kind": "block",
-					"type": "math_arithmetic"
-				},
-				{
-					"kind": "block",
-					"type": "text"
-				},
-				{
-					"kind": "block",
-					"type": "text_print"
-				}
-			]
-		}
 
 		const demoWorkspace = Blockly.inject('blocklyDiv',
 			{
@@ -135,35 +85,35 @@ $$.control.registerControl('rootPage', {
 		let breakState = ''
 
 		const blockTypeMap = {
-			'math_number': function (block) {
+			'math_number': async function (block) {
 				return block.fields.NUM
 			},
-			'text': function (block) {
+			'text': async function (block) {
 				return block.fields.TEXT
 			},
-			'text_append': function(block) {
+			'text_append': async function (block) {
 				const varId = block.fields.VAR.id
-				const text = evalCode(block.inputs.TEXT)
+				const text = await evalCode(block.inputs.TEXT)
 				variablesValue[varId] += text
 			},
-			'text_length': function(block) {
-				return evalCode(block.inputs.VALUE).length
+			'text_length': async function (block) {
+				return await evalCode(block.inputs.VALUE).length
 			},
-			
-			'variables_set': function (block) {
+
+			'variables_set': async function (block) {
 				const varId = block.fields.VAR.id
-				const value = evalCode(block.inputs.VALUE)
+				const value = await evalCode(block.inputs.VALUE)
 				console.log({ varId, value })
 				variablesValue[varId] = value
 			},
-			'variables_get': function (block) {
+			'variables_get': async function (block) {
 				const varId = block.fields.VAR.id
 				return variablesValue[varId]
 			},
-			'math_arithmetic': function (block) {
+			'math_arithmetic': async function (block) {
 				const operator = block.fields.OP
-				const val1 = evalCode(block.inputs.A)
-				const val2 = evalCode(block.inputs.B)
+				const val1 = await evalCode(block.inputs.A)
+				const val2 = await evalCode(block.inputs.B)
 				console.log({ operator, val1, val2 })
 				switch (operator) {
 					case 'ADD':
@@ -180,11 +130,11 @@ $$.control.registerControl('rootPage', {
 						throw (`Unknown operator '${operator}'`)
 				}
 			},
-			'controls_repeat_ext': function (block) {
-				const times = evalCode(block.inputs.TIMES)
+			'controls_repeat_ext': async function (block) {
+				const times = await evalCode(block.inputs.TIMES)
 				console.log('TIMES', times)
 				for (let i = 0; i < times; i++) {
-					evalCode(block.inputs.DO)
+					await evalCode(block.inputs.DO)
 					if (breakState == 'BREAK') {
 						breakState = ''
 						break
@@ -194,19 +144,35 @@ $$.control.registerControl('rootPage', {
 					}
 				}
 			},
-			'text_print': function (block) {
-				log(evalCode(block.inputs.TEXT))
+			'text_print': async function (block) {
+				log(await evalCode(block.inputs.TEXT))
 			},
-			'text_changeCase': function(block) {
+			'text_prompt_ext': async function(block) {
+				const type = block.fields.TYPE
+				const label = await evalCode(block.inputs.TEXT)
+				console.log({type, label})
+				const ret = await $$.ui.showPrompt({label, title: 'Enter value' , attrs: {
+					type: type.toLowerCase()
+				}})
+				return ret
+			},
+			'text_changeCase': async function (block) {
 				const charCase = block.fields.CASE
-				console.log({charCase})
-				const value = evalCode(block.inputs.TEXT)
-				return (charCase == 'UPPERCASE') ? value.toUpperCase() : value.toLowerCase()
+				console.log({ charCase })
+				const value = await evalCode(block.inputs.TEXT)
+				switch (charCase) {
+					case 'UPPERCASE':
+						return value.toUpperCase()
+					case 'LOWERCASE':
+						return value.toLowerCase()
+					case 'TITLECASE':
+						return textToTitleCase(value)
+				}
 			},
-			'logic_compare': function (block) {
+			'logic_compare': async function (block) {
 				const operator = block.fields.OP
-				const val1 = evalCode(block.inputs.A)
-				const val2 = evalCode(block.inputs.B)
+				const val1 = await evalCode(block.inputs.A)
+				const val2 = await evalCode(block.inputs.B)
 				console.log({ operator, val1, val2 })
 				switch (operator) {
 					case 'EQ':
@@ -226,10 +192,10 @@ $$.control.registerControl('rootPage', {
 
 				}
 			},
-			'logic_operation': function (block) {
+			'logic_operation': async function (block) {
 				const operator = block.fields.OP
-				const val1 = evalCode(block.inputs.A)
-				const val2 = evalCode(block.inputs.B)
+				const val1 = await evalCode(block.inputs.A)
+				const val2 = await evalCode(block.inputs.B)
 				console.log({ operator, val1, val2 })
 				switch (operator) {
 					case 'AND':
@@ -241,25 +207,25 @@ $$.control.registerControl('rootPage', {
 				}
 
 			},
-			'logic_boolean': function (block) {
+			'logic_boolean': async function (block) {
 				const test = block.fields.BOOL
 				console.log('test', test)
 				return (test == 'TRUE')
 			},
-			'logic_negate': function (block) {
-				const test = evalCode(block.inputs.BOOL)
+			'logic_negate': async function (block) {
+				const test = await evalCode(block.inputs.BOOL)
 				return !test
 			},
-			'logic_ternary': function (block) {
-				const test = evalCode(block.inputs.IF)
+			'logic_ternary': async function (block) {
+				const test = await evalCode(block.inputs.IF)
 				if (test) {
-					return evalCode(block.inputs.THEN)
+					return await evalCode(block.inputs.THEN)
 				}
 				else {
-					return evalCode(block.inputs.ELSE)
+					return await evalCode(block.inputs.ELSE)
 				}
 			},
-			'controls_if': function (block) {
+			'controls_if': async function (block) {
 
 				let hasElse = false
 				let nbIf = 1
@@ -278,49 +244,49 @@ $$.control.registerControl('rootPage', {
 				for (let i = 0; i < nbIf; i++) {
 					const ifName = `IF${i}`
 					const doName = `DO${i}`
-					test = evalCode(block.inputs[ifName])
+					test = await evalCode(block.inputs[ifName])
 					console.log(ifName, test)
 					if (test) {
-						evalCode(block.inputs[doName])
+						await evalCode(block.inputs[doName])
 						break
 					}
 
 				}
 				if (hasElse && !test) {
-					evalCode(block.inputs.ELSE)
+					await evalCode(block.inputs.ELSE)
 				}
 
 			},
-			'controls_whileUntil': function (block) {
+			'controls_whileUntil': async function (block) {
 				const mode = block.fields.MODE
 				console.log({ mode })
 				if (mode == 'WHILE') {
-					let test = evalCode(block.inputs.BOOL)
+					let test = await evalCode(block.inputs.BOOL)
 					while (test) {
-						evalCode(block.inputs.DO)
-						test = evalCode(block.inputs.BOOL)
+						await evalCode(block.inputs.DO)
+						test = await evalCode(block.inputs.BOOL)
 					}
 				}
 				else if (mode == 'UNTIL') {
-					let test = evalCode(block.inputs.BOOL)
+					let test = await evalCode(block.inputs.BOOL)
 					while (!test) {
-						evalCode(block.inputs.DO)
-						test = evalCode(block.inputs.BOOL)
+						await evalCode(block.inputs.DO)
+						test = await evalCode(block.inputs.BOOL)
 					}
 				}
 				else {
 					throw `Unknown mode '${mode}'`
 				}
 			},
-			'controls_for': function (block) {
+			'controls_for': async function (block) {
 				const varId = block.fields.VAR.id
-				const from = evalCode(block.inputs.FROM)
-				const to = evalCode(block.inputs.TO)
-				const by = evalCode(block.inputs.BY)
+				const from = await evalCode(block.inputs.FROM)
+				const to = await evalCode(block.inputs.TO)
+				const by = await evalCode(block.inputs.BY)
 				console.log({ from, to, by })
 				for (let i = from; i <= to; i += by) {
 					variablesValue[varId] = i
-					evalCode(block.inputs.DO)
+					await evalCode(block.inputs.DO)
 					if (breakState == 'BREAK') {
 						breakState = ''
 						break
@@ -330,7 +296,7 @@ $$.control.registerControl('rootPage', {
 					}
 				}
 			},
-			'procedures_callnoreturn': function (block) {
+			'procedures_callnoreturn': async function (block) {
 				const { extraState } = block
 				const functionName = extraState.name
 				let nbArgs = 0
@@ -340,7 +306,7 @@ $$.control.registerControl('rootPage', {
 				const args = []
 				for (let i = 0; i < nbArgs; i++) {
 					const argName = `ARG${i}`
-					const val = evalCode(block.inputs[argName])
+					const val = await evalCode(block.inputs[argName])
 					args.push(val)
 					const varId = getVarId(extraState.params[i])
 					variablesValue[varId] = val
@@ -351,26 +317,30 @@ $$.control.registerControl('rootPage', {
 
 				if (inputs != undefined) {
 					if (inputs.STACK != undefined) {
-						evalCode(inputs.STACK)
+						await evalCode(inputs.STACK)
 					}
 
 					if (inputs.RETURN != undefined) {
-						return evalCode(inputs.RETURN)
+						return await evalCode(inputs.RETURN)
 					}
 				}
 
 
 			},
-			'procedures_callreturn': function (block) {
+			'procedures_callreturn': async function (block) {
 				return this.procedures_callnoreturn(block)
 			},
-			'controls_flow_statements': function(block) {
+			'controls_flow_statements': async function (block) {
 				const flow = block.fields.FLOW
-				console.log({flow})
+				console.log({ flow })
 				breakState = flow
 			}
 		}
 
+		function textToTitleCase(str) {
+			return str.replace(/\S+/g,
+				function (txt) { return txt[0].toUpperCase() + txt.substring(1).toLowerCase(); })
+		}
 
 		function getVarId(name) {
 			return variablesDef.find((e) => e.name == name).id
@@ -386,7 +356,7 @@ $$.control.registerControl('rootPage', {
 			}
 		}
 
-		function evalCode(block) {
+		async function evalCode(block) {
 			if (block == undefined) {
 				return
 			}
@@ -407,14 +377,14 @@ $$.control.registerControl('rootPage', {
 			if (typeof fn != 'function') {
 				throw `function '${block.type}' not implemented yet`
 			}
-			const ret = fn.call(blockTypeMap, block)
+			const ret = await fn.call(blockTypeMap, block)
 			if (ret == undefined && breakState == '') {
-				evalCode(block.next)
+				await evalCode(block.next)
 			}
 			return ret
 		}
 
-		function startCode({ blocks, variables }) {
+		async function startCode({ blocks, variables }) {
 			console.log('startCode', blocks, variables)
 			ctrl.setData({ logs: [] })
 			variablesValue = {}
@@ -433,7 +403,7 @@ $$.control.registerControl('rootPage', {
 			}
 			for (let block of blocks.blocks) {
 				if (block.type != 'procedures_defnoreturn' && block.type != 'procedures_defreturn') {
-					evalCode(block)
+					await evalCode(block)
 				}
 			}
 			dumpVariables()

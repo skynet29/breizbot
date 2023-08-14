@@ -111,6 +111,34 @@ declare namespace Breizbot {
             }
         }
 
+        declare namespace BlocklyInterpretor {
+
+            interface Block {
+                fields?: {[name: string]: any};
+                inputs?: {[name: string]: any};
+                type: string;
+                next?: Block;
+                extraState?: {[name: string]: any};
+            }
+
+            interface VariableDef {
+                id: string;
+                name: string;
+            }
+
+            interface CodeDef {
+                variables: Array<VariableDef>;
+                blocks: {blocks: Array<Block>};
+            }
+
+            interface Interface {
+                startCode(codeDef: CodeDef):Promise<void>;
+                setLlogFunction(fn: (text: string) => void);
+                evalCode(block: Block): Promise<aby>;
+                dumpVariables(): void;
+            }
+        }
+
         declare namespace AppData {
 
             interface Interface {

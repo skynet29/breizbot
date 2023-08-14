@@ -4,7 +4,7 @@ code[class*=language-], pre[class*=language-] {
   color: #000;
   background: 0 0;
   text-shadow: 0 1px #fff;
-  font-family: Consolas,Monaco,'Andale Mono','Ubuntu Mono',monospace;
+  font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
   font-size: 1em;
   text-align: left;
   white-space: pre;
@@ -18,76 +18,95 @@ code[class*=language-], pre[class*=language-] {
   -webkit-hyphens: none;
   -moz-hyphens: none;
   -ms-hyphens: none;
-  hyphens: none; }
+  hyphens: none;
+}
 
 code[class*=language-] ::-moz-selection, code[class*=language-]::-moz-selection, pre[class*=language-] ::-moz-selection, pre[class*=language-]::-moz-selection {
   text-shadow: none;
-  background: #b3d4fc; }
+  background: #b3d4fc;
+}
 
 code[class*=language-] ::selection, code[class*=language-]::selection, pre[class*=language-] ::selection, pre[class*=language-]::selection {
   text-shadow: none;
-  background: #b3d4fc; }
+  background: #b3d4fc;
+}
 
 @media print {
   code[class*=language-], pre[class*=language-] {
-    text-shadow: none; } }
-
+    text-shadow: none;
+  }
+}
 pre[class*=language-] {
   padding: 1em;
-  margin: .5em 0;
-  overflow: auto; }
+  margin: 0.5em 0;
+  overflow: auto;
+}
 
 :not(pre) > code[class*=language-], pre[class*=language-] {
-  background: #f5f2f0; }
+  background: #f5f2f0;
+}
 
 :not(pre) > code[class*=language-] {
-  padding: .1em;
-  border-radius: .3em;
-  white-space: normal; }
+  padding: 0.1em;
+  border-radius: 0.3em;
+  white-space: normal;
+}
 
 .token.cdata, .token.comment, .token.doctype, .token.prolog {
-  color: #708090; }
+  color: #708090;
+}
 
 .token.punctuation {
-  color: #999; }
+  color: #999;
+}
 
 .token.namespace {
-  opacity: .7; }
+  opacity: 0.7;
+}
 
 .token.boolean, .token.constant, .token.deleted, .token.number, .token.property, .token.symbol, .token.tag {
-  color: #905; }
+  color: #905;
+}
 
 .token.attr-name, .token.builtin, .token.char, .token.inserted, .token.selector, .token.string {
-  color: #690; }
+  color: #690;
+}
 
 .language-css .token.string, .style .token.string, .token.entity, .token.operator, .token.url {
   color: #9a6e3a;
-  background: rgba(255, 255, 255, 0.5); }
+  background: hsla(0, 0%, 100%, 0.5);
+}
 
 .token.atrule, .token.attr-value, .token.keyword {
-  color: #07a; }
+  color: #07a;
+}
 
 .token.class-name, .token.function {
-  color: #dd4a68; }
+  color: #dd4a68;
+}
 
 .token.important, .token.regex, .token.variable {
-  color: #e90; }
+  color: #e90;
+}
 
 .token.bold, .token.important {
-  font-weight: 700; }
+  font-weight: 700;
+}
 
 .token.italic {
-  font-style: italic; }
+  font-style: italic;
+}
 
 .token.entity {
-  cursor: help; }
-
+  cursor: help;
+}
 .breizbot-appTab {
-  display: flex; }
-  .breizbot-appTab iframe {
-    flex: 1;
-    border: none; }
-
+  display: flex;
+}
+.breizbot-appTab iframe {
+  flex: 1;
+  border: none;
+}
 .breizbot-apps .tile {
   width: 90px;
   height: 90px;
@@ -99,8 +118,8 @@ pre[class*=language-] {
   justify-content: center;
   position: relative;
   padding: 0;
-  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); }
-
+  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
 .breizbot-apps .arrow-right {
   background-color: orange;
   height: 30px;
@@ -108,399 +127,496 @@ pre[class*=language-] {
   position: absolute;
   top: -15px;
   width: 30px;
-  transform: rotate(-45deg); }
-
+  transform: rotate(-45deg);
+}
 .breizbot-apps .scrollPanel {
   height: 100%;
-  overflow-y: auto; }
-
+  overflow-y: auto;
+}
 .breizbot-apps .main {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   flex-wrap: wrap;
-  align-content: start; }
-  .breizbot-apps .main img {
-    width: 90px;
-    height: 90px;
-    margin: 0; }
-
+  align-content: start;
+}
+.breizbot-apps .main img {
+  width: 90px;
+  height: 90px;
+  margin: 0;
+}
 .breizbot-addContactPage {
   padding: 10px;
   display: flex;
-  justify-content: center; }
-  .breizbot-addContactPage label {
-    display: inline-block;
-    min-width: 120px; }
-  .breizbot-addContactPage form {
-    height: 90%; }
-    .breizbot-addContactPage form .birthNotif {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 15px; }
-    .breizbot-addContactPage form .gender {
-      display: flex; }
-      .breizbot-addContactPage form .gender .brainjs-inputgroup {
-        margin-bottom: 5px; }
-    .breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup {
-      margin-bottom: 15px; }
-      .breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup input {
-        padding: 5px;
-        min-width: 300px; }
-
+  justify-content: center;
+}
+.breizbot-addContactPage label {
+  display: inline-block;
+  min-width: 120px;
+}
+.breizbot-addContactPage form {
+  height: 90%;
+}
+.breizbot-addContactPage form .birthNotif {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+.breizbot-addContactPage form .gender {
+  display: flex;
+}
+.breizbot-addContactPage form .gender .brainjs-inputgroup {
+  margin-bottom: 5px;
+}
+.breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup {
+  margin-bottom: 15px;
+}
+.breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup input {
+  padding: 5px;
+  min-width: 300px;
+}
 .breizbot-contacts {
   overflow: hidden;
   display: flex;
-  flex-direction: column; }
-  .breizbot-contacts .breizbot-searchbar {
-    margin: 10px; }
-  .breizbot-contacts .scrollPanel {
-    flex: 1;
-    overflow-y: auto; }
-    .breizbot-contacts .scrollPanel i {
-      min-width: 30px;
-      text-align: center; }
-    .breizbot-contacts .scrollPanel input {
-      border: none;
-      outline: none;
-      cursor: pointer; }
-
+  flex-direction: column;
+}
+.breizbot-contacts .breizbot-searchbar {
+  margin: 10px;
+}
+.breizbot-contacts .scrollPanel {
+  flex: 1;
+  overflow-y: auto;
+}
+.breizbot-contacts .scrollPanel i {
+  min-width: 30px;
+  text-align: center;
+}
+.breizbot-contacts .scrollPanel input {
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+@charset "UTF-8";
 .breizbot-htmleditor {
   display: flex;
   flex-direction: column;
-  overflow: hidden; }
-  .breizbot-htmleditor .bottom {
-    position: relative;
-    flex: 1;
-    display: flex;
-    overflow: hidden; }
-    .breizbot-htmleditor .bottom .micro {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      cursor: pointer; }
-    .breizbot-htmleditor .bottom > .scrollPanel {
-      flex: 1;
-      overflow-y: auto;
-      border: 1px solid lightgray; }
-      .breizbot-htmleditor .bottom > .scrollPanel .editor {
-        min-height: 100%;
-        padding: 10px;
-        outline: none;
-        font-family: Arial;
-        font-size: 12pt; }
-        .breizbot-htmleditor .bottom > .scrollPanel .editor [id^=tag-]:before {
-          content: '\2693';
-          font-size: 8px;
-          vertical-align: top;
-          margin-right: 5px; }
-        .breizbot-htmleditor .bottom > .scrollPanel .editor p {
-          margin: 0; }
-        .breizbot-htmleditor .bottom > .scrollPanel .editor a {
-          color: #0000ee; }
-        .breizbot-htmleditor .bottom > .scrollPanel .editor .interim {
-          color: gray; }
-        .breizbot-htmleditor .bottom > .scrollPanel .editor table, .breizbot-htmleditor .bottom > .scrollPanel .editor th, .breizbot-htmleditor .bottom > .scrollPanel .editor td {
-          border: 1px solid black;
-          border-collapse: collapse; }
-        .breizbot-htmleditor .bottom > .scrollPanel .editor td, .breizbot-htmleditor .bottom > .scrollPanel .editor th {
-          padding: 5px; }
-  .breizbot-htmleditor > .toolbar {
-    display: flex;
-    flex-direction: row;
-    background-color: #128C7E;
-    color: white; }
-    .breizbot-htmleditor > .toolbar .group {
-      display: flex;
-      align-items: center; }
-      .breizbot-htmleditor > .toolbar .group .separator {
-        border-left: 1px solid white;
-        height: 80%; }
-
+  overflow: hidden;
+}
+.breizbot-htmleditor .bottom {
+  position: relative;
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+.breizbot-htmleditor .bottom .micro {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  cursor: pointer;
+}
+.breizbot-htmleditor .bottom > .scrollPanel {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid lightgray;
+}
+.breizbot-htmleditor .bottom > .scrollPanel .editor {
+  min-height: 100%;
+  padding: 10px;
+  outline: none;
+  font-family: Arial;
+  font-size: 12pt;
+}
+.breizbot-htmleditor .bottom > .scrollPanel .editor [id^=tag-]:before {
+  content: "⚓";
+  font-size: 8px;
+  vertical-align: top;
+  margin-right: 5px;
+}
+.breizbot-htmleditor .bottom > .scrollPanel .editor p {
+  margin: 0;
+}
+.breizbot-htmleditor .bottom > .scrollPanel .editor a {
+  color: rgb(0, 0, 238);
+}
+.breizbot-htmleditor .bottom > .scrollPanel .editor .interim {
+  color: gray;
+}
+.breizbot-htmleditor .bottom > .scrollPanel .editor table, .breizbot-htmleditor .bottom > .scrollPanel .editor th, .breizbot-htmleditor .bottom > .scrollPanel .editor td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+.breizbot-htmleditor .bottom > .scrollPanel .editor td, .breizbot-htmleditor .bottom > .scrollPanel .editor th {
+  padding: 5px;
+}
+.breizbot-htmleditor > .toolbar {
+  display: flex;
+  flex-direction: row;
+  background-color: #128C7E;
+  color: white;
+}
+.breizbot-htmleditor > .toolbar .group {
+  display: flex;
+  align-items: center;
+}
+.breizbot-htmleditor > .toolbar .group .separator {
+  border-left: 1px solid white;
+  height: 80%;
+}
 .breizbot-filterDlg {
-  padding: 10px; }
-  .breizbot-filterDlg form {
-    display: grid;
-    grid-template-columns: 50px 1fr auto;
-    grid-gap: 10px;
-    align-items: center; }
-    .breizbot-filterDlg form label {
-      grid-column: 1 / 2; }
-    .breizbot-filterDlg form .brainjs-selectmenu {
-      grid-column: 2 / 3; }
-
+  padding: 10px;
+}
+.breizbot-filterDlg form {
+  display: grid;
+  grid-template-columns: 50px 1fr auto;
+  grid-gap: 10px;
+  align-items: center;
+}
+.breizbot-filterDlg form label {
+  grid-column: 1/2;
+}
+.breizbot-filterDlg form .brainjs-selectmenu {
+  grid-column: 2/3;
+}
 .breizbot-filechooser {
-  padding: 10px; }
-  .breizbot-filechooser .w3-bar {
-    cursor: pointer; }
-  .breizbot-filechooser .w3-bar-item {
-    display: flex;
-    align-items: center; }
-    .breizbot-filechooser .w3-bar-item span {
-      margin-left: 20px; }
-
+  padding: 10px;
+}
+.breizbot-filechooser .w3-bar {
+  cursor: pointer;
+}
+.breizbot-filechooser .w3-bar-item {
+  display: flex;
+  align-items: center;
+}
+.breizbot-filechooser .w3-bar-item span {
+  margin-left: 20px;
+}
 .breizbot-filelist {
   overflow: hidden;
   display: flex;
-  flex-direction: column; }
-  .breizbot-filelist > .scrollPanel {
-    flex: 1;
-    overflow-y: auto;
-    border: 1px solid lightgrey;
-    margin-top: 10px; }
-    .breizbot-filelist > .scrollPanel th {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      background-color: #666;
-      color: white; }
-    .breizbot-filelist > .scrollPanel .item {
-      cursor: pointer; }
-    .breizbot-filelist > .scrollPanel .item.active {
-      background-color: blue; }
-  .breizbot-filelist > .pathPanel {
-    margin-left: 10px; }
-    .breizbot-filelist > .pathPanel .fa-chevron-right {
-      color: #6c757d; }
-    .breizbot-filelist > .pathPanel .lastItem {
-      color: #6c757d; }
-    .breizbot-filelist > .pathPanel .pathItem {
-      text-decoration: none;
-      color: #007bff; }
-    .breizbot-filelist > .pathPanel > div {
-      display: inline-block; }
-  .breizbot-filelist > .info {
-    margin: 10px;
-    text-align: right; }
-  .breizbot-filelist > .loading {
-    margin-left: 10px; }
-
+  flex-direction: column;
+}
+.breizbot-filelist > .scrollPanel {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid lightgrey;
+  margin-top: 10px;
+}
+.breizbot-filelist > .scrollPanel th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #666;
+  color: white;
+}
+.breizbot-filelist > .scrollPanel .item {
+  cursor: pointer;
+}
+.breizbot-filelist > .scrollPanel .item.active {
+  background-color: rgb(0, 0, 255);
+}
+.breizbot-filelist > .pathPanel {
+  margin-left: 10px;
+}
+.breizbot-filelist > .pathPanel .fa-chevron-right {
+  color: #6c757d;
+}
+.breizbot-filelist > .pathPanel .lastItem {
+  color: #6c757d;
+}
+.breizbot-filelist > .pathPanel .pathItem {
+  text-decoration: none;
+  color: #007bff;
+}
+.breizbot-filelist > .pathPanel > div {
+  display: inline-block;
+}
+.breizbot-filelist > .info {
+  margin: 10px;
+  text-align: right;
+}
+.breizbot-filelist > .loading {
+  margin-left: 10px;
+}
 .breizbot-files {
   overflow: hidden;
   display: flex;
-  flex-direction: column; }
-  .breizbot-files > .scrollPanel {
-    flex: 1;
-    overflow-y: auto;
-    border: 1px solid lightgrey;
-    margin-top: 10px; }
-    .breizbot-files > .scrollPanel .container {
-      display: flex;
-      flex-direction: column; }
-      .breizbot-files > .scrollPanel .container .thumbnail {
-        margin: 5px;
-        position: relative;
-        padding: 10px;
-        background-color: white; }
-        .breizbot-files > .scrollPanel .container .thumbnail .check {
-          position: absolute;
-          left: 5px;
-          top: 5px; }
-        .breizbot-files > .scrollPanel .container .thumbnail .item {
-          display: flex;
-          align-items: center;
-          cursor: pointer; }
-          .breizbot-files > .scrollPanel .container .thumbnail .item .icon {
-            min-width: 100px;
-            text-align: center; }
-          .breizbot-files > .scrollPanel .container .thumbnail .item .info {
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            margin-left: 5px; }
-  .breizbot-files > .pathPanel {
-    margin-left: 10px; }
-    .breizbot-files > .pathPanel .fa-chevron-right {
-      color: #6c757d; }
-    .breizbot-files > .pathPanel .lastItem {
-      color: #6c757d; }
-    .breizbot-files > .pathPanel .pathItem {
-      text-decoration: none;
-      color: #007bff; }
-    .breizbot-files > .pathPanel > div {
-      display: inline-block; }
-  .breizbot-files > .info {
-    margin: 10px;
-    text-align: right; }
-  .breizbot-files > .loading {
-    margin-left: 10px; }
-
+  flex-direction: column;
+}
+.breizbot-files > .scrollPanel {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid lightgrey;
+  margin-top: 10px;
+}
+.breizbot-files > .scrollPanel .container {
+  display: flex;
+  flex-direction: column;
+}
+.breizbot-files > .scrollPanel .container .thumbnail {
+  margin: 5px;
+  position: relative;
+  padding: 10px;
+  background-color: white;
+}
+.breizbot-files > .scrollPanel .container .thumbnail .check {
+  position: absolute;
+  left: 5px;
+  top: 5px;
+}
+.breizbot-files > .scrollPanel .container .thumbnail .item {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.breizbot-files > .scrollPanel .container .thumbnail .item .icon {
+  min-width: 100px;
+  text-align: center;
+}
+.breizbot-files > .scrollPanel .container .thumbnail .item .info {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-left: 5px;
+}
+.breizbot-files > .pathPanel {
+  margin-left: 10px;
+}
+.breizbot-files > .pathPanel .fa-chevron-right {
+  color: #6c757d;
+}
+.breizbot-files > .pathPanel .lastItem {
+  color: #6c757d;
+}
+.breizbot-files > .pathPanel .pathItem {
+  text-decoration: none;
+  color: #007bff;
+}
+.breizbot-files > .pathPanel > div {
+  display: inline-block;
+}
+.breizbot-files > .info {
+  margin: 10px;
+  text-align: right;
+}
+.breizbot-files > .loading {
+  margin-left: 10px;
+}
 .breizbot-foldertree {
-  overflow-y: auto; }
-
+  overflow-y: auto;
+}
 @media (hover: none) {
   .w3-button:hover {
     background-color: inherit !important;
-    color: inherit !important; } }
-
+    color: inherit !important;
+  }
+}
 .breizbot-home {
   height: 100%;
   display: flex;
-  flex-direction: column; }
-  .breizbot-home .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #075E54;
-    color: white; }
-    .breizbot-home .header .state {
-      padding: 8px 16px 8px 16px; }
-    .breizbot-home .header .notification {
-      position: relative; }
-    .breizbot-home .header .notification .w3-badge {
-      position: relative;
-      left: -15px; }
-  .breizbot-home .content {
-    flex: 1;
-    overflow: hidden;
-    padding: 0; }
-    .breizbot-home .content .ui-tabs-nav {
-      padding: 0; }
-      .breizbot-home .content .ui-tabs-nav .ui-tabs-tab {
-        border-radius: 0;
-        margin: 0; }
-        .breizbot-home .content .ui-tabs-nav .ui-tabs-tab a {
-          outline: none;
-          user-select: none; }
-
+  flex-direction: column;
+}
+.breizbot-home .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #075E54;
+  color: white;
+}
+.breizbot-home .header .state {
+  padding: 8px 16px 8px 16px;
+}
+.breizbot-home .header .notification {
+  position: relative;
+}
+.breizbot-home .header .notification .w3-badge {
+  position: relative;
+  left: -15px;
+}
+.breizbot-home .content {
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+}
+.breizbot-home .content .ui-tabs-nav {
+  padding: 0;
+}
+.breizbot-home .content .ui-tabs-nav .ui-tabs-tab {
+  border-radius: 0;
+  margin: 0;
+}
+.breizbot-home .content .ui-tabs-nav .ui-tabs-tab a {
+  outline: none;
+  user-select: none;
+}
 .breizbot-pager {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden; }
-  .breizbot-pager > .toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #128C7E;
-    color: white; }
-    .breizbot-pager > .toolbar > .right {
-      display: flex;
-      align-items: center; }
-    .breizbot-pager > .toolbar > .left {
-      display: flex;
-      align-items: center;
-      min-width: 0; }
-      .breizbot-pager > .toolbar > .left > .title {
-        margin-left: 5px;
-        margin-right: 5px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis; }
-  .breizbot-pager > .content {
-    flex: 1;
-    overflow: hidden; }
-
+  overflow: hidden;
+}
+.breizbot-pager > .toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #128C7E;
+  color: white;
+}
+.breizbot-pager > .toolbar > .right {
+  display: flex;
+  align-items: center;
+}
+.breizbot-pager > .toolbar > .left {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.breizbot-pager > .toolbar > .left > .title {
+  margin-left: 5px;
+  margin-right: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.breizbot-pager > .content {
+  flex: 1;
+  overflow: hidden;
+}
 .breizbot-pdf {
   display: flex;
-  flex-direction: column; }
-  .breizbot-pdf .brainjs-pdf {
-    flex: 1; }
-  .breizbot-pdf .toolbar {
-    padding: 0 10px 0 10px;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between; }
-    .breizbot-pdf .toolbar .pages {
-      display: flex;
-      align-items: center; }
-    .breizbot-pdf .toolbar .loading {
-      padding: 8px 0 8px 0; }
-
+  flex-direction: column;
+}
+.breizbot-pdf .brainjs-pdf {
+  flex: 1;
+}
+.breizbot-pdf .toolbar {
+  padding: 0 10px 0 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+.breizbot-pdf .toolbar .pages {
+  display: flex;
+  align-items: center;
+}
+.breizbot-pdf .toolbar .loading {
+  padding: 8px 0 8px 0;
+}
 .breizbot-rtc {
   display: flex;
-  flex-direction: column; }
-  .breizbot-rtc .toolbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #128C7E;
-    color: white; }
-    .breizbot-rtc .toolbar > .status {
-      margin-left: 5px; }
-    .breizbot-rtc .toolbar p {
-      margin: 0px; }
-  .breizbot-rtc .panel {
-    flex: 1;
-    overflow: hidden; }
-
+  flex-direction: column;
+}
+.breizbot-rtc .toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #128C7E;
+  color: white;
+}
+.breizbot-rtc .toolbar > .status {
+  margin-left: 5px;
+}
+.breizbot-rtc .toolbar p {
+  margin: 0px;
+}
+.breizbot-rtc .panel {
+  flex: 1;
+  overflow: hidden;
+}
 .breizbot-searchbar > form {
   display: flex;
   flex-direction: row;
-  border: 2px solid #eeeeee;
+  border: 2px solid rgb(238, 238, 238);
   border-radius: 20px;
   padding-left: 10px;
-  padding-right: 10px; }
-  .breizbot-searchbar > form input:-webkit-autofill {
-    transition: background-color 5000s ease-in-out 0s; }
-  .breizbot-searchbar > form input {
-    flex: 1;
-    padding: 5px;
-    border: none;
-    outline: none; }
-
+  padding-right: 10px;
+}
+.breizbot-searchbar > form input:-webkit-autofill {
+  transition: background-color 5000s ease-in-out 0s;
+}
+.breizbot-searchbar > form input {
+  flex: 1;
+  padding: 5px;
+  border: none;
+  outline: none;
+}
 .breizbot-addUser {
   margin: 10px;
   display: flex;
-  justify-content: center; }
-  .breizbot-addUser label {
-    display: inline-block;
-    min-width: 100px; }
-  .breizbot-addUser .brainjs-inputgroup {
-    margin-bottom: 5px; }
-
+  justify-content: center;
+}
+.breizbot-addUser label {
+  display: inline-block;
+  min-width: 100px;
+}
+.breizbot-addUser .brainjs-inputgroup {
+  margin-bottom: 5px;
+}
 .breizbot-users {
   margin: 10px;
   display: flex;
-  flex-direction: column; }
-  .breizbot-users .toolbar {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 10px; }
-    .breizbot-users .toolbar button {
-      margin-left: 5px; }
-  .breizbot-users .scrollPanel {
-    flex: 1;
-    overflow: auto; }
-
+  flex-direction: column;
+}
+.breizbot-users .toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+.breizbot-users .toolbar button {
+  margin-left: 5px;
+}
+.breizbot-users .scrollPanel {
+  flex: 1;
+  overflow: auto;
+}
 .breizbot-viewer {
-  height: 100%; }
-  .breizbot-viewer .video {
-    height: 100%; }
-    .breizbot-viewer .video video {
-      object-fit: contain;
-      width: 100%;
-      height: 100%;
-      background-color: black; }
-  .breizbot-viewer .audio {
-    margin: 10px; }
-    .breizbot-viewer .audio audio {
-      width: 100%; }
-  .breizbot-viewer .doc, .breizbot-viewer .code {
-    position: relative; }
-    .breizbot-viewer .doc .top, .breizbot-viewer .code .top {
-      position: absolute;
-      bottom: 20px;
-      right: 30px;
-      cursor: pointer;
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      border: none;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 0;
-      background-color: lightgray; }
-    .breizbot-viewer .doc .scrollPanel, .breizbot-viewer .code .scrollPanel {
-      height: 100%;
-      overflow-y: auto; }
-      .breizbot-viewer .doc .scrollPanel .html, .breizbot-viewer .code .scrollPanel .html {
-        padding: 10px; }
-        .breizbot-viewer .doc .scrollPanel .html table, .breizbot-viewer .doc .scrollPanel .html td, .breizbot-viewer .doc .scrollPanel .html th, .breizbot-viewer .code .scrollPanel .html table, .breizbot-viewer .code .scrollPanel .html td, .breizbot-viewer .code .scrollPanel .html th {
-          border: 1px solid black;
-          border-collapse: collapse; }
-        .breizbot-viewer .doc .scrollPanel .html td, .breizbot-viewer .doc .scrollPanel .html th, .breizbot-viewer .code .scrollPanel .html td, .breizbot-viewer .code .scrollPanel .html th {
-          padding: 5px; }
+  height: 100%;
+}
+.breizbot-viewer .video {
+  height: 100%;
+}
+.breizbot-viewer .video video {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+}
+.breizbot-viewer .audio {
+  margin: 10px;
+}
+.breizbot-viewer .audio audio {
+  width: 100%;
+}
+.breizbot-viewer .doc, .breizbot-viewer .code {
+  position: relative;
+}
+.breizbot-viewer .doc .top, .breizbot-viewer .code .top {
+  position: absolute;
+  bottom: 20px;
+  right: 30px;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  background-color: lightgray;
+}
+.breizbot-viewer .doc .scrollPanel, .breizbot-viewer .code .scrollPanel {
+  height: 100%;
+  overflow-y: auto;
+}
+.breizbot-viewer .doc .scrollPanel .html, .breizbot-viewer .code .scrollPanel .html {
+  padding: 10px;
+}
+.breizbot-viewer .doc .scrollPanel .html table, .breizbot-viewer .doc .scrollPanel .html td, .breizbot-viewer .doc .scrollPanel .html th, .breizbot-viewer .code .scrollPanel .html table, .breizbot-viewer .code .scrollPanel .html td, .breizbot-viewer .code .scrollPanel .html th {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+.breizbot-viewer .doc .scrollPanel .html td, .breizbot-viewer .doc .scrollPanel .html th, .breizbot-viewer .code .scrollPanel .html td, .breizbot-viewer .code .scrollPanel .html th {
+  padding: 5px;
+}

@@ -358,11 +358,16 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
             logFunction = fn
         }
 
+        function addBlockType(typeName, fn) {
+            blockTypeMap[typeName] = fn
+        }
+
         return {
             startCode,
             setLlogFunction,
             evalCode,
-            dumpVariables
+            dumpVariables,
+            addBlockType
         }
     }
 });

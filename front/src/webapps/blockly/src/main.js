@@ -96,8 +96,23 @@ $$.control.registerControl('rootPage', {
 				const text = await evalCode(block.inputs.TEXT)
 				variablesValue[varId] += text
 			},
+			'text_join': async function(block) {
+				const nbItems = block.extraState.itemCount
+				let ret = ''
+				if (block.inputs != undefined) {
+					for(let i = 0; i < nbItems; i++) {
+						const itemName = `ADD${i}`
+						if (block.inputs[itemName] != undefined) {
+							const text = await evalCode(block.inputs[itemName])
+							ret += text
+						}
+					}
+				}
+				return ret
+			},
 			'text_length': async function (block) {
-				return await evalCode(block.inputs.VALUE).length
+				const text = await evalCode(block.inputs.VALUE)
+				return text.length
 			},
 
 			'variables_set': async function (block) {
@@ -375,6 +390,7 @@ $$.control.registerControl('rootPage', {
 			console.log('evalCode', block.type)
 			const fn = blockTypeMap[block.type]
 			if (typeof fn != 'function') {
+				console.log('block', block)
 				throw `function '${block.type}' not implemented yet`
 			}
 			const ret = await fn.call(blockTypeMap, block)

@@ -3,5 +3,6 @@
 	"title": "PowerUp",
 	"styles": ["app.css"],
 	"scripts": ["hub.js"],
-	"iconUrl": "powerup.webp"
+	"iconUrl": "powerup.webp",
+	"brainjs": ["blockly"]
 }

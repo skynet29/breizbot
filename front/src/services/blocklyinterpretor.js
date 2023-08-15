@@ -286,8 +286,16 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
                 function (txt) { return txt[0].toUpperCase() + txt.substring(1).toLowerCase(); })
         }
 
+        function getVarValue(varId) {
+            return variablesValue[varId]
+        }
+
         function getVarId(name) {
             return variablesDef.find((e) => e.name == name).id
+        }
+
+        function getVarName(varId) {
+            return variablesDef.find((e) => e.id == varId).name
         }
 
         function dumpVariables() {
@@ -367,7 +375,9 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
             setLlogFunction,
             evalCode,
             dumpVariables,
-            addBlockType
+            addBlockType,
+            getVarValue,
+            getVarName
         }
     }
 });

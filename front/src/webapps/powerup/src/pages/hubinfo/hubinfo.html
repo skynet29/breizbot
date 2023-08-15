@@ -6,7 +6,6 @@
                 <th>Port</th>
                 <th>Device Type</th>
                 <th>Action</th>
-                <th>Value</th>
             </tr>
         </thead>
         <tbody bn-each="externalDevices" bn-event="
@@ -35,11 +34,7 @@
 
                     <button class="w3-btn w3-blue portInfo">MODE</button>
                 </td>
-                <td>
-                    <div bn-if="isTachoMotor">
-                        <span bn-text="$scope.$i.value"></span>
-                    </div>
-                </td>
+
             </tr>
 
         </tbody>

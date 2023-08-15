@@ -45,13 +45,11 @@ declare namespace HUB {
         getMotor(portId: number): Promise<Motor>;
         getTachoMotor(portId: number): Promise<TachoMotor>;
         getDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>;
-        getRbgLed(portId: number):Promise<RgbLed>;
+        getRgbLed(portId: number):Promise<RgbLed>;
         getTiltSensor(portId: number):Promise<TiltSensor>; 
-        getSinpleLed(portId: number):Promise<Led>;
+        getLed(portId: number):Promise<Led>;
 
-        isMotor(portId: number):boolean;
-        isLed(portId: number):boolean;
-        isTachoMotor(portId: number):boolean;
+
 
         getPortIdFromName(name: string): number;
         startNotification(): Promise<void>;
@@ -106,6 +104,9 @@ declare namespace HUB {
     }
 
     function connect(): Promise<HubDevice>
+    function isMotor(device: Device):boolean;
+    function isLed(device: Device):boolean;
+    function isTachoMotor(device: Device):boolean;
 
     enum Color {
         BLACK,

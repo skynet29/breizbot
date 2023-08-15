@@ -99,6 +99,22 @@
   margin-top: 10px;
   cursor: pointer;
 }
+.code {
+  display: flex;
+  flex-direction: column;
+}
+.code #blocklyDiv {
+  flex: 1;
+}
+.code .toolbar {
+  padding: 5px;
+}
+.code .logPanel {
+  height: 100px;
+  overflow-y: auto;
+  border: 1px solid lightgray;
+  padding: 5px;
+}
 .configCtrl {
   display: flex;
   flex-direction: row;

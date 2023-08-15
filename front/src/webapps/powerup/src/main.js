@@ -23,6 +23,8 @@ $$.control.registerControl('rootPage', {
 
 		//const config = {}
 
+		initBlock()
+
 		let config = {
 			actions: [],
 			mappings: {}
@@ -41,7 +43,7 @@ $$.control.registerControl('rootPage', {
 			console.log('onVarChange', data)
 			const variables = actionSrv.getVariables()
 			console.log('variables', variables)
-			ctrl.setData({variables})
+			ctrl.setData({ variables })
 		})
 
 		const ctrl = $$.viewController(elt, {
@@ -51,28 +53,37 @@ $$.control.registerControl('rootPage', {
 				hubDevices: [],
 				hubs: ['HUB1', 'HUB2'],
 				variables: [],
-				hasVariables: function() {
+				hasVariables: function () {
 					return this.variables.length > 0
 				}
 			},
 			events: {
-				onNewConfig: function() {
+				onCode: function () {
+					console.log('onCode')
+					pager.pushPage('code', {
+						title: 'Code',
+						props: {
+							hubDevices: Object.values(hubDevices)
+						}
+					})
+				},
+				onNewConfig: function () {
 					config = {
 						actions: [],
 						mappings: {}
 					}
 					gamepadMapping = null
-					ctrl.setData({currentConfig: ''})
+					ctrl.setData({ currentConfig: '' })
 					actionSrv.resetVariables()
 				},
-				onSaveConfig: async function() {
+				onSaveConfig: async function () {
 					//console.log('onSaveConfig', config)
 					if (ctrl.model.currentConfig == '') {
-						const currentConfig = await $$.ui.showPrompt({title: 'Save Config', label: 'Config Name:'})
+						const currentConfig = await $$.ui.showPrompt({ title: 'Save Config', label: 'Config Name:' })
 						//console.log({currentConfig})
 						if (currentConfig) {
-							await http.post('/add', {name: currentConfig, actions: config.actions, mappings: config.mappings})
-							ctrl.setData({currentConfig})
+							await http.post('/add', { name: currentConfig, actions: config.actions, mappings: config.mappings })
+							ctrl.setData({ currentConfig })
 						}
 					}
 					else {
@@ -81,16 +92,16 @@ $$.control.registerControl('rootPage', {
 					}
 
 				},
-				onConfig: function() {
+				onConfig: function () {
 					//console.log('onConfig')
 					pager.pushPage('configCtrl', {
 						title: 'Configurations',
 						props: {
 							currentConfig: ctrl.model.currentConfig
-						},	
-						onReturn: function(data) {
+						},
+						onReturn: function (data) {
 							config = data
-							ctrl.setData({currentConfig: data.name})
+							ctrl.setData({ currentConfig: data.name })
 							gamepadMapping = config.mappings[gamepadId]
 							actionSrv.resetVariables()
 							//console.log({gamepadMapping})
@@ -191,15 +202,15 @@ $$.control.registerControl('rootPage', {
 						const hubDesc = ctrl.model.hubDevices.find((e) => e.UUID == id)
 						hubDesc.batteryLevel = data.batteryLevel
 						ctrl.update()
-					})			
+					})
 
 					hubDevice.on('address', (data) => {
 						console.log('address', data)
 						const hubDesc = ctrl.model.hubDevices.find((e) => e.UUID == id)
 						hubDesc.address = data.address
 						ctrl.update()
-					})		
-					
+					})
+
 					await hubDevice.startNotification()
 
 					hubDevice.on('disconnected', () => {
@@ -208,13 +219,112 @@ $$.control.registerControl('rootPage', {
 						ctrl.model.hubDevices.splice(idx, 1)
 						ctrl.update()
 						delete hubDevices[id]
-					})					
+					})
 
 				}
 
 
 			}
 		})
+
+		function initBlock() {
+			Blockly.Blocks['create_motor'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField("Motor")
+						.appendField("HUB")
+						.appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")
+						.appendField("PORT")
+						.appendField(new Blockly.FieldDropdown([["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"]]), "PORT");
+					this.setOutput(true, "Motor");
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+			Blockly.Blocks['hub_color'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField("HUB")
+						.appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")
+						.appendField("Color")
+						.appendField(new Blockly.FieldDropdown([["BLACK", "BLACK"], ["PURPLE", "PURPLE"], ["BLUE", "BLUE"], ["LIGHT_BLUE", "LIGHT_BLUE"], ["CYAN", "CYAN"], ["GREEN", "GREEN"], ["PINK", "PINK"], ["YELLOW", "YELLOW"], ["ORANGE", "ORANGE"], ["RED", "RED"], ["WHITE", "WHITE"]]), "COLOR");
+					this.setPreviousStatement(true, null);
+					this.setNextStatement(true, null);
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+			Blockly.Blocks['motor_speed_time'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField(new Blockly.FieldVariable("item"), "VAR")
+						.appendField("Speed")
+						.appendField(new Blockly.FieldNumber(100, -100, 100, 1), "SPEED")
+						.appendField("Time")
+						.appendField(new Blockly.FieldNumber(1, 1, Infinity, 1), "TIME")
+						.appendField("Wait")
+						.appendField(new Blockly.FieldCheckbox("TRUE"), "WAIT");
+					this.setPreviousStatement(true, null);
+					this.setNextStatement(true, null);
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+			Blockly.Blocks['motor_speed_degrees'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField(new Blockly.FieldVariable("item"), "VAR")
+						.appendField("Speed")
+						.appendField(new Blockly.FieldNumber(100, -100, 100, 1), "SPEED")
+						.appendField("Degrees")
+						.appendField(new Blockly.FieldNumber(1, -Infinity, Infinity, 1), "DEGREES")
+						.appendField("Wait")
+						.appendField(new Blockly.FieldCheckbox("TRUE"), "WAIT");
+					this.setPreviousStatement(true, null);
+					this.setNextStatement(true, null);
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+			Blockly.Blocks['motor_speed_position'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField(new Blockly.FieldVariable("item"), "VAR")
+						.appendField("Speed")
+						.appendField(new Blockly.FieldNumber(100, -100, 100, 1), "SPEED")
+						.appendField("Angle")
+						.appendField(new Blockly.FieldNumber(1, -180, 180, 1), "ANGLE")
+						.appendField("Wait")
+						.appendField(new Blockly.FieldCheckbox("TRUE"), "WAIT");
+					this.setPreviousStatement(true, null);
+					this.setNextStatement(true, null);
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+			Blockly.Blocks['motor_reset_position'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField(new Blockly.FieldVariable("item"), "VAR")
+						.appendField("reset position")
+					this.setPreviousStatement(true, null);
+					this.setNextStatement(true, null);
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+		}
 
 		/**
 		 * 

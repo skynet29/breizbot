@@ -137,6 +137,8 @@ declare namespace Breizbot {
                 evalCode(block: Block): Promise<aby>;
                 dumpVariables(): void;
                 addBlockType(typeName: string, fn: (block: Block) => Promise<any>);
+                getVarValue(varId: string): any;
+                getVarName(varId: string): string;
             }
         }
 

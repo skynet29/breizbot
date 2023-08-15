@@ -196,44 +196,7 @@
             })
         }
 
-        /**
-         * 
-         * @param {number} portId 
-         * @returns {boolean}
-         */
-        isMotor(portId) {
-            const device = this.hubDevices[portId]
-            if (device) {
-                return device instanceof Motor
-            }
-            return false
-        }
 
-        /**
-         * 
-         * @param {number} portId 
-         * @returns {boolean}
-         */
-        isLed(portId) {
-            const device = this.hubDevices[portId]
-            if (device) {
-                return device instanceof Led
-            }
-            return false
-        }
-
-        /**
-         * 
-         * @param {number} portId 
-         * @returns {boolean}
-         */
-        isTachoMotor(portId) {
-            const device = this.hubDevices[portId]
-            if (device) {
-                return device instanceof TachoMotor
-            }
-            return false
-        }
 
         /**
          * 
@@ -412,10 +375,9 @@
          * @returns {Promise<HUB.PortInformation>}
          */
         async getPortInformation(portId) {
-            let {modes, capabilities} = this.hubDevices[portId]
-            if (modes != undefined || capabilities != undefined)
-            {
-                return {modes, capabilities}
+            let { modes, capabilities } = this.hubDevices[portId]
+            if (modes != undefined || capabilities != undefined) {
+                return { modes, capabilities }
             }
             const portInfo = await this.getPortInformationRequest(portId)
             const { count, output, input } = portInfo
@@ -703,6 +665,36 @@
         init: function () {
 
             /**
+  * 
+  * @param {Device} device 
+  * @returns {boolean}
+  */
+            function isMotor(device) {
+
+                return device instanceof Motor
+
+            }
+
+            /**
+             * 
+             * @param {Device} device 
+             * @returns {boolean}
+             */
+            function isLed(device) {
+
+                return device instanceof Led
+            }
+
+            /**
+             * 
+             * @param {Device} device 
+             * @returns {boolean}
+             */
+            function isTachoMotor(device) {
+                return device instanceof TachoMotor
+            }
+
+            /**
              * 
              * @returns {Promise<HubDevice>}
              */
@@ -731,7 +723,10 @@
                 PortMapNames,
                 DeviceMode,
                 BrakingStyle,
-                DeviceTypeNames
+                DeviceTypeNames,
+                isMotor,
+                isTachoMotor,
+                isLed
             }
         }
     });

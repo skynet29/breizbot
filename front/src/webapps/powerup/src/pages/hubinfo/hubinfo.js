@@ -33,17 +33,6 @@ $$.control.registerControl('hubinfo', {
 				if (portId < 50) {
 					const info = { name, portId, type }
 					externalDevices.push(info)
-
-					if (hubDevice.isTachoMotor(portId)) {
-						const motor = await hubDevice.getTachoMotor(portId)
-						await motor.subscribe(hub.DeviceMode.ROTATION, (value) => {
-							//console.log('rotation', value)
-							//const info = ctrl.model.externalDevices.find(dev => dev.portId == portId)
-							//console.log('info', info)
-							info.value = value
-							ctrl.update()
-						}, 2)
-					}
 				}
 				else {
 					internalDevices.push({
@@ -89,16 +78,7 @@ $$.control.registerControl('hubinfo', {
 			const info = { portId, name, type }
 			ctrl.model.externalDevices.push(info)
 			ctrl.update()
-			if (hubDevice.isTachoMotor(portId)) {
-				const motor = await hubDevice.getTachoMotor(portId)
-				motor.subscribe(hub.DeviceMode.ROTATION, (value) => {
-					//console.log('rotation', value)
-					//const info = ctrl.model.externalDevices.find(dev => dev.portId == portId)
-					//console.log('info', info)
-					info.value = value
-					ctrl.update()
-				}, 2)
-			}
+
 		}
 
 		function detachCbk(data) {
@@ -118,20 +98,7 @@ $$.control.registerControl('hubinfo', {
 			hubDevice.off('attach', attachCbk)
 			hubDevice.off('detach', detachCbk)
 
-			const devices = hubDevice.getHubDevices()
-			console.log('devices', devices)
 
-			for (const device of devices) {
-				const { portId } = device
-				if (portId < 50) {
-
-					if (hubDevice.isTachoMotor(portId)) {
-						const motor = await hubDevice.getTachoMotor(portId)
-						await motor.setMode(hub.DeviceMode.ROTATION, false)
-					}
-				}
-
-			}
 		}
 
 
@@ -140,13 +107,13 @@ $$.control.registerControl('hubinfo', {
 				internalDevices: [],
 				externalDevices: [],
 				isMotor: function (scope) {
-					return hubDevice.isMotor(scope.$i.portId)
+					return hub.isMotor(hubDevice.getDevice(scope.$i.portId))
 				},
 				isLed: function (scope) {
-					return hubDevice.isLed(scope.$i.portId)
+					return hub.isLed(hubDevice.getDevice(scope.$i.portId))
 				},
 				isTachoMotor: function (scope) {
-					return hubDevice.isTachoMotor(scope.$i.portId)
+					return hub.isTachoMotor(hubDevice.getDevice(scope.$i.portId))
 				}
 			},
 			events: {

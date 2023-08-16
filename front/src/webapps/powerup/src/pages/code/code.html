@@ -155,15 +155,85 @@
     </category>
     <category name="Variables" custom="VARIABLE" categorystyle="variable_category"></category>
     <category name="Functions" custom="PROCEDURE" categorystyle="procedure_category"></category>
-    <category name="Motor" colour="355">
+    <category name="TachoMotor" colour="355">
         <block type="create_motor"></block>
-        <block type="motor_speed_time"></block>
-        <block type="motor_speed_degrees"></block>
-        <block type="motor_speed_position"></block>
+        <block type="motor_speed">
+            <value name="SPEED">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>            
+        </block>
+        <block type="motor_speed_time">
+            <value name="TIME">
+                <shadow type="math_number">
+                    <field name="NUM">1000</field>
+                </shadow>
+            </value>
+            <value name="SPEED">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="motor_speed_degrees">
+            <value name="DEGREES">
+                <shadow type="math_number">
+                    <field name="NUM">180</field>
+                </shadow>
+            </value>
+            <value name="SPEED">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="motor_speed_position">
+            <value name="ANGLE">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+            <value name="SPEED">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+        </block>
         <block type="motor_reset_position"></block>
+        <block type="motor_get_speed"></block>
+        <block type="motor_get_position"></block>
+        <block type="motor_get_absoluteposition"></block>
+
     </category>
-    <category name="HUB" colour="355">
+    <category name="PairMotor" colour="355">
+        <block type="create_pair_motor"></block>
+        <block type="pair_motor_speed">
+            <value name="SPEED1">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+            <value name="SPEED2">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+        </block>
+
+        
+    </category>
+    <category name="Hub" colour="355">
         <block type="hub_color"></block>
+    </category>
+    <category name="System" colour="355">
+        <block type="sleep">
+            <value name="TIME">
+                <shadow type="math_number">
+                    <field name="NUM">1000</field>
+                </shadow>
+            </value>
+        </block>
     </category>
 
 </xml>

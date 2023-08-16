@@ -84,6 +84,10 @@ declare namespace HUB {
         gotoAngle(angle: number, speed: number, waitFeedback: boolean, brakingStyle = BrakingStyle.BRAKE): Promise<void>;
         calibrate():Promise<void>;
 
+        getAbsolutePosition(): Promise<number>;
+        getPosition(): Promise<number>;
+        getSpeed(): Promise<number>;
+
     }
 
     interface DoubleMotor extends Motor {
@@ -107,6 +111,7 @@ declare namespace HUB {
     function isMotor(device: Device):boolean;
     function isLed(device: Device):boolean;
     function isTachoMotor(device: Device):boolean;
+    function isDoubleMotor(device: Device):boolean;
 
     enum Color {
         BLACK,

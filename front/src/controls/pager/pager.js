@@ -6,13 +6,6 @@ $$.control.registerControl('breizbot.pager', {
 	},
 	template: { gulp_inject: './pager.html' },
 
-	$iface: `
-		popPage(data)
-		pushPage(ctrlName, options)
-		setButtonVisible(buttonsVisible: {[buttonName]:boolean})
-		setButtonEnabled(buttonsEnabled: {[buttonName]:boolean})
-	`,
-
 	init: function (elt) {
 
 		const { rootPage } = this.props
@@ -67,9 +60,15 @@ $$.control.registerControl('breizbot.pager', {
 		let curInfo = null
 
 
+
 		function restorePage(isBack, data) {
 
 			const iface = curInfo.ctrl.iface()
+			let backValue
+
+			if (typeof iface.onBack == 'function') {
+				backValue = iface.onBack()
+			}
 			//console.log('popPage', pageCtrl)
 			curInfo.ctrl.safeEmpty().remove()
 
@@ -84,7 +83,7 @@ $$.control.registerControl('breizbot.pager', {
 				//console.log('[pager] back', iface.name)
 				if (typeof onBack == 'function') {
 					console.log('[pager] onBack', iface.name)
-					onBack.call(iface)
+					onBack.call(iface, backValue)
 				}
 			}
 			else if (typeof onReturn == 'function') {

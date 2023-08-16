@@ -56,6 +56,17 @@ class TachoMotor extends Motor {
         return this.writeDirectMode(DeviceMode.ROTATION, true, 0x00, 0x00, 0x00, 0x00)
     }
 
+    getSpeed() {
+        return this.getValue(DeviceMode.SPEED)
+    }
+
+    getPosition() {
+        return this.getValue(DeviceMode.ROTATION)
+    }
+
+    getAbsolutePosition() {
+        return this.getValue(DeviceMode.ABSOLUTE)
+    }
 
     async calibrate() {
 

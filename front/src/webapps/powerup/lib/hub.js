@@ -665,14 +665,21 @@
         init: function () {
 
             /**
-  * 
-  * @param {Device} device 
-  * @returns {boolean}
-  */
+             * 
+             * @param {Device} device 
+             * @returns {boolean}
+             */
             function isMotor(device) {
-
                 return device instanceof Motor
+            }
 
+            /**
+             * 
+             * @param {Device} device 
+             * @returns {boolean}
+             */
+            function isDoubleMotor(device) {
+                return device instanceof DoubleMotor
             }
 
             /**
@@ -681,7 +688,6 @@
              * @returns {boolean}
              */
             function isLed(device) {
-
                 return device instanceof Led
             }
 
@@ -726,7 +732,8 @@
                 DeviceTypeNames,
                 isMotor,
                 isTachoMotor,
-                isLed
+                isLed,
+                isDoubleMotor
             }
         }
     });

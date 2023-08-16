@@ -30,6 +30,8 @@ $$.control.registerControl('rootPage', {
 			mappings: {}
 		}
 
+		let code = null
+
 		elt.find('button').addClass('w3-btn w3-blue')
 
 		/**@type {{[UUID: string]: HUB.HubDevice}} */
@@ -59,11 +61,16 @@ $$.control.registerControl('rootPage', {
 			},
 			events: {
 				onCode: function () {
-					console.log('onCode')
+					//console.log('onCode')
 					pager.pushPage('code', {
 						title: 'Code',
 						props: {
-							hubDevices: Object.values(hubDevices)
+							hubDevices: Object.values(hubDevices),
+							code
+						},
+						onBack: function (value) {
+							//console.log('onBack', value)
+							code = value
 						}
 					})
 				},
@@ -243,6 +250,42 @@ $$.control.registerControl('rootPage', {
 				}
 			};
 
+			Blockly.Blocks['create_pair_motor'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField("PairMotor")
+						.appendField("HUB")
+						.appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")
+						.appendField("PORT1")
+						.appendField(new Blockly.FieldDropdown([["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"]]), "PORT1")
+						.appendField("PORT2")
+						.appendField(new Blockly.FieldDropdown([["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"]]), "PORT2")
+					this.setOutput(true, "Motor");
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+			Blockly.Blocks['pair_motor_speed'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField(new Blockly.FieldVariable("item"), "VAR");
+					this.appendValueInput("SPEED1")
+						.setCheck("Number")
+						.appendField("Speed1");
+					this.appendValueInput("SPEED2")
+						.setCheck("Number")
+						.appendField("Speed2");
+					this.setInputsInline(true);
+					this.setPreviousStatement(true, null);
+					this.setNextStatement(true, null);
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
 			Blockly.Blocks['hub_color'] = {
 				init: function () {
 					this.appendDummyInput()
@@ -261,13 +304,16 @@ $$.control.registerControl('rootPage', {
 			Blockly.Blocks['motor_speed_time'] = {
 				init: function () {
 					this.appendDummyInput()
-						.appendField(new Blockly.FieldVariable("item"), "VAR")
-						.appendField("Speed")
-						.appendField(new Blockly.FieldNumber(100, -100, 100, 1), "SPEED")
-						.appendField("Time")
-						.appendField(new Blockly.FieldNumber(1, 1, Infinity, 1), "TIME")
+						.appendField(new Blockly.FieldVariable("item"), "VAR");
+					this.appendValueInput("SPEED")
+						.setCheck("Number")
+						.appendField("Speed");
+					this.appendValueInput("TIME")
+						.setCheck("Number")
+						.appendField("Time (ms)");
+					this.appendDummyInput()
 						.appendField("Wait")
-						.appendField(new Blockly.FieldCheckbox("TRUE"), "WAIT");
+						.appendField(new Blockly.FieldCheckbox("TRUE"), "WAITME");
 					this.setPreviousStatement(true, null);
 					this.setNextStatement(true, null);
 					this.setColour(230);
@@ -279,13 +325,16 @@ $$.control.registerControl('rootPage', {
 			Blockly.Blocks['motor_speed_degrees'] = {
 				init: function () {
 					this.appendDummyInput()
-						.appendField(new Blockly.FieldVariable("item"), "VAR")
-						.appendField("Speed")
-						.appendField(new Blockly.FieldNumber(100, -100, 100, 1), "SPEED")
-						.appendField("Degrees")
-						.appendField(new Blockly.FieldNumber(1, -Infinity, Infinity, 1), "DEGREES")
+						.appendField(new Blockly.FieldVariable("item"), "VAR");
+					this.appendValueInput("SPEED")
+						.setCheck("Number")
+						.appendField("Speed");
+					this.appendValueInput("DEGREES")
+						.setCheck("Number")
+						.appendField("Degress");
+					this.appendDummyInput()
 						.appendField("Wait")
-						.appendField(new Blockly.FieldCheckbox("TRUE"), "WAIT");
+						.appendField(new Blockly.FieldCheckbox("TRUE"), "WAITME");
 					this.setPreviousStatement(true, null);
 					this.setNextStatement(true, null);
 					this.setColour(230);
@@ -297,13 +346,16 @@ $$.control.registerControl('rootPage', {
 			Blockly.Blocks['motor_speed_position'] = {
 				init: function () {
 					this.appendDummyInput()
-						.appendField(new Blockly.FieldVariable("item"), "VAR")
-						.appendField("Speed")
-						.appendField(new Blockly.FieldNumber(100, -100, 100, 1), "SPEED")
-						.appendField("Angle")
-						.appendField(new Blockly.FieldNumber(1, -180, 180, 1), "ANGLE")
+						.appendField(new Blockly.FieldVariable("item"), "VAR");
+					this.appendValueInput("SPEED")
+						.setCheck("Number")
+						.appendField("Speed");
+					this.appendValueInput("ANGLE")
+						.setCheck("Number")
+						.appendField("Angle");
+					this.appendDummyInput()
 						.appendField("Wait")
-						.appendField(new Blockly.FieldCheckbox("TRUE"), "WAIT");
+						.appendField(new Blockly.FieldCheckbox("TRUE"), "WAITME");
 					this.setPreviousStatement(true, null);
 					this.setNextStatement(true, null);
 					this.setColour(230);
@@ -317,6 +369,70 @@ $$.control.registerControl('rootPage', {
 					this.appendDummyInput()
 						.appendField(new Blockly.FieldVariable("item"), "VAR")
 						.appendField("reset position")
+					this.setPreviousStatement(true, null);
+					this.setNextStatement(true, null);
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+			Blockly.Blocks['motor_get_speed'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField(new Blockly.FieldVariable("item"), "VAR")
+						.appendField("Speed");
+					this.setOutput(true, null);
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+			Blockly.Blocks['motor_get_position'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField(new Blockly.FieldVariable("item"), "VAR")
+						.appendField("Position");
+					this.setOutput(true, null);
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+			Blockly.Blocks['motor_get_absoluteposition'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField(new Blockly.FieldVariable("item"), "VAR")
+						.appendField("Absolute Position");
+					this.setOutput(true, null);
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+			Blockly.Blocks['sleep'] = {
+				init: function () {
+					this.appendValueInput("TIME")
+						.setCheck("Number")
+						.appendField("Sleep (ms)");
+					this.setPreviousStatement(true, null);
+					this.setNextStatement(true, null);
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+
+			Blockly.Blocks['motor_speed'] = {
+				init: function () {
+					this.appendValueInput("SPEED")
+						.setCheck("Number")
+						.appendField(new Blockly.FieldVariable("item"), "VAR")
+						.appendField("Speed");
 					this.setPreviousStatement(true, null);
 					this.setNextStatement(true, null);
 					this.setColour(230);

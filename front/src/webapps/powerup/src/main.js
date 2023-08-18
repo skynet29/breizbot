@@ -235,6 +235,21 @@ $$.control.registerControl('rootPage', {
 		})
 
 		function initBlock() {
+			Blockly.Blocks['create_tacho_motor'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField("TachoMotor")
+						.appendField("HUB")
+						.appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")
+						.appendField("PORT")
+						.appendField(new Blockly.FieldDropdown([["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"]]), "PORT");
+					this.setOutput(true, "Motor");
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
 			Blockly.Blocks['create_motor'] = {
 				init: function () {
 					this.appendDummyInput()
@@ -301,6 +316,35 @@ $$.control.registerControl('rootPage', {
 				}
 			};
 
+			Blockly.Blocks['hub_get_tilt'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField("HUB")
+						.appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")
+						.appendField("Tilt")
+						.appendField(new Blockly.FieldDropdown([["Pitch", "pitch"], ["Roll", "roll"], ["Yaw", "yaw"]]), "TYPE");
+					this.setOutput(true, "Number");
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+
+			Blockly.Blocks['hub_get_voltage'] = {
+				init: function () {
+					this.appendDummyInput()
+						.appendField("HUB")
+						.appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")
+						.appendField("Voltage (mV)")
+					this.setOutput(true, "Number");
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+
 			Blockly.Blocks['motor_speed_time'] = {
 				init: function () {
 					this.appendDummyInput()
@@ -331,10 +375,10 @@ $$.control.registerControl('rootPage', {
 						.appendField("Speed");
 					this.appendValueInput("DEGREES")
 						.setCheck("Number")
-						.appendField("Degress");
+						.appendField("Degrees");
 					this.appendDummyInput()
 						.appendField("Wait")
-						.appendField(new Blockly.FieldCheckbox("TRUE"), "WAITME");
+						.appendField(new Blockly.FieldCheckbox("TRUE"), "WAIT");
 					this.setPreviousStatement(true, null);
 					this.setNextStatement(true, null);
 					this.setColour(230);
@@ -433,6 +477,20 @@ $$.control.registerControl('rootPage', {
 						.setCheck("Number")
 						.appendField(new Blockly.FieldVariable("item"), "VAR")
 						.appendField("Speed");
+					this.setPreviousStatement(true, null);
+					this.setNextStatement(true, null);
+					this.setColour(230);
+					this.setTooltip("");
+					this.setHelpUrl("");
+				}
+			};
+
+			Blockly.Blocks['motor_power'] = {
+				init: function () {
+					this.appendValueInput("POWER")
+						.setCheck("Number")
+						.appendField(new Blockly.FieldVariable("item"), "VAR")
+						.appendField("Power");
 					this.setPreviousStatement(true, null);
 					this.setNextStatement(true, null);
 					this.setColour(230);

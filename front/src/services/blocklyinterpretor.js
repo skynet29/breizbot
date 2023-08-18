@@ -9,6 +9,16 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
         let breakState = ''
         let logFunction
 
+        function mathRandomInt(a, b) {
+            if (a > b) {
+                // Swap a and b to ensure a is smaller.
+                var c = a;
+                a = b;
+                b = c;
+            }
+            return Math.floor(Math.random() * (b - a + 1) + a);
+        }
+
         const blockTypeMap = {
             'math_number': async function (block) {
                 return block.fields.NUM
@@ -70,6 +80,89 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
                         throw (`Unknown operator '${operator}'`)
                 }
             },
+            'math_single': async function (block) {
+                const operator = block.fields.OP
+                const val = await evalCode(block.inputs.NUM)
+                console.log({ operator, val })
+                switch (operator) {
+                    case 'ROOT':
+                        return Math.sqrt(val)
+                    case 'ABS':
+                        return Math.abs(val)
+                    case 'NEG':
+                        return -val
+                    case 'LN':
+                        return Math.log(val)
+                    case 'LOG10':
+                        return Math.log10(val)
+                    case 'EXP':
+                        return Math.exp(val)
+                    case 'POW10':
+                        return Math.pow(10, val)
+                    default:
+                        throw (`Unknown operator '${operator}'`)
+                }
+            },
+            'math_trig': async function (block) {
+                const operator = block.fields.OP
+                const val = await evalCode(block.inputs.NUM)
+                console.log({ operator, val })
+                switch (operator) {
+                    case 'SIN':
+                        return Math.sin(val / 180 * Math.PI)
+                    case 'COS':
+                        return Math.cos(val / 180 * Math.PI)
+                    case 'TAN':
+                        return Math.tan(val / 180 * Math.PI)
+                    case 'ASIN':
+                        return Math.asin(val) / Math.PI * 180
+                    case 'ACOS':
+                        return Math.acos(val) / Math.PI * 180
+                    case 'ATAN':
+                        return Math.atan(val) / Math.PI * 180
+                    default:
+                        throw (`Unknown operator '${operator}'`)
+                }
+            },
+            'math_random_int': async function (block) {
+                const from = await evalCode(block.inputs.FROM)
+                const to = await evalCode(block.inputs.TO)
+                return mathRandomInt(from, to)
+            },
+            'math_round': async function (block) {
+                const operator = block.fields.OP
+                const val = await evalCode(block.inputs.NUM)
+                console.log({ operator, val })
+                switch (operator) {
+                    case 'ROUND':
+                        return Math.round(val)
+                    case 'ROUNDUP':
+                        return Math.ceil(val)
+                    case 'ROUNDDOWN':
+                        return Math.floor(val)
+                    default:
+                        throw (`Unknown operator '${operator}'`)
+                }
+            },
+            'math_constant': async function (block) {
+                const c = block.fields.CONSTANT
+                switch (c) {
+                    case 'PI':
+                        return Math.PI
+                    case 'E':
+                        return Math.E
+                    case 'GOLDEN_RATIO':
+                        return (1 + Math.sqrt(5)) / 2
+                    case 'SQRT2':
+                        return Math.SQRT2
+                    case 'SQRT1_2':
+                        return Math.SQRT1_2
+                    case 'INFINITY':
+                        return Infinity
+                    default:
+                        throw (`Unknown constante '${c}'`)
+                }
+            },
             'controls_repeat_ext': async function (block) {
                 const times = await evalCode(block.inputs.TIMES)
                 console.log('TIMES', times)
@@ -87,7 +180,7 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
             'text_print': async function (block) {
                 if (typeof logFunction == 'function') {
                     logFunction(await evalCode(block.inputs.TEXT))
-                }                
+                }
             },
             'text_prompt_ext': async function (block) {
                 const type = block.fields.TYPE

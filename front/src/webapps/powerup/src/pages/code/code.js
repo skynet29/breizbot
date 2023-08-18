@@ -63,7 +63,7 @@ $$.control.registerControl('code', {
 
 		})
 
-		blocklyInterpretor.addBlockType('create_motor', async (block) => {
+		blocklyInterpretor.addBlockType('create_tacho_motor', async (block) => {
 
 			/**@type {string} */
 			const portName = block.fields.PORT
@@ -77,6 +77,31 @@ $$.control.registerControl('code', {
 
 		})
 
+		blocklyInterpretor.addBlockType('create_motor', async (block) => {
+
+			/**@type {string} */
+			const portName = block.fields.PORT
+
+			const hubDevice = getHub(block)
+			const motor = hubDevice.getDevice(hub.PortMap[portName])
+			if (!hub.isMotor(motor)) {
+				throw `Device connected to port '${portName}' is not of a Motor`
+			}
+			return motor
+
+		})
+
+		function getMotor(block) {
+			/**@type {string} */
+			const varId = block.fields.VAR.id
+			/**@type {HUB.Motor} */
+			const motor = blocklyInterpretor.getVarValue(varId)
+			if (typeof motor != 'object' || !hub.isMotor(motor)) {
+				const varName = blocklyInterpretor.getVarName(varId)
+				throw `variable '${varName}' is not of type Motor`
+			}
+			return motor
+		}
 
 		function getTachoMotor(block) {
 			/**@type {string} */
@@ -102,6 +127,18 @@ $$.control.registerControl('code', {
 			}
 			return motor
 		}
+
+		blocklyInterpretor.addBlockType('motor_power', async (block) => {
+
+			/**@type {number} */
+			const power = await blocklyInterpretor.evalCode(block.inputs.POWER)
+
+			const motor = getMotor(block)
+
+			console.log({ power })
+			await motor.setPower(power)
+
+		})
 
 		blocklyInterpretor.addBlockType('motor_speed', async (block) => {
 
@@ -220,6 +257,29 @@ $$.control.registerControl('code', {
 			await led.setColor(hub.Color[color])
 
 		})
+
+		async function getHubValue(block, portId, mode) {
+			const hubDevice = getHub(block)
+			const device = hubDevice.getDevice(portId)
+			return device.getValue(mode)
+		}
+
+		blocklyInterpretor.addBlockType('hub_get_voltage', async (block) => {
+
+			return getHubValue(block, hub.PortMap.VOLTAGE_SENSOR, 0)
+
+		})
+
+		blocklyInterpretor.addBlockType('hub_get_tilt', async (block) => {
+
+			/**@type {string} */
+			const type = block.fields.TYPE
+
+			const value = await getHubValue(block, hub.PortMap.TILT_SENSOR, hub.DeviceMode.TILT_POS)
+			return value[type]
+
+		})
+
 
 		blocklyInterpretor.addBlockType('sleep', async (block) => {
 			const time = await blocklyInterpretor.evalCode(block.inputs.TIME)

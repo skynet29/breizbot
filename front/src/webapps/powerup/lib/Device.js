@@ -136,6 +136,11 @@ class Device {
     */
     async getValue(mode) {
         console.log('getValue', this.portId, { mode })
+        if (this.modes == undefined) {
+            const {modes, capabilities} = await this.hubDevice.getPortInformation(this.portId)
+            this.modes = modes
+            this.capabilities = capabilities
+        }
         await this.setMode(mode, false)
         return new Promise(async (resolve) => {
             this.valueCallbacks.on((data) => {

@@ -46,6 +46,25 @@
     <category name="Math" categorystyle="math_category">
         <block type="math_number"></block>
         <block type="math_arithmetic"></block>
+        <block type="math_single">
+            <field name="OP">ROOT</field>
+            <value name="NUM">
+                <shadow type="math_number">
+                    <field name="NUM">9</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="math_trig">
+            <field name="OP">SIN</field>
+            <value name="NUM">
+                <shadow type="math_number">
+                    <field name="NUM">45</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="math_constant">
+            <field name="CONSTANT">PI</field>
+        </block>
         <block type="math_random_int">
             <value name="FROM">
                 <shadow type="math_number">
@@ -55,6 +74,14 @@
             <value name="TO">
                 <shadow type="math_number">
                     <field name="NUM">100</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="math_round">
+            <field name="OP">ROUND</field>
+            <value name="NUM">
+                <shadow type="math_number">
+                    <field name="NUM">3.1</field>
                 </shadow>
             </value>
         </block>
@@ -155,14 +182,24 @@
     </category>
     <category name="Variables" custom="VARIABLE" categorystyle="variable_category"></category>
     <category name="Functions" custom="PROCEDURE" categorystyle="procedure_category"></category>
-    <category name="TachoMotor" colour="355">
+    <category name="Motor" colour="355">
         <block type="create_motor"></block>
+        <block type="motor_power">
+            <value name="POWER">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+        </block>
+    </category>
+    <category name="TachoMotor" colour="355">
+        <block type="create_tacho_motor"></block>
         <block type="motor_speed">
             <value name="SPEED">
                 <shadow type="math_number">
                     <field name="NUM">100</field>
                 </shadow>
-            </value>            
+            </value>
         </block>
         <block type="motor_speed_time">
             <value name="TIME">
@@ -207,7 +244,9 @@
 
     </category>
     <category name="PairMotor" colour="355">
-        <block type="create_pair_motor"></block>
+        <block type="create_pair_motor">
+            <FIELD name="PORT2">B</FIELD>
+        </block>
         <block type="pair_motor_speed">
             <value name="SPEED1">
                 <shadow type="math_number">
@@ -221,10 +260,14 @@
             </value>
         </block>
 
-        
+
     </category>
     <category name="Hub" colour="355">
         <block type="hub_color"></block>
+        <block type="hub_get_tilt"></block>
+        <block type="hub_get_voltage"></block>
+
+
     </category>
     <category name="System" colour="355">
         <block type="sleep">

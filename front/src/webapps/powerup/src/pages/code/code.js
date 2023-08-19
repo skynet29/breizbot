@@ -29,12 +29,23 @@ $$.control.registerControl('code', {
 
 		const {code, gamepadMapping} = this.props
 
+		async function callFunction(name, value) {
+			try {
+				await blocklyInterpretor.callFunction(name, value)
+			}
+			catch (e) {
+				if (typeof e == 'string') {
+					$$.ui.showAlert({ title: 'Error', content: e })
+				}
+			}
+		}
+
 		function onGamepadAxe(data) {
 			console.log('axe', data)
 			if (gamepadMapping) {
 				const { action } = gamepadMapping.axes[data.id]
 				if (action != 'None') {
-					blocklyInterpretor.callFunction(action, data.value)
+					callFunction(action, data.value)
 				}
 			}
 		} 
@@ -44,7 +55,7 @@ $$.control.registerControl('code', {
 			if (gamepadMapping) {
 				const { down } = gamepadMapping.buttons[data.id]
 				if (down != 'None') {
-					blocklyInterpretor.callFunction(down, 1)
+					callFunction(down, 1)
 				}
 			}
 		}
@@ -55,11 +66,11 @@ $$.control.registerControl('code', {
 				const { up, down } = gamepadMapping.buttons[data.id]
 				if (up == 'Zero') {
 					if (down != 'None') {
-						blocklyInterpretor.callFunction(down, 0)
+						callFunction(down, 0)
 					}
 				}
 				else if (up != 'None') {
-					blocklyInterpretor.callFunction(up, 1)
+					callFunction(up, 1)
 				}
 			}
 		}

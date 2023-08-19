@@ -431,13 +431,51 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
             return ret
         }
 
-        async function startCode({ blocks, variables }) {
-            console.log('startCode', blocks, variables)
+        function getFunctionNames({ blocks }) {
+            const ret = []
+            for (let block of blocks.blocks) {
+                if (block.type == 'procedures_defnoreturn' || block.type == 'procedures_defreturn') {
+                    const procedureName = block.fields.NAME
+                    ret.push(procedureName)
+                }
+            }
+            return ret
+        }
+
+        async function callFunction(functionName, ...functionArgs) {
+            console.log('caal')
+            const block = procedureBlock[functionName]
+            if (block == undefined) {
+                throw `function '${functionName}' does not exists !`
+            }
+
+            const { extraState, inputs } = block
+            let nbArgs = 0
+            if (extraState.params != undefined) {
+                nbArgs = extraState.params.length
+            }
+            for (let i = 0; i < nbArgs; i++) {
+                const varId = extraState.params[i].id
+                variablesValue[varId] = functionArgs[i]
+            }
+
+            if (inputs != undefined) {
+                if (inputs.STACK != undefined) {
+                    await evalCode(inputs.STACK)
+                }
+
+            }
+        }
+
+        async function startCode({ blocks, variables} ) {
+            console.log('startCode')
+
             variablesValue = {}
             procedureBlock = {}
             variablesDef = variables
+            const codeBlocks = blocks.blocks
             breakState = ''
-            for (let block of blocks.blocks) {
+            for (let block of codeBlocks) {
                 if (block.type == 'procedures_defnoreturn' || block.type == 'procedures_defreturn') {
                     const procedureName = block.fields.NAME
                     procedureBlock[procedureName] = block
@@ -447,7 +485,8 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
             for (const procedureName of Object.keys(procedureBlock)) {
                 console.log(procedureName)
             }
-            for (let block of blocks.blocks) {
+
+            for (let block of codeBlocks) {
                 if (block.type != 'procedures_defnoreturn' && block.type != 'procedures_defreturn') {
                     await evalCode(block)
                 }

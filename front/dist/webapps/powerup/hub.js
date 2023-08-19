@@ -1,2 +1,1499 @@
-!function(){return function e(t,s,o){function i(n,r){if(!s[n]){if(!t[n]){var c="function"==typeof require&&require;if(!r&&c)return c(n,!0);if(a)return a(n,!0);var l=new Error("Cannot find module '"+n+"'");throw l.code="MODULE_NOT_FOUND",l}var d=s[n]={exports:{}};t[n][0].call(d.exports,function(e){return i(t[n][1][e]||e)},d,d.exports,e,t,s,o)}return s[n].exports}for(var a="function"==typeof require&&require,n=0;n<o.length;n++)i(o[n]);return i}}()({1:[function(e,t,s){t.exports=class{constructor(){this.callbacks=[]}on(e){this.callbacks.push(e)}emit(e){let t=this.callbacks.length;for(;t--;)(0,this.callbacks[t])(e)&&this.callbacks.splice(t,1)}}},{}],2:[function(e,t,s){const{getEnumName:o}=$$.util,i={DETACHED_IO:0,ATTACHED_IO:1,ATTACHED_VIRTUAL_IO:2},a=o(i),n={HUB_PROPERTIES:1,HUB_ACTIONS:2,HUB_ALERTS:3,HUB_ATTACHED_IO:4,GENERIC_ERROR_MESSAGES:5,HW_NETWORK_COMMANDS:8,FW_UPDATE_GO_INTO_BOOT_MODE:16,FW_UPDATE_LOCK_MEMORY:17,FW_UPDATE_LOCK_STATUS_REQUEST:18,FW_LOCK_STATUS:19,PORT_INFORMATION_REQUEST:33,PORT_MODE_INFORMATION_REQUEST:34,PORT_INPUT_FORMAT_SETUP_SINGLE:65,PORT_INPUT_FORMAT_SETUP_COMBINEDMODE:66,PORT_INFORMATION:67,PORT_MODE_INFORMATION:68,PORT_VALUE_SINGLE:69,PORT_VALUE_COMBINEDMODE:70,PORT_INPUT_FORMAT_SINGLE:71,PORT_INPUT_FORMAT_COMBINEDMODE:72,VIRTUAL_PORT_SETUP:97,PORT_OUTPUT_COMMAND:129,PORT_OUTPUT_COMMAND_FEEDBACK:130},r=o(n),c={UNKNOWN:0,SIMPLE_MEDIUM_LINEAR_MOTOR:1,TRAIN_MOTOR:2,LIGHT:8,VOLTAGE_SENSOR:20,CURRENT_SENSOR:21,PIEZO_BUZZER:22,HUB_LED:23,TILT_SENSOR:34,MOTION_SENSOR:35,COLOR_DISTANCE_SENSOR:37,MEDIUM_LINEAR_MOTOR:38,MOVE_HUB_MEDIUM_LINEAR_MOTOR:39,MOVE_HUB_TILT_SENSOR:40,DUPLO_TRAIN_BASE_MOTOR:41,DUPLO_TRAIN_BASE_SPEAKER:42,DUPLO_TRAIN_BASE_COLOR_SENSOR:43,DUPLO_TRAIN_BASE_SPEEDOMETER:44,TECHNIC_LARGE_LINEAR_MOTOR:46,TECHNIC_XLARGE_LINEAR_MOTOR:47,TECHNIC_MEDIUM_ANGULAR_MOTOR:48,TECHNIC_LARGE_ANGULAR_MOTOR:49,TECHNIC_MEDIUM_HUB_GEST_SENSOR:54,REMOTE_CONTROL_BUTTON:55,REMOTE_CONTROL_RSSI:56,TECHNIC_MEDIUM_HUB_ACCELEROMETER:57,TECHNIC_MEDIUM_HUB_GYRO_SENSOR:58,TECHNIC_MEDIUM_HUB_TILT_SENSOR:59,TECHNIC_MEDIUM_HUB_TEMPERATURE_SENSOR:60,TECHNIC_COLOR_SENSOR:61,TECHNIC_DISTANCE_SENSOR:62,TECHNIC_FORCE_SENSOR:63,TECHNIC_3X3_COLOR_LIGHT_MATRIX:64,TECHNIC_SMALL_ANGULAR_MOTOR:65,MARIO_ACCELEROMETER:71,MARIO_BARCODE_SENSOR:73,MARIO_PANTS_SENSOR:74,TECHNIC_MEDIUM_ANGULAR_MOTOR_GREY:75,TECHNIC_LARGE_ANGULAR_MOTOR_GREY:76,VIRTUAL_DEVICE:100},l=o(c),d=o({ACK:1,MACK:2,BUFFER_OVERFLOW:3,TIMEOUT:4,COMMAND_NOT_RECOGNIZED:5,INVALID_USE:6,OVERCURRENT:7,INTERNAL_ERROR:8}),h={ADVERTISING_NAME:1,BUTTON_STATE:2,FW_VERSION:3,HW_VERSION:4,RSSI:5,BATTERY_VOLTAGE:6,BATTERY_TYPE:7,MANUFACTURER_NAME:8,RADIO_FIRMWARE_VERSION:9,LWP_PROTOCOL_VERSION:10,SYSTEM_TYPE_ID:11,HW_NETWORK_ID:12,PRIMARY_MAC_ADDRESS:13,SECONDARY_MAC_ADDRESS:14,HW_NETWORK_FAMILY:15},E=o(h),u={NAME:0,RAW:1,PCT:2,SI:3,SYMBOL:4,MAPPING:5,USED_INTERNALLY:6,MOTOR_BIAS:7,CAPABILITY_BITS:8,VALUE_FORMAT:128},T=o(u),_={A:0,B:1,C:2,D:3,HUB_LED:50,CURRENT_SENSOR:59,VOLTAGE_SENSOR:60,ACCELEROMETER:97,GYRO_SENSOR:98,TILT_SENSOR:99},R=o(_);t.exports={MessageType:n,MessageTypeNames:r,Event:i,EventNames:a,BrakingStyle:{FLOAT:0,HOLD:126,BRAKE:127},DeviceMode:{POWER:0,SPEED:1,ROTATION:2,ABSOLUTE:3,COLOR:0,RGB:1,TILT_POS:0},DeviceType:c,DeviceTypeNames:l,ModeInformationType:u,ModeInformationTypeNames:T,PortMap:_,PortMapNames:R,HubPropertyPayload:h,HubPropertyPayloadNames:E,ErrorCodeNames:d}},{}],3:[function(e,t,s){const o=e("./CallbackEmitter"),{MessageType:i,PortMapNames:a}=e("./Const"),{log:n,toUint32:r}=e("./Util");t.exports=class{constructor(e,t,s){this.hubDevice=e,this.portId=t,this.type=s,this.name=a[t],this.feedbackCallback=null,this.valueCallbacks=new o,this.mode=void 0,this.modes=void 0,this.capabilities=void 0}async writePortCommand(e,...t){return n("writePortCommand",this.portId,{waitFeedback:e,data:t}),e?new Promise(async e=>{await this.hubDevice.sendMsg(i.PORT_OUTPUT_COMMAND,this.portId,17,t),this.feedbackCallback=e}):this.hubDevice.sendMsg(i.PORT_OUTPUT_COMMAND,this.portId,16,t)}writeDirectMode(e,t,...s){return n("writeDirectMode",this.portId,{mode:e,waitFeedback:t}),this.writePortCommand(t,81,e,s)}setMode(e,t,s=1){return console.log("setMode",this.portId,{mode:e,notificationEnabled:t}),this.mode=e,this.hubDevice.sendMsg(i.PORT_INPUT_FORMAT_SETUP_SINGLE,this.portId,e,r(s),t?1:0)}decodeValue(e){if(null!=this.modes){const{VALUE_FORMAT:t,RAW:s,SI:o}=this.modes[this.mode],i=$$.util.mapRange(s.min,s.max,o.min,o.max);n("info",this.modes[this.mode]);const{dataType:a,numValues:r}=t,c=[];let l,d=4;for(let t=0;t<r;t++){switch(a){case"16bit":l=e.getInt16(d,!0),d+=2;break;case"8bit":l=e.getInt8(d),d+=1;break;case"32bit":l=e.getInt32(d,!0),d+=4;break;case"float":l=e.getFloat32(d,!0),d+=4}n("val",l),c.push(Math.trunc(i(l)))}return c}}handleValue(e){n("handleValue",this.portId,e);let t=this.decodeValue(e);null!=t&&this.valueCallbacks.emit(t)}handleFeedback(){"function"==typeof this.feedbackCallback&&this.feedbackCallback()}async getValue(e){if(console.log("getValue",this.portId,{mode:e}),null==this.modes){const{modes:e,capabilities:t}=await this.hubDevice.getPortInformation(this.portId);this.modes=e,this.capabilities=t}return await this.setMode(e,!1),new Promise(async e=>{this.valueCallbacks.on(t=>(e(t),!0)),await this.hubDevice.sendMsg(i.PORT_INFORMATION_REQUEST,this.portId,0)})}async waitTestValue(e,t){return new Promise(async s=>{await this.setMode(e,!0),this.valueCallbacks.on(async o=>(n("waitTestValue",o),!!t(o)&&(n("waitTestValue OK"),await this.setMode(e,!1),s(),!0)))})}async subscribe(e,t,s=1){await this.setMode(e,!0,s),this.valueCallbacks.on(e=>(t(e),!1))}}},{"./CallbackEmitter":1,"./Const":2,"./Util":10}],4:[function(e,t,s){const o=e("./Motor"),{BrakingStyle:i}=e("./Const"),{toInt16:a,toInt32:n}=e("./Util"),r=100;t.exports=class extends o{constructor(e,t,s){super(e,t,"Virtual Device"),this.name=s}setSpeed(e,t){return this.writePortCommand(!1,8,e,t,r,0)}setSpeedForTime(e,t,s,o=!1,n=i.BRAKE){return console.log("setSpeedForTime",this.portId,{speed1:e,speed2:t,time:s,waitFeedback:o,brakingStyle:n}),this.writePortCommand(this.portId,o,10,a(s),e,t,r,n)}rotateDegrees(e,t,s,o,a=i.BRAKE){return console.log("rotateDegrees",this.portId,{degrees:e,speed1:t,speed2:s,waitFeedback:o,brakingStyle:a}),this.writePortCommand(o,12,n(e),t,s,r,a)}gotoAngle(e,t,s,o,a=i.BRAKE){return console.log("gotoAngle",this.portId,{angle1:e,angle2:t,speed:s,waitFeedback:o,brakingStyle:a}),this.writePortCommand(o,14,n(e),n(t),s,r,a)}}},{"./Const":2,"./Motor":6,"./Util":10}],5:[function(e,t,s){const o=e("./Device"),{PortMapNames:i,DeviceMode:a}=e("./Const");t.exports=class extends o{constructor(e,t,s){super(e,t,s)}setBrightness(e){return console.log("setBrightness",this.portId,{brightness:e}),this.writeDirectMode(a.POWER,!1,e)}}},{"./Const":2,"./Device":3}],6:[function(e,t,s){const o=e("./Device"),{PortMapNames:i,DeviceMode:a}=e("./Const");t.exports=class extends o{constructor(e,t,s){super(e,t,s)}setPower(e){return console.log("setPower",this.portId,{power:e}),this.writeDirectMode(a.POWER,!1,e)}}},{"./Const":2,"./Device":3}],7:[function(e,t,s){const o=e("./Device"),{PortMapNames:i,DeviceMode:a}=e("./Const");t.exports=class extends o{constructor(e,t,s){super(e,t,s)}async setColor(e){return console.log("setColor",this.portId,{color:e}),await this.setMode(a.COLOR,!1),this.writeDirectMode(a.COLOR,!1,e)}async setRGBColor(e,t,s){return console.log("setColor",this.portId,{r:e,g:t,b:s}),await this.setMode(a.RGB,!1),this.writeDirectMode(a.RGB,!1,e,t,s)}}},{"./Const":2,"./Device":3}],8:[function(e,t,s){const o=e("./Motor"),{PortMapNames:i,DeviceMode:a,BrakingStyle:n}=e("./Const"),{toInt32:r,toInt16:c}=e("./Util"),l=100;t.exports=class extends o{constructor(e,t,s){super(e,t,s)}setSpeed(e){return console.log("setSpeed",this.portId,{speed:e}),this.writePortCommand(!1,7,e,l,0)}rotateDegrees(e,t,s,o=n.BRAKE){return console.log("rotateDegrees",this.portId,{degrees:e,speed:t,waitFeedback:s,brakingStyle:o}),this.writePortCommand(s,11,r(e),t,l,o)}gotoAngle(e,t,s,o=n.BRAKE){return console.log("gotoAngle",this.portId,{angle:e,speed:t,waitFeedback:s,brakingStyle:o}),this.calibrationValue&&(e*=this.calibrationValue),this.writePortCommand(s,13,r(e),t,l,o)}setSpeedForTime(e,t,s=!1,o=n.BRAKE){return console.log("setSpeedForTime",this.portId,{speed:e,time:t,waitFeedback:s,brakingStyle:o}),this.writePortCommand(s,9,c(t),e,l,o)}resetZero(){return console.log("resetZero",this.portId),this.writeDirectMode(a.ROTATION,!0,0,0,0,0)}getSpeed(){return this.getValue(a.SPEED)}getPosition(){return this.getValue(a.ROTATION)}getAbsolutePosition(){return this.getValue(a.ABSOLUTE)}async calibrate(){console.log("calibrate",this.portId),this.setPower(50),await this.waitTestValue(a.SPEED,e=>e>10),await this.waitTestValue(a.SPEED,e=>0==e),this.setPower(0),await $$.util.wait(1e3),await this.resetZero(),this.setPower(-50),await this.waitTestValue(a.SPEED,e=>Math.abs(e)>10),await this.waitTestValue(a.SPEED,e=>0==e),this.setPower(0);const e=await this.getValue(a.ROTATION);console.log(e);const t=Math.floor(e/2);console.log({offset:t}),await this.gotoAngle(t,10,!0),await this.resetZero(),this.calibrationValue=Math.abs(t)}decodeValue(e){let t;switch(this.mode){case a.ABSOLUTE:t=e.getInt16(4,!0);break;case a.ROTATION:t=e.getInt32(4,!0);break;case a.SPEED:t=e.getInt8(4)}return t}}},{"./Const":2,"./Motor":6,"./Util":10}],9:[function(e,t,s){const o=e("./Device"),{PortMapNames:i,DeviceMode:a}=e("./Const");t.exports=class extends o{constructor(e,t,s){super(e,t,s)}decodeValue(e){let t;switch(this.mode){case a.TILT_POS:t={yaw:e.getInt16(4,!0),pitch:e.getInt16(6,!0),roll:e.getInt16(8,!0)};break;default:t=super.decodeValue(e)}return t}}},{"./Const":2,"./Device":3}],10:[function(e,t,s){t.exports={toInt16:function(e){const t=new Uint8Array(2);return new DataView(t.buffer).setInt16(0,e,!0),Array.from(t)},toInt32:function(e){const t=new Uint8Array(4);return new DataView(t.buffer).setInt32(0,e,!0),Array.from(t)},toUint32:function(e){const t=new Uint8Array(4);return new DataView(t.buffer).setUint32(0,e,!0),Array.from(t)},log:function(...e){}}},{}],11:[function(e,t,s){!function(){const t=e("./CallbackEmitter"),{EventNames:s,DeviceMode:o,DeviceTypeNames:i,BrakingStyle:a,PortMap:n,HubPropertyPayloadNames:r,ModeInformationTypeNames:c,Event:l,DeviceType:d,PortMapNames:h,MessageType:E,HubPropertyPayload:u,ModeInformationType:T,ErrorCodeNames:_,MessageTypeNames:R}=e("./Const"),O=e("./Motor"),I=e("./DoubleMotor"),M=e("./TachoMotor"),A=e("./Device"),g=e("./RgbLed"),m=e("./Led"),p=e("./TiltSensor"),{log:C}=e("./Util"),b={BLACK:0,PINK:1,PURPLE:2,BLUE:3,LIGHT_BLUE:4,CYAN:5,GREEN:6,YELLOW:7,ORANGE:8,RED:9,WHITE:10,NONE:255},N="00001623-1212-efde-1623-785feabcd123",S="00001624-1212-efde-1623-785feabcd123";function P(e){const t=new Uint8Array(e);let s="";for(let e=0;e<t.byteLength&&0!=t[e];e++)s+=String.fromCharCode(t[e]);return s}function U(e,t){return`${h[e]}_${h[t]}`}const D={[d.TECHNIC_LARGE_LINEAR_MOTOR]:M,[d.TECHNIC_LARGE_ANGULAR_MOTOR_GREY]:M,[d.TECHNIC_XLARGE_LINEAR_MOTOR]:M,[d.TECHNIC_MEDIUM_HUB_TILT_SENSOR]:p,[d.HUB_LED]:g,[d.LIGHT]:m};class f extends EventEmitter2{constructor(){super(),this.charac=null,this.portCmdQueue={},this.portCmdCallback={},this.hubDevices={},this.busy=!1,this.cmdQueue=[],this.attachCallbacks=new t}async init(e){const t=await e.gatt.connect();C("Connected");const s=await t.getPrimaryService(N);this.charac=await s.getCharacteristic(S);const o=e=>{this.decodeMsg(e.target.value)};e.addEventListener("gattserverdisconnected",()=>{console.log("onGattServerDisconnected",this),this.charac.removeEventListener("characteristicvaluechanged",o),this.charac=null,this.emit("disconnected")}),this.charac.addEventListener("characteristicvaluechanged",o),await this.charac.startNotifications(),await $$.util.wait(100)}async startNotification(){await this.sendMsg(E.HUB_PROPERTIES,u.BATTERY_VOLTAGE,2),await this.sendMsg(E.HUB_PROPERTIES,u.SYSTEM_TYPE_ID,5),await this.sendMsg(E.HUB_PROPERTIES,u.PRIMARY_MAC_ADDRESS,5),await this.sendMsg(E.HUB_ALERTS,1,1)}getMotor(e){return new Promise((t,s)=>{const o=this.hubDevices[e];o?o instanceof O?t(o):s():this.attachCallbacks.on(s=>s.portId==e&&(C(`device on portId ${e} is ready`),t(s),!0))})}getTachoMotor(e){return new Promise((t,s)=>{const o=this.hubDevices[e];o?o instanceof M?t(o):s():this.attachCallbacks.on(s=>s.portId==e&&(C(`device on portId ${e} is ready`),t(s),!0))})}getTiltSensor(e){return new Promise((t,s)=>{const o=this.hubDevices[e];o?o instanceof p?t(o):s():this.attachCallbacks.on(s=>s.portId==e&&(C(`device on portId ${e} is ready`),t(s),!0))})}getRgbLed(e){return new Promise((t,s)=>{const o=this.hubDevices[e];o?o instanceof g?t(o):s():this.attachCallbacks.on(s=>s.portId==e&&(C(`device on portId ${e} is ready`),t(s),!0))})}getLed(e){return new Promise((t,s)=>{const o=this.hubDevices[e];o?o instanceof m?t(o):s():this.attachCallbacks.on(s=>s.portId==e&&(C(`device on portId ${e} is ready`),t(s),!0))})}async getDblMotor(e,t){return new Promise(async s=>{const o=U(e,t),i=Object.values(this.hubDevices).find(e=>e.name==o);i?s(i):(this.attachCallbacks.on(e=>e.name==o&&(console.log(`device on portId ${e.portId} is ready`),s(e),!0)),await this.createVirtualPort(e,t))})}async sendBuffer(e){console.log("sendBuffer",e),this.busy?(console.log("busy! push in queue"),this.cmdQueue.push(e)):(this.busy=!0,await this.charac.writeValueWithoutResponse(e),this.busy=!1,this.cmdQueue.length>0&&await this.sendBuffer(this.cmdQueue.shift()))}sendMsg(e,...t){return C("sendMsg",R[e],t),this.sendBuffer(function(e,...t){const s=t.flat(3),o=s.length+3,i=new ArrayBuffer(o),a=new Uint8Array(i);return a[0]=o,a[1]=0,a[2]=e,a.set(s,3),i}(e,t))}getPortIdFromName(e){for(const t of Object.values(this.hubDevices))if(t.name==e)return t.portId}createVirtualPort(e,t){return this.sendMsg(E.VIRTUAL_PORT_SETUP,1,e,t)}shutdown(){return this.sendMsg(E.HUB_ACTIONS,1)}getHubDevices(){return Object.values(this.hubDevices)}getDeviceType(e){return this.hubDevices[e].type}getDevice(e){return this.hubDevices[e]}async getPortInformation(e){let{modes:t,capabilities:s}=this.hubDevices[e];if(null!=t||null!=s)return{modes:t,capabilities:s};const o=await this.getPortInformationRequest(e),{count:i,output:a,input:n}=o;s=o.capabilities,t=[];for(let s=0;s<i;s++){const o={};let i;o.mode=0,i=await this.getPortModeInformationRequest(e,s,T.NAME),o.name=i.name,o[(i=await this.getPortModeInformationRequest(e,s,T.RAW)).type]={min:i.min,max:i.max},o[(i=await this.getPortModeInformationRequest(e,s,T.SI)).type]={min:i.min,max:i.max},i=await this.getPortModeInformationRequest(e,s,T.SYMBOL),o.unit=i.symbol,i=await this.getPortModeInformationRequest(e,s,T.VALUE_FORMAT);const{numValues:r,dataType:c,totalFigures:l,decimals:d}=i;o[i.type]={numValues:r,dataType:c,totalFigures:l,decimals:d},n>>s&1&&(o.mode|=1),a>>s&1&&(o.mode|=2),t.push(o)}return this.hubDevices[e].modes=t,this.hubDevices[e].capabilities=s,{modes:t,capabilities:s}}getPortInformationRequest(e){return new Promise(async t=>{await this.sendMsg(E.PORT_INFORMATION_REQUEST,e,1),this.portCmdCallback[e]=t})}getPortModeInformationRequest(e,t,s){return new Promise(async o=>{await this.sendMsg(E.PORT_MODE_INFORMATION_REQUEST,e,t,s),this.portCmdCallback[e]=o})}decodeMsg(e){e.byteLength,e.getUint8(0);const t=e.getUint8(2);switch(C("decodeMsg",{msgType:R[t]}),t){case E.HUB_ATTACHED_IO:this.handlePortMsg(e);break;case E.GENERIC_ERROR_MESSAGES:this.handleGenericErrorMsg(e);break;case E.HUB_PROPERTIES:this.handleHubPropertyResponse(e);break;case E.HUB_ALERTS:this.handleHubAlerts(e);break;case E.PORT_OUTPUT_COMMAND_FEEDBACK:this.handlePortCommandFeedback(e);break;case E.PORT_MODE_INFORMATION:this.handlePortModeInformation(e);break;case E.PORT_INFORMATION:this.handlePortInformation(e);break;case E.PORT_VALUE_SINGLE:this.handlePortValueSingle(e)}}handlePortValueSingle(e){const t=e.getUint8(3),s=e.getUint8(0),o=this.hubDevices[t];C("handlePortValueSingle",{msgLen:s,portId:t}),o.handleValue(e)}handlePortModeInformation(e){const t=e.getUint8(3),s=e.getUint8(4),o=e.getUint8(5),i={portId:t,mode:s,type:c[o]};switch(o){case T.NAME:i.name=P(e.buffer.slice(6,e.byteLength));break;case T.RAW:case T.PCT:case T.SI:i.min=e.getFloat32(6,!0),i.max=e.getFloat32(10,!0);break;case T.SYMBOL:i.symbol=P(e.buffer.slice(6,e.byteLength));break;case T.VALUE_FORMAT:i.numValues=e.getUint8(6),i.dataType=["8bit","16bit","32bit","float"][e.getUint8(7)],i.totalFigures=e.getUint8(8),i.decimals=e.getUint8(9)}C("portModeInformation",i);const a=this.portCmdCallback[t];"function"==typeof a&&(a(i),delete this.portCmdCallback[t])}handlePortInformation(e){const t=e.getUint8(3);let s=e.getUint8(5);const o=e.getUint8(6),i=e.getUint16(7,!0),a=e.getUint16(9,!0);C(`Port ${t}, capabilities ${s}, total modes ${o}, \n                    input modes ${i}, output modes ${a}`);const n="output,input,logical combinable, logical synchronisable".split(",");let r=[];for(let e=0;e<4;e++)s>>e&1&&r.push(n[e]);const c={portId:t,capabilities:r.join(", "),count:o,input:i,output:a},l=this.portCmdCallback[t];"function"==typeof l&&l(c)}handleHubPropertyResponse(e){const t=e.getUint8(3);if(C({property:r[t]}),t==u.BATTERY_VOLTAGE){const t=e.getUint8(5);C({batteryLevel:t}),this.emit("batteryLevel",{batteryLevel:t})}else if(t==u.BUTTON_STATE){const t=e.getUint8(5);C({buttonState:t}),this.emit("buttonState",{buttonState:t})}else if(t==u.SYSTEM_TYPE_ID){const t=e.getUint8(5);C({systemType:t})}else if(t==u.PRIMARY_MAC_ADDRESS){const t=[];for(let s=0;s<6;s++)t.push(e.getUint8(5+s).toString(16).toLocaleUpperCase().padStart(2,"0"));C({bytes:t}),this.emit("address",{address:t.join(":")})}}handleGenericErrorMsg(e){const t=e.getUint8(3),s=e.getUint8(4);C({cmdType:t,errorCode:_[s]}),this.emit("error",{cmdType:t,errorCode:_[s]})}handleHubAlerts(e){const t=e.byteLength,s=e.getUint8(0),o=e.getUint8(3),i=e.getUint8(4),a=e.getUint8(5);C("handleHubAlerts",{bufferLen:t,msgLen:s,type:o,operation:i,payload:a}),this.emit("hubAlerts",{type:o,payload:a})}handlePortCommandFeedback(e){for(let t=3;t<e.byteLength;t+=2){const s=e.getUint8(t),o=e.getUint8(t+1),i=this.hubDevices[s];C("handlePortCommandFeedback",{portId:s,feedback:o}),10==o&&null!=i&&i.handleFeedback()}}handlePortMsg(e){const t=e.getUint8(3),o=e.getUint8(4),a=o?e.getUint16(5,!0):0,n=i[a]||"Unknown",r=s[o];if(console.log("handlePortMsg",{portId:t,eventName:r,deviceTypeName:n}),o==l.ATTACHED_IO){let e=D[a];e||(e=A);const s=new e(this,t,n);this.hubDevices[t]=s,this.attachCallbacks.emit(s),this.emit("attach",s)}else if(o==l.DETACHED_IO)delete this.hubDevices[t],this.emit("detach",{portId:t});else if(o==l.ATTACHED_VIRTUAL_IO){const s=e.getUint8(7),o=e.getUint8(8),i=new I(this,t,U(s,o));this.hubDevices[t]=i,this.attachCallbacks.emit(i),this.emit("attach",i)}}}$$.service.registerService("hub",{init:function(){return{connect:async function(){C("connect");const e=await navigator.bluetooth.requestDevice({acceptAllDevices:!0,optionalServices:[N]}),t=new f;return await t.init(e),t},Color:b,PortMap:n,PortMapNames:h,DeviceMode:o,BrakingStyle:a,DeviceTypeNames:i,isMotor:function(e){return e instanceof O},isTachoMotor:function(e){return e instanceof M},isLed:function(e){return e instanceof m},isDoubleMotor:function(e){return e instanceof I}}}})}()},{"./CallbackEmitter":1,"./Const":2,"./Device":3,"./DoubleMotor":4,"./Led":5,"./Motor":6,"./RgbLed":7,"./TachoMotor":8,"./TiltSensor":9,"./Util":10}]},{},[11]);
+(function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
+class CallbackEmitter {
+    constructor() {
+        this.callbacks = []
+    }
+
+    /**
+     * 
+     * @param {(data) => boolean} callback 
+     */
+    on(callback) {
+        this.callbacks.push(callback)
+    }
+
+    emit(data) {
+        let i = this.callbacks.length
+
+        while (i--) {
+            const callback = this.callbacks[i]
+            if (callback(data)) {
+                this.callbacks.splice(i, 1)
+            }
+        }
+    }
+}
+
+module.exports = CallbackEmitter
+},{}],2:[function(require,module,exports){
+//@ts-check
+
+const { getEnumName } = $$.util
+
+const Event = {
+    DETACHED_IO: 0x00,
+    ATTACHED_IO: 0x01,
+    ATTACHED_VIRTUAL_IO: 0x02,
+}
+const EventNames = getEnumName(Event)
+
+const HubAlertType = {
+    LOW_VOLTAGE: 0x01,
+    HIGH_CURRENT: 0x02,
+    LOW_SIGNAL_STRENGTH: 0x03,
+    OVER_POWER_CONDITION: 0x04
+}
+
+const MessageType = {
+    HUB_PROPERTIES: 0x01,
+    HUB_ACTIONS: 0x02,
+    HUB_ALERTS: 0x03,
+    HUB_ATTACHED_IO: 0x04,
+    GENERIC_ERROR_MESSAGES: 0x05,
+    HW_NETWORK_COMMANDS: 0x08,
+    FW_UPDATE_GO_INTO_BOOT_MODE: 0x10,
+    FW_UPDATE_LOCK_MEMORY: 0x11,
+    FW_UPDATE_LOCK_STATUS_REQUEST: 0x12,
+    FW_LOCK_STATUS: 0x13,
+    PORT_INFORMATION_REQUEST: 0x21,
+    PORT_MODE_INFORMATION_REQUEST: 0x22,
+    PORT_INPUT_FORMAT_SETUP_SINGLE: 0x41,
+    PORT_INPUT_FORMAT_SETUP_COMBINEDMODE: 0x42,
+    PORT_INFORMATION: 0x43,
+    PORT_MODE_INFORMATION: 0x44,
+    PORT_VALUE_SINGLE: 0x45,
+    PORT_VALUE_COMBINEDMODE: 0x46,
+    PORT_INPUT_FORMAT_SINGLE: 0x47,
+    PORT_INPUT_FORMAT_COMBINEDMODE: 0x48,
+    VIRTUAL_PORT_SETUP: 0x61,
+    PORT_OUTPUT_COMMAND: 0x81,
+    PORT_OUTPUT_COMMAND_FEEDBACK: 0x82,
+}
+
+
+
+const MessageTypeNames = getEnumName(MessageType)
+
+const DeviceType = {
+    UNKNOWN: 0,
+    SIMPLE_MEDIUM_LINEAR_MOTOR: 1,
+    TRAIN_MOTOR: 2,
+    LIGHT: 8,
+    VOLTAGE_SENSOR: 20,
+    CURRENT_SENSOR: 21,
+    PIEZO_BUZZER: 22,
+    HUB_LED: 23,
+    TILT_SENSOR: 34,
+    MOTION_SENSOR: 35,
+    COLOR_DISTANCE_SENSOR: 37,
+    MEDIUM_LINEAR_MOTOR: 38,
+    MOVE_HUB_MEDIUM_LINEAR_MOTOR: 39,
+    MOVE_HUB_TILT_SENSOR: 40,
+    DUPLO_TRAIN_BASE_MOTOR: 41,
+    DUPLO_TRAIN_BASE_SPEAKER: 42,
+    DUPLO_TRAIN_BASE_COLOR_SENSOR: 43,
+    DUPLO_TRAIN_BASE_SPEEDOMETER: 44,
+    TECHNIC_LARGE_LINEAR_MOTOR: 46, // Technic Control+
+    TECHNIC_XLARGE_LINEAR_MOTOR: 47, // Technic Control+
+    TECHNIC_MEDIUM_ANGULAR_MOTOR: 48, // Spike Prime
+    TECHNIC_LARGE_ANGULAR_MOTOR: 49, // Spike Prime
+    TECHNIC_MEDIUM_HUB_GEST_SENSOR: 54,
+    REMOTE_CONTROL_BUTTON: 55,
+    REMOTE_CONTROL_RSSI: 56,
+    TECHNIC_MEDIUM_HUB_ACCELEROMETER: 57,
+    TECHNIC_MEDIUM_HUB_GYRO_SENSOR: 58,
+    TECHNIC_MEDIUM_HUB_TILT_SENSOR: 59,
+    TECHNIC_MEDIUM_HUB_TEMPERATURE_SENSOR: 60,
+    TECHNIC_COLOR_SENSOR: 61, // Spike Prime
+    TECHNIC_DISTANCE_SENSOR: 62, // Spike Prime
+    TECHNIC_FORCE_SENSOR: 63, // Spike Prime
+    TECHNIC_3X3_COLOR_LIGHT_MATRIX: 64, // Spike Essential
+    TECHNIC_SMALL_ANGULAR_MOTOR: 65, // Spike Essential
+    MARIO_ACCELEROMETER: 71,
+    MARIO_BARCODE_SENSOR: 73,
+    MARIO_PANTS_SENSOR: 74,
+    TECHNIC_MEDIUM_ANGULAR_MOTOR_GREY: 75, // Mindstorms
+    TECHNIC_LARGE_ANGULAR_MOTOR_GREY: 76, // Technic Control+
+    VIRTUAL_DEVICE: 100
+}
+
+const DeviceTypeNames = getEnumName(DeviceType)
+
+const ErrorCode = {
+    ACK: 0x01,
+    MACK: 0x02,
+    BUFFER_OVERFLOW: 0x03,
+    TIMEOUT: 0x04,
+    COMMAND_NOT_RECOGNIZED: 0x05,
+    INVALID_USE: 0x06,
+    OVERCURRENT: 0x07,
+    INTERNAL_ERROR: 0x08,
+}
+
+const ErrorCodeNames = getEnumName(ErrorCode)
+
+
+const HubPropertyPayload = {
+    ADVERTISING_NAME: 0x01,
+    BUTTON_STATE: 0x02,
+    FW_VERSION: 0x03,
+    HW_VERSION: 0x04,
+    RSSI: 0x05,
+    BATTERY_VOLTAGE: 0x06,
+    BATTERY_TYPE: 0x07,
+    MANUFACTURER_NAME: 0x08,
+    RADIO_FIRMWARE_VERSION: 0x09,
+    LWP_PROTOCOL_VERSION: 0x0A,
+    SYSTEM_TYPE_ID: 0x0B,
+    HW_NETWORK_ID: 0x0C,
+    PRIMARY_MAC_ADDRESS: 0x0D,
+    SECONDARY_MAC_ADDRESS: 0x0E,
+    HW_NETWORK_FAMILY: 0x0F
+}
+
+const HubPropertyPayloadNames = getEnumName(HubPropertyPayload)
+
+const ModeInformationType = {
+    NAME: 0x00,
+    RAW: 0x01,
+    PCT: 0x02,
+    SI: 0x03,
+    SYMBOL: 0x04,
+    MAPPING: 0x05,
+    USED_INTERNALLY: 0x06,
+    MOTOR_BIAS: 0x07,
+    CAPABILITY_BITS: 0x08,
+    VALUE_FORMAT: 0x80,
+}
+
+const ModeInformationTypeNames = getEnumName(ModeInformationType)
+
+const PortMap = {
+    "A": 0,
+    "B": 1,
+    "C": 2,
+    "D": 3,
+    "HUB_LED": 50,
+    "CURRENT_SENSOR": 59,
+    "VOLTAGE_SENSOR": 60,
+    "ACCELEROMETER": 97,
+    "GYRO_SENSOR": 98,
+    "TILT_SENSOR": 99
+}
+
+const DeviceMode = {
+    POWER: 0x00,
+    SPEED: 0x01,
+    ROTATION: 0x02,
+    ABSOLUTE: 0x03,
+    COLOR: 0x00,
+    RGB: 0x01,
+    TILT_POS: 0x00
+}
+
+const BrakingStyle = {
+    FLOAT: 0,
+    HOLD: 126,
+    BRAKE: 127
+}
+
+const PortMapNames = getEnumName(PortMap)
+
+module.exports = {
+    MessageType,
+    MessageTypeNames,
+    Event,
+    EventNames,
+    BrakingStyle,
+    DeviceMode,
+    DeviceType,
+    DeviceTypeNames,
+    ModeInformationType,
+    ModeInformationTypeNames,
+    PortMap,
+    PortMapNames,
+    HubPropertyPayload,
+    HubPropertyPayloadNames,
+    ErrorCodeNames
+}
+},{}],3:[function(require,module,exports){
+//@ts-check
+
+const CallbackEmitter = require('./CallbackEmitter')
+const {MessageType, PortMapNames} = require('./Const')
+const {log, toUint32} = require('./Util')
+
+class Device {
+    /**
+     * 
+     * @param {HUB.HubDevice} hubDevice 
+     * @param {number} portId 
+     * @param {string} type 
+     */
+    constructor(hubDevice, portId, type) {
+        this.hubDevice = hubDevice
+        this.portId = portId
+        this.type = type
+        this.name = PortMapNames[portId]
+        this.feedbackCallback = null
+        this.valueCallbacks = new CallbackEmitter()
+        this.mode = undefined
+        this.modes = undefined
+        this.capabilities = undefined
+    }
+
+    async writePortCommand(waitFeedback, ...data) {
+
+        log('writePortCommand', this.portId, { waitFeedback, data })
+
+        if (waitFeedback) {
+
+            return new Promise(async (resolve) => {
+
+                await this.hubDevice.sendMsg(MessageType.PORT_OUTPUT_COMMAND, this.portId, 0x11, data)
+
+                this.feedbackCallback = resolve
+            })
+        }
+        else {
+            return this.hubDevice.sendMsg(MessageType.PORT_OUTPUT_COMMAND, this.portId, 0x10, data)
+        }
+
+    }
+
+    /**
+     * 
+     * @param {number} mode
+     * @param {boolean} waitFeedback 
+     * @param  {...any} data 
+     * @returns 
+     */
+    writeDirectMode(mode, waitFeedback, ...data) {
+        log('writeDirectMode', this.portId, {mode, waitFeedback })
+        return this.writePortCommand(waitFeedback, 0x51, mode, data)
+    }
+
+    /**
+     * 
+     * @param {number} mode 
+     * @param {boolean} notificationEnabled 
+     * @param {number} deltaInterval 
+     * @returns 
+     */
+    setMode(mode, notificationEnabled, deltaInterval = 1) {
+        console.log('setMode', this.portId, { mode, notificationEnabled })
+
+        this.mode = mode
+
+        return this.hubDevice.sendMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
+            this.portId, mode, toUint32(deltaInterval), notificationEnabled ? 0x01 : 0)
+    }
+
+    /**
+     * 
+     * @param {DataView} msg 
+     */
+    decodeValue(msg) {
+        if (this.modes != undefined) {
+            const {VALUE_FORMAT, RAW, SI} = this.modes[this.mode]
+            const range = $$.util.mapRange(RAW.min, RAW.max, SI.min, SI.max)
+            log('info', this.modes[this.mode])
+            const {dataType, numValues} = VALUE_FORMAT
+            const ret = []
+            let offset = 4
+            let val
+            for(let idx = 0; idx < numValues; idx++) {
+                switch(dataType) {
+                    case '16bit':
+                        val = msg.getInt16(offset, true)
+                        offset += 2
+                        break;
+                    case '8bit':
+                        val = msg.getInt8(offset)
+                        offset += 1
+                        break;
+                    case '32bit':
+                        val = msg.getInt32(offset, true)
+                        offset += 4
+                        break;
+                    case 'float':
+                        val = msg.getFloat32(offset, true)
+                        offset += 4
+                        break;    
+
+                }
+                log('val', val)
+                ret.push(Math.trunc(range(val)))
+            }
+            return ret
+
+        }
+    }
+    /**
+     * 
+     * @param {DataView} msg 
+     */
+    handleValue(msg) {
+        log('handleValue', this.portId, msg)
+        let value = this.decodeValue(msg)
+
+        if (value != undefined) {
+            this.valueCallbacks.emit(value)
+        }
+    }
+
+    handleFeedback() {
+        if (typeof this.feedbackCallback == 'function') {
+            this.feedbackCallback()
+        }
+    }
+
+    /**
+     * 
+     * @param {number} mode 
+     * @returns 
+    */
+    async getValue(mode) {
+        console.log('getValue', this.portId, { mode })
+        if (this.modes == undefined) {
+            const {modes, capabilities} = await this.hubDevice.getPortInformation(this.portId)
+            this.modes = modes
+            this.capabilities = capabilities
+        }
+        await this.setMode(mode, false)
+        return new Promise(async (resolve) => {
+            this.valueCallbacks.on((data) => {
+                resolve(data)
+                return true
+            })
+            await this.hubDevice.sendMsg(MessageType.PORT_INFORMATION_REQUEST, this.portId, 0x00)
+
+        })
+    }
+
+    /**
+     * 
+     * @param {number} mode 
+     * @param {(data) => boolean} testFn 
+     * @returns 
+     */
+    async waitTestValue(mode, testFn) {
+        return new Promise(async (resolve) => {
+            await this.setMode(mode, true)
+            this.valueCallbacks.on(async (value) => {
+                log('waitTestValue', value)
+                if (testFn(value)) {
+                    log('waitTestValue OK')
+                    await this.setMode(mode, false)
+                    resolve()
+                    return true
+                }
+                return false
+            })
+                
+        })
+    }
+
+    async subscribe(mode, cbk, deltaInterval = 1) {
+        await this.setMode(mode, true, deltaInterval)
+        this.valueCallbacks.on((data) => {
+            cbk(data)
+            return false
+        })
+    }
+}
+
+module.exports = Device
+},{"./CallbackEmitter":1,"./Const":2,"./Util":10}],4:[function(require,module,exports){
+//@ts-check
+
+const Motor = require('./Motor')
+const {BrakingStyle} = require('./Const')
+const {toInt16, toInt32} = require('./Util')
+
+const maxPower = 100
+
+class DoubleMotor extends Motor {
+
+
+    constructor(hubDevice, portId, name) {
+        super(hubDevice, portId, 'Virtual Device')
+        this.name = name
+
+    }
+
+    /**
+     * 
+     * @param {number} speed1 
+     * @param {number} speed2 
+     * @returns 
+     */
+    setSpeed(speed1, speed2) {
+        return this.writePortCommand(false, 0x08, speed1, speed2, maxPower, 0)
+    }
+
+    setSpeedForTime(speed1, speed2, time, waitFeedback = false, brakingStyle = BrakingStyle.BRAKE) {
+
+        console.log('setSpeedForTime', this.portId, { speed1, speed2, time, waitFeedback, brakingStyle })
+        return this.writePortCommand(this.portId, waitFeedback, 0x0A, toInt16(time), speed1, speed2, maxPower, brakingStyle)
+    }
+
+    rotateDegrees(degrees, speed1, speed2, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
+        console.log('rotateDegrees', this.portId, { degrees, speed1, speed2, waitFeedback, brakingStyle })
+        return this.writePortCommand(waitFeedback, 0x0C, toInt32(degrees), speed1, speed2, maxPower, brakingStyle)
+    }
+
+    gotoAngle(angle1, angle2, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
+        console.log('gotoAngle', this.portId, { angle1, angle2, speed, waitFeedback, brakingStyle })
+
+        return this.writePortCommand(waitFeedback, 0x0E, toInt32(angle1), toInt32(angle2), speed, maxPower, brakingStyle)
+    }
+}
+
+module.exports = DoubleMotor
+},{"./Const":2,"./Motor":6,"./Util":10}],5:[function(require,module,exports){
+//@ts-check
+
+const Device = require('./Device')
+const {PortMapNames, DeviceMode} = require('./Const')
+
+class Led extends Device {
+
+    /**
+    * 
+    * @param {HubDevice} hubDevice 
+    * @param {number} portId 
+    */
+    constructor(hubDevice, portId, type) {
+        super(hubDevice, portId, type)
+
+    }
+
+    setBrightness(brightness) {
+        console.log('setBrightness', this.portId, { brightness })
+        return this.writeDirectMode(DeviceMode.POWER, false, brightness)
+    }
+
+
+}
+
+module.exports = Led
+},{"./Const":2,"./Device":3}],6:[function(require,module,exports){
+//@ts-check
+
+const Device = require('./Device')
+const {PortMapNames, DeviceMode} = require('./Const')
+
+const maxPower = 100
+
+class Motor extends Device {
+
+    /**
+     * 
+     * @param {HubDevice} hubDevice 
+     * @param {number} portId 
+     */
+    constructor(hubDevice, portId, type) {
+        super(hubDevice, portId, type)
+    }
+
+    setPower(power) {
+        console.log('setPower', this.portId, { power })
+        return this.writeDirectMode(DeviceMode.POWER, false, power)
+    }
+
+
+}
+
+module.exports = Motor
+},{"./Const":2,"./Device":3}],7:[function(require,module,exports){
+//@ts-check
+
+const Device = require('./Device')
+const {PortMapNames, DeviceMode} = require('./Const')
+
+class RgbLed extends Device {
+
+    /**
+    * 
+    * @param {HubDevice} hubDevice 
+    * @param {number} portId 
+    */
+    constructor(hubDevice, portId, type) {
+        super(hubDevice, portId, type)
+
+    }
+
+    async setColor(color) {
+        console.log('setColor', this.portId, { color })
+        await this.setMode(DeviceMode.COLOR, false)
+        return this.writeDirectMode(DeviceMode.COLOR, false, color)
+    }
+
+    async setRGBColor(r, g, b) {
+        console.log('setColor', this.portId, { r, g, b })
+        await this.setMode(DeviceMode.RGB, false)
+        return this.writeDirectMode(DeviceMode.RGB, false, r, g, b)
+    }
+}
+
+module.exports = RgbLed
+},{"./Const":2,"./Device":3}],8:[function(require,module,exports){
+//@ts-check
+
+const Motor = require('./Motor')
+const {PortMapNames, DeviceMode, BrakingStyle} = require('./Const')
+const {toInt32, toInt16} = require('./Util')
+
+const maxPower = 100
+
+class TachoMotor extends Motor {
+
+    /**
+     * 
+     * @param {HubDevice} hubDevice 
+     * @param {number} portId 
+     */
+    constructor(hubDevice, portId, type) {
+        super(hubDevice, portId, type)
+    }
+
+    setSpeed(speed) {
+        console.log('setSpeed', this.portId, { speed })
+        return this.writePortCommand(false, 0x07, speed, maxPower, 0)
+    }
+
+    rotateDegrees(degrees, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
+        console.log('rotateDegrees', this.portId, { degrees, speed, waitFeedback, brakingStyle })
+        return this.writePortCommand(waitFeedback, 0x0B, toInt32(degrees), speed, maxPower, brakingStyle)
+    }
+
+    /**
+     * 
+     * @param {number} angle 
+     * @param {number} speed 
+     * @param {boolean} waitFeedback 
+     * @param {number} brakingStyle 
+     * @returns 
+     */
+    gotoAngle(angle, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
+        console.log('gotoAngle', this.portId, { angle, speed, waitFeedback, brakingStyle })
+
+        if (this.calibrationValue) {
+            angle *= this.calibrationValue
+        }
+
+        return this.writePortCommand(waitFeedback, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
+    }
+
+    setSpeedForTime(speed, time, waitFeedback = false, brakingStyle = BrakingStyle.BRAKE) {
+
+        console.log('setSpeedForTime', this.portId, { speed, time, waitFeedback, brakingStyle })
+        return this.writePortCommand(waitFeedback, 0x09, toInt16(time), speed, maxPower, brakingStyle)
+    }
+
+    resetZero() {
+        console.log('resetZero', this.portId)
+        return this.writeDirectMode(DeviceMode.ROTATION, true, 0x00, 0x00, 0x00, 0x00)
+    }
+
+    getSpeed() {
+        return this.getValue(DeviceMode.SPEED)
+    }
+
+    getPosition() {
+        return this.getValue(DeviceMode.ROTATION)
+    }
+
+    getAbsolutePosition() {
+        return this.getValue(DeviceMode.ABSOLUTE)
+    }
+
+    async calibrate() {
+
+        console.log('calibrate', this.portId)
+        this.setPower(50)
+        await this.waitTestValue(DeviceMode.SPEED, (value) => value > 10)
+        await this.waitTestValue(DeviceMode.SPEED, (value) => value == 0)
+
+
+        this.setPower(0)
+
+        await $$.util.wait(1000)
+
+        // await this.hubDevice.setPortFormat(this.portId, DeviceMode.ROTATION)
+        // let value = await this.hubDevice.getPortValue(this.portId)
+        // console.log(value)	
+
+        await this.resetZero()
+
+
+        this.setPower(-50)
+        await this.waitTestValue(DeviceMode.SPEED, (value) => Math.abs(value) > 10)
+        await this.waitTestValue(DeviceMode.SPEED, (value) => value == 0)
+
+        this.setPower(0)
+        const value = await this.getValue(DeviceMode.ROTATION)
+        console.log(value)
+        const offset = Math.floor(value / 2)
+        console.log({ offset })
+        await this.gotoAngle(offset, 10, true)
+        await this.resetZero()
+        this.calibrationValue = Math.abs(offset)
+    }
+
+    /**
+     * 
+     * @param {DataView} msg 
+     */
+    decodeValue(msg) {
+        let value
+        switch (this.mode) {
+            case DeviceMode.ABSOLUTE:
+                value = msg.getInt16(4, true)
+                break
+            case DeviceMode.ROTATION:
+                value = msg.getInt32(4, true)
+                break
+            case DeviceMode.SPEED:
+                value = msg.getInt8(4)
+                break
+
+        }
+        return value
+    }
+
+}
+
+module.exports = TachoMotor
+},{"./Const":2,"./Motor":6,"./Util":10}],9:[function(require,module,exports){
+//@ts-check
+
+const Device = require('./Device')
+const {PortMapNames, DeviceMode} = require('./Const')
+
+class TiltSensor extends Device {
+    constructor(hubDevice, portId, type) {
+        super(hubDevice, portId, type)
+    }
+
+    /**
+     * 
+     * @param {DataView} msg 
+     */
+    decodeValue(msg) {
+        let value
+        switch (this.mode) {
+            case DeviceMode.TILT_POS:
+                value = {
+                    yaw: msg.getInt16(4, true),
+                    pitch: msg.getInt16(6, true),
+                    roll: msg.getInt16(8, true)
+                }
+                break
+            default:
+                value = super.decodeValue(msg)
+                break
+        }
+        return value
+    }
+}
+
+module.exports = TiltSensor
+
+},{"./Const":2,"./Device":3}],10:[function(require,module,exports){
+//@ts-check
+
+/**
+  * 
+  * @param {number} val 
+  * @returns {Array}
+  */
+function toInt16(val) {
+    const buff = new Uint8Array(2)
+    const view = new DataView(buff.buffer)
+    view.setInt16(0, val, true)
+    return Array.from(buff)
+}
+
+/**
+ * 
+ * @param {number} val 
+ * @returns {Array}
+ */
+function toInt32(val) {
+    const buff = new Uint8Array(4)
+    const view = new DataView(buff.buffer)
+    view.setInt32(0, val, true)
+    return Array.from(buff)
+}
+
+function toUint32(val) {
+    const buff = new Uint8Array(4)
+    const view = new DataView(buff.buffer)
+    view.setUint32(0, val, true)
+    return Array.from(buff)
+}
+
+const debug = false
+
+const log = function (...data) {
+    if (debug) {
+        console.log.apply(console, data)
+    }
+}
+
+module.exports = {
+    toInt16,
+    toInt32,
+    toUint32,
+    log
+}
+},{}],11:[function(require,module,exports){
+//@ts-check
+
+
+(function () {
+
+    const CallbackEmitter = require('./CallbackEmitter')
+    const { EventNames, DeviceMode, DeviceTypeNames, BrakingStyle, PortMap, HubPropertyPayloadNames, ModeInformationTypeNames, Event, DeviceType, PortMapNames, MessageType, HubPropertyPayload, ModeInformationType, ErrorCodeNames, MessageTypeNames } = require('./Const')
+    const Motor = require('./Motor')
+    const DoubleMotor = require('./DoubleMotor')
+    const TachoMotor = require('./TachoMotor');
+    const Device = require('./Device')
+    const RgbLed = require('./RgbLed')
+    const Led = require('./Led')
+    const TiltSensor = require('./TiltSensor')
+    const { log } = require('./Util')
+
+    const Color = {
+        BLACK: 0,
+        PINK: 1,
+        PURPLE: 2,
+        BLUE: 3,
+        LIGHT_BLUE: 4,
+        CYAN: 5,
+        GREEN: 6,
+        YELLOW: 7,
+        ORANGE: 8,
+        RED: 9,
+        WHITE: 10,
+        NONE: 255
+    }
+
+    const LPF2_SERVICE_UUID = '00001623-1212-efde-1623-785feabcd123'
+    const LPF2_CHARAC_UUID = '00001624-1212-efde-1623-785feabcd123'
+
+
+    /**
+     * 
+     * @param {ArrayBuffer} buf 
+     */
+    function abToString(buf) {
+        const uint8buff = new Uint8Array(buf)
+        let ret = ""
+        for (let i = 0; i < uint8buff.byteLength && uint8buff[i] != 0; i++) {
+            ret += String.fromCharCode(uint8buff[i])
+        }
+        return ret
+    }
+
+
+
+
+    /**
+     * 
+     * @param  {...any} data 
+     * @returns {ArrayBuffer}
+     */
+    function formatMsg(msgType, ...data) {
+        const buff = data.flat(3)
+        const msgLen = buff.length + 3
+        const buffer = new ArrayBuffer(msgLen)
+        const uint8Buffer = new Uint8Array(buffer)
+        uint8Buffer[0] = msgLen
+        uint8Buffer[1] = 0
+        uint8Buffer[2] = msgType
+        uint8Buffer.set(buff, 3)
+        return buffer
+    }
+
+
+    function getVirtualPortName(portId1, portId2) {
+        const portIdA = PortMapNames[portId1]
+        const portIdB = PortMapNames[portId2]
+        return `${portIdA}_${portIdB}`
+    }
+
+    const constructorMap = {
+        [DeviceType.TECHNIC_LARGE_LINEAR_MOTOR]: TachoMotor,
+        [DeviceType.TECHNIC_LARGE_ANGULAR_MOTOR_GREY]: TachoMotor,
+        [DeviceType.TECHNIC_XLARGE_LINEAR_MOTOR]: TachoMotor,
+        [DeviceType.TECHNIC_MEDIUM_HUB_TILT_SENSOR]: TiltSensor,
+        [DeviceType.HUB_LED]: RgbLed,
+        [DeviceType.LIGHT]: Led
+    }
+
+    /**@implements HUB.HubDevice */
+    class HubDevice extends EventEmitter2 {
+
+        constructor() {
+            super()
+            this.charac = null
+            this.portCmdQueue = {}
+            this.portCmdCallback = {}
+            /**@type {{[portId: string]: Device}} */
+            this.hubDevices = {}
+            this.busy = false
+            this.cmdQueue = []
+            this.attachCallbacks = new CallbackEmitter()
+        }
+
+        /**
+         * 
+         * @param {BluetoothDevice} device 
+         */
+        async init(device) {
+
+            const server = await device.gatt.connect()
+            log('Connected')
+            const service = await server.getPrimaryService(LPF2_SERVICE_UUID)
+            this.charac = await service.getCharacteristic(LPF2_CHARAC_UUID)
+
+            const onCharacteristicvaluechanged = (event) => {
+                this.decodeMsg(event.target.value)
+            }
+
+            device.addEventListener('gattserverdisconnected', () => {
+                console.log('onGattServerDisconnected', this)
+                this.charac.removeEventListener('characteristicvaluechanged', onCharacteristicvaluechanged)
+
+                this.charac = null
+                this.emit('disconnected')
+            })
+
+            this.charac.addEventListener('characteristicvaluechanged', onCharacteristicvaluechanged)
+            await this.charac.startNotifications()
+            await $$.util.wait(100)
+        }
+
+        async startNotification() {
+            await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02)
+            await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.SYSTEM_TYPE_ID, 0x05)
+            await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.PRIMARY_MAC_ADDRESS, 0x05)
+            await this.sendMsg(MessageType.HUB_ALERTS, 0x01, 0x01)
+            // await this.sendMsg(MessageType.HUB_ALERTS, 0x02, 0x01)
+            // await this.sendMsg(MessageType.HUB_ALERTS, 0x03, 0x01)
+            // await this.sendMsg(MessageType.HUB_ALERTS, 0x04, 0x01)
+
+        }
+
+
+        /**
+         * 
+         * @param {number} portId 
+         * @returns {Promise<Motor>}
+         */
+        getMotor(portId) {
+            return new Promise((resolve, reject) => {
+                const device = this.hubDevices[portId]
+                if (device) {
+                    if (device instanceof Motor) {
+                        resolve(device)
+                    }
+                    else {
+                        reject()
+                    }
+                }
+                else {
+                    this.attachCallbacks.on((device) => {
+                        if (device.portId == portId) {
+                            log(`device on portId ${portId} is ready`)
+                            resolve(device)
+                            return true
+                        }
+                        return false
+                    })
+                }
+            })
+        }
+
+
+        /**
+         * 
+         * @param {number} portId 
+         * @returns {Promise<Motor>}
+         */
+        getTachoMotor(portId) {
+            return new Promise((resolve, reject) => {
+                const device = this.hubDevices[portId]
+                if (device) {
+                    if (device instanceof TachoMotor) {
+                        resolve(device)
+                    }
+                    else {
+                        reject()
+                    }
+                }
+                else {
+                    this.attachCallbacks.on((device) => {
+                        if (device.portId == portId) {
+                            log(`device on portId ${portId} is ready`)
+                            resolve(device)
+                            return true
+                        }
+                        return false
+                    })
+                }
+            })
+        }
+
+
+
+        /**
+         * 
+         * @param {number} portId 
+         * @returns {Promise<TiltSensor>}
+         */
+        getTiltSensor(portId) {
+            return new Promise((resolve, reject) => {
+                const device = this.hubDevices[portId]
+                if (device) {
+                    if (device instanceof TiltSensor) {
+                        resolve(device)
+                    }
+                    else {
+                        reject()
+                    }
+                }
+                else {
+                    this.attachCallbacks.on((device) => {
+                        if (device.portId == portId) {
+                            log(`device on portId ${portId} is ready`)
+                            resolve(device)
+                            return true
+                        }
+                        return false
+                    })
+                }
+            })
+
+        }
+
+        getRgbLed(portId) {
+            return new Promise((resolve, reject) => {
+                const device = this.hubDevices[portId]
+                if (device) {
+                    if (device instanceof RgbLed) {
+                        resolve(device)
+                    }
+                    else {
+                        reject()
+                    }
+                }
+                else {
+                    this.attachCallbacks.on((device) => {
+                        if (device.portId == portId) {
+                            log(`device on portId ${portId} is ready`)
+                            resolve(device)
+                            return true
+                        }
+                        return false
+                    })
+                }
+            })
+        }
+
+        getLed(portId) {
+            return new Promise((resolve, reject) => {
+                const device = this.hubDevices[portId]
+                if (device) {
+                    if (device instanceof Led) {
+                        resolve(device)
+                    }
+                    else {
+                        reject()
+                    }
+                }
+                else {
+                    this.attachCallbacks.on((device) => {
+                        if (device.portId == portId) {
+                            log(`device on portId ${portId} is ready`)
+                            resolve(device)
+                            return true
+                        }
+                        return false
+                    })
+                }
+            })
+        }
+        async getDblMotor(portId1, portId2) {
+            return new Promise(async (resolve) => {
+                const name = getVirtualPortName(portId1, portId2)
+                const device = Object.values(this.hubDevices).find((d) => d.name == name)
+                if (device) {
+                    resolve(device)
+
+                }
+                else {
+                    this.attachCallbacks.on((device) => {
+                        if (device.name == name) {
+                            console.log(`device on portId ${device.portId} is ready`)
+                            resolve(device)
+                            return true
+                        }
+                        return false
+                    })
+
+                    await this.createVirtualPort(portId1, portId2)
+                }
+            })
+        }
+
+        /**
+         * 
+         * @param  {ArrayBuffer} buffer 
+         */
+        async sendBuffer(buffer) {
+            console.log('sendBuffer', buffer)
+            if (!this.busy) {
+                this.busy = true
+                await this.charac.writeValueWithoutResponse(buffer)
+                this.busy = false
+                if (this.cmdQueue.length > 0) {
+                    await this.sendBuffer(this.cmdQueue.shift())
+                }
+
+            }
+            else {
+                console.log('busy! push in queue')
+                this.cmdQueue.push(buffer)
+            }
+
+        }
+
+        /**
+         * 
+         * @param {number} msgType
+         * @param  {...any} data 
+         */
+        sendMsg(msgType, ...data) {
+            log('sendMsg', MessageTypeNames[msgType], data)
+            return this.sendBuffer(formatMsg(msgType, data))
+        }
+
+        /**
+         * 
+         * @param {string} name 
+         * @returns {number}
+         */
+        getPortIdFromName(name) {
+            for (const info of Object.values(this.hubDevices)) {
+                if (info.name == name) {
+                    return info.portId
+                }
+            }
+        }
+
+        /**
+         * @param {number} portId1
+         * @param {number} portId2
+         */
+        createVirtualPort(portId1, portId2) {
+
+            return this.sendMsg(MessageType.VIRTUAL_PORT_SETUP, 0x01, portId1, portId2)
+        }
+
+        shutdown() {
+            return this.sendMsg(MessageType.HUB_ACTIONS, 0x01)
+        }
+
+
+        getHubDevices() {
+            return Object.values(this.hubDevices)
+        }
+
+        getDeviceType(portId) {
+            return this.hubDevices[portId].type
+        }
+
+        getDevice(portId) {
+            return this.hubDevices[portId]
+        }
+
+        /**
+         * 
+         * @param {number} portId 
+         * @returns {Promise<HUB.PortInformation>}
+         */
+        async getPortInformation(portId) {
+            let { modes, capabilities } = this.hubDevices[portId]
+            if (modes != undefined || capabilities != undefined) {
+                return { modes, capabilities }
+            }
+            const portInfo = await this.getPortInformationRequest(portId)
+            const { count, output, input } = portInfo
+            capabilities = portInfo.capabilities
+            modes = []
+            for (let mode = 0; mode < count; mode++) {
+                const data = {}
+                let ret
+                data.mode = 0
+                ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.NAME)
+                data.name = ret.name
+                ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.RAW)
+                data[ret.type] = { min: ret.min, max: ret.max }
+                ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.SI)
+                data[ret.type] = { min: ret.min, max: ret.max }
+                ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.SYMBOL)
+                data.unit = ret.symbol
+                ret = await this.getPortModeInformationRequest(portId, mode, ModeInformationType.VALUE_FORMAT)
+                const { numValues, dataType, totalFigures, decimals } = ret
+                data[ret.type] = { numValues, dataType, totalFigures, decimals }
+                if ((input >> mode) & 0x1) {
+                    data.mode |= 1
+                }
+                if ((output >> mode) & 0x1) {
+                    data.mode |= 2
+                }
+                modes.push(data)
+            }
+            this.hubDevices[portId].modes = modes
+            this.hubDevices[portId].capabilities = capabilities
+
+            return { modes, capabilities }
+        }
+
+
+        getPortInformationRequest(portId) {
+            return new Promise(async (resolve) => {
+                await this.sendMsg(MessageType.PORT_INFORMATION_REQUEST, portId, 0x01)
+                this.portCmdCallback[portId] = resolve
+            })
+        }
+
+
+
+        getPortModeInformationRequest(portId, mode, type) {
+            return new Promise(async (resolve) => {
+                await this.sendMsg(MessageType.PORT_MODE_INFORMATION_REQUEST, portId, mode, type)
+                this.portCmdCallback[portId] = resolve
+            })
+        }
+
+        /**
+         * 
+         * @param {DataView} msg 
+         */
+        decodeMsg(msg) {
+            const bufferLen = msg.byteLength
+            const msgLen = msg.getUint8(0)
+            const msgType = msg.getUint8(2)
+            log('decodeMsg', { msgType: MessageTypeNames[msgType] })
+            switch (msgType) {
+                case MessageType.HUB_ATTACHED_IO:
+                    this.handlePortMsg(msg)
+                    break;
+                case MessageType.GENERIC_ERROR_MESSAGES:
+                    this.handleGenericErrorMsg(msg)
+                    break;
+                case MessageType.HUB_PROPERTIES:
+                    this.handleHubPropertyResponse(msg)
+                    break
+                case MessageType.HUB_ALERTS:
+                    this.handleHubAlerts(msg);
+                    break
+                case MessageType.PORT_OUTPUT_COMMAND_FEEDBACK:
+                    this.handlePortCommandFeedback(msg)
+                    break;
+                case MessageType.PORT_MODE_INFORMATION:
+                    this.handlePortModeInformation(msg)
+                    break;
+                case MessageType.PORT_INFORMATION:
+                    this.handlePortInformation(msg)
+                    break;
+                case MessageType.PORT_VALUE_SINGLE:
+                    this.handlePortValueSingle(msg)
+                    break;
+            }
+        }
+
+
+        /**
+          * 
+          * @param {DataView} msg 
+          */
+        handlePortValueSingle(msg) {
+            //log('msg', msg)
+            const portId = msg.getUint8(3)
+            const msgLen = msg.getUint8(0)
+            const device = this.hubDevices[portId]
+            log('handlePortValueSingle', { msgLen, portId })
+            device.handleValue(msg)
+        }
+
+
+        /**
+         * 
+         * @param {DataView} msg 
+         */
+        handlePortModeInformation(msg) {
+            const portId = msg.getUint8(3)
+            const mode = msg.getUint8(4)
+            const type = msg.getUint8(5)
+            const data = { portId, mode, type: ModeInformationTypeNames[type] }
+            switch (type) {
+                case ModeInformationType.NAME:
+                    data.name = abToString(msg.buffer.slice(6, msg.byteLength))
+                    break
+                case ModeInformationType.RAW:
+                case ModeInformationType.PCT:
+                case ModeInformationType.SI:
+                    data.min = msg.getFloat32(6, true)
+                    data.max = msg.getFloat32(10, true)
+                    break
+                case ModeInformationType.SYMBOL:
+                    data.symbol = abToString(msg.buffer.slice(6, msg.byteLength))
+                    break
+                case ModeInformationType.VALUE_FORMAT:
+                    data.numValues = msg.getUint8(6)
+                    data.dataType = ["8bit", "16bit", "32bit", "float"][msg.getUint8(7)]
+                    data.totalFigures = msg.getUint8(8)
+                    data.decimals = msg.getUint8(9)
+                    break
+            }
+            log('portModeInformation', data)
+            const cb = this.portCmdCallback[portId]
+            if (typeof cb == 'function') {
+                cb(data)
+                delete this.portCmdCallback[portId]
+            }
+        }
+        /**
+         * 
+         * @param {DataView} msg 
+         */
+        handlePortInformation(msg) {
+            const portId = msg.getUint8(3)
+            let capabilities = msg.getUint8(5)
+            const count = msg.getUint8(6)
+            const input = msg.getUint16(7, true)
+            const output = msg.getUint16(9, true)
+            log(`Port ${portId}, capabilities ${capabilities}, total modes ${count}, 
+                    input modes ${input}, output modes ${output}`)
+            const availableCaps = 'output,input,logical combinable, logical synchronisable'.split(',')
+            let cap = []
+            for (let i = 0; i < 4; i++) {
+                if ((capabilities >> i) & 1) {
+                    cap.push(availableCaps[i])
+                }
+            }
+            const data = { portId, capabilities: cap.join(', '), count, input, output }
+            const cb = this.portCmdCallback[portId]
+            if (typeof cb == 'function') {
+                cb(data)
+            }
+        }
+
+
+        /**
+         * 
+         * @param {DataView} msg 
+         * @returns 
+         */
+        handleHubPropertyResponse(msg) {
+            const property = msg.getUint8(3)
+            log({ property: HubPropertyPayloadNames[property] })
+            if (property == HubPropertyPayload.BATTERY_VOLTAGE) {
+                const batteryLevel = msg.getUint8(5)
+                log({ batteryLevel })
+                this.emit('batteryLevel', { batteryLevel })
+            }
+            else if (property == HubPropertyPayload.BUTTON_STATE) {
+                const buttonState = msg.getUint8(5)
+                log({ buttonState })
+                this.emit('buttonState', { buttonState })
+            }
+            else if (property == HubPropertyPayload.SYSTEM_TYPE_ID) {
+                const systemType = msg.getUint8(5)
+                log({ systemType })
+                //this.emit('buttonState', { buttonState })
+            }
+            else if (property == HubPropertyPayload.PRIMARY_MAC_ADDRESS) {
+                const bytes = []
+                for (let i = 0; i < 6; i++) {
+                    bytes.push(msg.getUint8(5 + i).toString(16).toLocaleUpperCase().padStart(2, '0'))
+                }
+                log({ bytes })
+                this.emit('address', { address: bytes.join(':') })
+            }
+        }
+        /**
+         * 
+         * @param {DataView} msg 
+         */
+        handleGenericErrorMsg(msg) {
+            const cmdType = msg.getUint8(3)
+            const errorCode = msg.getUint8(4)
+            log({ cmdType, errorCode: ErrorCodeNames[errorCode] })
+            this.emit('error', { cmdType, errorCode: ErrorCodeNames[errorCode] })
+        }
+
+        /**
+         * 
+         * @param {DataView} msg 
+         */
+        handleHubAlerts(msg) {
+            const bufferLen = msg.byteLength
+            const msgLen = msg.getUint8(0)
+            const type = msg.getUint8(3)
+            const operation = msg.getUint8(4)
+            const payload = msg.getUint8(5)
+
+            log('handleHubAlerts', { bufferLen, msgLen, type, operation, payload })
+            this.emit('hubAlerts', { type, payload })
+        }
+
+        /**
+         * 
+         * @param {DataView} msg 
+         */
+        handlePortCommandFeedback(msg) {
+            for (let offset = 3; offset < msg.byteLength; offset += 2) {
+                const portId = msg.getUint8(offset)
+                const feedback = msg.getUint8(offset + 1)
+                const device = this.hubDevices[portId]
+                log('handlePortCommandFeedback', { portId, feedback })
+                if (feedback == 10 && device != undefined) {
+                    device.handleFeedback()
+                }
+
+            }
+        }
+        /**
+         * 
+         * @param {DataView} msg 
+         */
+        handlePortMsg(msg) {
+
+            const portId = msg.getUint8(3)
+            const eventType = msg.getUint8(4)
+            const type = eventType ? msg.getUint16(5, true) : 0
+            const deviceTypeName = DeviceTypeNames[type] || "Unknown"
+            const eventName = EventNames[eventType]
+
+            console.log('handlePortMsg', { portId, eventName, deviceTypeName })
+            if (eventType == Event.ATTACHED_IO) {
+
+                let constructor = constructorMap[type]
+                if (!constructor) {
+                    constructor = Device
+                }
+                const device = new constructor(this, portId, deviceTypeName)
+                this.hubDevices[portId] = device
+                this.attachCallbacks.emit(device)
+
+                this.emit('attach', device)
+            }
+            else if (eventType == Event.DETACHED_IO) {
+                delete this.hubDevices[portId]
+                this.emit('detach', { portId })
+            }
+            else if (eventType == Event.ATTACHED_VIRTUAL_IO) {
+                const portId1 = msg.getUint8(7)
+                const portId2 = msg.getUint8(8)
+
+                const device = new DoubleMotor(this, portId, getVirtualPortName(portId1, portId2))
+                this.hubDevices[portId] = device
+                this.attachCallbacks.emit(device)
+
+                this.emit('attach', device)
+            }
+        }
+    }
+
+    $$.service.registerService('hub', {
+
+        init: function () {
+
+            /**
+             * 
+             * @param {Device} device 
+             * @returns {boolean}
+             */
+            function isMotor(device) {
+                return device instanceof Motor
+            }
+
+            /**
+             * 
+             * @param {Device} device 
+             * @returns {boolean}
+             */
+            function isDoubleMotor(device) {
+                return device instanceof DoubleMotor
+            }
+
+            /**
+             * 
+             * @param {Device} device 
+             * @returns {boolean}
+             */
+            function isLed(device) {
+                return device instanceof Led
+            }
+
+            /**
+             * 
+             * @param {Device} device 
+             * @returns {boolean}
+             */
+            function isTachoMotor(device) {
+                return device instanceof TachoMotor
+            }
+
+            /**
+             * 
+             * @returns {Promise<HubDevice>}
+             */
+            async function connect() {
+                log('connect')
+
+                const device = await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: [LPF2_SERVICE_UUID]
+                })
+
+                const hubDevice = new HubDevice()
+                await hubDevice.init(device)
+
+                return hubDevice
+
+                //await sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_TYPE, 0x05)
+                //await sendMsg(formatMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02))
+                //await sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BUTTON_STATE, 0x02)
+            }
+
+            return {
+                connect,
+                Color,
+                PortMap,
+                PortMapNames,
+                DeviceMode,
+                BrakingStyle,
+                DeviceTypeNames,
+                isMotor,
+                isTachoMotor,
+                isLed,
+                isDoubleMotor
+            }
+        }
+    });
+
+})();
+
+
+
+},{"./CallbackEmitter":1,"./Const":2,"./Device":3,"./DoubleMotor":4,"./Led":5,"./Motor":6,"./RgbLed":7,"./TachoMotor":8,"./TiltSensor":9,"./Util":10}]},{},[11])
+
 //# sourceMappingURL=hub.js.map

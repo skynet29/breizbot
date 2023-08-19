@@ -133,6 +133,8 @@ declare namespace Breizbot {
 
             interface Interface {
                 startCode(codeDef: CodeDef):Promise<void>;
+                getFunctionNames(codeDef: CodeDef):Array<string>;
+                callFunction(functionName: string, ...functionsArgs):Promise<void>;
                 setLlogFunction(fn: (text: string) => void);
                 evalCode(block: Block): Promise<aby>;
                 dumpVariables(): void;

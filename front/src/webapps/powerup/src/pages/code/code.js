@@ -197,7 +197,7 @@ $$.control.registerControl('code', {
 			const degrees = await blocklyInterpretor.evalCode(block.inputs.DEGREES)
 
 			console.log({ speed, degrees, waitFeedback })
-			await motor.rotateDegrees(degrees, speed, waitFeedback, hub.BrakingStyle.FLOAT)
+			await motor.rotateDegrees(degrees, speed, waitFeedback, hub.BrakingStyle.BRAKE)
 
 		})
 

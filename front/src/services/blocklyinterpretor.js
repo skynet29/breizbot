@@ -443,7 +443,7 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
         }
 
         async function callFunction(functionName, ...functionArgs) {
-            console.log('caal')
+            console.log('callFunction', functionName, functionArgs)
             const block = procedureBlock[functionName]
             if (block == undefined) {
                 throw `function '${functionName}' does not exists !`
@@ -451,7 +451,7 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
 
             const { extraState, inputs } = block
             let nbArgs = 0
-            if (extraState.params != undefined) {
+            if (extraState != undefined && extraState.params != undefined) {
                 nbArgs = extraState.params.length
             }
             for (let i = 0; i < nbArgs; i++) {
@@ -509,7 +509,9 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
             dumpVariables,
             addBlockType,
             getVarValue,
-            getVarName
+            getVarName,
+            getFunctionNames,
+            callFunction
         }
     }
 });

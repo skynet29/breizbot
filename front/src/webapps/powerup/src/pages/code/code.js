@@ -4,11 +4,13 @@ $$.control.registerControl('code', {
 
 	template: { gulp_inject: './code.html' },
 
-	deps: ['breizbot.pager', 'breizbot.blocklyinterpretor', 'hub'],
+	deps: ['breizbot.pager', 'breizbot.blocklyinterpretor', 'hub', 'breizbot.gamepad'],
 
 	props: {
 		hubDevices: null,
-		code: null
+		code: null,
+		gamepadMapping: null
+
 	},
 
 	/**
@@ -16,13 +18,63 @@ $$.control.registerControl('code', {
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {Breizbot.Services.BlocklyInterpretor.Interface} blocklyInterpretor
 	 * @param {HUB} hub
+	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
 	 */
-	init: function (elt, pager, blocklyInterpretor, hub) {
+	init: function (elt, pager, blocklyInterpretor, hub, gamepad) {
+
+		console.log('props', this.props)
 
 		/**@type {Array<HUB.HubDevice>} */
 		const hubDevices = this.props.hubDevices
 
-		const code = this.props.code
+		const {code, gamepadMapping} = this.props
+
+		function onGamepadAxe(data) {
+			console.log('axe', data)
+			if (gamepadMapping) {
+				const { action } = gamepadMapping.axes[data.id]
+				if (action != 'None') {
+					blocklyInterpretor.callFunction(action, data.value)
+				}
+			}
+		} 
+
+		function onGamepadButtonDown(data) {
+			console.log('buttonDown', data.id)
+			if (gamepadMapping) {
+				const { down } = gamepadMapping.buttons[data.id]
+				if (down != 'None') {
+					blocklyInterpretor.callFunction(down, 1)
+				}
+			}
+		}
+
+		function onGamepadButtonUp(data) {
+			console.log('buttonDown', data.id)
+			if (gamepadMapping) {
+				const { up, down } = gamepadMapping.buttons[data.id]
+				if (up == 'Zero') {
+					if (down != 'None') {
+						blocklyInterpretor.callFunction(down, 0)
+					}
+				}
+				else if (up != 'None') {
+					blocklyInterpretor.callFunction(up, 1)
+				}
+			}
+		}
+
+		gamepad.on('axe', onGamepadAxe)
+		gamepad.on('buttonDown', onGamepadButtonDown)
+		gamepad.on('buttonUp', onGamepadButtonUp)
+
+		this.dispose = function() {
+			console.log('dispose')
+			gamepad.off('axe', onGamepadAxe)
+			gamepad.off('buttonDown', onGamepadButtonDown)
+			gamepad.off('buttonUp', onGamepadButtonUp)
+	
+		}
 
 		const demoWorkspace = Blockly.inject('blocklyDiv',
 			{

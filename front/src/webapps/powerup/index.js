@@ -18,10 +18,10 @@ module.exports = function (ctx, router) {
     router.post('/update', async function (req, resp) {
 
 
-        const { name, actions, mappings } = req.body
+        const { name, code, mappings } = req.body
 
         try {
-            await db.updateOne({ name }, { $set: { actions, mappings } })
+            await db.updateOne({ name }, { $set: { code, mappings } })
             resp.sendStatus(200)
         }
         catch (e) {

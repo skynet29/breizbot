@@ -19,13 +19,17 @@ $$.control.registerControl('gamepad', {
 	init: function (elt, pager, gamepad) {
 
 		const {mapping, actions} = this.props
+
+		actions.unshift('Zero')
+		actions.unshift('None')
+
 		console.log(this.props)
 
 		let axes = []
 		let buttons = []
 
 		const info = gamepad.getGamepads()[0]
-		//console.log({ info })
+		console.log({ info })
 
 		if (mapping != null) {
 			axes = mapping.axes
@@ -84,6 +88,7 @@ $$.control.registerControl('gamepad', {
 				id: info.id,
 				axes,
 				buttons,
+				actions,
 				getButtonLabel: function(scope) {
 					return `Button ${scope.idx + 1}`
 				},
@@ -92,39 +97,7 @@ $$.control.registerControl('gamepad', {
 				}
 			},
 			events: {
-				onButtonClick: function() {
-					const idx = $(this).closest('tr').index()
-					const cmd = $(this).data('cmd')
-					//console.log('onButtonClick', idx, cmd)
-					pager.pushPage('actionsCtrl', {
-						title: 'Select an action',
-						props: {
-							isEdition: false,
-							actions
-						},
-						onReturn: function(actionName) {
-							//console.log({actionName})
-							ctrl.model.buttons[idx][cmd] = actionName
-							ctrl.update()
-						}
-					})
-				},
-				onAxeClick: function() {
-					const idx = $(this).closest('tr').index()
-					console.log('onAxeClick', idx)
-					pager.pushPage('actionsCtrl', {
-						title: 'Select an action',
-						props: {
-							isEdition: false,
-							actions
-						},
-						onReturn: function(actionName) {
-							//console.log({actionName})
-							ctrl.model.axes[idx].action = actionName
-							ctrl.update()
-						}
-					})
-				}
+
 			}
 		})
 
@@ -141,16 +114,15 @@ $$.control.registerControl('gamepad', {
 				buttons: []
 			}
 			axesElt.find('tr').each(function (idx) {
-				const action = $(this).find('.item').text()
-
+				const action = $(this).find('.item').getValue()
 				ret.axes.push({
 					action
 				})
 			})
 
 			buttonsElt.find('tr').each(function (idx) {
-				const up = $(this).find('[data-cmd="up"]').text()
-				const down = $(this).find('[data-cmd="down"]').text()
+				const up = $(this).find('.up').getValue()
+				const down = $(this).find('.down').getValue()
 
 				ret.buttons.push({
 					up,

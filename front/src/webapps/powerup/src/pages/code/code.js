@@ -451,7 +451,7 @@ $$.control.registerControl('code', {
 						}
 					}
 					else {
-						await http.post('/update', { code: getCode(), mappings: config.mappings })
+						await http.post('/update', { name: config.name, code: getCode(), mappings: config.mappings })
 						$.notify(`Config '${config.name}' updated`, 'success')
 					}
 

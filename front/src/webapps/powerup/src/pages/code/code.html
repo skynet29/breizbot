@@ -1,5 +1,25 @@
 <div class="toolbar">
-    <button bn-event="click: onRun" class="w3-btn w3-blue">Run</button>
+
+    <div>
+        <button bn-event="click: onNewConfig" bn-icon="fa fa-file" title="Reset Config"></button>
+
+        <button bn-event="click: onConfig" bn-icon="fa fa-folder-open" title="Open Config"></button>
+    
+        <button bn-event="click: onSaveConfig" bn-icon="fa fa-save" title="Save current config"></button>
+    
+        <button bn-event="click: onRun" >Run</button>
+    
+        <button bn-event="click: onGamePad" bn-show="gamepadConnected">Gamepad</button>
+    </div>
+
+    <div>
+        <div bn-show="currentConfig">
+            <label>Current Config:</label>
+            <span bn-text="currentConfig"></span>
+        </div>
+    </div>
+
+
 
 </div>
 <div id="blocklyDiv"></div>

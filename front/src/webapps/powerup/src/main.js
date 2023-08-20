@@ -5,7 +5,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'hub', 'breizbot.gamepad', 'breizbot.http', 'breizbot.blocklyinterpretor'],
+	deps: ['breizbot.pager', 'hub', 'breizbot.blocklyinterpretor'],
 
 
 	props: {
@@ -15,21 +15,14 @@ $$.control.registerControl('rootPage', {
 	 * 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {HUB} hub
-	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
-	 * @param {Breizbot.Services.Http.Interface} http
 	 * @param {Breizbot.Services.BlocklyInterpretor.Interface} blocklyInterpretor
 	 * 
 	 */
-	init: async function (elt, pager, hub, gamepad, http, blocklyInterpretor) {
+	init: async function (elt, pager, hub, blocklyInterpretor) {
 
 		//const config = {}
 
 		initBlock()
-
-		let config = {
-			code: null,
-			mappings: {}
-		}
 
 		elt.find('button').addClass('w3-btn w3-blue')
 
@@ -37,8 +30,8 @@ $$.control.registerControl('rootPage', {
 		const hubDevices = {}
 		let UUID = 1
 
-		let gamepadMapping = null
-		let gamepadId = ''
+		let config = null
+
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -55,55 +48,15 @@ $$.control.registerControl('rootPage', {
 						title: 'Code',
 						props: {
 							hubDevices: Object.values(hubDevices),
-							code: config.code,
-							gamepadMapping
+							config,
 						},
 						onBack: function (value) {
 							//console.log('onBack', value)
-							config.code = value
+							config = value
 						}
 					})
 				},
-				onNewConfig: function () {
-					config = {
-						code: null,
-						mappings: {}
-					}
-					gamepadMapping = null
-					ctrl.setData({ currentConfig: '' })
-				},
-				onSaveConfig: async function () {
-					console.log('onSaveConfig', config)
-					if (ctrl.model.currentConfig == '') {
-						const currentConfig = await $$.ui.showPrompt({ title: 'Save Config', label: 'Config Name:' })
-						//console.log({currentConfig})
-						if (currentConfig) {
-							await http.post('/add', { name: currentConfig, code: config.code, mappings: config.mappings })
-							ctrl.setData({ currentConfig })
-						}
-					}
-					else {
-						await http.post('/update', config)
-						$.notify(`Config '${config.name}' updated`, 'success')
-					}
 
-				},
-				onConfig: function () {
-					//console.log('onConfig')
-					pager.pushPage('configCtrl', {
-						title: 'Configurations',
-						props: {
-							currentConfig: ctrl.model.currentConfig
-						},
-						onReturn: function (data) {
-							console.log('newConfig', data)
-							config = data
-							ctrl.setData({ currentConfig: data.name })
-							gamepadMapping = config.mappings[gamepadId]
-							//console.log({gamepadMapping})
-						}
-					})
-				},
 				onHubChange: function () {
 					const idx = $(this).closest('tr').index()
 
@@ -140,24 +93,6 @@ $$.control.registerControl('rootPage', {
 					})
 				},
 
-				onGamePad: function () {
-
-					console.log('code', config.code)
-
-					pager.pushPage('gamepad', {
-						title: 'Gamepad',
-						props: {
-							mapping: gamepadMapping,
-							actions: (config.code != null) ?  blocklyInterpretor.getFunctionNames(config.code) : []
-						},
-						onReturn: async (mapping) => {
-							gamepadMapping = mapping
-							console.log('onReturn', gamepadMapping)
-							console.log('config', config)
-							config.mappings[mapping.id] = gamepadMapping
-						}
-					})
-				},
 
 
 				onConnect: async function () {
@@ -473,23 +408,7 @@ $$.control.registerControl('rootPage', {
 		}
 
 
-		gamepad.on('connected', (ev) => {
-			console.log('gamepad connnected', ev)
-			gamepadId = ev.id
-			gamepadMapping = config.mappings[gamepadId]
-			console.log({ gamepadMapping })
 
-			ctrl.setData({ gamepadConnected: true })
-			gamepad.checkGamePadStatus()
-
-		})
-
-		gamepad.on('disconnected', (ev) => {
-			console.log('gamepad disconnected')
-			ctrl.setData({ gamepadConnected: false })
-			gamepadMapping = null
-
-		})
 
 	}
 

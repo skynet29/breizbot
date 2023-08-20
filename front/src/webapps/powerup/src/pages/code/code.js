@@ -4,12 +4,11 @@ $$.control.registerControl('code', {
 
 	template: { gulp_inject: './code.html' },
 
-	deps: ['breizbot.pager', 'breizbot.blocklyinterpretor', 'hub', 'breizbot.gamepad'],
+	deps: ['breizbot.pager', 'breizbot.blocklyinterpretor', 'hub', 'breizbot.gamepad', 'breizbot.http'],
 
 	props: {
 		hubDevices: null,
-		code: null,
-		gamepadMapping: null
+		config: null,
 
 	},
 
@@ -19,15 +18,48 @@ $$.control.registerControl('code', {
 	 * @param {Breizbot.Services.BlocklyInterpretor.Interface} blocklyInterpretor
 	 * @param {HUB} hub
 	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
+	 * @param {Breizbot.Services.Http.Interface} http
 	 */
-	init: function (elt, pager, blocklyInterpretor, hub, gamepad) {
+	init: function (elt, pager, blocklyInterpretor, hub, gamepad, http) {
 
 		console.log('props', this.props)
 
 		/**@type {Array<HUB.HubDevice>} */
 		const hubDevices = this.props.hubDevices
 
-		const {code, gamepadMapping} = this.props
+		elt.find('button').addClass('w3-btn w3-blue')
+
+		let { config } = this.props
+
+		if (config == null) {
+			config = {
+				code: null,
+				gamepadId: '',
+				mappings: {},
+				name: ''
+			}
+		}
+
+		console.log('config', config)
+
+		gamepad.on('connected', (ev) => {
+			console.log('gamepad connnected', ev)
+			config.gamepadId = ev.id
+			config.gamepadMapping = config.mappings[ev.id]
+			console.log({ gamepadMapping: config.gamepadMapping })
+
+			ctrl.setData({ gamepadConnected: true })
+			gamepad.checkGamePadStatus()
+
+		})
+
+		gamepad.on('disconnected', (ev) => {
+			console.log('gamepad disconnected')
+			ctrl.setData({ gamepadConnected: false })
+			config.gamepadMapping = null
+			config.gamepadId = ''
+
+		})
 
 		async function callFunction(name, value) {
 			try {
@@ -41,19 +73,19 @@ $$.control.registerControl('code', {
 		}
 
 		function onGamepadAxe(data) {
-			console.log('axe', data)
-			if (gamepadMapping) {
-				const { action } = gamepadMapping.axes[data.id]
+			//console.log('axe', data)
+			if (config.gamepadMapping) {
+				const { action } = config.gamepadMapping.axes[data.id]
 				if (action != 'None') {
 					callFunction(action, data.value)
 				}
 			}
-		} 
+		}
 
 		function onGamepadButtonDown(data) {
 			console.log('buttonDown', data.id)
-			if (gamepadMapping) {
-				const { down } = gamepadMapping.buttons[data.id]
+			if (config.gamepadMapping) {
+				const { down } = config.gamepadMapping.buttons[data.id]
 				if (down != 'None') {
 					callFunction(down, 1)
 				}
@@ -62,8 +94,8 @@ $$.control.registerControl('code', {
 
 		function onGamepadButtonUp(data) {
 			console.log('buttonDown', data.id)
-			if (gamepadMapping) {
-				const { up, down } = gamepadMapping.buttons[data.id]
+			if (config.gamepadMapping) {
+				const { up, down } = config.gamepadMapping.buttons[data.id]
 				if (up == 'Zero') {
 					if (down != 'None') {
 						callFunction(down, 0)
@@ -79,12 +111,12 @@ $$.control.registerControl('code', {
 		gamepad.on('buttonDown', onGamepadButtonDown)
 		gamepad.on('buttonUp', onGamepadButtonUp)
 
-		this.dispose = function() {
+		this.dispose = function () {
 			console.log('dispose')
 			gamepad.off('axe', onGamepadAxe)
 			gamepad.off('buttonDown', onGamepadButtonDown)
 			gamepad.off('buttonUp', onGamepadButtonUp)
-	
+
 		}
 
 		const demoWorkspace = Blockly.inject('blocklyDiv',
@@ -350,28 +382,99 @@ $$.control.registerControl('code', {
 			await $$.util.wait(time)
 		})
 
-		if (code != null) {
+		function loadCode(code) {
 			const workspace = Blockly.getMainWorkspace();
 			Blockly.serialization.workspaces.load(code, workspace);
 		}
 
+		if (config.code != null) {
+			loadCode(config.code)
+		}
+
 		this.onBack = function () {
 			//console.log('onBack')
-			return getCode()
+			config.code = getCode()
+			return config
 		}
 
 		function getCode() {
 			return Blockly.serialization.workspaces.save(Blockly.getMainWorkspace())
 		}
 
+
+
 		const ctrl = $$.viewController(elt, {
 			data: {
+				currentConfig: config.name,
+				gamepadConnected: config.gamepadId != '',
 				logs: [],
 				getLogs: function () {
 					return this.logs.join('<br>')
 				}
 			},
 			events: {
+				onGamePad: function () {
+
+					const code = getCode()
+					console.log('config', config)
+
+					pager.pushPage('gamepad', {
+						title: 'Gamepad',
+						props: {
+							mapping: config.gamepadMapping,
+							actions: (code != null) ? blocklyInterpretor.getFunctionNames(code) : []
+						},
+						onReturn: async (mapping) => {
+							console.log('onReturn', mapping)
+
+							config.gamepadMapping = mapping
+							config.mappings[mapping.id] = mapping
+						}
+					})
+				},
+				onNewConfig: function () {
+					config.mapping = {}
+					config.gamepadMapping = null
+					const workspace = Blockly.getMainWorkspace()
+					workspace.clear()
+
+					ctrl.setData({ currentConfig: '' })
+				},
+				onSaveConfig: async function () {
+					console.log('oncodeSaveConfig', config)
+					if (ctrl.model.currentConfig == '') {
+						const currentConfig = await $$.ui.showPrompt({ title: 'Save Config', label: 'Config Name:' })
+						//console.log({currentConfig})
+						if (currentConfig) {
+							await http.post('/add', { name: currentConfig, code: getCode(), mappings: config.mappings })
+							ctrl.setData({ currentConfig })
+						}
+					}
+					else {
+						await http.post('/update', { code: getCode(), mappings: config.mappings })
+						$.notify(`Config '${config.name}' updated`, 'success')
+					}
+
+				},
+				onConfig: function () {
+					//console.log('onConfig')
+					pager.pushPage('configCtrl', {
+						title: 'Configurations',
+						props: {
+							currentConfig: ctrl.model.currentConfig
+						},
+						onReturn: function (data) {
+							console.log('newConfig', data)
+							config.code = data.code
+							config.name = data.name
+							config.mappings = data.mappings
+							ctrl.setData({ currentConfig: data.name })
+							config.gamepadMapping = config.mappings[config.gamepadId]
+							loadCode(config.code)
+							//console.log({gamepadMapping})
+						}
+					})
+				},
 				onRun: async function () {
 					console.log('onRun')
 					const info = getCode()

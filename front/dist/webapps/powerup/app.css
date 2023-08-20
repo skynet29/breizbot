@@ -53,6 +53,9 @@
 }
 .code .toolbar {
   padding: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 .code .logPanel {
   height: 100px;

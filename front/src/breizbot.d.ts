@@ -141,6 +141,7 @@ declare namespace Breizbot {
                 addBlockType(typeName: string, fn: (block: Block) => Promise<any>);
                 getVarValue(varId: string): any;
                 getVarName(varId: string): string;
+                mathCompare(operator: string, val1: number, val2: number):boolean;
             }
         }
 

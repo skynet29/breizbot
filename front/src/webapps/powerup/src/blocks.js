@@ -262,4 +262,21 @@
             this.setHelpUrl("");
         }
     };
+
+    Blockly.Blocks['wait_until_tilt'] = {
+        init: function() {
+          this.appendValueInput("VAR")
+              .setCheck("Number")
+              .appendField("HUB")
+              .appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")       
+              .appendField("wait until tilt")
+              .appendField(new Blockly.FieldDropdown([["Pitch","pitch"], ["Roll","roll"], ["Yaw","yaw"]]), "TYPE")
+              .appendField(new Blockly.FieldDropdown([["=","EQ"], ["!=","NEQ"], ["<","LT"], ["<=","LTE"], [">","GT"], [">=","GTE"]]), "OP")
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(230);
+       this.setTooltip("");
+       this.setHelpUrl("");
+        }
+      };
 })();

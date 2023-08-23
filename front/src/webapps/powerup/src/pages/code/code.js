@@ -377,6 +377,25 @@ $$.control.registerControl('code', {
 
 		})
 
+		blocklyInterpretor.addBlockType('wait_until_tilt', async (block) => {
+
+			/**@type {string} */
+			const type = block.fields.TYPE
+			const operator = block.fields.OP
+			const hubDevice = getHub(block)
+			const device = hubDevice.getDevice(hub.PortMap.TILT_SENSOR)
+			const varValue = await blocklyInterpretor.evalCode(block.inputs.VAR)
+			console.log({varValue, operator, type})
+
+			await device.waitTestValue(hub.DeviceMode.TILT_POS, (value) => {
+				return blocklyInterpretor.mathCompare(operator, value[type], varValue)
+
+			})
+
+
+		})
+
+
 
 		blocklyInterpretor.addBlockType('sleep', async (block) => {
 			const time = await blocklyInterpretor.evalCode(block.inputs.TIME)

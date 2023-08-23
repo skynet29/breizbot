@@ -19,6 +19,26 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
             return Math.floor(Math.random() * (b - a + 1) + a);
         }
 
+        function mathCompare(operator, val1, val2) {
+            switch (operator) {
+                case 'EQ':
+                    return val1 === val2
+                case 'NEQ':
+                    return val1 !== val2
+                case 'LT':
+                    return val1 < val2
+                case 'LTE':
+                    return val1 <= val2
+                case 'GT':
+                    return val1 > val2
+                case 'GTE':
+                    return val1 >= val2
+                default:
+                    throw (`Unknown operator '${operator}'`)
+
+            }
+        }
+
         const blockTypeMap = {
             'math_number': async function (block) {
                 return block.fields.NUM
@@ -211,23 +231,7 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
                 const val1 = await evalCode(block.inputs.A)
                 const val2 = await evalCode(block.inputs.B)
                 console.log({ operator, val1, val2 })
-                switch (operator) {
-                    case 'EQ':
-                        return val1 === val2
-                    case 'NEQ':
-                        return val1 !== val2
-                    case 'LT':
-                        return val1 < val2
-                    case 'LTE':
-                        return val1 <= val2
-                    case 'GT':
-                        return val1 > val2
-                    case 'GTE':
-                        return val1 >= val2
-                    default:
-                        throw (`Unknown operator '${operator}'`)
-
-                }
+                return mathCompare(operator, val1, val2)
             },
             'logic_operation': async function (block) {
                 const operator = block.fields.OP
@@ -511,7 +515,8 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
             getVarValue,
             getVarName,
             getFunctionNames,
-            callFunction
+            callFunction,
+            mathCompare
         }
     }
 });

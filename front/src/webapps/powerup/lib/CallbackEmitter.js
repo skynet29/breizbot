@@ -20,6 +20,8 @@ class CallbackEmitter {
                 this.callbacks.splice(i, 1)
             }
         }
+
+        return (this.callbacks.length == 0)
     }
 }
 

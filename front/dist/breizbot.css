@@ -100,13 +100,6 @@ pre[class*=language-] {
 .token.entity {
   cursor: help;
 }
-.breizbot-appTab {
-  display: flex;
-}
-.breizbot-appTab iframe {
-  flex: 1;
-  border: none;
-}
 .breizbot-apps .tile {
   width: 90px;
   height: 90px;
@@ -144,6 +137,65 @@ pre[class*=language-] {
   width: 90px;
   height: 90px;
   margin: 0;
+}
+.breizbot-appTab {
+  display: flex;
+}
+.breizbot-appTab iframe {
+  flex: 1;
+  border: none;
+}
+.breizbot-addContactPage {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+.breizbot-addContactPage label {
+  display: inline-block;
+  min-width: 120px;
+}
+.breizbot-addContactPage form {
+  height: 90%;
+}
+.breizbot-addContactPage form .birthNotif {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+.breizbot-addContactPage form .gender {
+  display: flex;
+}
+.breizbot-addContactPage form .gender .brainjs-inputgroup {
+  margin-bottom: 5px;
+}
+.breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup {
+  margin-bottom: 15px;
+}
+.breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup input {
+  padding: 5px;
+  min-width: 300px;
+}
+.breizbot-contacts {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.breizbot-contacts .breizbot-searchbar {
+  margin: 10px;
+}
+.breizbot-contacts .scrollPanel {
+  flex: 1;
+  overflow-y: auto;
+}
+.breizbot-contacts .scrollPanel i {
+  min-width: 30px;
+  text-align: center;
+}
+.breizbot-contacts .scrollPanel input {
+  border: none;
+  outline: none;
+  cursor: pointer;
 }
 @charset "UTF-8";
 .breizbot-htmleditor {
@@ -210,58 +262,6 @@ pre[class*=language-] {
 .breizbot-htmleditor > .toolbar .group .separator {
   border-left: 1px solid white;
   height: 80%;
-}
-.breizbot-addContactPage {
-  padding: 10px;
-  display: flex;
-  justify-content: center;
-}
-.breizbot-addContactPage label {
-  display: inline-block;
-  min-width: 120px;
-}
-.breizbot-addContactPage form {
-  height: 90%;
-}
-.breizbot-addContactPage form .birthNotif {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 15px;
-}
-.breizbot-addContactPage form .gender {
-  display: flex;
-}
-.breizbot-addContactPage form .gender .brainjs-inputgroup {
-  margin-bottom: 5px;
-}
-.breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup {
-  margin-bottom: 15px;
-}
-.breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup input {
-  padding: 5px;
-  min-width: 300px;
-}
-.breizbot-contacts {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.breizbot-contacts .breizbot-searchbar {
-  margin: 10px;
-}
-.breizbot-contacts .scrollPanel {
-  flex: 1;
-  overflow-y: auto;
-}
-.breizbot-contacts .scrollPanel i {
-  min-width: 30px;
-  text-align: center;
-}
-.breizbot-contacts .scrollPanel input {
-  border: none;
-  outline: none;
-  cursor: pointer;
 }
 .breizbot-filterDlg {
   padding: 10px;
@@ -524,6 +524,23 @@ pre[class*=language-] {
   flex: 1;
   overflow: hidden;
 }
+.breizbot-searchbar > form {
+  display: flex;
+  flex-direction: row;
+  border: 2px solid rgb(238, 238, 238);
+  border-radius: 20px;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.breizbot-searchbar > form input:-webkit-autofill {
+  transition: background-color 5000s ease-in-out 0s;
+}
+.breizbot-searchbar > form input {
+  flex: 1;
+  padding: 5px;
+  border: none;
+  outline: none;
+}
 .breizbot-addUser {
   margin: 10px;
   display: flex;
@@ -552,23 +569,6 @@ pre[class*=language-] {
 .breizbot-users .scrollPanel {
   flex: 1;
   overflow: auto;
-}
-.breizbot-searchbar > form {
-  display: flex;
-  flex-direction: row;
-  border: 2px solid rgb(238, 238, 238);
-  border-radius: 20px;
-  padding-left: 10px;
-  padding-right: 10px;
-}
-.breizbot-searchbar > form input:-webkit-autofill {
-  transition: background-color 5000s ease-in-out 0s;
-}
-.breizbot-searchbar > form input {
-  flex: 1;
-  padding: 5px;
-  border: none;
-  outline: none;
 }
 .breizbot-viewer {
   height: 100%;

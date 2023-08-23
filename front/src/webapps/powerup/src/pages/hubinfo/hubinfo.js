@@ -29,6 +29,7 @@ $$.control.registerControl('hubinfo', {
 			const externalDevices = []
 
 			for (const device of devices) {
+				//await device.readInfo()
 				const { portId, type, name } = device
 				if (portId < 50) {
 					const info = { name, portId, type }
@@ -56,8 +57,7 @@ $$.control.registerControl('hubinfo', {
 			pager.pushPage('info', {
 				title: deviceTypeName,
 				props: {
-					portId,
-					hubDevice
+					device: hubDevice.getDevice(portId)
 				}
 			})
 		}

@@ -7,6 +7,7 @@ $$.control.registerControl('info', {
 	deps: ['breizbot.pager', 'hub'],
 
 	props: {
+		device: null
 	},
 
 	/**
@@ -16,10 +17,9 @@ $$.control.registerControl('info', {
 	 */
 	init: function (elt, pager, hub) {
 
-		const { portId } = this.props
+		/**@type {HUB.Device} */
+		const device = this.props.device
 
-		/**@type {HUB.HubDevice} */
-		const hubDevice = this.props.hubDevice
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -44,7 +44,6 @@ $$.control.registerControl('info', {
 				onBtnGet: async function(scope) {
 					const mode = $(this).closest('tr').index()
 					console.log('onBtnGet', mode)
-					const device = hubDevice.getDevice(portId)
 					const values = await device.getValue(mode)
 					console.log('values', values)
 					$(this).closest('td').find('span').text(JSON.stringify(values, null, 4))
@@ -54,9 +53,7 @@ $$.control.registerControl('info', {
 		})
 
 		async function init() {
-			const portInfo = await hubDevice.getPortInformation(portId)
-			console.log('portInfo', portInfo)	
-			const { modes, capabilities } = portInfo
+			const { modes, capabilities } = await device.readInfo()
 			ctrl.setData({ modes, capabilities })
 		}
 

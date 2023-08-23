@@ -494,7 +494,7 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
             dumpVariables()
         }
 
-        function setLlogFunction(fn) {
+        function setLogFunction(fn) {
             logFunction = fn
         }
 
@@ -504,7 +504,7 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
 
         return {
             startCode,
-            setLlogFunction,
+            setLogFunction,
             evalCode,
             dumpVariables,
             addBlockType,

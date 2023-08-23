@@ -4,6 +4,8 @@ const CallbackEmitter = require('./CallbackEmitter')
 const {MessageType, PortMapNames} = require('./Const')
 const {log, toUint32} = require('./Util')
 
+const deviceInfo = {}
+
 class Device {
     /**
      * 
@@ -19,8 +21,7 @@ class Device {
         this.feedbackCallback = null
         this.valueCallbacks = new CallbackEmitter()
         this.mode = undefined
-        this.modes = undefined
-        this.capabilities = undefined
+
     }
 
     async writePortCommand(waitFeedback, ...data) {
@@ -70,15 +71,24 @@ class Device {
             this.portId, mode, toUint32(deltaInterval), notificationEnabled ? 0x01 : 0)
     }
 
+    async readInfo() {
+        let info = deviceInfo[this.type]
+        if (info == undefined) {
+            info = await this.hubDevice.getPortInformation(this.portId)
+            deviceInfo[this.type] = info           
+        }
+        return info
+    }
+
     /**
      * 
      * @param {DataView} msg 
      */
     decodeValue(msg) {
-        if (this.modes != undefined) {
-            const {VALUE_FORMAT, RAW, SI} = this.modes[this.mode]
+        const info = deviceInfo[this.type]
+        if (info != undefined) {
+            const {VALUE_FORMAT, RAW, SI} = info.modes[this.mode]
             const range = $$.util.mapRange(RAW.min, RAW.max, SI.min, SI.max)
-            log('info', this.modes[this.mode])
             const {dataType, numValues} = VALUE_FORMAT
             const ret = []
             let offset = 4
@@ -136,11 +146,7 @@ class Device {
     */
     async getValue(mode) {
         console.log('getValue', this.portId, { mode })
-        if (this.modes == undefined) {
-            const {modes, capabilities} = await this.hubDevice.getPortInformation(this.portId)
-            this.modes = modes
-            this.capabilities = capabilities
-        }
+
         await this.setMode(mode, false)
         return new Promise(async (resolve) => {
             this.valueCallbacks.on((data) => {
@@ -182,6 +188,7 @@ class Device {
             return false
         })
     }
+
 }
 
 module.exports = Device

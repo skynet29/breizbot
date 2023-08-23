@@ -24,6 +24,8 @@ $$.control.registerControl('code', {
 
 		console.log('props', this.props)
 
+		const progressDlg = $$.ui.progressDialog('Loading device info')
+
 		/**@type {Array<HUB.HubDevice>} */
 		const hubDevices = this.props.hubDevices
 
@@ -128,7 +130,7 @@ $$.control.registerControl('code', {
 			}
 		)
 
-		blocklyInterpretor.setLlogFunction((text) => {
+		blocklyInterpretor.setLogFunction((text) => {
 			ctrl.model.logs.push(text)
 			ctrl.update()
 		})
@@ -433,8 +435,9 @@ $$.control.registerControl('code', {
 					})
 				},
 				onNewConfig: function () {
-					config.mapping = {}
+					config.mappings = {}
 					config.gamepadMapping = null
+					config.name = ''
 					const workspace = Blockly.getMainWorkspace()
 					workspace.clear()
 
@@ -448,6 +451,7 @@ $$.control.registerControl('code', {
 						if (currentConfig) {
 							await http.post('/add', { name: currentConfig, code: getCode(), mappings: config.mappings })
 							ctrl.setData({ currentConfig })
+							config.name = currentConfig
 						}
 					}
 					else {
@@ -477,6 +481,23 @@ $$.control.registerControl('code', {
 				},
 				onRun: async function () {
 					console.log('onRun')
+					progressDlg.setPercentage(0)
+					progressDlg.show()
+					let nbAccess = 0
+					for(const hub of hubDevices) {
+						nbAccess += hub.getHubDevices().length
+					
+					}
+					console.log({nbAccess})
+					const range = $$.util.mapRange(0, nbAccess, 0, 1)
+					let i = 0
+					for(const hub of hubDevices) {
+						for(const device of hub.getHubDevices()) {
+							await device.readInfo()
+							progressDlg.setPercentage(range(++i))
+						}
+					}
+					progressDlg.hide()
 					const info = getCode()
 					ctrl.setData({ logs: [] })
 					try {

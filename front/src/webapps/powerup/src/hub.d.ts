@@ -37,7 +37,6 @@ declare namespace HUB {
         getHubDevices(): Device[];
         init(device: BluetoothDevice): Promise<void>;
         shutdown(): Promise<void>;
-        getDeviceType(portId: PortMap): string;
         getDevice(portId: PortMap): Device;
         createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<void>;
         getPortInformation(portId: PortMap): Promise<PortInformation>;
@@ -65,6 +64,7 @@ declare namespace HUB {
         waitTestValue(mode: DeviceMode, testFn: (value: number) => boolean):Promise<void>;
         setMode(mode: DeviceMode, notificationEnabled: boolean, deltaInterval?: number):Promise<void>;
         subscribe(mode: DeviceMode, cbk: (value) => void, deltaInterval?: number):Promise<void>;
+        readInfo():Promise<PortInformation>;
     }
 
     interface TiltSensor extends Device {
@@ -112,6 +112,7 @@ declare namespace HUB {
     function isLed(device: Device):boolean;
     function isTachoMotor(device: Device):boolean;
     function isDoubleMotor(device: Device):boolean;
+    function getDeviceInfo(type: number):PortInformation;
 
     enum Color {
         BLACK,
@@ -172,47 +173,4 @@ declare namespace ActionSrv {
         address: string;
     }
 
-    interface StepDesc {
-        type: 'SPEED' | 'DBLSPEED' | 'POWER' | 'ROTATE' |
-         'POSITION' | 'CALIBRATE' | 'ZERO' | 'COLOR' | 'RGB' | 'SPEEDTIME' | 'SLEEP' | 'TESTVAR' | 'SETVAR';
-        hub: string;
-        port?: string;
-        speed?: number;
-        port1?: string;
-        port2?: string;
-        speed1?: number;
-        speed2?: number;
-        power?: number;
-        angle?: number;
-        waitFeedback?: boolean;
-        color?: number;
-        red?: number;
-        green?: number;
-        blue?: number;
-        time?: number;
-        brakeStyle?: HUB.BrakingStyle;
-        angle1?: number;
-        angle2?: number;
-        varName?: string;
-        varValue?: string;
-        eqAction?: string;
-        neqAction?: string;
-    }
-
-    interface ActionDesc {
-        name: string;
-        steps: Array<StepDesc>;
-    }
-
-    interface VarDesc {
-        name: string;
-        value: string;
-    }
-
-    interface Interface {
-        execAction(hubDevices: Array<HUB.HubDevice>, actions: Array<ActionDesc>, actionName: string, factor: number):Promise<void>;
-        getVariables(): Array<VarDesc>;
-        resetVariables():void;
-
-    }
 }

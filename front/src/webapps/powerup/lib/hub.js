@@ -361,8 +361,10 @@
             return Object.values(this.hubDevices)
         }
 
-        getDeviceType(portId) {
-            return this.hubDevices[portId].type
+        async readDeviceInfo() {
+            for (const device of this.getHubDevices()) {
+                await device.readInfo()
+            }
         }
 
         getDevice(portId) {
@@ -375,14 +377,10 @@
          * @returns {Promise<HUB.PortInformation>}
          */
         async getPortInformation(portId) {
-            let { modes, capabilities } = this.hubDevices[portId]
-            if (modes != undefined || capabilities != undefined) {
-                return { modes, capabilities }
-            }
+
             const portInfo = await this.getPortInformationRequest(portId)
-            const { count, output, input } = portInfo
-            capabilities = portInfo.capabilities
-            modes = []
+            const { count, output, input, capabilities } = portInfo
+            const modes = []
             for (let mode = 0; mode < count; mode++) {
                 const data = {}
                 let ret
@@ -406,8 +404,6 @@
                 }
                 modes.push(data)
             }
-            this.hubDevices[portId].modes = modes
-            this.hubDevices[portId].capabilities = capabilities
 
             return { modes, capabilities }
         }
@@ -699,6 +695,7 @@
             function isTachoMotor(device) {
                 return device instanceof TachoMotor
             }
+
 
             /**
              * 

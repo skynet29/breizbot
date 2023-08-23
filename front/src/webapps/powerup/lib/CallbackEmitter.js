@@ -12,6 +12,7 @@ class CallbackEmitter {
     }
 
     emit(data) {
+        console.log('emit', data)
         let i = this.callbacks.length
 
         while (i--) {
@@ -20,8 +21,6 @@ class CallbackEmitter {
                 this.callbacks.splice(i, 1)
             }
         }
-
-        return (this.callbacks.length == 0)
     }
 }
 

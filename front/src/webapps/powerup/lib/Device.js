@@ -129,9 +129,7 @@ class Device {
         let value = this.decodeValue(msg)
 
         if (value != undefined) {
-            if (this.valueCallbacks.emit(value)) { // mo more listener
-                this.setMode(this.mode, false)
-            }
+            this.valueCallbacks.emit(value)
         }
     }
 
@@ -152,6 +150,7 @@ class Device {
         await this.setMode(mode, false)
         return new Promise(async (resolve) => {
             this.valueCallbacks.on((data) => {
+                console.log('value', data)
                 resolve(data)
                 return true
             })
@@ -167,7 +166,7 @@ class Device {
      * @returns 
      */
     async waitTestValue(mode, testFn) {
-        return new Promise(async (resolve) => {
+        await new Promise(async (resolve) => {
             await this.setMode(mode, true)
             this.valueCallbacks.on((value) => {
                 log('waitTestValue', value)
@@ -181,6 +180,7 @@ class Device {
             })
                 
         })
+        return this.setMode(mode, false)
     }
 
     async subscribe(mode, cbk, deltaInterval = 1) {

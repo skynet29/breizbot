@@ -304,19 +304,20 @@
          */
         async sendBuffer(buffer) {
             console.log('sendBuffer', buffer)
-            if (!this.busy) {
-                this.busy = true
-                await this.charac.writeValueWithoutResponse(buffer)
-                this.busy = false
-                if (this.cmdQueue.length > 0) {
-                    await this.sendBuffer(this.cmdQueue.shift())
-                }
+            await this.charac.writeValueWithoutResponse(buffer)
+            // if (!this.busy) {
+            //     this.busy = true
+            //     await this.charac.writeValueWithoutResponse(buffer)
+            //     this.busy = false
+            //     if (this.cmdQueue.length > 0) {
+            //         await this.sendBuffer(this.cmdQueue.shift())
+            //     }
 
-            }
-            else {
-                console.log('busy! push in queue')
-                this.cmdQueue.push(buffer)
-            }
+            // }
+            // else {
+            //     console.log('busy! push in queue')
+            //     this.cmdQueue.push(buffer)
+            // }
 
         }
 

@@ -32,13 +32,13 @@ class Device {
 
             return new Promise(async (resolve) => {
 
-                await this.hubDevice.sendMsg(MessageType.PORT_OUTPUT_COMMAND, this.portId, 0x11, data)
+                await this.hubDevice.sendMsg(MessageType.PORT_OUTPUT_COMMAND, this.portId, 0x01, data)
 
                 this.feedbackCallback = resolve
             })
         }
         else {
-            return this.hubDevice.sendMsg(MessageType.PORT_OUTPUT_COMMAND, this.portId, 0x10, data)
+            return this.hubDevice.sendMsg(MessageType.PORT_OUTPUT_COMMAND, this.portId, 0x00, data)
         }
 
     }

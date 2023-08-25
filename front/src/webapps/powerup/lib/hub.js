@@ -305,6 +305,7 @@
         async sendBuffer(buffer) {
             console.log('sendBuffer', buffer)
             await this.charac.writeValueWithoutResponse(buffer)
+            console.log('OK')
             // if (!this.busy) {
             //     this.busy = true
             //     await this.charac.writeValueWithoutResponse(buffer)

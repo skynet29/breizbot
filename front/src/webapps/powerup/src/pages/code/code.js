@@ -74,33 +74,33 @@ $$.control.registerControl('code', {
 			}
 		}
 
-		function onGamepadAxe(data) {
+		async function onGamepadAxe(data) {
 			//console.log('axe', data)
 			if (config.gamepadMapping) {
 				const { action } = config.gamepadMapping.axes[data.id]
 				if (action != 'None') {
-					callFunction(action, data.value)
+					await callFunction(action, data.value)
 				}
 			}
 		}
 
-		function onGamepadButtonDown(data) {
+		async function onGamepadButtonDown(data) {
 			console.log('buttonDown', data.id)
 			if (config.gamepadMapping) {
 				const { down } = config.gamepadMapping.buttons[data.id]
 				if (down != 'None') {
-					callFunction(down, 1)
+					await callFunction(down, 1)
 				}
 			}
 		}
 
-		function onGamepadButtonUp(data) {
+		async function onGamepadButtonUp(data) {
 			console.log('buttonDown', data.id)
 			if (config.gamepadMapping) {
 				const { up, down } = config.gamepadMapping.buttons[data.id]
 				if (up == 'Zero') {
 					if (down != 'None') {
-						callFunction(down, 0)
+						await callFunction(down, 0)
 					}
 				}
 				else if (up != 'None') {

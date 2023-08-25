@@ -73,7 +73,7 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
             'variables_set': async function (block) {
                 const varId = block.fields.VAR.id
                 const value = await evalCode(block.inputs.VALUE)
-                console.log(`${getVarName(varId)} = $[value}`)
+                console.log(`${getVarName(varId)} = ${value}`)
 
                 variablesValue[varId] = value
             },

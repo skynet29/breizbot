@@ -19,6 +19,9 @@ class TachoMotor extends Motor {
 
     setSpeed(speed) {
         console.log('setSpeed', this.portId, { speed })
+        if (speed == 0) {
+            return this.setPower(0)
+        }
         return this.writePortCommand(false, 0x07, speed, maxPower, 0)
     }
 

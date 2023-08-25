@@ -145,6 +145,62 @@ $$.control.registerControl('code', {
 			return hubDevice
 		}
 
+
+
+		blocklyInterpretor.addBlockType('object_getfield', async (block) => {
+
+			/**@type {string} */
+			const fieldName = block.fields.FIELD
+
+			const object = await blocklyInterpretor.evalCode(block.inputs.OBJECT)
+			console.log({ fieldName, object })
+
+			return object[fieldName]
+
+		})
+
+		blocklyInterpretor.addBlockType('create_device', async (block) => {
+
+			/**@type {number} */
+			const port = block.fields.PORT
+			console.log({ port })
+
+			const hubDevice = getHub(block)
+			return hubDevice.getDevice(port)
+
+		})
+
+		blocklyInterpretor.addBlockType('device_getvalue', async (block) => {
+			/**@type {HUB.DeviceMode} */
+			const mode = block.fields.MODE
+			/**@type {HUB.Device} */
+			const device = await blocklyInterpretor.evalCode(block.inputs.DEVICE)
+			console.log({ mode, device })
+			return device.getValue(mode)
+
+		})
+
+		blocklyInterpretor.addBlockType('wait_until_device', async (block) => {
+
+			/**@type {HUB.DeviceMode} */
+			const mode = block.fields.MODE
+
+			/**@type {HUB.Device} */
+			const device = await blocklyInterpretor.evalCode(block.inputs.DEVICE)
+			const varId = block.fields.VAR.id
+			console.log({ mode, device })
+
+			await device.waitTestValue(mode, async (value) => {
+				console.log('waitTestValue', value)
+				blocklyInterpretor.setVarValue(varId, value)
+				/**@type {boolean} */
+				const retValue = await blocklyInterpretor.evalCode(block.inputs.TEST)
+				return retValue
+			})
+
+
+		})
+
 		blocklyInterpretor.addBlockType('create_pair_motor', async (block) => {
 
 			/**@type {string} */
@@ -385,7 +441,7 @@ $$.control.registerControl('code', {
 			const hubDevice = getHub(block)
 			const device = hubDevice.getDevice(hub.PortMap.TILT_SENSOR)
 			const varValue = await blocklyInterpretor.evalCode(block.inputs.VAR)
-			console.log({varValue, operator, type})
+			console.log({ varValue, operator, type })
 
 			await device.waitTestValue(hub.DeviceMode.TILT_POS, (value) => {
 				return blocklyInterpretor.mathCompare(operator, value[type], varValue)
@@ -503,15 +559,15 @@ $$.control.registerControl('code', {
 					progressDlg.setPercentage(0)
 					progressDlg.show()
 					let nbAccess = 0
-					for(const hub of hubDevices) {
+					for (const hub of hubDevices) {
 						nbAccess += hub.getHubDevices().length
-					
+
 					}
-					console.log({nbAccess})
+					console.log({ nbAccess })
 					const range = $$.util.mapRange(0, nbAccess, 0, 1)
 					let i = 0
-					for(const hub of hubDevices) {
-						for(const device of hub.getHubDevices()) {
+					for (const hub of hubDevices) {
+						for (const device of hub.getHubDevices()) {
 							await device.readInfo()
 							progressDlg.setPercentage(range(++i))
 						}

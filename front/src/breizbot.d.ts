@@ -142,6 +142,7 @@ declare namespace Breizbot {
                 getVarValue(varId: string): any;
                 getVarName(varId: string): string;
                 mathCompare(operator: string, val1: number, val2: number):boolean;
+                setVarValue(varId: string, value:any):void;
             }
         }
 

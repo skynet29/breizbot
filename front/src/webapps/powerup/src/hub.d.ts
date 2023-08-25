@@ -61,9 +61,9 @@ declare namespace HUB {
         portId: number;
 
         getValue(mode: DeviceMode):Promise<number>;
-        waitTestValue(mode: DeviceMode, testFn: (value: number) => boolean):Promise<void>;
+        waitTestValue(mode: DeviceMode, testFn: (value: number) => Promise<boolean>):Promise<void>;
         setMode(mode: DeviceMode, notificationEnabled: boolean, deltaInterval?: number):Promise<void>;
-        subscribe(mode: DeviceMode, cbk: (value) => void, deltaInterval?: number):Promise<void>;
+        subscribe(mode: DeviceMode, cbk: (value) => Promise<void>, deltaInterval?: number):Promise<void>;
         readInfo():Promise<PortInformation>;
     }
 

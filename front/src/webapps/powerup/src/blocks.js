@@ -1,4 +1,75 @@
 (function () {
+
+    Blockly.Blocks['object_getfield'] = {
+        init: function () {
+            this.appendValueInput("OBJECT")
+                .setCheck(null)
+                .appendField("in Object");
+            this.appendDummyInput()
+                .appendField("get field")
+                .appendField(new Blockly.FieldTextInput(""), "FIELD");
+            this.setInputsInline(true);
+            this.setOutput(true, null);
+            this.setColour(230);
+            this.setTooltip("");
+            this.setHelpUrl("");
+        }
+    };
+
+    Blockly.Blocks['create_device'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("Device")
+                .appendField("HUB")
+                .appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")
+                .appendField("PORT")
+                .appendField(new Blockly.FieldNumber(0, 0, Infinity, 1), "PORT");
+            this.setOutput(true, "Device");
+            this.setColour(230);
+            this.setTooltip("");
+            this.setHelpUrl("");
+        }
+    };
+
+    Blockly.Blocks['device_getvalue'] = {
+        init: function() {
+          this.appendValueInput("DEVICE")
+              .setCheck(null)
+              .appendField("Device");
+          this.appendDummyInput()
+              .appendField("Mode")
+              .appendField(new Blockly.FieldNumber(0, 0, Infinity, 1), "MODE")
+              .appendField("getValue");
+          this.appendDummyInput();
+          this.setInputsInline(true);
+          this.setOutput(true, null);
+          this.setColour(230);
+       this.setTooltip("");
+       this.setHelpUrl("");
+        }
+      };
+
+    Blockly.Blocks['wait_until_device'] = {
+        init: function () {
+            this.appendValueInput("DEVICE")
+                .setCheck(null)
+                .appendField("Wait until Device");
+            this.appendDummyInput()
+                .appendField("Mode")
+                .appendField(new Blockly.FieldNumber(0, 0, Infinity, 1), "MODE");
+            this.appendValueInput("TEST")
+                .setCheck("Boolean")
+                .appendField(new Blockly.FieldVariable("value"), "VAR")
+                .appendField("Test");
+            this.setInputsInline(true);
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip("");
+            this.setHelpUrl("");
+        }
+    };
+
     Blockly.Blocks['create_tacho_motor'] = {
         init: function () {
             this.appendDummyInput()
@@ -264,19 +335,19 @@
     };
 
     Blockly.Blocks['wait_until_tilt'] = {
-        init: function() {
-          this.appendValueInput("VAR")
-              .setCheck("Number")
-              .appendField("HUB")
-              .appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")       
-              .appendField("wait until tilt")
-              .appendField(new Blockly.FieldDropdown([["Pitch","pitch"], ["Roll","roll"], ["Yaw","yaw"]]), "TYPE")
-              .appendField(new Blockly.FieldDropdown([["=","EQ"], ["!=","NEQ"], ["<","LT"], ["<=","LTE"], [">","GT"], [">=","GTE"]]), "OP")
-          this.setPreviousStatement(true, null);
-          this.setNextStatement(true, null);
-          this.setColour(230);
-       this.setTooltip("");
-       this.setHelpUrl("");
+        init: function () {
+            this.appendValueInput("VAR")
+                .setCheck("Number")
+                .appendField("HUB")
+                .appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")
+                .appendField("wait until tilt")
+                .appendField(new Blockly.FieldDropdown([["Pitch", "pitch"], ["Roll", "roll"], ["Yaw", "yaw"]]), "TYPE")
+                .appendField(new Blockly.FieldDropdown([["=", "EQ"], ["!=", "NEQ"], ["<", "LT"], ["<=", "LTE"], [">", "GT"], [">=", "GTE"]]), "OP")
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip("");
+            this.setHelpUrl("");
         }
-      };
+    };
 })();

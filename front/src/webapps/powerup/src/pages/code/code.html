@@ -202,6 +202,32 @@
     </category>
     <category name="Variables" custom="VARIABLE" categorystyle="variable_category"></category>
     <category name="Functions" custom="PROCEDURE" categorystyle="procedure_category"></category>
+    <category name="Object" colour="355">
+        <block type="object_getfield">
+            <value name="OBJECT">
+                <block type="variables_get">
+                    <field name="VAR">object</field>
+                </block>
+            </value>
+        </block>
+    </category>
+    <category name="Device" colour="355">
+        <block type="create_device"></block>
+        <block type="device_getvalue">
+            <value name="DEVICE">
+                <block type="variables_get">
+                    <field name="VAR">device</field>
+                </block>
+            </value>            
+        </block>
+        <block type="wait_until_device">
+            <value name="DEVICE">
+                <block type="variables_get">
+                    <field name="VAR">device</field>
+                </block>
+            </value>
+        </block>
+    </category>
     <category name="Motor" colour="355">
         <block type="create_motor"></block>
         <block type="motor_power">

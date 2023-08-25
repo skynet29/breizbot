@@ -19,7 +19,7 @@ class Device {
         this.type = type
         this.name = PortMapNames[portId]
         this.feedbackCallback = null
-        this.valueCallbacks = new CallbackEmitter()
+        this.valueCallback = undefined
         this.mode = undefined
 
     }
@@ -128,8 +128,8 @@ class Device {
         log('handleValue', this.portId, msg)
         let value = this.decodeValue(msg)
 
-        if (value != undefined) {
-            this.valueCallbacks.emit(value)
+        if (value != undefined && typeof this.valueCallback == 'function') {
+            this.valueCallback(value)
         }
     }
 
@@ -149,11 +149,11 @@ class Device {
 
         await this.setMode(mode, false)
         return new Promise(async (resolve) => {
-            this.valueCallbacks.on((data) => {
+            this.valueCallback = (data) => {
                 console.log('value', data)
                 resolve(data)
                 return true
-            })
+            }
             await this.hubDevice.sendMsg(MessageType.PORT_INFORMATION_REQUEST, this.portId, 0x00)
 
         })
@@ -162,22 +162,22 @@ class Device {
     /**
      * 
      * @param {number} mode 
-     * @param {(data) => boolean} testFn 
+     * @param {(data) => Promise<boolean>} testFn 
      * @returns 
      */
     async waitTestValue(mode, testFn) {
+        await this.setMode(mode, true)
+
         await new Promise(async (resolve) => {
-            await this.setMode(mode, true)
-            this.valueCallbacks.on((value) => {
+            this.valueCallback = async (value) => {
                 log('waitTestValue', value)
-                if (testFn(value)) {
+                const ret = await testFn(value)
+                if (ret) {
                     log('waitTestValue OK')
                     //await this.setMode(mode, false)
                     resolve()
-                    return true
                 }
-                return false
-            })
+            }
                 
         })
         return this.setMode(mode, false)
@@ -185,10 +185,9 @@ class Device {
 
     async subscribe(mode, cbk, deltaInterval = 1) {
         await this.setMode(mode, true, deltaInterval)
-        this.valueCallbacks.on((data) => {
-            cbk(data)
-            return false
-        })
+        this.valueCallback = async (data) => {
+            await cbk(data)
+        }
     }
 
 }

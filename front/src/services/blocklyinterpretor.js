@@ -387,6 +387,10 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
             return variablesValue[varId]
         }
 
+        function setVarValue(varId, value) {
+            variablesValue[varId] = value
+        }
+
         function getVarId(name) {
             return variablesDef.find((e) => e.name == name).id
         }
@@ -513,6 +517,7 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
             dumpVariables,
             addBlockType,
             getVarValue,
+            setVarValue,
             getVarName,
             getFunctionNames,
             callFunction,

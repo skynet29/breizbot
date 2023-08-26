@@ -18,40 +18,40 @@ class TachoMotor extends Motor {
     }
 
     setSpeed(speed) {
-        console.log('setSpeed', this.portId, { speed })
+        console.log('#setSpeed', this.portId, { speed })
         if (speed == 0) {
             return this.setPower(0)
         }
-        return this.writePortCommand(false, 0x07, speed, maxPower, 0)
+        return this.writePortCommand(true, 0x07, speed, maxPower, 0)
     }
 
-    rotateDegrees(degrees, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
-        console.log('rotateDegrees', this.portId, { degrees, speed, waitFeedback, brakingStyle })
-        return this.writePortCommand(waitFeedback, 0x0B, toInt32(degrees), speed, maxPower, brakingStyle)
+    rotateDegrees(degrees, speed, waitEnd, brakingStyle = BrakingStyle.BRAKE) {
+        console.log('rotateDegrees', this.portId, { degrees, speed, waitEnd, brakingStyle })
+        return this.writePortCommand(waitEnd, 0x0B, toInt32(degrees), speed, maxPower, brakingStyle)
     }
 
     /**
      * 
      * @param {number} angle 
      * @param {number} speed 
-     * @param {boolean} waitFeedback 
+     * @param {boolean} waitEnd 
      * @param {number} brakingStyle 
      * @returns 
      */
-    gotoAngle(angle, speed, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {
-        console.log('gotoAngle', this.portId, { angle, speed, waitFeedback, brakingStyle })
+    gotoAngle(angle, speed, waitEnd, brakingStyle = BrakingStyle.BRAKE) {
+        console.log('gotoAngle', this.portId, { angle, speed, waitEnd, brakingStyle })
 
         if (this.calibrationValue) {
             angle *= this.calibrationValue
         }
 
-        return this.writePortCommand(waitFeedback, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
+        return this.writePortCommand(waitEnd, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
     }
 
-    setSpeedForTime(speed, time, waitFeedback = false, brakingStyle = BrakingStyle.BRAKE) {
+    setSpeedForTime(speed, time, waitEnd = false, brakingStyle = BrakingStyle.BRAKE) {
 
-        console.log('setSpeedForTime', this.portId, { speed, time, waitFeedback, brakingStyle })
-        return this.writePortCommand(waitFeedback, 0x09, toInt16(time), speed, maxPower, brakingStyle)
+        console.log('setSpeedForTime', this.portId, { speed, time, waitEnd, brakingStyle })
+        return this.writePortCommand(waitEnd, 0x09, toInt16(time), speed, maxPower, brakingStyle)
     }
 
     resetZero() {

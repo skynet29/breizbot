@@ -18,7 +18,7 @@ class Motor extends Device {
 
     setPower(power) {
         console.log('setPower', this.portId, { power })
-        return this.writeDirectMode(DeviceMode.POWER, false, power)
+        return this.writeDirectMode(DeviceMode.POWER, power)
     }
 
 

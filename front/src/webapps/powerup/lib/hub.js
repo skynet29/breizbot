@@ -47,15 +47,13 @@
     }
 
 
-
-
     /**
      * 
      * @param  {...any} data 
      * @returns {ArrayBuffer}
      */
     function formatMsg(msgType, ...data) {
-        const buff = data.flat(3)
+        const buff = data.flat(4)
         const msgLen = buff.length + 3
         const buffer = new ArrayBuffer(msgLen)
         const uint8Buffer = new Uint8Array(buffer)
@@ -93,9 +91,30 @@
             /**@type {{[portId: string]: Device}} */
             this.hubDevices = {}
             this.busy = false
-            this.cmdQueue = []
             this.attachCallbacks = new CallbackEmitter()
+            this.portCmdQueue = []
+
         }
+
+        async writePortCommand(portId, ...data) {
+
+            console.log('#writePortCommand', { portId, data })
+
+            const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, data)
+
+            if (!this.busy)  {
+                this.busy = true
+                await this.sendBuffer(buffer)
+            }
+            else {
+                this.portCmdQueue.push(buffer)
+                console.log('# Busy ! wait feedback')
+                
+            }
+
+        }
+
+
 
         /**
          * 
@@ -303,7 +322,7 @@
          * @param  {ArrayBuffer} buffer 
          */
         async sendBuffer(buffer) {
-            console.log('sendBuffer', buffer)
+            console.log('# sendBuffer', buffer)
             await this.charac.writeValueWithoutResponse(buffer)
             // console.log('OK')
             // if (!this.busy) {
@@ -610,9 +629,17 @@
                 const portId = msg.getUint8(offset)
                 const feedback = msg.getUint8(offset + 1)
                 const device = this.hubDevices[portId]
-                log('handlePortCommandFeedback', { portId, feedback })
-                if (feedback == 10 && device != undefined) {
-                    device.handleFeedback()
+                console.log('#handlePortCommandFeedback', { portId, feedback })
+                this.busy = false
+                if (device != undefined) {
+                    device.handleFeedback(feedback)
+                }
+                
+                const buffer = this.portCmdQueue.shift()
+                if (buffer) {
+                    console.log('# process queued cmd')
+                    this.busy = true
+                    this.sendBuffer(buffer)
                 }
 
             }

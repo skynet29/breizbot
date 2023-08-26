@@ -84,6 +84,7 @@ declare namespace Breizbot {
 
             interface Interface {
                 on(event: EventName, callback: (ev: Info) => void): void;
+                off(event: EventName, callback: (ev: Info) => void): void;
                 getGamepads(): Array<Info>;
                 checkGamePadStatus():void;
                 getButtonState(buttonId: number):boolean;
@@ -669,4 +670,6 @@ interface JQueryStatic {
 
 interface EventEmitter2 {
     on(evtName: string, cbk: () => void): void;
+    off(evtName: string, cbk: () => void): void;
+    emit(evtName: string, value:any):void;
 }

@@ -1,8 +1,8 @@
 //@ts-check
 
 const CallbackEmitter = require('./CallbackEmitter')
-const {MessageType, PortMapNames} = require('./Const')
-const {log, toUint32} = require('./Util')
+const { MessageType, PortMapNames } = require('./Const')
+const { log, toUint32 } = require('./Util')
 
 const deviceInfo = {}
 
@@ -21,38 +21,40 @@ class Device {
         this.feedbackCallback = null
         this.valueCallback = undefined
         this.mode = undefined
+        this.waitEnd = false
 
     }
 
-    async writePortCommand(waitFeedback, ...data) {
+    async writePortCommand(waitEnd, ...data) {
+        this.waitEnd = waitEnd
+        return new Promise(async (resolve) => {
+            this.feedbackCallback = resolve
+            await this.hubDevice.writePortCommand(this.portId, data)
+        })  
 
-        log('writePortCommand', this.portId, { waitFeedback, data })
+    }
 
-        if (waitFeedback) {
-
-            return new Promise(async (resolve) => {
-
-                await this.hubDevice.sendMsg(MessageType.PORT_OUTPUT_COMMAND, this.portId, 0x01, data)
-
-                this.feedbackCallback = resolve
-            })
+    handleFeedback(feedback) {
+        if (typeof this.feedbackCallback == 'function') {
+            if (feedback == 1 && !this.waitEnd) {
+                this.feedbackCallback()
+            }
+            else if (feedback == 10 && this.waitEnd) {
+                this.feedbackCallback()
+            }
+            
         }
-        else {
-            return this.hubDevice.sendMsg(MessageType.PORT_OUTPUT_COMMAND, this.portId, 0x00, data)
-        }
-
     }
 
     /**
      * 
      * @param {number} mode
-     * @param {boolean} waitFeedback 
      * @param  {...any} data 
      * @returns 
      */
-    writeDirectMode(mode, waitFeedback, ...data) {
-        log('writeDirectMode', this.portId, {mode, waitFeedback })
-        return this.writePortCommand(waitFeedback, 0x51, mode, data)
+    writeDirectMode(mode, ...data) {
+        log('writeDirectMode', this.portId, { mode })
+        return this.writePortCommand(true, 0x51, mode, data)
     }
 
     /**
@@ -75,7 +77,7 @@ class Device {
         let info = deviceInfo[this.type]
         if (info == undefined) {
             info = await this.hubDevice.getPortInformation(this.portId)
-            deviceInfo[this.type] = info           
+            deviceInfo[this.type] = info
         }
         return info
     }
@@ -87,14 +89,14 @@ class Device {
     decodeValue(msg) {
         const info = deviceInfo[this.type]
         if (info != undefined) {
-            const {VALUE_FORMAT, RAW, SI} = info.modes[this.mode]
+            const { VALUE_FORMAT, RAW, SI } = info.modes[this.mode]
             const range = $$.util.mapRange(RAW.min, RAW.max, SI.min, SI.max)
-            const {dataType, numValues} = VALUE_FORMAT
+            const { dataType, numValues } = VALUE_FORMAT
             const ret = []
             let offset = 4
             let val
-            for(let idx = 0; idx < numValues; idx++) {
-                switch(dataType) {
+            for (let idx = 0; idx < numValues; idx++) {
+                switch (dataType) {
                     case '16bit':
                         val = msg.getInt16(offset, true)
                         offset += 2
@@ -110,7 +112,7 @@ class Device {
                     case 'float':
                         val = msg.getFloat32(offset, true)
                         offset += 4
-                        break;    
+                        break;
 
                 }
                 log('val', val)
@@ -133,11 +135,6 @@ class Device {
         }
     }
 
-    handleFeedback() {
-        if (typeof this.feedbackCallback == 'function') {
-            this.feedbackCallback()
-        }
-    }
 
     /**
      * 
@@ -178,7 +175,7 @@ class Device {
                     resolve()
                 }
             }
-                
+
         })
         return this.setMode(mode, false)
     }

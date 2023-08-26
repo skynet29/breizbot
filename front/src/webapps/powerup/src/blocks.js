@@ -189,10 +189,10 @@
                 .appendField("Speed");
             this.appendValueInput("TIME")
                 .setCheck("Number")
-                .appendField("Time (ms)");
+                .appendField("Time (sec)");
             this.appendDummyInput()
                 .appendField("Wait")
-                .appendField(new Blockly.FieldCheckbox("TRUE"), "WAITME");
+                .appendField(new Blockly.FieldCheckbox("TRUE"), "WAIT");
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setColour(230);
@@ -234,7 +234,7 @@
                 .appendField("Angle");
             this.appendDummyInput()
                 .appendField("Wait")
-                .appendField(new Blockly.FieldCheckbox("TRUE"), "WAITME");
+                .appendField(new Blockly.FieldCheckbox("TRUE"), "WAIT");
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setColour(230);
@@ -296,7 +296,7 @@
         init: function () {
             this.appendValueInput("TIME")
                 .setCheck("Number")
-                .appendField("Sleep (ms)");
+                .appendField("Sleep (sec)");
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setColour(230);

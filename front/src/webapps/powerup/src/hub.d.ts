@@ -48,6 +48,7 @@ declare namespace HUB {
         getTiltSensor(portId: number):Promise<TiltSensor>; 
         getLed(portId: number):Promise<Led>;
 
+        writePortCommand(portId: number, ...data):Promise<void>;
 
 
         getPortIdFromName(name: string): number;

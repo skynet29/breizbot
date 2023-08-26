@@ -74,12 +74,20 @@ $$.control.registerControl('code', {
 			}
 		}
 
+		let gamepadAxesValue = {}
+
 		async function onGamepadAxe(data) {
 			//console.log('axe', data)
 			if (config.gamepadMapping) {
 				const { action } = config.gamepadMapping.axes[data.id]
+				let {value} = data
 				if (action != 'None') {
-					await callFunction(action, data.value)
+					value = Math.sign(value) * 100
+					if (value != (gamepadAxesValue[data.id] || 0)) {
+						gamepadAxesValue[data.id] = value
+						await callFunction(action, value)
+					}
+					
 				}
 			}
 		}
@@ -109,15 +117,25 @@ $$.control.registerControl('code', {
 			}
 		}
 
-		gamepad.on('axe', onGamepadAxe)
-		gamepad.on('buttonDown', onGamepadButtonDown)
-		gamepad.on('buttonUp', onGamepadButtonUp)
+		function enableCallback(enabled) {
+			if (enabled) {
+				gamepad.on('axe', onGamepadAxe)
+				gamepad.on('buttonDown', onGamepadButtonDown)
+				gamepad.on('buttonUp', onGamepadButtonUp)	
+			}
+			else {
+				gamepad.off('axe', onGamepadAxe)
+				gamepad.off('buttonDown', onGamepadButtonDown)
+				gamepad.off('buttonUp', onGamepadButtonUp)
+			}
+		}
+
+		enableCallback(true)
+
 
 		this.dispose = function () {
 			console.log('dispose')
-			gamepad.off('axe', onGamepadAxe)
-			gamepad.off('buttonDown', onGamepadButtonDown)
-			gamepad.off('buttonUp', onGamepadButtonUp)
+			enableCallback(false)
 
 		}
 
@@ -325,15 +343,15 @@ $$.control.registerControl('code', {
 			/**@type {number} */
 			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED)
 
-			const waitFeedback = block.fields.WAIT
+			const waitEnd = block.fields.WAIT
 
 			/**@type {number} */
 			const time = await blocklyInterpretor.evalCode(block.inputs.TIME)
 
 			const motor = getTachoMotor(block)
 
-			console.log({ speed, time, waitFeedback })
-			await motor.setSpeedForTime(speed, time, waitFeedback, hub.BrakingStyle.FLOAT)
+			console.log({ speed, time, waitEnd })
+			await motor.setSpeedForTime(speed, time * 1000, waitEnd, hub.BrakingStyle.FLOAT)
 
 		})
 
@@ -344,13 +362,13 @@ $$.control.registerControl('code', {
 			/**@type {number} */
 			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED)
 
-			const waitFeedback = block.fields.WAIT
+			const waitEnd = block.fields.WAIT
 
 			/**@type {number} */
 			const degrees = await blocklyInterpretor.evalCode(block.inputs.DEGREES)
 
-			console.log({ speed, degrees, waitFeedback })
-			await motor.rotateDegrees(degrees, speed, waitFeedback, hub.BrakingStyle.BRAKE)
+			console.log({ speed, degrees, waitEnd })
+			await motor.rotateDegrees(degrees, speed, waitEnd, hub.BrakingStyle.BRAKE)
 
 		})
 
@@ -361,13 +379,13 @@ $$.control.registerControl('code', {
 			/**@type {number} */
 			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED)
 
-			const waitFeedback = block.fields.WAIT
+			const waitEnd = block.fields.WAIT
 
 			/**@type {number} */
 			const angle = await blocklyInterpretor.evalCode(block.inputs.ANGLE)
 
-			console.log({ speed, angle, waitFeedback })
-			await motor.gotoAngle(angle, speed, waitFeedback, hub.BrakingStyle.FLOAT)
+			console.log({ speed, angle, waitEnd })
+			await motor.gotoAngle(angle, speed, waitEnd, hub.BrakingStyle.FLOAT)
 
 		})
 
@@ -456,7 +474,7 @@ $$.control.registerControl('code', {
 		blocklyInterpretor.addBlockType('sleep', async (block) => {
 			const time = await blocklyInterpretor.evalCode(block.inputs.TIME)
 			console.log({ time })
-			await $$.util.wait(time)
+			await $$.util.wait(time * 1000)
 		})
 
 		function loadCode(code) {
@@ -494,6 +512,7 @@ $$.control.registerControl('code', {
 
 					const code = getCode()
 					console.log('config', config)
+					enableCallback(false)
 
 					pager.pushPage('gamepad', {
 						title: 'Gamepad',
@@ -506,6 +525,10 @@ $$.control.registerControl('code', {
 
 							config.gamepadMapping = mapping
 							config.mappings[mapping.id] = mapping
+							enableCallback(true)
+						},
+						onBack: () =>  {
+							enableCallback(true)
 						}
 					})
 				},
@@ -574,6 +597,7 @@ $$.control.registerControl('code', {
 					}
 					progressDlg.hide()
 					const info = getCode()
+					gamepadAxesValue = {}
 					ctrl.setData({ logs: [] })
 					try {
 						await blocklyInterpretor.startCode(info)

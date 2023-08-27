@@ -442,12 +442,15 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
 
         function getFunctionNames({ blocks }) {
             const ret = []
-            for (let block of blocks.blocks) {
-                if (block.type == 'procedures_defnoreturn' || block.type == 'procedures_defreturn') {
-                    const procedureName = block.fields.NAME
-                    ret.push(procedureName)
+            if (blocks && blocks.blocks) {
+                for (let block of blocks.blocks) {
+                    if (block.type == 'procedures_defnoreturn' || block.type == 'procedures_defreturn') {
+                        const procedureName = block.fields.NAME
+                        ret.push(procedureName)
+                    }
                 }
             }
+
             return ret
         }
 

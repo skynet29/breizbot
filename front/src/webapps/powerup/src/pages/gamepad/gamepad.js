@@ -18,9 +18,10 @@ $$.control.registerControl('gamepad', {
 	 */
 	init: function (elt, pager, gamepad) {
 
+		console.log('props', this.props)
+
 		const {mapping, actions} = this.props
 
-		actions.unshift('Zero')
 		actions.unshift('None')
 
 		console.log(this.props)
@@ -44,8 +45,20 @@ $$.control.registerControl('gamepad', {
 
 		if (buttons.length == 0) {	
 			for (let i = 0; i < info.buttons.length; i++) {
-				buttons.push({ up: 'None', down: 'None' })
+				buttons.push({ up: 'None', down: 'None', upValue: 0, downValue: 1 })
 			}
+		}
+
+		function resetValue() {
+			let axes = []
+			let buttons = []
+			for (let i = 0; i < info.axes.length; i++) {
+				axes.push({ action: 'None' })
+			}
+			for (let i = 0; i < info.buttons.length; i++) {
+				buttons.push({ up: 'None', down: 'None', upValue: 0, downValue: 1 })
+			}
+			ctrl.setData({axes, buttons})
 		}
 
 		
@@ -123,10 +136,14 @@ $$.control.registerControl('gamepad', {
 			buttonsElt.find('tr').each(function (idx) {
 				const up = $(this).find('.up').getValue()
 				const down = $(this).find('.down').getValue()
+				const upValue = $(this).find('.upValue').getValue()
+				const downValue = $(this).find('.downValue').getValue()
 
 				ret.buttons.push({
 					up,
-					down
+					down,
+					upValue,
+					downValue
 				})
 			})		
 			
@@ -143,6 +160,11 @@ $$.control.registerControl('gamepad', {
 					onClick: function () {
 						pager.popPage(getInfo())
 					}
+				},
+				reset: {
+					icon: 'fas fa-sync',
+					title: 'Reset value',
+					onClick: resetValue
 				}
 			}
 

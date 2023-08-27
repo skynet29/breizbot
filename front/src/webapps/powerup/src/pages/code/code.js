@@ -80,14 +80,14 @@ $$.control.registerControl('code', {
 			//console.log('axe', data)
 			if (config.gamepadMapping) {
 				const { action } = config.gamepadMapping.axes[data.id]
-				let {value} = data
+				let { value } = data
 				if (action != 'None') {
 					value = Math.sign(value) * 100
 					if (value != (gamepadAxesValue[data.id] || 0)) {
 						gamepadAxesValue[data.id] = value
 						await callFunction(action, value)
 					}
-					
+
 				}
 			}
 		}
@@ -95,9 +95,9 @@ $$.control.registerControl('code', {
 		async function onGamepadButtonDown(data) {
 			console.log('buttonDown', data.id)
 			if (config.gamepadMapping) {
-				const { down } = config.gamepadMapping.buttons[data.id]
+				const { down, downValue } = config.gamepadMapping.buttons[data.id]
 				if (down != 'None') {
-					await callFunction(down, 1)
+					await callFunction(down, downValue)
 				}
 			}
 		}
@@ -105,15 +105,11 @@ $$.control.registerControl('code', {
 		async function onGamepadButtonUp(data) {
 			console.log('buttonDown', data.id)
 			if (config.gamepadMapping) {
-				const { up, down } = config.gamepadMapping.buttons[data.id]
-				if (up == 'Zero') {
-					if (down != 'None') {
-						await callFunction(down, 0)
-					}
+				const { up, upValue } = config.gamepadMapping.buttons[data.id]
+				if (up != 'None') {
+					await callFunction(up, upValue)
 				}
-				else if (up != 'None') {
-					callFunction(up, 1)
-				}
+
 			}
 		}
 
@@ -121,7 +117,7 @@ $$.control.registerControl('code', {
 			if (enabled) {
 				gamepad.on('axe', onGamepadAxe)
 				gamepad.on('buttonDown', onGamepadButtonDown)
-				gamepad.on('buttonUp', onGamepadButtonUp)	
+				gamepad.on('buttonUp', onGamepadButtonUp)
 			}
 			else {
 				gamepad.off('axe', onGamepadAxe)
@@ -511,7 +507,7 @@ $$.control.registerControl('code', {
 				onGamePad: function () {
 
 					const code = getCode()
-					console.log('config', config)
+					console.log('code', code)
 					enableCallback(false)
 
 					pager.pushPage('gamepad', {
@@ -527,7 +523,7 @@ $$.control.registerControl('code', {
 							config.mappings[mapping.id] = mapping
 							enableCallback(true)
 						},
-						onBack: () =>  {
+						onBack: () => {
 							enableCallback(true)
 						}
 					})

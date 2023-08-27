@@ -110,7 +110,11 @@
   z-index: 2;
 }
 .gamepad .commandTable .item {
-  cursor: pointer;
+  display: flex;
+}
+.gamepad .commandTable .item input {
+  margin-left: 10px;
+  width: 80px;
 }
 .hubinfo {
   margin: 5px;

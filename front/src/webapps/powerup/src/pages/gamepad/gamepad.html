@@ -15,8 +15,9 @@
             <tr>
                 <td bn-text="getAxeLabel"></td>
                 <td>
-                    <div bn-control="brainjs.combobox" bn-data="{items: actions}" bn-val="$scope.$i.action" class="item"></div>
-                </td>                
+                    <div bn-control="brainjs.combobox" bn-data="{items: actions}" bn-val="$scope.$i.action"
+                        class="item"></div>
+                </td>
             </tr>
         </tbody>
     </table>
@@ -32,16 +33,26 @@
                 <th>Up</th>
             </tr>
         </thead>
-        <tbody bn-each="buttons" bn-bind="buttons" bn-index="idx" bn-event="click.item: onButtonClick">
+        <tbody bn-each="buttons" bn-bind="buttons" bn-index="idx">
             <tr>
                 <td bn-text="getButtonLabel"></td>
                 <td>
-                    <div bn-control="brainjs.combobox" bn-data="{items: actions}" bn-val="$scope.$i.down" class="down"></div>
+                    <div class="item">
+                        <div bn-control="brainjs.combobox" bn-data="{items: actions}" bn-val="$scope.$i.down"
+                            class="down"></div>
+                        <input bn-val="$scope.$i.downValue" type="number" class="downValue">
+
                     </div>
+
                 </td>
                 <td>
-                    <div bn-control="brainjs.combobox" bn-data="{items: actions}" bn-val="$scope.$i.up" class="up"></div>
+                    <div class="item">
+                        <div bn-control="brainjs.combobox" bn-data="{items: actions}" bn-val="$scope.$i.up" class="up">
+                        </div>
+                        <input bn-val="$scope.$i.upValue" type="number" class="upValue">
                     </div>
+
+
                 </td>
 
             </tr>

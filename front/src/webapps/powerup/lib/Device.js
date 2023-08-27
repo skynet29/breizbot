@@ -25,6 +25,12 @@ class Device {
 
     }
 
+    /**
+     * 
+     * @param {boolean} waitEnd 
+     * @param  {...any} data 
+     * @returns 
+     */
     async writePortCommand(waitEnd, ...data) {
         this.waitEnd = waitEnd
         return new Promise(async (resolve) => {

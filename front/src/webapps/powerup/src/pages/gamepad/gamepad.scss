@@ -34,7 +34,11 @@
         }
 
         .item {
-            cursor: pointer;
+            display: flex;
+            input {
+                margin-left: 10px;
+                width: 80px
+            }
         }
     }
 }

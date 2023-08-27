@@ -22,6 +22,7 @@ class Device {
         this.valueCallback = undefined
         this.mode = undefined
         this.waitEnd = false
+        this.notificationEnabled = false
 
     }
 
@@ -74,6 +75,7 @@ class Device {
         console.log('setMode', this.portId, { mode, notificationEnabled })
 
         this.mode = mode
+        this.notificationEnabled = notificationEnabled
 
         return this.hubDevice.sendMsg(MessageType.PORT_INPUT_FORMAT_SETUP_SINGLE,
             this.portId, mode, toUint32(deltaInterval), notificationEnabled ? 0x01 : 0)
@@ -190,6 +192,12 @@ class Device {
         await this.setMode(mode, true, deltaInterval)
         this.valueCallback = async (data) => {
             await cbk(data)
+        }
+    }
+
+    async unsubscribe() {
+        if (this.notificationEnabled) {
+            this.setMode(this.mode, false)
         }
     }
 

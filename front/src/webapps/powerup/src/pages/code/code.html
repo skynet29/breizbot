@@ -4,11 +4,13 @@
         <button bn-event="click: onNewConfig" bn-icon="fa fa-file" title="Reset Config"></button>
 
         <button bn-event="click: onConfig" bn-icon="fa fa-folder-open" title="Open Config"></button>
-    
+
         <button bn-event="click: onSaveConfig" bn-icon="fa fa-save" title="Save current config"></button>
-    
-        <button bn-event="click: onRun" >Run</button>
-    
+
+        <button bn-event="click: onRun">Run</button>
+
+        <button bn-event="click: onStop">Stop</button>
+
         <button bn-event="click: onGamePad" bn-show="gamepadConnected">Gamepad</button>
     </div>
 
@@ -23,7 +25,7 @@
 
 </div>
 <div id="blocklyDiv"></div>
-<div class="logPanel" bn-html="getLogs"></div>
+<div class="logPanel" bn-html="getLogs" bn-bind="logPanel"></div>
 
 <xml id="toolbox" style="display: none;">
     <category name="Logic" categorystyle="logic_category">
@@ -218,9 +220,16 @@
                 <block type="variables_get">
                     <field name="VAR">device</field>
                 </block>
-            </value>            
+            </value>
         </block>
         <block type="wait_until_device">
+            <value name="DEVICE">
+                <block type="variables_get">
+                    <field name="VAR">device</field>
+                </block>
+            </value>
+        </block>
+        <block type="device_subscribe">
             <value name="DEVICE">
                 <block type="variables_get">
                     <field name="VAR">device</field>
@@ -312,15 +321,6 @@
         <block type="hub_color"></block>
         <block type="hub_get_tilt"></block>
         <block type="hub_get_voltage"></block>
-        <block type="wait_until_tilt">
-            <value name="VAR">
-                <shadow type="math_number">
-                    <field name="NUM">90</field>
-                </shadow>
-            </value>
-        </block>
-
-
     </category>
     <category name="System" colour="355">
         <block type="sleep">

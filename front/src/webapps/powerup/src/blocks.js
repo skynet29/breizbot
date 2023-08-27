@@ -32,22 +32,22 @@
     };
 
     Blockly.Blocks['device_getvalue'] = {
-        init: function() {
-          this.appendValueInput("DEVICE")
-              .setCheck(null)
-              .appendField("Device");
-          this.appendDummyInput()
-              .appendField("Mode")
-              .appendField(new Blockly.FieldNumber(0, 0, Infinity, 1), "MODE")
-              .appendField("getValue");
-          this.appendDummyInput();
-          this.setInputsInline(true);
-          this.setOutput(true, null);
-          this.setColour(230);
-       this.setTooltip("");
-       this.setHelpUrl("");
+        init: function () {
+            this.appendValueInput("DEVICE")
+                .setCheck(null)
+                .appendField("Device");
+            this.appendDummyInput()
+                .appendField("Mode")
+                .appendField(new Blockly.FieldNumber(0, 0, Infinity, 1), "MODE")
+                .appendField("getValue");
+            this.appendDummyInput();
+            this.setInputsInline(true);
+            this.setOutput(true, null);
+            this.setColour(230);
+            this.setTooltip("");
+            this.setHelpUrl("");
         }
-      };
+    };
 
     Blockly.Blocks['wait_until_device'] = {
         init: function () {
@@ -334,20 +334,28 @@
         }
     };
 
-    Blockly.Blocks['wait_until_tilt'] = {
-        init: function () {
-            this.appendValueInput("VAR")
-                .setCheck("Number")
-                .appendField("HUB")
-                .appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")
-                .appendField("wait until tilt")
-                .appendField(new Blockly.FieldDropdown([["Pitch", "pitch"], ["Roll", "roll"], ["Yaw", "yaw"]]), "TYPE")
-                .appendField(new Blockly.FieldDropdown([["=", "EQ"], ["!=", "NEQ"], ["<", "LT"], ["<=", "LTE"], [">", "GT"], [">=", "GTE"]]), "OP")
-            this.setPreviousStatement(true, null);
-            this.setNextStatement(true, null);
-            this.setColour(230);
-            this.setTooltip("");
-            this.setHelpUrl("");
+
+    Blockly.Blocks['device_subscribe'] = {
+        init: function() {
+          this.appendValueInput("DEVICE")
+              .setCheck(null)
+              .appendField("Device");
+          this.appendDummyInput()
+              .appendField("Mode")
+              .appendField(new Blockly.FieldNumber(0, 0, Infinity, 1), "MODE")
+              .appendField("delta")
+              .appendField(new Blockly.FieldNumber(1, 1), "DELTA")
+              .appendField("subscribe")
+              .appendField(new Blockly.FieldVariable("value"), "VAR");
+          this.appendStatementInput("DO")
+              .setCheck(null);
+          this.setInputsInline(true);
+          this.setPreviousStatement(true, null);
+          this.setNextStatement(true, null);
+          this.setColour(230);
+       this.setTooltip("");
+       this.setHelpUrl("");
         }
-    };
+      };
+
 })();

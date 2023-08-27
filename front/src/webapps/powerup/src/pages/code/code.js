@@ -16,11 +16,11 @@ $$.control.registerControl('code', {
 	 * 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {Breizbot.Services.BlocklyInterpretor.Interface} blocklyInterpretor
-	 * @param {HUB} hub
+	 * @param {HUB} hubSrv
 	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
 	 * @param {Breizbot.Services.Http.Interface} http
 	 */
-	init: function (elt, pager, blocklyInterpretor, hub, gamepad, http) {
+	init: function (elt, pager, blocklyInterpretor, hubSrv, gamepad, http) {
 
 		console.log('props', this.props)
 
@@ -147,6 +147,7 @@ $$.control.registerControl('code', {
 		blocklyInterpretor.setLogFunction((text) => {
 			ctrl.model.logs.push(text)
 			ctrl.update()
+			logPanel.scrollToBottom()
 		})
 
 		function getHub(block) {
@@ -211,8 +212,24 @@ $$.control.registerControl('code', {
 				const retValue = await blocklyInterpretor.evalCode(block.inputs.TEST)
 				return retValue
 			})
+		})
 
+		blocklyInterpretor.addBlockType('device_subscribe', async (block) => {
 
+			/**@type {HUB.DeviceMode} */
+			const mode = block.fields.MODE
+
+			const deltaInterval = block.fields.DELTA
+
+			/**@type {HUB.Device} */
+			const device = await blocklyInterpretor.evalCode(block.inputs.DEVICE)
+			console.log({ mode, deltaInterval, device })
+			const varId = block.fields.VAR.id
+
+			await device.subscribe(mode, async (value) => {
+				blocklyInterpretor.setVarValue(varId, value)
+				await blocklyInterpretor.evalCode(block.inputs.DO)
+			}, deltaInterval)
 		})
 
 		blocklyInterpretor.addBlockType('create_pair_motor', async (block) => {
@@ -224,7 +241,7 @@ $$.control.registerControl('code', {
 			const portName2 = block.fields.PORT2
 
 			const hubDevice = getHub(block)
-			const motor = await hubDevice.getDblMotor(hub.PortMap[portName1], hub.PortMap[portName2])
+			const motor = await hubDevice.getDblMotor(hubSrv.PortMap[portName1], hubSrv.PortMap[portName2])
 
 			return motor
 
@@ -236,8 +253,8 @@ $$.control.registerControl('code', {
 			const portName = block.fields.PORT
 
 			const hubDevice = getHub(block)
-			const motor = hubDevice.getDevice(hub.PortMap[portName])
-			if (!hub.isTachoMotor(motor)) {
+			const motor = hubDevice.getDevice(hubSrv.PortMap[portName])
+			if (!hubSrv.isTachoMotor(motor)) {
 				throw `Device connected to port '${portName}' is not of a TachoMotor`
 			}
 			return motor
@@ -250,8 +267,8 @@ $$.control.registerControl('code', {
 			const portName = block.fields.PORT
 
 			const hubDevice = getHub(block)
-			const motor = hubDevice.getDevice(hub.PortMap[portName])
-			if (!hub.isMotor(motor)) {
+			const motor = hubDevice.getDevice(hubSrv.PortMap[portName])
+			if (!hubSrv.isMotor(motor)) {
 				throw `Device connected to port '${portName}' is not of a Motor`
 			}
 			return motor
@@ -263,7 +280,7 @@ $$.control.registerControl('code', {
 			const varId = block.fields.VAR.id
 			/**@type {HUB.Motor} */
 			const motor = blocklyInterpretor.getVarValue(varId)
-			if (typeof motor != 'object' || !hub.isMotor(motor)) {
+			if (typeof motor != 'object' || !hubSrv.isMotor(motor)) {
 				const varName = blocklyInterpretor.getVarName(varId)
 				throw `variable '${varName}' is not of type Motor`
 			}
@@ -275,7 +292,7 @@ $$.control.registerControl('code', {
 			const varId = block.fields.VAR.id
 			/**@type {HUB.TachoMotor} */
 			const motor = blocklyInterpretor.getVarValue(varId)
-			if (typeof motor != 'object' || !hub.isTachoMotor(motor)) {
+			if (typeof motor != 'object' || !hubSrv.isTachoMotor(motor)) {
 				const varName = blocklyInterpretor.getVarName(varId)
 				throw `variable '${varName}' is not of type TachoMotor`
 			}
@@ -288,7 +305,7 @@ $$.control.registerControl('code', {
 			/**@type {HUB.DoubleMotor} */
 			const motor = blocklyInterpretor.getVarValue(varId)
 			console.log('motor', motor)
-			if (typeof motor != 'object' || !hub.isDoubleMotor(motor)) {
+			if (typeof motor != 'object' || !hubSrv.isDoubleMotor(motor)) {
 				const varName = blocklyInterpretor.getVarName(varId)
 				throw `variable '${varName}' is not of type PairMotor`
 			}
@@ -347,7 +364,7 @@ $$.control.registerControl('code', {
 			const motor = getTachoMotor(block)
 
 			console.log({ speed, time, waitEnd })
-			await motor.setSpeedForTime(speed, time * 1000, waitEnd, hub.BrakingStyle.FLOAT)
+			await motor.setSpeedForTime(speed, time * 1000, waitEnd, hubSrv.BrakingStyle.FLOAT)
 
 		})
 
@@ -364,7 +381,7 @@ $$.control.registerControl('code', {
 			const degrees = await blocklyInterpretor.evalCode(block.inputs.DEGREES)
 
 			console.log({ speed, degrees, waitEnd })
-			await motor.rotateDegrees(degrees, speed, waitEnd, hub.BrakingStyle.BRAKE)
+			await motor.rotateDegrees(degrees, speed, waitEnd, hubSrv.BrakingStyle.BRAKE)
 
 		})
 
@@ -381,7 +398,7 @@ $$.control.registerControl('code', {
 			const angle = await blocklyInterpretor.evalCode(block.inputs.ANGLE)
 
 			console.log({ speed, angle, waitEnd })
-			await motor.gotoAngle(angle, speed, waitEnd, hub.BrakingStyle.FLOAT)
+			await motor.gotoAngle(angle, speed, waitEnd, hubSrv.BrakingStyle.FLOAT)
 
 		})
 
@@ -420,20 +437,21 @@ $$.control.registerControl('code', {
 
 			const hubDevice = getHub(block)
 			/**@type {HUB.RgbLed} */
-			const led = hubDevice.getDevice(hub.PortMap.HUB_LED)
-			await led.setColor(hub.Color[color])
+			const led = hubDevice.getDevice(hubSrv.PortMap.HUB_LED)
+			await led.setColor(hubSrv.Color[color])
 
 		})
 
 		async function getHubValue(block, portId, mode) {
 			const hubDevice = getHub(block)
 			const device = hubDevice.getDevice(portId)
+			console.log('getHubValue', {portId, mode, device})
 			return device.getValue(mode)
 		}
 
 		blocklyInterpretor.addBlockType('hub_get_voltage', async (block) => {
 
-			return getHubValue(block, hub.PortMap.VOLTAGE_SENSOR, 0)
+			return getHubValue(block, hubSrv.PortMap.VOLTAGE_SENSOR, 0)
 
 		})
 
@@ -442,29 +460,10 @@ $$.control.registerControl('code', {
 			/**@type {string} */
 			const type = block.fields.TYPE
 
-			const value = await getHubValue(block, hub.PortMap.TILT_SENSOR, hub.DeviceMode.TILT_POS)
+			const value = await getHubValue(block, hubSrv.PortMap.TILT_SENSOR, hubSrv.DeviceMode.TILT_POS)
 			return value[type]
 
 		})
-
-		blocklyInterpretor.addBlockType('wait_until_tilt', async (block) => {
-
-			/**@type {string} */
-			const type = block.fields.TYPE
-			const operator = block.fields.OP
-			const hubDevice = getHub(block)
-			const device = hubDevice.getDevice(hub.PortMap.TILT_SENSOR)
-			const varValue = await blocklyInterpretor.evalCode(block.inputs.VAR)
-			console.log({ varValue, operator, type })
-
-			await device.waitTestValue(hub.DeviceMode.TILT_POS, (value) => {
-				return blocklyInterpretor.mathCompare(operator, value[type], varValue)
-
-			})
-
-
-		})
-
 
 
 		blocklyInterpretor.addBlockType('sleep', async (block) => {
@@ -492,7 +491,16 @@ $$.control.registerControl('code', {
 			return Blockly.serialization.workspaces.save(Blockly.getMainWorkspace())
 		}
 
-
+		async function stop() {
+			for (const hub of hubDevices) {
+				for (const device of hub.getHubDevices()) {
+					if (hubSrv.isMotor(device)) {
+						await device.setPower(0)
+					}
+					await device.unsubscribe()
+				}
+			}
+		}
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -504,6 +512,9 @@ $$.control.registerControl('code', {
 				}
 			},
 			events: {
+				onStop: async function() {
+					await stop()
+				},
 				onGamePad: function () {
 
 					const code = getCode()
@@ -575,6 +586,7 @@ $$.control.registerControl('code', {
 				},
 				onRun: async function () {
 					console.log('onRun')
+					await stop()
 					progressDlg.setPercentage(0)
 					progressDlg.show()
 					let nbAccess = 0
@@ -608,6 +620,7 @@ $$.control.registerControl('code', {
 			}
 		})
 
+		const logPanel = ctrl.scope.logPanel
 	}
 
 

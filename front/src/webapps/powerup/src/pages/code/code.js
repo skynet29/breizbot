@@ -4,7 +4,14 @@ $$.control.registerControl('code', {
 
 	template: { gulp_inject: './code.html' },
 
-	deps: ['breizbot.pager', 'breizbot.blocklyinterpretor', 'hub', 'breizbot.gamepad', 'breizbot.http'],
+	deps: [
+		'breizbot.pager',
+		'breizbot.blocklyinterpretor', 
+		'hub', 
+		'breizbot.gamepad', 
+		'breizbot.http',
+		'breizbot.files'
+	],
 
 	props: {
 		hubDevices: null,
@@ -19,8 +26,9 @@ $$.control.registerControl('code', {
 	 * @param {HUB} hubSrv
 	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
 	 * @param {Breizbot.Services.Http.Interface} http
+	 * @param {Breizbot.Services.Files.Interface} fileSrv
 	 */
-	init: function (elt, pager, blocklyInterpretor, hubSrv, gamepad, http) {
+	init: function (elt, pager, blocklyInterpretor, hubSrv, gamepad, http, fileSrv) {
 
 		console.log('props', this.props)
 
@@ -512,6 +520,43 @@ $$.control.registerControl('code', {
 				}
 			},
 			events: {
+				onExport: async function() {
+					let fileName = await $$.ui.showPrompt({title: 'Export', label: 'FileName: '})
+					if (fileName) {
+						const jsonText = JSON.stringify({code: getCode(), mappings: config.mappings})
+						const blob = new Blob([jsonText], { type: 'application/json' })
+						fileName += '.pow'
+						await fileSrv.saveFile(blob, fileName)
+						$.notify('Code exported', 'success')
+					}
+				},
+				onImport: function() {
+					pager.pushPage('breizbot.files', {
+						title: 'Open File',
+						props: {
+							filterExtension: 'pow'
+						},
+						events: {
+							fileclick: function (ev, data) {
+								pager.popPage(data)
+							}
+						},
+						onReturn: async function (data) {
+							//console.log('onReturn', data)
+							const url = fileSrv.fileUrl(data.rootDir + data.fileName)
+							const resp = await fetch(url)
+							const {code, mappings} = await resp.json()
+							console.log({code, mappings})
+							config.code = code
+							config.name = ''
+							config.mappings = mappings
+							ctrl.setData({ currentConfig: '' })
+							config.gamepadMapping = config.mappings[config.gamepadId]
+							loadCode(config.code)
+
+						}
+					})
+				},
 				onStop: async function() {
 					await stop()
 				},

@@ -1,6 +1,9 @@
 <div class="toolbar">
 
     <div>
+        <button bn-event="click: onExport"  title="Export current config">Export</button>
+        <button bn-event="click: onImport"  title="Import config">Import</button>
+
         <button bn-event="click: onNewConfig" bn-icon="fa fa-file" title="Reset Config"></button>
 
         <button bn-event="click: onConfig" bn-icon="fa fa-folder-open" title="Open Config"></button>
@@ -13,6 +16,7 @@
 
         <button bn-event="click: onGamePad" bn-show="gamepadConnected">Gamepad</button>
     </div>
+
 
     <div>
         <div bn-show="currentConfig">

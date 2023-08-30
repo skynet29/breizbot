@@ -1,0 +1,15 @@
+{
+  "name": "blockly",
+  "version": "1.0.0",
+  "description": "",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@mit-app-inventor/blockly-block-lexical-variables": "^0.0.13",
+    "blockly": "^10.1.3"
+  }
+}

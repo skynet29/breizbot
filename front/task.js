@@ -12,6 +12,7 @@ const replace = require('gulp-replace')
 const browserify = require('browserify');
 const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
+const webpack = require('webpack-stream');
 
 //sass.compiler = require('node-sass')
 
@@ -71,6 +72,15 @@ function compute(dest, srcs, options) {
 		}
 
 		stream = stream.pipe(sourcemaps.write('./'))
+	}
+	else if (options.webpackConfig) {
+		console.log({dest})
+		const srcPath = dest.replace('dist', 'src')	
+		const webpackConfigPath = path.join(srcPath, options.webpackConfig)
+		console.log({webpackConfigPath})
+
+		const webpackConfig = require(webpackConfigPath)
+		stream = webpack(webpackConfig)
 	}
 	else {
 		stream = gulp.src(srcs)

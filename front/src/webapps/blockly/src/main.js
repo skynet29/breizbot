@@ -5,7 +5,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'breizbot.blocklyinterpretor'],
+	deps: ['breizbot.pager', 'breizbot.blocklyinterpretorLexical', 'breizbot.blockly'],
 
 	props: {
 	},
@@ -15,7 +15,7 @@ $$.control.registerControl('rootPage', {
 	 * @param {Breizbot.Services.Pager.Interface} pager
 	 * @param {Breizbot.Services.BlocklyInterpretor.Interface} blocklyInterpretor 
 	 */
-	init: function (elt, pager, blocklyInterpretor) {
+	init: function (elt, pager, blocklyInterpretor, blocklySrv) {
 
 
 
@@ -72,16 +72,11 @@ $$.control.registerControl('rootPage', {
 
 
 
-		const demoWorkspace = Blockly.inject('blocklyDiv',
-			{
-				media: '../lib/blockly/media/',
-				toolbox: document.getElementById('toolbox')
-				//horizontalLayout: true,
-				//toolboxPosition: 'end'
-			}
-		)
+		blocklySrv.inject('blocklyDiv', document.getElementById('toolbox'))
 
-		blocklyInterpretor.setLlogFunction((text) => {
+
+
+		blocklyInterpretor.setLogFunction((text) => {
 			ctrl.model.logs.push(text)
 			ctrl.update()
 		})
@@ -98,12 +93,12 @@ $$.control.registerControl('rootPage', {
 				onRun: function () {
 					//console.log('onSave')
 					const info = Blockly.serialization.workspaces.save(Blockly.getMainWorkspace())
-					ctrl.setData({logs: []})
-					blocklyInterpretor.startCode(info)
+					console.log('code', info)
 				},
 				onGenerate: function () {
-					const code = Blockly.JavaScript.workspaceToCode(Blockly.getMainWorkspace())
-					console.log('code', code)
+					const code = Blockly.serialization.workspaces.save(Blockly.getMainWorkspace())
+					ctrl.setData({logs: []})				
+					blocklyInterpretor.startCode(code)
 				}
 			}
 		})

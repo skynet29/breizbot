@@ -1,6 +1,6 @@
 <div class="toolbar">
-    <button bn-event="click: onRun" class="w3-btn w3-blue">Run</button>
-    <button bn-event="click: onGenerate" class="w3-btn w3-blue">Generate</button>
+    <button bn-event="click: onRun" class="w3-btn w3-blue">Block</button>
+    <button bn-event="click: onGenerate" class="w3-btn w3-blue">Run</button>
 
 </div>
 <div id="blocklyDiv"></div>
@@ -25,17 +25,17 @@
         </block>
         <block type="controls_whileUntil"></block>
         <block type="controls_for">
-            <value name="FROM">
+            <value name="START">
                 <shadow type="math_number">
                     <field name="NUM">1</field>
                 </shadow>
             </value>
-            <value name="TO">
+            <value name="END">
                 <shadow type="math_number">
                     <field name="NUM">10</field>
                 </shadow>
             </value>
-            <value name="BY">
+            <value name="STEP">
                 <shadow type="math_number">
                     <field name="NUM">1</field>
                 </shadow>
@@ -154,7 +154,12 @@
         <block type="lists_sort"></block>
         <block type="lists_reverse"></block>
     </category>
-    <category name="Variables" custom="VARIABLE" categorystyle="variable_category"></category>
+    <category id="catVariables" colour="330" name="Variables">
+        <block type="global_declaration"></block>
+        <block type="local_declaration_statement"></block>
+        <block type="lexical_variable_get"></block>
+        <block type="lexical_variable_set"></block>
+    </category>
     <category name="Functions" custom="PROCEDURE" categorystyle="procedure_category"></category>
     <category name="Music" colour="355">
         <block type="play_sound"></block>

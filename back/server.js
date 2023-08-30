@@ -209,7 +209,7 @@ function dbReady() {
 	}
 
 	app.use('/brainjs', express.static(config.BRAINJS_HOME))
-	app.use('/lib', express.static(path.join(__dirname, '../front/externals')))
+	app.use('/ext', express.static(path.join(__dirname, '../front/externals')))
 	app.use(express.static(path.join(__dirname, '../front/dist')))
 
 

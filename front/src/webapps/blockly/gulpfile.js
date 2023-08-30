@@ -36,7 +36,6 @@ const assets = task('assets',
 )
 
 
-
 const app = gulp.series(appJs, appCss, assets, workerJs)
 exports.default = app
 
@@ -51,5 +50,6 @@ exports.watch = gulp.series(app, function() {
 	gulp.watch(['./src/**/*.js', './src/**/*.html'], appJs)
 	gulp.watch(['./src/**/*.scss'], appCss)
 	gulp.watch(['./assets/*'], assets)
+
 
 })

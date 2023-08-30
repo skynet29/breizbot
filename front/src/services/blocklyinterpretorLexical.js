@@ -352,7 +352,8 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                 
                 if (inputs != undefined) {
 
-                    const argNames = getArgNames(block)
+                    const argNames = getArgNames(fields)
+                    console.log({argNames})
 
                     const newContext = {}
                     for (let i = 0; i < argNames.length; i++) {
@@ -443,8 +444,7 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
             return ret
         }
 
-        function getArgNames(block) {
-            const { fields } = block
+        function getArgNames(fields) {
             const argNames = []
             for(let i = 0, done = false; !done ; i++) {
                 const argName = fields['VAR' + i]
@@ -465,11 +465,11 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                 throw `function '${functionName}' does not exists !`
             }
 
-            const { inputs } = block
+            const { inputs, fields } = block
 
             if (inputs != undefined) {
 
-                const argNames = getArgNames(block)
+                const argNames = getArgNames(fields)
 
                 const newContext = {}
                 for (let i = 0; i < argNames.length; i++) {

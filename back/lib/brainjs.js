@@ -38,9 +38,9 @@ module.exports = function(libName, scripts, styles) {
 	}
 
 	if (libName.includes('blockly')) {
-		scripts.push("/lib/blockly/blockly_compressed.js")
-		scripts.push("/lib/blockly/blocks_compressed.js")
-		scripts.push("/lib/blockly/msg/en.js")
-		scripts.push('/lib/blockly/javascript_compressed.js')
+		scripts.push("/ext/blockly/blockly_compressed.js")
+		scripts.push("/ext/blockly/blocks_compressed.js")
+		scripts.push("/ext/blockly/msg/en.js")
+		scripts.push('/ext/blockly/javascript_compressed.js')
 	}
 }

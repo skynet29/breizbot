@@ -145,7 +145,7 @@ $$.control.registerControl('code', {
 
 		const demoWorkspace = Blockly.inject('blocklyDiv',
 			{
-				media: '../lib/blockly/media/',
+				media: '/ext/blockly/media/',
 				toolbox: document.getElementById('toolbox')
 				//horizontalLayout: true,
 				//toolboxPosition: 'end'

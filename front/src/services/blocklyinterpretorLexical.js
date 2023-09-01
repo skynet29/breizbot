@@ -69,22 +69,54 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                 return text.length
             },
 
-            'global_declaration': async function(block) {
+            'global_declaration': async function (block) {
                 const value = await evalCode(block.inputs.VALUE)
                 const varName = block.fields.NAME
                 console.log(`${varName} = ${value}`)
                 variablesValue[varName] = value
             },
-            'lexical_variable_get': async function(block, localVariables) {
+            'lexical_variable_get': async function (block, localVariables) {
                 /**@type {string} */
                 const varName = block.fields.VAR
                 return (varName.startsWith('global ')) ?
-                    variablesValue[varName.substring(7)] : localVariables[varName]                
+                    variablesValue[varName.substring(7)] : localVariables[varName]
             },
+            'lexical_variable_set': async function (block, localVariables) {
+                const varName = block.fields.VAR
+                const value = await evalCode(block.inputs.VALUE, localVariables)
+                if (varName.startsWith('global ')) {
+                    variablesValue[varName.substring(7)] = value
+                }
+                else {
+                    localVariables[varName] = value
+                }
+            },
+            'local_declaration_statement': async function (block, localVariables) {
+                const { fields, inputs } = block
+                if (inputs.STACK == undefined)
+                    return
 
-            'variables_get': async function (block, localVariables) {
-                const varId = block.fields.VAR.id
-                return variablesValue[varId]
+                const argsName = getArgNames(fields)
+                //console.log({ argsName })
+                const values = {}
+                for (let i = 0; i < argsName.length; i++) {
+                    const valueName = 'DECL' + i
+                    if (inputs[valueName] != undefined) {
+                        const value = await evalCode(inputs[valueName], localVariables)
+                        values[argsName[i]] = value
+                    }
+                }
+
+                for (const [varName, value] of Object.entries(values)) {
+                    localVariables[varName] = value
+                }
+
+                await evalCode(inputs.STACK, localVariables)
+
+                for (const varName of Object.keys(values)) {
+                    delete localVariables[varName]
+                }
+
             },
             'math_arithmetic': async function (block, localVariables) {
                 const operator = block.fields.OP
@@ -349,11 +381,11 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
 
                 const { inputs, fields } = procedureBlock[functionName]
 
-                
+
                 if (inputs != undefined) {
 
                     const argNames = getArgNames(fields)
-                    console.log({argNames})
+                    console.log({ argNames })
 
                     const newContext = {}
                     for (let i = 0; i < argNames.length; i++) {
@@ -362,8 +394,8 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                         newContext[argNames[i]] = value
                     }
 
-                    console.log({functionName, newContext})
-                    
+                    console.log({ functionName, newContext })
+
                     if (inputs.STACK != undefined) {
                         await evalCode(inputs.STACK, newContext)
                     }
@@ -381,6 +413,129 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                 const flow = block.fields.FLOW
                 console.log({ flow })
                 breakState = flow
+            },
+            'lists_create_with': async function (block, localVariables) {
+                const { inputs, extraState } = block
+                const { itemCount } = extraState
+                console.log({ itemCount })
+                const ret = []
+                for (let i = 0; i < itemCount; i++) {
+                    const argName = 'ADD' + i
+                    if (inputs != undefined && inputs[argName] != undefined) {
+                        ret[i] = await evalCode(inputs[argName], localVariables)
+                    }
+                    else {
+                        ret[i] = undefined
+                    }
+                }
+
+                console.log({ ret })
+                return ret
+            },
+            'lists_getIndex': async function (block, localVariables) {
+                const { fields, inputs } = block
+                const mode = fields.MODE
+                const where = fields.WHERE
+                /**@type {Array<any>} */
+                const list = await evalCode(inputs.VALUE, localVariables)
+                console.log({ list, mode, where })
+                let ret
+                if (mode == 'GET') {
+                    if (where == 'FROM_START') {
+                        const idx = await evalCode(inputs.AT, localVariables)
+                        console.log({ idx })
+                        ret = list[idx - 1]
+                    }
+                    else if (where == 'FROM_END') {
+                        const idx = await evalCode(inputs.AT, localVariables)
+                        console.log({ idx })
+                        ret = list.slice(-idx)[0]
+                    }
+                    else if (where == 'FIRST') {
+                        ret = list[0]
+                    }
+                    else if (where == 'LAST') {
+                        ret = list.slice(-1)[0]
+                    }
+                }
+                else if (mode == 'GET_REMOVE' || mode == 'REMOVE') {
+                    if (where == 'FROM_START') {
+                        const idx = await evalCode(inputs.AT, localVariables)
+                        console.log({ idx })
+                        ret = list.splice(idx - 1, 1)[0]
+                    }
+                    else if (where == 'FROM_END') {
+                        const idx = await evalCode(inputs.AT, localVariables)
+                        console.log({ idx })
+                        ret = list.splice(-idx, 1)[0]
+                    }
+                    else if (where == 'FIRST') {
+                        ret = list.shift()
+                    }
+                    else if (where == 'LAST') {
+                        ret = list.pop()
+                    }
+                }
+
+                console.log({ ret })
+
+                return ret
+            },
+            'lists_setIndex': async function (block, localVariables) {
+                const { fields, inputs } = block
+                const mode = fields.MODE
+                const where = fields.WHERE
+                /**@type {Array<any>} */
+                const list = await evalCode(inputs.LIST, localVariables)
+                const newValue = await evalCode(inputs.TO, localVariables)
+
+                console.log({ list, mode, where })
+                let ret
+                if (mode == 'SET') {
+                    if (where == 'FROM_START') {
+                        const idx = await evalCode(inputs.AT, localVariables)
+
+                        console.log({ idx })
+                        list[idx - 1] = newValue
+                    }
+                    else if (where == 'FROM_END') {
+                        const idx = await evalCode(inputs.AT, localVariables)
+
+                        console.log({ idx })
+                        list[list.length - idx] = newValue
+                    }
+                    else if (where == 'FIRST') {
+                        list[0] = newValue
+                    }
+                    else if (where == 'LAST') {
+                        list[length - 1] = newValue
+                    }
+                }
+                else if (mode == 'INSERT') {
+                    if (where == 'FROM_START') {
+                        const idx = await evalCode(inputs.AT, localVariables)
+                        console.log({ idx })
+                        list.splice(idx - 1, 0, newValue)
+                    }
+                    else if (where == 'FROM_END') {
+                        const idx = await evalCode(inputs.AT, localVariables)
+                        console.log({ idx })
+                        list.splice(list.length - idx, 0, newValue)
+                    }
+                    else if (where == 'FIRST') {
+                        list.unshift(newValue)
+                    }
+                    else if (where == 'LAST') {
+                        list.push(newValue)
+                    }
+                }
+
+            },
+            'lists_length': async function (block, localVariables) {
+                const { inputs } = block
+                /**@type {Array<any>} */
+                const list = await evalCode(inputs.VALUE, localVariables)
+                return list.length
             }
         }
 
@@ -424,7 +579,7 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                 throw `function '${block.type}' not implemented yet`
             }
             const ret = await fn.call(blockTypeMap, block, localVariables)
-            if (ret == undefined && breakState == '') {
+            if (block.next != undefined && breakState == '') {
                 await evalCode(block.next, localVariables)
             }
             return ret
@@ -446,7 +601,7 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
 
         function getArgNames(fields) {
             const argNames = []
-            for(let i = 0, done = false; !done ; i++) {
+            for (let i = 0, done = false; !done; i++) {
                 const argName = fields['VAR' + i]
                 if (argName != undefined) {
                     argNames.push(argName)
@@ -476,22 +631,22 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                     newContext[argNames[i]] = functionArgs[i]
                 }
 
-                console.log({functionName, newContext})
-                
+                console.log({ functionName, newContext })
+
                 if (inputs.STACK != undefined) {
                     await evalCode(inputs.STACK, newContext)
                 }
-            }     
+            }
         }
 
-        async function startCode({ blocks } ) {
+        async function startCode({ blocks }) {
             console.log('startCode')
 
             variablesValue = {}
             procedureBlock = {}
             const codeBlocks = blocks.blocks
             breakState = ''
-            
+
 
             for (const block of codeBlocks) {
                 if (block.type == 'global_declaration') {
@@ -508,8 +663,8 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                 console.log(procedureName)
             }
 
-            for (const  block of codeBlocks) {
-                if (block.type != 'procedures_defnoreturn' && 
+            for (const block of codeBlocks) {
+                if (block.type != 'procedures_defnoreturn' &&
                     block.type != 'procedures_defreturn' &&
                     block.type != 'global_declaration') {
                     await evalCode(block, {})

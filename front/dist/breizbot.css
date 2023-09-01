@@ -145,6 +145,58 @@ pre[class*=language-] {
   height: 90px;
   margin: 0;
 }
+.breizbot-addContactPage {
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+}
+.breizbot-addContactPage label {
+  display: inline-block;
+  min-width: 120px;
+}
+.breizbot-addContactPage form {
+  height: 90%;
+}
+.breizbot-addContactPage form .birthNotif {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+.breizbot-addContactPage form .gender {
+  display: flex;
+}
+.breizbot-addContactPage form .gender .brainjs-inputgroup {
+  margin-bottom: 5px;
+}
+.breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup {
+  margin-bottom: 15px;
+}
+.breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup input {
+  padding: 5px;
+  min-width: 300px;
+}
+.breizbot-contacts {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.breizbot-contacts .breizbot-searchbar {
+  margin: 10px;
+}
+.breizbot-contacts .scrollPanel {
+  flex: 1;
+  overflow-y: auto;
+}
+.breizbot-contacts .scrollPanel i {
+  min-width: 30px;
+  text-align: center;
+}
+.breizbot-contacts .scrollPanel input {
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
 @charset "UTF-8";
 .breizbot-htmleditor {
   display: flex;
@@ -211,57 +263,33 @@ pre[class*=language-] {
   border-left: 1px solid white;
   height: 80%;
 }
-.breizbot-addContactPage {
+.breizbot-filterDlg {
   padding: 10px;
-  display: flex;
-  justify-content: center;
 }
-.breizbot-addContactPage label {
-  display: inline-block;
-  min-width: 120px;
+.breizbot-filterDlg form {
+  display: grid;
+  grid-template-columns: 50px 1fr auto;
+  grid-gap: 10px;
+  align-items: center;
 }
-.breizbot-addContactPage form {
-  height: 90%;
+.breizbot-filterDlg form label {
+  grid-column: 1/2;
 }
-.breizbot-addContactPage form .birthNotif {
+.breizbot-filterDlg form .brainjs-selectmenu {
+  grid-column: 2/3;
+}
+.breizbot-filechooser {
+  padding: 10px;
+}
+.breizbot-filechooser .w3-bar {
+  cursor: pointer;
+}
+.breizbot-filechooser .w3-bar-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 15px;
 }
-.breizbot-addContactPage form .gender {
-  display: flex;
-}
-.breizbot-addContactPage form .gender .brainjs-inputgroup {
-  margin-bottom: 5px;
-}
-.breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup {
-  margin-bottom: 15px;
-}
-.breizbot-addContactPage form .ui-accordion-content > .brainjs-inputgroup input {
-  padding: 5px;
-  min-width: 300px;
-}
-.breizbot-contacts {
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-.breizbot-contacts .breizbot-searchbar {
-  margin: 10px;
-}
-.breizbot-contacts .scrollPanel {
-  flex: 1;
-  overflow-y: auto;
-}
-.breizbot-contacts .scrollPanel i {
-  min-width: 30px;
-  text-align: center;
-}
-.breizbot-contacts .scrollPanel input {
-  border: none;
-  outline: none;
-  cursor: pointer;
+.breizbot-filechooser .w3-bar-item span {
+  margin-left: 20px;
 }
 .breizbot-filelist {
   overflow: hidden;
@@ -309,34 +337,6 @@ pre[class*=language-] {
 }
 .breizbot-filelist > .loading {
   margin-left: 10px;
-}
-.breizbot-filterDlg {
-  padding: 10px;
-}
-.breizbot-filterDlg form {
-  display: grid;
-  grid-template-columns: 50px 1fr auto;
-  grid-gap: 10px;
-  align-items: center;
-}
-.breizbot-filterDlg form label {
-  grid-column: 1/2;
-}
-.breizbot-filterDlg form .brainjs-selectmenu {
-  grid-column: 2/3;
-}
-.breizbot-filechooser {
-  padding: 10px;
-}
-.breizbot-filechooser .w3-bar {
-  cursor: pointer;
-}
-.breizbot-filechooser .w3-bar-item {
-  display: flex;
-  align-items: center;
-}
-.breizbot-filechooser .w3-bar-item span {
-  margin-left: 20px;
 }
 .breizbot-files {
   overflow: hidden;

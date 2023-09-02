@@ -1,8 +1,8 @@
 <div class="toolbar">
 
     <div>
-        <button bn-event="click: onExport"  title="Export current config">Export</button>
-        <button bn-event="click: onImport"  title="Import config">Import</button>
+        <button bn-event="click: onExport" title="Export current config">Export</button>
+        <button bn-event="click: onImport" title="Import config">Import</button>
 
         <button bn-event="click: onNewConfig" bn-icon="fa fa-file" title="Reset Config"></button>
 
@@ -32,6 +32,7 @@
 <div class="logPanel" bn-html="getLogs" bn-bind="logPanel"></div>
 
 <xml id="toolbox" style="display: none;">
+
     <category name="Logic" categorystyle="logic_category">
         <block type="controls_if"></block>
         <block type="logic_compare"></block>
@@ -50,17 +51,17 @@
         </block>
         <block type="controls_whileUntil"></block>
         <block type="controls_for">
-            <value name="FROM">
+            <value name="START">
                 <shadow type="math_number">
                     <field name="NUM">1</field>
                 </shadow>
             </value>
-            <value name="TO">
+            <value name="END">
                 <shadow type="math_number">
                     <field name="NUM">10</field>
                 </shadow>
             </value>
-            <value name="BY">
+            <value name="STEP">
                 <shadow type="math_number">
                     <field name="NUM">1</field>
                 </shadow>
@@ -72,25 +73,6 @@
     <category name="Math" categorystyle="math_category">
         <block type="math_number"></block>
         <block type="math_arithmetic"></block>
-        <block type="math_single">
-            <field name="OP">ROOT</field>
-            <value name="NUM">
-                <shadow type="math_number">
-                    <field name="NUM">9</field>
-                </shadow>
-            </value>
-        </block>
-        <block type="math_trig">
-            <field name="OP">SIN</field>
-            <value name="NUM">
-                <shadow type="math_number">
-                    <field name="NUM">45</field>
-                </shadow>
-            </value>
-        </block>
-        <block type="math_constant">
-            <field name="CONSTANT">PI</field>
-        </block>
         <block type="math_random_int">
             <value name="FROM">
                 <shadow type="math_number">
@@ -100,14 +82,6 @@
             <value name="TO">
                 <shadow type="math_number">
                     <field name="NUM">100</field>
-                </shadow>
-            </value>
-        </block>
-        <block type="math_round">
-            <field name="OP">ROUND</field>
-            <value name="NUM">
-                <shadow type="math_number">
-                    <field name="NUM">3.1</field>
                 </shadow>
             </value>
         </block>
@@ -127,14 +101,6 @@
             <value name="TEXT">
                 <shadow type="text">
                     <field name="TEXT">abc</field>
-                </shadow>
-            </value>
-        </block>
-        <block type="text_append">
-            <field name="VAR" id="MHveE$^#X7/c|*RA!r{I">item</field>
-            <value name="TEXT">
-                <shadow type="text">
-                    <field name="TEXT" />
                 </shadow>
             </value>
         </block>
@@ -170,28 +136,28 @@
         <block type="lists_isEmpty"></block>
         <block type="lists_indexOf">
             <value name="VALUE">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">list</field>
                 </block>
             </value>
         </block>
         <block type="lists_getIndex">
             <value name="VALUE">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">list</field>
                 </block>
             </value>
         </block>
         <block type="lists_setIndex">
             <value name="LIST">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">list</field>
                 </block>
             </value>
         </block>
         <block type="lists_getSublist">
             <value name="LIST">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">list</field>
                 </block>
             </value>
@@ -206,12 +172,19 @@
         <block type="lists_sort"></block>
         <block type="lists_reverse"></block>
     </category>
-    <category name="Variables" custom="VARIABLE" categorystyle="variable_category"></category>
+    <category id="catVariables" colour="330" name="Variables">
+        <block type="global_declaration"></block>
+        <block type="local_declaration_statement"></block>
+        <block type="lexical_variable_get"></block>
+        <block type="lexical_variable_set"></block>
+    </category>
     <category name="Functions" custom="PROCEDURE" categorystyle="procedure_category"></category>
+
+
     <category name="Object" colour="355">
         <block type="object_getfield">
             <value name="OBJECT">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">object</field>
                 </block>
             </value>
@@ -221,21 +194,21 @@
         <block type="create_device"></block>
         <block type="device_getvalue">
             <value name="DEVICE">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">device</field>
                 </block>
             </value>
         </block>
         <block type="wait_until_device">
             <value name="DEVICE">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">device</field>
                 </block>
             </value>
         </block>
         <block type="device_subscribe">
             <value name="DEVICE">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">device</field>
                 </block>
             </value>
@@ -245,10 +218,10 @@
         <block type="create_motor"></block>
         <block type="motor_power">
             <value name="VAR">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">motor</field>
                 </block>
-            </value>            
+            </value>
             <value name="POWER">
                 <shadow type="math_number">
                     <field name="NUM">100</field>
@@ -260,10 +233,10 @@
         <block type="create_tacho_motor"></block>
         <block type="motor_speed">
             <value name="VAR">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">motor</field>
                 </block>
-            </value>  
+            </value>
             <value name="SPEED">
                 <shadow type="math_number">
                     <field name="NUM">100</field>
@@ -272,10 +245,10 @@
         </block>
         <block type="motor_speed_time">
             <value name="VAR">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">motor</field>
                 </block>
-            </value>  
+            </value>
             <value name="TIME">
                 <shadow type="math_number">
                     <field name="NUM">1</field>
@@ -289,10 +262,10 @@
         </block>
         <block type="motor_speed_degrees">
             <value name="VAR">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">motor</field>
                 </block>
-            </value>  
+            </value>
             <value name="DEGREES">
                 <shadow type="math_number">
                     <field name="NUM">180</field>
@@ -306,10 +279,10 @@
         </block>
         <block type="motor_speed_position">
             <value name="VAR">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">motor</field>
                 </block>
-            </value>  
+            </value>
             <value name="ANGLE">
                 <shadow type="math_number">
                     <field name="NUM">0</field>
@@ -323,31 +296,31 @@
         </block>
         <block type="motor_reset_position">
             <value name="VAR">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">motor</field>
                 </block>
-            </value>  
+            </value>
         </block>
         <block type="motor_get_speed">
             <value name="VAR">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">motor</field>
                 </block>
-            </value>  
+            </value>
         </block>
         <block type="motor_get_position">
             <value name="VAR">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">motor</field>
                 </block>
-            </value>  
+            </value>
         </block>
         <block type="motor_get_absoluteposition">
             <value name="VAR">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">motor</field>
                 </block>
-            </value>  
+            </value>
         </block>
 
     </category>
@@ -357,10 +330,10 @@
         </block>
         <block type="pair_motor_speed">
             <value name="VAR">
-                <block type="variables_get">
+                <block type="lexical_variable_get">
                     <field name="VAR">motor</field>
                 </block>
-            </value>  
+            </value>
             <value name="SPEED1">
                 <shadow type="math_number">
                     <field name="NUM">100</field>

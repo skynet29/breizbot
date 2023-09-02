@@ -2,7 +2,6 @@
 	"colorCls": "w3-blue",
 	"title": "PowerUp",
 	"styles": ["app.css"],
-	"scripts": ["hub.js"],
-	"iconUrl": "powerup.webp",
-	"brainjs": ["blockly"]
+	"scripts": ["hub.js", "/lib/lexical.min.js"],
+	"iconUrl": "powerup.webp"
 }

@@ -6,11 +6,12 @@ $$.control.registerControl('code', {
 
 	deps: [
 		'breizbot.pager',
-		'breizbot.blocklyinterpretor', 
+		'breizbot.blocklyinterpretorLexical', 
 		'hub', 
 		'breizbot.gamepad', 
 		'breizbot.http',
-		'breizbot.files'
+		'breizbot.files',
+		'breizbot.blockly'
 	],
 
 	props: {
@@ -28,7 +29,7 @@ $$.control.registerControl('code', {
 	 * @param {Breizbot.Services.Http.Interface} http
 	 * @param {Breizbot.Services.Files.Interface} fileSrv
 	 */
-	init: function (elt, pager, blocklyInterpretor, hubSrv, gamepad, http, fileSrv) {
+	init: function (elt, pager, blocklyInterpretor, hubSrv, gamepad, http, fileSrv, blocklySrv) {
 
 		console.log('props', this.props)
 
@@ -143,14 +144,7 @@ $$.control.registerControl('code', {
 
 		}
 
-		const demoWorkspace = Blockly.inject('blocklyDiv',
-			{
-				media: '/ext/blockly/media/',
-				toolbox: document.getElementById('toolbox')
-				//horizontalLayout: true,
-				//toolboxPosition: 'end'
-			}
-		)
+		blocklySrv.inject('blocklyDiv', document.getElementById('toolbox'))
 
 		blocklyInterpretor.setLogFunction((text) => {
 			ctrl.model.logs.push(text)
@@ -170,19 +164,19 @@ $$.control.registerControl('code', {
 
 
 
-		blocklyInterpretor.addBlockType('object_getfield', async (block) => {
+		blocklyInterpretor.addBlockType('object_getfield', async (block, localVariables) => {
 
 			/**@type {string} */
 			const fieldName = block.fields.FIELD
 
-			const object = await blocklyInterpretor.evalCode(block.inputs.OBJECT)
+			const object = await blocklyInterpretor.evalCode(block.inputs.OBJECT, localVariables)
 			console.log({ fieldName, object })
 
 			return object[fieldName]
 
 		})
 
-		blocklyInterpretor.addBlockType('create_device', async (block) => {
+		blocklyInterpretor.addBlockType('create_device', async (block, localVariables) => {
 
 			/**@type {number} */
 			const port = block.fields.PORT
@@ -193,23 +187,23 @@ $$.control.registerControl('code', {
 
 		})
 
-		blocklyInterpretor.addBlockType('device_getvalue', async (block) => {
+		blocklyInterpretor.addBlockType('device_getvalue', async (block, localVariables) => {
 			/**@type {HUB.DeviceMode} */
 			const mode = block.fields.MODE
 			/**@type {HUB.Device} */
-			const device = await blocklyInterpretor.evalCode(block.inputs.DEVICE)
+			const device = await blocklyInterpretor.evalCode(block.inputs.DEVICE, localVariables)
 			console.log({ mode, device })
 			return device.getValue(mode)
 
 		})
 
-		blocklyInterpretor.addBlockType('wait_until_device', async (block) => {
+		blocklyInterpretor.addBlockType('wait_until_device', async (block, localVariables) => {
 
 			/**@type {HUB.DeviceMode} */
 			const mode = block.fields.MODE
 
 			/**@type {HUB.Device} */
-			const device = await blocklyInterpretor.evalCode(block.inputs.DEVICE)
+			const device = await blocklyInterpretor.evalCode(block.inputs.DEVICE, localVariables)
 			const varId = block.fields.VAR.id
 			console.log({ mode, device })
 
@@ -217,12 +211,12 @@ $$.control.registerControl('code', {
 				console.log('waitTestValue', value)
 				blocklyInterpretor.setVarValue(varId, value)
 				/**@type {boolean} */
-				const retValue = await blocklyInterpretor.evalCode(block.inputs.TEST)
+				const retValue = await blocklyInterpretor.evalCode(block.inputs.TEST, localVariables)
 				return retValue
 			})
 		})
 
-		blocklyInterpretor.addBlockType('device_subscribe', async (block) => {
+		blocklyInterpretor.addBlockType('device_subscribe', async (block, localVariables) => {
 
 			/**@type {HUB.DeviceMode} */
 			const mode = block.fields.MODE
@@ -230,17 +224,17 @@ $$.control.registerControl('code', {
 			const deltaInterval = block.fields.DELTA
 
 			/**@type {HUB.Device} */
-			const device = await blocklyInterpretor.evalCode(block.inputs.DEVICE)
+			const device = await blocklyInterpretor.evalCode(block.inputs.DEVICE, localVariables)
 			console.log({ mode, deltaInterval, device })
 			const varId = block.fields.VAR.id
 
 			await device.subscribe(mode, async (value) => {
 				blocklyInterpretor.setVarValue(varId, value)
-				await blocklyInterpretor.evalCode(block.inputs.DO)
+				await blocklyInterpretor.evalCode(block.inputs.DO, localVariables)
 			}, deltaInterval)
 		})
 
-		blocklyInterpretor.addBlockType('create_pair_motor', async (block) => {
+		blocklyInterpretor.addBlockType('create_pair_motor', async (block, localVariables) => {
 
 			/**@type {string} */
 			const portName1 = block.fields.PORT1
@@ -255,7 +249,7 @@ $$.control.registerControl('code', {
 
 		})
 
-		blocklyInterpretor.addBlockType('create_tacho_motor', async (block) => {
+		blocklyInterpretor.addBlockType('create_tacho_motor', async (block, localVariables) => {
 
 			/**@type {string} */
 			const portName = block.fields.PORT
@@ -269,7 +263,7 @@ $$.control.registerControl('code', {
 
 		})
 
-		blocklyInterpretor.addBlockType('create_motor', async (block) => {
+		blocklyInterpretor.addBlockType('create_motor', async (block, localVariables) => {
 
 			/**@type {string} */
 			const portName = block.fields.PORT
@@ -283,18 +277,18 @@ $$.control.registerControl('code', {
 
 		})
 
-		async function getMotor(block) {
+		async function getMotor(block, localVariables) {
 			/**@type {HUB.Motor} */
-			const motor = await blocklyInterpretor.evalCode(block.inputs.VAR)
+			const motor = await blocklyInterpretor.evalCode(block.inputs.VAR, localVariables)
 			if (!hubSrv.isMotor(motor)) {
 				throw `input is not of type Motor`
 			}
 			return motor
 		}
 
-		async function getTachoMotor(block) {
+		async function getTachoMotor(block, localVariables) {
 			/**@type {HUB.TachoMotor} */
-			const motor = await blocklyInterpretor.evalCode(block.inputs.VAR)
+			const motor = await blocklyInterpretor.evalCode(block.inputs.VAR, localVariables)
 
 			if (!hubSrv.isTachoMotor(motor)) {
 				throw `input is not of type TachoMotor`
@@ -302,9 +296,9 @@ $$.control.registerControl('code', {
 			return motor
 		}
 
-		async function getPairMotor(block) {
+		async function getPairMotor(block, localVariables) {
 			/**@type {HUB.DoubleMotor} */
-			const motor = await blocklyInterpretor.evalCode(block.inputs.VAR)
+			const motor = await blocklyInterpretor.evalCode(block.inputs.VAR, localVariables)
 			console.log('motor', motor)
 			if (!hubSrv.isDoubleMotor(motor)) {
 				throw `input is not of type PairMotor`
@@ -312,38 +306,38 @@ $$.control.registerControl('code', {
 			return motor
 		}
 
-		blocklyInterpretor.addBlockType('motor_power', async (block) => {
+		blocklyInterpretor.addBlockType('motor_power', async (block, localVariables) => {
 
 			/**@type {number} */
-			const power = await blocklyInterpretor.evalCode(block.inputs.POWER)
+			const power = await blocklyInterpretor.evalCode(block.inputs.POWER, localVariables)
 
-			const motor = await getMotor(block)
+			const motor = await getMotor(block, localVariables)
 
 			console.log({ power })
 			await motor.setPower(power)
 
 		})
 
-		blocklyInterpretor.addBlockType('motor_speed', async (block) => {
+		blocklyInterpretor.addBlockType('motor_speed', async (block,  localVariables) => {
 
 			/**@type {number} */
-			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED)
+			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED, localVariables)
 
-			const motor = await getTachoMotor(block)
+			const motor = await getTachoMotor(block, localVariables)
 
 			console.log({ speed })
 			await motor.setSpeed(speed)
 
 		})
 
-		blocklyInterpretor.addBlockType('pair_motor_speed', async (block) => {
+		blocklyInterpretor.addBlockType('pair_motor_speed', async (block, localVariables) => {
 
 			/**@type {number} */
-			const speed1 = await blocklyInterpretor.evalCode(block.inputs.SPEED1)
+			const speed1 = await blocklyInterpretor.evalCode(block.inputs.SPEED1, localVariables)
 			/**@type {number} */
-			const speed2 = await blocklyInterpretor.evalCode(block.inputs.SPEED2)
+			const speed2 = await blocklyInterpretor.evalCode(block.inputs.SPEED2, localVariables)
 
-			const motor = await getPairMotor(block)
+			const motor = await getPairMotor(block, localVariables)
 
 			console.log({ speed1, speed2, motor })
 			await motor.setSpeed(speed1, speed2)
@@ -351,86 +345,86 @@ $$.control.registerControl('code', {
 		})
 
 
-		blocklyInterpretor.addBlockType('motor_speed_time', async (block) => {
+		blocklyInterpretor.addBlockType('motor_speed_time', async (block, localVariables) => {
 
 			/**@type {number} */
-			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED)
+			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED, localVariables)
 
 			const waitEnd = block.fields.WAIT
 
 			/**@type {number} */
-			const time = await blocklyInterpretor.evalCode(block.inputs.TIME)
+			const time = await blocklyInterpretor.evalCode(block.inputs.TIME, localVariables)
 
-			const motor = await getTachoMotor(block)
+			const motor = await getTachoMotor(block, localVariables)
 
 			console.log({ speed, time, waitEnd, motor })
 			await motor.setSpeedForTime(speed, time * 1000, waitEnd, hubSrv.BrakingStyle.FLOAT)
 
 		})
 
-		blocklyInterpretor.addBlockType('motor_speed_degrees', async (block) => {
+		blocklyInterpretor.addBlockType('motor_speed_degrees', async (block,  localVariables) => {
 
-			const motor = await getTachoMotor(block)
+			const motor = await getTachoMotor(block, localVariables)
 
 			/**@type {number} */
-			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED)
+			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED, localVariables)
 
 			const waitEnd = block.fields.WAIT
 
 			/**@type {number} */
-			const degrees = await blocklyInterpretor.evalCode(block.inputs.DEGREES)
+			const degrees = await blocklyInterpretor.evalCode(block.inputs.DEGREES, localVariables)
 
 			console.log({ speed, degrees, waitEnd })
 			await motor.rotateDegrees(degrees, speed, waitEnd, hubSrv.BrakingStyle.BRAKE)
 
 		})
 
-		blocklyInterpretor.addBlockType('motor_speed_position', async (block) => {
+		blocklyInterpretor.addBlockType('motor_speed_position', async (block,  localVariables) => {
 
-			const motor = await getTachoMotor(block)
+			const motor = await getTachoMotor(block, localVariables)
 
 			/**@type {number} */
-			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED)
+			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED, localVariables)
 
 			const waitEnd = block.fields.WAIT
 
 			/**@type {number} */
-			const angle = await blocklyInterpretor.evalCode(block.inputs.ANGLE)
+			const angle = await blocklyInterpretor.evalCode(block.inputs.ANGLE, localVariables)
 
 			console.log({ speed, angle, waitEnd })
 			await motor.gotoAngle(angle, speed, waitEnd, hubSrv.BrakingStyle.FLOAT)
 
 		})
 
-		blocklyInterpretor.addBlockType('motor_reset_position', async (block) => {
+		blocklyInterpretor.addBlockType('motor_reset_position', async (block,  localVariables) => {
 
-			const motor = await getTachoMotor(block)
+			const motor = await getTachoMotor(block, localVariables)
 			await motor.resetZero()
 
 		})
 
-		blocklyInterpretor.addBlockType('motor_get_speed', async (block) => {
+		blocklyInterpretor.addBlockType('motor_get_speed', async (block,  localVariables) => {
 
-			const motor = await getTachoMotor(block)
+			const motor = await getTachoMotor(block, localVariables)
 			return motor.getSpeed()
 
 		})
 
-		blocklyInterpretor.addBlockType('motor_get_position', async (block) => {
+		blocklyInterpretor.addBlockType('motor_get_position', async (block,  localVariables) => {
 
-			const motor = await getTachoMotor(block)
+			const motor = await getTachoMotor(block, localVariables)
 			return motor.getPosition()
 
 		})
 
-		blocklyInterpretor.addBlockType('motor_get_absoluteposition', async (block) => {
+		blocklyInterpretor.addBlockType('motor_get_absoluteposition', async (block,  localVariables) => {
 
-			const motor = await getTachoMotor(block)
+			const motor = await getTachoMotor(block, localVariables)
 			return motor.getAbsolutePosition()
 
 		})
 
-		blocklyInterpretor.addBlockType('hub_color', async (block) => {
+		blocklyInterpretor.addBlockType('hub_color', async (block,  localVariables) => {
 
 			/**@type {string} */
 			const color = block.fields.COLOR
@@ -449,13 +443,13 @@ $$.control.registerControl('code', {
 			return device.getValue(mode)
 		}
 
-		blocklyInterpretor.addBlockType('hub_get_voltage', async (block) => {
+		blocklyInterpretor.addBlockType('hub_get_voltage', async (block,  localVariables) => {
 
 			return getHubValue(block, hubSrv.PortMap.VOLTAGE_SENSOR, 0)
 
 		})
 
-		blocklyInterpretor.addBlockType('hub_get_tilt', async (block) => {
+		blocklyInterpretor.addBlockType('hub_get_tilt', async (block,  localVariables) => {
 
 			/**@type {string} */
 			const type = block.fields.TYPE
@@ -466,8 +460,8 @@ $$.control.registerControl('code', {
 		})
 
 
-		blocklyInterpretor.addBlockType('sleep', async (block) => {
-			const time = await blocklyInterpretor.evalCode(block.inputs.TIME)
+		blocklyInterpretor.addBlockType('sleep', async (block,  localVariables) => {
+			const time = await blocklyInterpretor.evalCode(block.inputs.TIME, localVariables)
 			console.log({ time })
 			await $$.util.wait(time * 1000)
 		})

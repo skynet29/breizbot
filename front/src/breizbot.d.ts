@@ -137,9 +137,9 @@ declare namespace Breizbot {
                 getFunctionNames(codeDef: CodeDef):Array<string>;
                 callFunction(functionName: string, ...functionsArgs):Promise<void>;
                 setLogFunction(fn: (text: string) => void);
-                evalCode(block: Block): Promise<aby>;
+                evalCode(block: Block, localVariables: {[name: string]: any}): Promise<aby>;
                 dumpVariables(): void;
-                addBlockType(typeName: string, fn: (block: Block) => Promise<any>);
+                addBlockType(typeName: string, fn: (block: Block, localVariables: {[name: string]: any}) => Promise<any>);
                 getVarValue(varId: string): any;
                 getVarName(varId: string): string;
                 mathCompare(operator: string, val1: number, val2: number):boolean;

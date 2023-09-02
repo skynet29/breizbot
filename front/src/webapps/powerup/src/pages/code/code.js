@@ -11,7 +11,7 @@ $$.control.registerControl('code', {
 		'breizbot.gamepad', 
 		'breizbot.http',
 		'breizbot.files',
-		'breizbot.blockly'
+		'breizbot.blocklyLexical'
 	],
 
 	props: {
@@ -28,6 +28,7 @@ $$.control.registerControl('code', {
 	 * @param {Breizbot.Services.Gamepad.Interface} gamepad
 	 * @param {Breizbot.Services.Http.Interface} http
 	 * @param {Breizbot.Services.Files.Interface} fileSrv
+	 * @param {Breizbot.Services.BlocklyLexical.Interface} blocklySrv
 	 */
 	init: function (elt, pager, blocklyInterpretor, hubSrv, gamepad, http, fileSrv, blocklySrv) {
 
@@ -204,16 +205,17 @@ $$.control.registerControl('code', {
 
 			/**@type {HUB.Device} */
 			const device = await blocklyInterpretor.evalCode(block.inputs.DEVICE, localVariables)
-			const varId = block.fields.VAR.id
-			console.log({ mode, device })
+			const varName = block.fields.VAR
+			console.log({ varName, mode, device })
 
 			await device.waitTestValue(mode, async (value) => {
 				console.log('waitTestValue', value)
-				blocklyInterpretor.setVarValue(varId, value)
+				localVariables[varName] = value
 				/**@type {boolean} */
 				const retValue = await blocklyInterpretor.evalCode(block.inputs.TEST, localVariables)
 				return retValue
 			})
+			delete localVariables[varName]
 		})
 
 		blocklyInterpretor.addBlockType('device_subscribe', async (block, localVariables) => {
@@ -225,13 +227,14 @@ $$.control.registerControl('code', {
 
 			/**@type {HUB.Device} */
 			const device = await blocklyInterpretor.evalCode(block.inputs.DEVICE, localVariables)
-			console.log({ mode, deltaInterval, device })
-			const varId = block.fields.VAR.id
+			const varName = block.fields.VAR
+			console.log({ varName, mode, deltaInterval, device })
 
 			await device.subscribe(mode, async (value) => {
-				blocklyInterpretor.setVarValue(varId, value)
+				localVariables[varName] = value
 				await blocklyInterpretor.evalCode(block.inputs.DO, localVariables)
 			}, deltaInterval)
+			delete localVariables[varName]
 		})
 
 		blocklyInterpretor.addBlockType('create_pair_motor', async (block, localVariables) => {

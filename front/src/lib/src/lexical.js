@@ -10,7 +10,7 @@ window.Blockly = Blockly
 window.javascript = javascript
 
 
-$$.service.registerService('breizbot.blockly', {
+$$.service.registerService('breizbot.blocklyLexical', {
     init: function (config) {
         function inject(elt, toolbox) {
             const workspace = Blockly.inject(elt,

@@ -59,7 +59,9 @@
                 .appendField(new Blockly.FieldNumber(0, 0, Infinity, 1), "MODE");
             this.appendValueInput("TEST")
                 .setCheck("Boolean")
-                .appendField(new Blockly.FieldVariable("value"), "VAR")
+                .appendField(new LexicalVariables.FieldParameterFlydown(
+                    'value', true,
+                    LexicalVariables.FieldFlydown.DISPLAY_BELOW), 'VAR')
                 .appendField("Test");
             this.setInputsInline(true);
             this.setPreviousStatement(true, null);
@@ -67,6 +69,30 @@
             this.setColour(230);
             this.setTooltip("");
             this.setHelpUrl("");
+            this.lexicalVarPrefix = 'counter'
+        },
+        blocksInScope: function () {
+            const doBlock = this.getInputTargetBlock('TEST');
+            //console.log('blocksInScope', doBlock)
+            if (doBlock) {
+                return [doBlock];
+            } else {
+                return [];
+            }
+        },
+        declaredNames: function () {
+            //console.log('declaredNames', this.getFieldValue('VAR'))
+
+            return [this.getFieldValue('VAR')];
+        },
+
+
+        withLexicalVarsAndPrefix: function (child, proc) {
+            //console.log('withLexicalVarsAndPrefix', { child, proc })
+            if (this.getInputTargetBlock('TEST') == child) {
+                const lexVar = this.getFieldValue('VAR');
+                proc(lexVar, this.lexicalVarPrefix);
+            }
         }
     };
 
@@ -366,7 +392,9 @@
                 .appendField("delta")
                 .appendField(new Blockly.FieldNumber(1, 1), "DELTA")
                 .appendField("subscribe")
-                .appendField(new Blockly.FieldVariable("value"), "VAR");
+                .appendField(new LexicalVariables.FieldParameterFlydown(
+                    'value', true,
+                    LexicalVariables.FieldFlydown.DISPLAY_BELOW), 'VAR')
             this.appendStatementInput("DO")
                 .setCheck(null);
             this.setInputsInline(true);
@@ -375,6 +403,31 @@
             this.setColour(230);
             this.setTooltip("");
             this.setHelpUrl("");
+            this.lexicalVarPrefix = 'counter'
+        },
+
+        blocksInScope: function () {
+            const doBlock = this.getInputTargetBlock('DO');
+            //console.log('blocksInScope', doBlock)
+            if (doBlock) {
+                return [doBlock];
+            } else {
+                return [];
+            }
+        },
+        declaredNames: function () {
+            //console.log('declaredNames', this.getFieldValue('VAR'))
+
+            return [this.getFieldValue('VAR')];
+        },
+
+
+        withLexicalVarsAndPrefix: function (child, proc) {
+            //console.log('withLexicalVarsAndPrefix', { child, proc })
+            if (this.getInputTargetBlock('DO') == child) {
+                const lexVar = this.getFieldValue('VAR');
+                proc(lexVar, this.lexicalVarPrefix);
+            }
         }
     };
 

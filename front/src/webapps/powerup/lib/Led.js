@@ -17,7 +17,7 @@ class Led extends Device {
 
     setBrightness(brightness) {
         console.log('setBrightness', this.portId, { brightness })
-        return this.writeDirectMode(DeviceMode.POWER, false, brightness)
+        return this.writeDirectMode(DeviceMode.POWER, brightness)
     }
 
 

@@ -244,6 +244,11 @@
     <category name="Motor" colour="355">
         <block type="create_motor"></block>
         <block type="motor_power">
+            <value name="VAR">
+                <block type="variables_get">
+                    <field name="VAR">motor</field>
+                </block>
+            </value>            
             <value name="POWER">
                 <shadow type="math_number">
                     <field name="NUM">100</field>
@@ -254,6 +259,11 @@
     <category name="TachoMotor" colour="355">
         <block type="create_tacho_motor"></block>
         <block type="motor_speed">
+            <value name="VAR">
+                <block type="variables_get">
+                    <field name="VAR">motor</field>
+                </block>
+            </value>  
             <value name="SPEED">
                 <shadow type="math_number">
                     <field name="NUM">100</field>
@@ -261,6 +271,11 @@
             </value>
         </block>
         <block type="motor_speed_time">
+            <value name="VAR">
+                <block type="variables_get">
+                    <field name="VAR">motor</field>
+                </block>
+            </value>  
             <value name="TIME">
                 <shadow type="math_number">
                     <field name="NUM">1</field>
@@ -273,6 +288,11 @@
             </value>
         </block>
         <block type="motor_speed_degrees">
+            <value name="VAR">
+                <block type="variables_get">
+                    <field name="VAR">motor</field>
+                </block>
+            </value>  
             <value name="DEGREES">
                 <shadow type="math_number">
                     <field name="NUM">180</field>
@@ -285,6 +305,11 @@
             </value>
         </block>
         <block type="motor_speed_position">
+            <value name="VAR">
+                <block type="variables_get">
+                    <field name="VAR">motor</field>
+                </block>
+            </value>  
             <value name="ANGLE">
                 <shadow type="math_number">
                     <field name="NUM">0</field>
@@ -296,10 +321,34 @@
                 </shadow>
             </value>
         </block>
-        <block type="motor_reset_position"></block>
-        <block type="motor_get_speed"></block>
-        <block type="motor_get_position"></block>
-        <block type="motor_get_absoluteposition"></block>
+        <block type="motor_reset_position">
+            <value name="VAR">
+                <block type="variables_get">
+                    <field name="VAR">motor</field>
+                </block>
+            </value>  
+        </block>
+        <block type="motor_get_speed">
+            <value name="VAR">
+                <block type="variables_get">
+                    <field name="VAR">motor</field>
+                </block>
+            </value>  
+        </block>
+        <block type="motor_get_position">
+            <value name="VAR">
+                <block type="variables_get">
+                    <field name="VAR">motor</field>
+                </block>
+            </value>  
+        </block>
+        <block type="motor_get_absoluteposition">
+            <value name="VAR">
+                <block type="variables_get">
+                    <field name="VAR">motor</field>
+                </block>
+            </value>  
+        </block>
 
     </category>
     <category name="PairMotor" colour="355">
@@ -307,6 +356,11 @@
             <FIELD name="PORT2">B</FIELD>
         </block>
         <block type="pair_motor_speed">
+            <value name="VAR">
+                <block type="variables_get">
+                    <field name="VAR">motor</field>
+                </block>
+            </value>  
             <value name="SPEED1">
                 <shadow type="math_number">
                     <field name="NUM">100</field>

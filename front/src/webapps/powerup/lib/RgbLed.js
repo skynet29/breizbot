@@ -18,13 +18,13 @@ class RgbLed extends Device {
     async setColor(color) {
         console.log('setColor', this.portId, { color })
         await this.setMode(DeviceMode.COLOR, false)
-        return this.writeDirectMode(DeviceMode.COLOR, false, color)
+        return this.writeDirectMode(DeviceMode.COLOR, color)
     }
 
     async setRGBColor(r, g, b) {
         console.log('setColor', this.portId, { r, g, b })
         await this.setMode(DeviceMode.RGB, false)
-        return this.writeDirectMode(DeviceMode.RGB, false, r, g, b)
+        return this.writeDirectMode(DeviceMode.RGB, r, g, b)
     }
 }
 

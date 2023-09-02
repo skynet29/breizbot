@@ -119,8 +119,9 @@
 
     Blockly.Blocks['pair_motor_speed'] = {
         init: function () {
-            this.appendDummyInput()
-                .appendField(new Blockly.FieldVariable("item"), "VAR");
+            this.appendValueInput("VAR")
+                .setCheck(null)
+                .appendField("Pair Motor");
             this.appendValueInput("SPEED1")
                 .setCheck("Number")
                 .appendField("Speed1");
@@ -182,8 +183,9 @@
 
     Blockly.Blocks['motor_speed_time'] = {
         init: function () {
-            this.appendDummyInput()
-                .appendField(new Blockly.FieldVariable("item"), "VAR");
+            this.appendValueInput("VAR")
+                .setCheck(null)
+                .appendField("TachoMotor");
             this.appendValueInput("SPEED")
                 .setCheck("Number")
                 .appendField("Speed");
@@ -203,8 +205,9 @@
 
     Blockly.Blocks['motor_speed_degrees'] = {
         init: function () {
-            this.appendDummyInput()
-                .appendField(new Blockly.FieldVariable("item"), "VAR");
+            this.appendValueInput("VAR")
+                .setCheck(null)
+                .appendField("TachoMotor");
             this.appendValueInput("SPEED")
                 .setCheck("Number")
                 .appendField("Speed");
@@ -224,8 +227,9 @@
 
     Blockly.Blocks['motor_speed_position'] = {
         init: function () {
-            this.appendDummyInput()
-                .appendField(new Blockly.FieldVariable("item"), "VAR");
+            this.appendValueInput("VAR")
+                .setCheck(null)
+                .appendField("TachoMotor");
             this.appendValueInput("SPEED")
                 .setCheck("Number")
                 .appendField("Speed");
@@ -245,11 +249,14 @@
 
     Blockly.Blocks['motor_reset_position'] = {
         init: function () {
+            this.appendValueInput("VAR")
+                .setCheck(null)
+                .appendField("TachoMotor")
             this.appendDummyInput()
-                .appendField(new Blockly.FieldVariable("item"), "VAR")
                 .appendField("reset position")
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
+            this.setInputsInline(true);
             this.setColour(230);
             this.setTooltip("");
             this.setHelpUrl("");
@@ -258,10 +265,12 @@
 
     Blockly.Blocks['motor_get_speed'] = {
         init: function () {
+            this.appendValueInput("VAR")
+                .appendField("TachoMotor");
             this.appendDummyInput()
-                .appendField(new Blockly.FieldVariable("item"), "VAR")
                 .appendField("Speed");
             this.setOutput(true, null);
+            this.setInputsInline(true);
             this.setColour(230);
             this.setTooltip("");
             this.setHelpUrl("");
@@ -270,10 +279,12 @@
 
     Blockly.Blocks['motor_get_position'] = {
         init: function () {
+            this.appendValueInput("VAR")
+                .appendField("TachoMotor");
             this.appendDummyInput()
-                .appendField(new Blockly.FieldVariable("item"), "VAR")
                 .appendField("Position");
             this.setOutput(true, null);
+            this.setInputsInline(true);
             this.setColour(230);
             this.setTooltip("");
             this.setHelpUrl("");
@@ -282,10 +293,12 @@
 
     Blockly.Blocks['motor_get_absoluteposition'] = {
         init: function () {
+            this.appendValueInput("VAR")
+                .appendField("TachoMotor");
             this.appendDummyInput()
-                .appendField(new Blockly.FieldVariable("item"), "VAR")
                 .appendField("Absolute Position");
             this.setOutput(true, null);
+            this.setInputsInline(true);
             this.setColour(230);
             this.setTooltip("");
             this.setHelpUrl("");
@@ -308,10 +321,13 @@
 
     Blockly.Blocks['motor_speed'] = {
         init: function () {
+            this.appendValueInput("VAR")
+                .setCheck(null)
+                .appendField("TachoMotor");
             this.appendValueInput("SPEED")
                 .setCheck("Number")
-                .appendField(new Blockly.FieldVariable("item"), "VAR")
                 .appendField("Speed");
+            this.setInputsInline(true);
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setColour(230);
@@ -322,10 +338,14 @@
 
     Blockly.Blocks['motor_power'] = {
         init: function () {
+            this.appendValueInput("VAR")
+                .setCheck(null)
+                .appendField("Motor");
             this.appendValueInput("POWER")
                 .setCheck("Number")
-                .appendField(new Blockly.FieldVariable("item"), "VAR")
                 .appendField("Power");
+            this.setInputsInline(true);
+
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setColour(230);
@@ -336,26 +356,26 @@
 
 
     Blockly.Blocks['device_subscribe'] = {
-        init: function() {
-          this.appendValueInput("DEVICE")
-              .setCheck(null)
-              .appendField("Device");
-          this.appendDummyInput()
-              .appendField("Mode")
-              .appendField(new Blockly.FieldNumber(0, 0, Infinity, 1), "MODE")
-              .appendField("delta")
-              .appendField(new Blockly.FieldNumber(1, 1), "DELTA")
-              .appendField("subscribe")
-              .appendField(new Blockly.FieldVariable("value"), "VAR");
-          this.appendStatementInput("DO")
-              .setCheck(null);
-          this.setInputsInline(true);
-          this.setPreviousStatement(true, null);
-          this.setNextStatement(true, null);
-          this.setColour(230);
-       this.setTooltip("");
-       this.setHelpUrl("");
+        init: function () {
+            this.appendValueInput("DEVICE")
+                .setCheck(null)
+                .appendField("Device");
+            this.appendDummyInput()
+                .appendField("Mode")
+                .appendField(new Blockly.FieldNumber(0, 0, Infinity, 1), "MODE")
+                .appendField("delta")
+                .appendField(new Blockly.FieldNumber(1, 1), "DELTA")
+                .appendField("subscribe")
+                .appendField(new Blockly.FieldVariable("value"), "VAR");
+            this.appendStatementInput("DO")
+                .setCheck(null);
+            this.setInputsInline(true);
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip("");
+            this.setHelpUrl("");
         }
-      };
+    };
 
 })();

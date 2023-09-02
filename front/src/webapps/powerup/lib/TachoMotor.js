@@ -56,7 +56,7 @@ class TachoMotor extends Motor {
 
     resetZero() {
         console.log('resetZero', this.portId)
-        return this.writeDirectMode(DeviceMode.ROTATION, true, 0x00, 0x00, 0x00, 0x00)
+        return this.writeDirectMode(DeviceMode.ROTATION, 0x00, 0x00, 0x00, 0x00)
     }
 
     getSpeed() {

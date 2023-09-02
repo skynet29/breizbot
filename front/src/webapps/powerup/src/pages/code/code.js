@@ -283,39 +283,31 @@ $$.control.registerControl('code', {
 
 		})
 
-		function getMotor(block) {
-			/**@type {string} */
-			const varId = block.fields.VAR.id
+		async function getMotor(block) {
 			/**@type {HUB.Motor} */
-			const motor = blocklyInterpretor.getVarValue(varId)
-			if (typeof motor != 'object' || !hubSrv.isMotor(motor)) {
-				const varName = blocklyInterpretor.getVarName(varId)
-				throw `variable '${varName}' is not of type Motor`
+			const motor = await blocklyInterpretor.evalCode(block.inputs.VAR)
+			if (!hubSrv.isMotor(motor)) {
+				throw `input is not of type Motor`
 			}
 			return motor
 		}
 
-		function getTachoMotor(block) {
-			/**@type {string} */
-			const varId = block.fields.VAR.id
+		async function getTachoMotor(block) {
 			/**@type {HUB.TachoMotor} */
-			const motor = blocklyInterpretor.getVarValue(varId)
-			if (typeof motor != 'object' || !hubSrv.isTachoMotor(motor)) {
-				const varName = blocklyInterpretor.getVarName(varId)
-				throw `variable '${varName}' is not of type TachoMotor`
+			const motor = await blocklyInterpretor.evalCode(block.inputs.VAR)
+
+			if (!hubSrv.isTachoMotor(motor)) {
+				throw `input is not of type TachoMotor`
 			}
 			return motor
 		}
 
-		function getPairMotor(block) {
-			/**@type {string} */
-			const varId = block.fields.VAR.id
+		async function getPairMotor(block) {
 			/**@type {HUB.DoubleMotor} */
-			const motor = blocklyInterpretor.getVarValue(varId)
+			const motor = await blocklyInterpretor.evalCode(block.inputs.VAR)
 			console.log('motor', motor)
-			if (typeof motor != 'object' || !hubSrv.isDoubleMotor(motor)) {
-				const varName = blocklyInterpretor.getVarName(varId)
-				throw `variable '${varName}' is not of type PairMotor`
+			if (!hubSrv.isDoubleMotor(motor)) {
+				throw `input is not of type PairMotor`
 			}
 			return motor
 		}
@@ -325,7 +317,7 @@ $$.control.registerControl('code', {
 			/**@type {number} */
 			const power = await blocklyInterpretor.evalCode(block.inputs.POWER)
 
-			const motor = getMotor(block)
+			const motor = await getMotor(block)
 
 			console.log({ power })
 			await motor.setPower(power)
@@ -337,7 +329,7 @@ $$.control.registerControl('code', {
 			/**@type {number} */
 			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED)
 
-			const motor = getTachoMotor(block)
+			const motor = await getTachoMotor(block)
 
 			console.log({ speed })
 			await motor.setSpeed(speed)
@@ -351,7 +343,7 @@ $$.control.registerControl('code', {
 			/**@type {number} */
 			const speed2 = await blocklyInterpretor.evalCode(block.inputs.SPEED2)
 
-			const motor = getPairMotor(block)
+			const motor = await getPairMotor(block)
 
 			console.log({ speed1, speed2, motor })
 			await motor.setSpeed(speed1, speed2)
@@ -369,16 +361,16 @@ $$.control.registerControl('code', {
 			/**@type {number} */
 			const time = await blocklyInterpretor.evalCode(block.inputs.TIME)
 
-			const motor = getTachoMotor(block)
+			const motor = await getTachoMotor(block)
 
-			console.log({ speed, time, waitEnd })
+			console.log({ speed, time, waitEnd, motor })
 			await motor.setSpeedForTime(speed, time * 1000, waitEnd, hubSrv.BrakingStyle.FLOAT)
 
 		})
 
 		blocklyInterpretor.addBlockType('motor_speed_degrees', async (block) => {
 
-			const motor = getTachoMotor(block)
+			const motor = await getTachoMotor(block)
 
 			/**@type {number} */
 			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED)
@@ -395,7 +387,7 @@ $$.control.registerControl('code', {
 
 		blocklyInterpretor.addBlockType('motor_speed_position', async (block) => {
 
-			const motor = getTachoMotor(block)
+			const motor = await getTachoMotor(block)
 
 			/**@type {number} */
 			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED)
@@ -412,28 +404,28 @@ $$.control.registerControl('code', {
 
 		blocklyInterpretor.addBlockType('motor_reset_position', async (block) => {
 
-			const motor = getTachoMotor(block)
+			const motor = await getTachoMotor(block)
 			await motor.resetZero()
 
 		})
 
 		blocklyInterpretor.addBlockType('motor_get_speed', async (block) => {
 
-			const motor = getTachoMotor(block)
+			const motor = await getTachoMotor(block)
 			return motor.getSpeed()
 
 		})
 
 		blocklyInterpretor.addBlockType('motor_get_position', async (block) => {
 
-			const motor = getTachoMotor(block)
+			const motor = await getTachoMotor(block)
 			return motor.getPosition()
 
 		})
 
 		blocklyInterpretor.addBlockType('motor_get_absoluteposition', async (block) => {
 
-			const motor = getTachoMotor(block)
+			const motor = await getTachoMotor(block)
 			return motor.getAbsolutePosition()
 
 		})

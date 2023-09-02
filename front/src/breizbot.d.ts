@@ -115,7 +115,6 @@ declare namespace Breizbot {
         declare namespace BlocklyLexical {
             interface Interface {
                 inject(elt: string | HTMLElement, toolbox: HTMLElement): object;
-                createFieldParameterFlydown(name: string): object;
             }
         }
 

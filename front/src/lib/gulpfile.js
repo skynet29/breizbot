@@ -1,18 +1,28 @@
 
 const gulp = require('gulp')
-const {task} = require('../../task')(__dirname)
+const { task } = require('../../task')(__dirname)
 
 
 const lexicalJS = task('lexical',
 	[],
-	{webpackConfig: './webpack.config.js'}
+	{
+		webpack: {
+			entry: {
+				lexical: './src/lexical.js',
+			},
+			output: {
+				filename: '[name].min.js',
+			},
+			mode: 'production'
+		}
+	}
 
 )
 
 exports.default = lexicalJS
 
 
-exports.watch = gulp.series(lexicalJS, function() {
+exports.watch = gulp.series(lexicalJS, function () {
 
 	gulp.watch(['./src/*'], lexicalJS)
 

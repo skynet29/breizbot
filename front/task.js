@@ -73,14 +73,9 @@ function compute(dest, srcs, options) {
 
 		stream = stream.pipe(sourcemaps.write('./'))
 	}
-	else if (options.webpackConfig) {
-		console.log({dest})
-		const srcPath = dest.replace('dist', 'src')	
-		const webpackConfigPath = path.join(srcPath, options.webpackConfig)
-		console.log({webpackConfigPath})
+	else if (options.webpack) {
 
-		const webpackConfig = require(webpackConfigPath)
-		stream = webpack(webpackConfig)
+		stream = webpack(options.webpack)
 	}
 	else {
 		stream = gulp.src(srcs)

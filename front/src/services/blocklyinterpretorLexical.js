@@ -11,11 +11,31 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
         function mathRandomInt(a, b) {
             if (a > b) {
                 // Swap a and b to ensure a is smaller.
-                var c = a;
+                const c = a;
                 a = b;
                 b = c;
             }
             return Math.floor(Math.random() * (b - a + 1) + a);
+        }
+
+        function mathRandomList(list) {
+            const x = Math.floor(Math.random() * list.length);
+            return list[x];
+        }
+
+        function mathMean(myList) {
+            return myList.reduce(function (x, y) { return x + y; }, 0) / myList.length;
+        }
+
+        function mathMedian(myList) {
+            const localList = myList.filter(function (x) { return typeof x === 'number'; });
+            if (!localList.length) return null;
+            localList.sort(function (a, b) { return b - a; });
+            if (localList.length % 2 === 0) {
+                return (localList[localList.length / 2 - 1] + localList[localList.length / 2]) / 2;
+            } else {
+                return localList[(localList.length - 1) / 2];
+            }
         }
 
         function mathCompare(operator, val1, val2) {
@@ -66,6 +86,9 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
             },
             'text_length': async function (block, localVariables) {
                 const text = await evalCode(block.inputs.VALUE, localVariables)
+                if (typeof text != 'string') {
+                    throw 'in textLength text is not a string !'
+                }
                 return text.length
             },
 
@@ -221,6 +244,29 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                         throw (`Unknown constante '${c}'`)
                 }
             },
+            'math_on_list': async function (block, localVariables) {
+                const operator = block.fields.OP
+                const list = await evalCode(block.inputs.LIST, localVariables)
+                if (!Array.isArray(list)) {
+                    throw 'in mathList list is not an Array !'
+                }
+                switch (operator) {
+                    case 'SUM':
+                        return list.reduce(function (x, y) { return x + y; }, 0)
+                    case 'MIN':
+                        return Math.min.apply(null, list)
+                    case 'MAX':
+                        return Math.max.apply(null, list)
+                    case 'AVERAGE':
+                        return mathMean(list)
+                    case 'MEDIAN':
+                        return mathMedian(list)
+                    case 'RANDOM':
+                        return mathRandomList(list)
+                    default:
+                        throw `operator '${operator}' is not implemented`
+                }
+            },
             'controls_repeat_ext': async function (block, localVariables) {
                 const times = await evalCode(block.inputs.TIMES, localVariables)
                 console.log('TIMES', times)
@@ -255,6 +301,9 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                 const charCase = block.fields.CASE
                 console.log({ charCase })
                 const value = await evalCode(block.inputs.TEXT, localVariables)
+                if (typeof value != 'string') {
+                    throw 'in textLength text is not a string !'
+                }
                 switch (charCase) {
                     case 'UPPERCASE':
                         return value.toUpperCase()
@@ -357,6 +406,26 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                     throw `Unknown mode '${mode}'`
                 }
             },
+            'controls_forEach': async function (block, localVariables) {
+                const varName = block.fields.VAR
+                const list = await evalCode(block.inputs.LIST, localVariables)
+                console.log({ varName, list })
+                if (!Array.isArray(list)) {
+                    throw 'in forEach list is not an Array !'
+                }
+                for (const item of list) {
+                    localVariables[varName] = item
+                    await evalCode(block.inputs.DO, localVariables)
+                    if (breakState == 'BREAK') {
+                        breakState = ''
+                        break
+                    }
+                    else if (breakState == 'CONTINUE') {
+                        breakState = ''
+                    }
+                }
+                delete localVariables[varName]
+            },
             'controls_for': async function (block, localVariables) {
                 const varName = block.fields.VAR
                 const from = await evalCode(block.inputs.START, localVariables)
@@ -439,6 +508,9 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                 /**@type {Array<any>} */
                 const list = await evalCode(inputs.VALUE, localVariables)
                 console.log({ list, mode, where })
+                if (!Array.isArray(list)) {
+                    throw 'in getIndex list is not an Array !'
+                }
                 let ret
                 if (mode == 'GET') {
                     if (where == 'FROM_START') {
@@ -490,6 +562,9 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                 const newValue = await evalCode(inputs.TO, localVariables)
 
                 console.log({ list, mode, where })
+                if (!Array.isArray(list)) {
+                    throw 'in setIndex list is not an Array !'
+                }
                 let ret
                 if (mode == 'SET') {
                     if (where == 'FROM_START') {
@@ -535,6 +610,9 @@ $$.service.registerService('breizbot.blocklyinterpretorLexical', {
                 const { inputs } = block
                 /**@type {Array<any>} */
                 const list = await evalCode(inputs.VALUE, localVariables)
+                if (!Array.isArray(list)) {
+                    throw 'in getLength list is not an Array !'
+                }
                 return list.length
             }
         }

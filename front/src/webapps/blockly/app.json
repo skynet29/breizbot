@@ -3,5 +3,5 @@
 	"colorCls": "w3-green",
 	"title": "Blockly",
 	"styles": ["app.css"],
-	"scripts": ["/lib/lexical.min.js"]
+	"scripts": ["/lib/blockly.min.js"]
 }

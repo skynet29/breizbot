@@ -8,7 +8,7 @@ const lexicalJS = task('lexical',
 	{
 		webpack: {
 			entry: {
-				lexical: './src/lexical.js',
+				blockly: './src/lexical.js',
 			},
 			output: {
 				filename: '[name].min.js',

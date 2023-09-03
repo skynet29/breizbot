@@ -6,7 +6,7 @@ $$.control.registerControl('code', {
 
 	deps: [
 		'breizbot.pager',
-		'breizbot.blocklyinterpretorLexical', 
+		'breizbot.blocklyinterpretor', 
 		'hub', 
 		'breizbot.gamepad', 
 		'breizbot.http',

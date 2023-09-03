@@ -5,7 +5,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'breizbot.blocklyinterpretorLexical', 'breizbot.blockly'],
+	deps: ['breizbot.pager', 'breizbot.blocklyinterpretor', 'breizbot.blocklyLexical'],
 
 	props: {
 	},
@@ -14,6 +14,7 @@ $$.control.registerControl('rootPage', {
 	 * 
 	 * @param {Breizbot.Services.Pager.Interface} pager
 	 * @param {Breizbot.Services.BlocklyInterpretor.Interface} blocklyInterpretor 
+	 * @param {Breizbot.Services.BlocklyLexical.Interface} blocklySrv
 	 */
 	init: function (elt, pager, blocklyInterpretor, blocklySrv) {
 

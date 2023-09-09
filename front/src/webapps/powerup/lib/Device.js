@@ -126,6 +126,9 @@ class Device {
                 log('val', val)
                 ret.push(Math.trunc(range(val)))
             }
+            if (ret.length == 1) {
+                return ret[0]
+            }
             return ret
 
         }

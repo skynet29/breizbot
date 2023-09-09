@@ -207,6 +207,36 @@
     };
 
 
+    Blockly.Blocks['hub_get_impact_count'] = {
+        init: function () {
+            this.appendDummyInput()
+                .appendField("HUB")
+                .appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")
+                .appendField("Impact Count")
+            this.setOutput(true, "Number");
+            this.setColour(230);
+            this.setTooltip("");
+            this.setHelpUrl("");
+        }
+    };
+
+    Blockly.Blocks['hub_set_impact_count'] = {
+        init: function () {
+            this.appendValueInput("VAR")
+                .setCheck("Number")
+                .appendField("HUB")
+                .appendField(new Blockly.FieldDropdown([["HUB1", "HUB1"], ["HUB2", "HUB2"]]), "HUB")
+                .appendField("Impact Count");
+            this.setInputsInline(true);
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip("");
+            this.setHelpUrl("");
+        }
+    };
+
+
     Blockly.Blocks['motor_speed_time'] = {
         init: function () {
             this.appendValueInput("VAR")
@@ -354,6 +384,55 @@
                 .setCheck("Number")
                 .appendField("Speed");
             this.setInputsInline(true);
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip("");
+            this.setHelpUrl("");
+        }
+    };
+
+    Blockly.Blocks['color_sensor_brightness'] = {
+        init: function () {
+            this.appendValueInput("VAR")
+                .setCheck(null)
+                .appendField("ColorSensor");
+            this.appendValueInput("FIRST_SEG")
+                .setCheck("Number")
+                .appendField("First Segment");
+            this.appendValueInput("SEC_SEG")
+                .setCheck("Number")
+                .appendField("Second Segment");
+            this.appendValueInput("THIRD_SEG")
+                .setCheck("Number")
+                .appendField("Third Segment");
+            //            this.setInputsInline(true);
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip("");
+            this.setHelpUrl("");
+        }
+    };
+
+    Blockly.Blocks['distance_sensor_brightness'] = {
+        init: function () {
+            this.appendValueInput("VAR")
+                .setCheck(null)
+                .appendField("DistanceSensor");
+            this.appendValueInput("TOP_LEFT")
+                .setCheck("Number")
+                .appendField("Top Left");
+            this.appendValueInput("BOTTOM_LEFT")
+                .setCheck("Number")
+                .appendField("Bottom Left");
+            this.appendValueInput("TOP_RIGHT")
+                .setCheck("Number")
+                .appendField("Top Right");
+            this.appendValueInput("BOTTOM_RIGHT")
+                .setCheck("Number")
+                .appendField("Bottom Right");
+            //            this.setInputsInline(true);
             this.setPreviousStatement(true, null);
             this.setNextStatement(true, null);
             this.setColour(230);

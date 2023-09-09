@@ -1,7 +1,12 @@
 //@ts-check
 
 const Device = require('./Device')
-const {PortMapNames, DeviceMode} = require('./Const')
+const {PortMapNames} = require('./Const')
+
+const DeviceMode = {
+    COLOR: 0x00,
+    RGB: 0x01
+}
 
 class RgbLed extends Device {
 

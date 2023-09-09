@@ -160,7 +160,8 @@ const DeviceMode = {
     ABSOLUTE: 0x03,
     COLOR: 0x00,
     RGB: 0x01,
-    TILT_POS: 0x00
+    TILT_POS: 0x00,
+    TILT_INPACT_COUNT: 0x01
 }
 
 const BrakingStyle = {

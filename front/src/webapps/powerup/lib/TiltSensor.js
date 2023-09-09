@@ -1,11 +1,21 @@
 //@ts-check
 
 const Device = require('./Device')
-const {PortMapNames, DeviceMode} = require('./Const')
+const { DeviceMode } = require('./Const')
+const {toInt32} = require('./Util')
+
 
 class TiltSensor extends Device {
     constructor(hubDevice, portId, type) {
         super(hubDevice, portId, type)
+    }
+
+    getImpactCount() {
+        return this.getValue(DeviceMode.TILT_INPACT_COUNT)
+    }
+
+    setImpactCount(count) {
+        return this.writeDirectMode(DeviceMode.TILT_INPACT_COUNT, toInt32(count))
     }
 
     /**
@@ -13,19 +23,14 @@ class TiltSensor extends Device {
      * @param {DataView} msg 
      */
     decodeValue(msg) {
-        let value
-        switch (this.mode) {
-            case DeviceMode.TILT_POS:
-                value = {
-                    yaw: msg.getInt16(4, true),
-                    pitch: msg.getInt16(6, true),
-                    roll: msg.getInt16(8, true)
-                }
-                break
-            default:
-                value = super.decodeValue(msg)
-                break
+        /**@type {Array<number>} */
+        const value = super.decodeValue(msg)
+
+        if (this.mode == DeviceMode.TILT_POS) {
+            const [yaw, pitch, roll] = value
+            return { yaw, pitch, roll }
         }
+
         return value
     }
 }

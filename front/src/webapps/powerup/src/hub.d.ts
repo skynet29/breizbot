@@ -70,7 +70,16 @@ declare namespace HUB {
     }
 
     interface TiltSensor extends Device {
+        getImpactCount():Promise<number>;
+        setImpactCount(count: number): Promise<void>;
+    }
 
+    interface ColorSensor extends Device {
+        setBrightness(firstSegment: number, secondSegment: number, thirdSegment: number):Promise<void>;
+    }
+
+    interface DistanceSensor extends Device {
+        setBrightness(topLeft: number, bottomLeft: number, topRight: number, bottomRight: number):Promise<void>;
     }
      
     interface Motor extends Device {
@@ -114,6 +123,9 @@ declare namespace HUB {
     function isLed(device: Device):boolean;
     function isTachoMotor(device: Device):boolean;
     function isDoubleMotor(device: Device):boolean;
+    function isColorSensor(device: Device):boolean;
+    function isDistanceSensor(device: Device):boolean;
+
     function getDeviceInfo(type: number):PortInformation;
 
     enum Color {

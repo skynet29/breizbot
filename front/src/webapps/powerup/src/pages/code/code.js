@@ -181,11 +181,12 @@ $$.control.registerControl('code', {
 
 			/**@type {number} */
 			const port = block.fields.PORT
-			console.log({ port })
 
 			const hubDevice = getHub(block)
-			return hubDevice.getDevice(port)
 
+			const device = hubDevice.getDevice(port)
+			console.log({ port, device })
+			return device
 		})
 
 		blocklyInterpretor.addBlockType('device_getvalue', async (block, localVariables) => {
@@ -308,6 +309,42 @@ $$.control.registerControl('code', {
 			}
 			return motor
 		}
+
+		blocklyInterpretor.addBlockType('color_sensor_brightness', async (block, localVariables) => {
+
+			/**@type {HUB.ColorSensor} */
+			const device = await blocklyInterpretor.evalCode(block.inputs.VAR, localVariables)
+			if (!hubSrv.isColorSensor(device)) {
+				throw `input is not of type ColorSensor`
+			}
+
+			const firstSeg = await blocklyInterpretor.evalCode(block.inputs.FIRST_SEG, localVariables)
+			const secSeg = await blocklyInterpretor.evalCode(block.inputs.SEC_SEG, localVariables)
+			const thirdSeg = await blocklyInterpretor.evalCode(block.inputs.THIRD_SEG, localVariables)
+
+			console.log({ device, firstSeg, secSeg, thirdSeg })
+			await device.setBrightness(firstSeg, secSeg, thirdSeg)
+
+		})
+
+		blocklyInterpretor.addBlockType('distance_sensor_brightness', async (block, localVariables) => {
+
+			/**@type {HUB.DistanceSensor} */
+			const device = await blocklyInterpretor.evalCode(block.inputs.VAR, localVariables)
+			if (!hubSrv.isDistanceSensor(device)) {
+				throw `input is not of type DistanceSensor`
+			}
+
+			const topLeft = await blocklyInterpretor.evalCode(block.inputs.TOP_LEFT, localVariables)
+			const topRight = await blocklyInterpretor.evalCode(block.inputs.TOP_RIGHT, localVariables)
+			const bottomLeft = await blocklyInterpretor.evalCode(block.inputs.BOTTOM_LEFT, localVariables)
+			const bottomRight = await blocklyInterpretor.evalCode(block.inputs.BOTTOM_RIGHT, localVariables)
+
+			console.log({ device, topLeft, topRight, bottomLeft, bottomRight })
+			return device.setBrightness(topLeft, bottomLeft, topRight, bottomRight)
+
+		})
+
 
 		blocklyInterpretor.addBlockType('motor_power', async (block, localVariables) => {
 
@@ -449,6 +486,23 @@ $$.control.registerControl('code', {
 		blocklyInterpretor.addBlockType('hub_get_voltage', async (block,  localVariables) => {
 
 			return getHubValue(block, hubSrv.PortMap.VOLTAGE_SENSOR, 0)
+
+		})
+
+		blocklyInterpretor.addBlockType('hub_get_impact_count', async (block,  localVariables) => {
+
+			return getHubValue(block, hubSrv.PortMap.TILT_SENSOR, 1)
+
+		})
+
+		blocklyInterpretor.addBlockType('hub_set_impact_count', async (block,  localVariables) => {
+
+			const count = await blocklyInterpretor.evalCode(block.inputs.VAR, localVariables)
+			const hubDevice = getHub(block)
+			console.log({count, hubDevice})
+			/**@type {HUB.TiltSensor} */
+			const device = hubDevice.getDevice(hubSrv.PortMap.TILT_SENSOR)
+			return device.setImpactCount(count)
 
 		})
 

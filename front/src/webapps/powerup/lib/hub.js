@@ -12,6 +12,8 @@
     const RgbLed = require('./RgbLed')
     const Led = require('./Led')
     const TiltSensor = require('./TiltSensor')
+    const ColorSensor = require('./ColorSensor')
+    const DistanceSensor = require('./DistanceSensor')
     const { log } = require('./Util')
 
     const Color = {
@@ -77,7 +79,10 @@
         [DeviceType.TECHNIC_XLARGE_LINEAR_MOTOR]: TachoMotor,
         [DeviceType.TECHNIC_MEDIUM_HUB_TILT_SENSOR]: TiltSensor,
         [DeviceType.HUB_LED]: RgbLed,
-        [DeviceType.LIGHT]: Led
+        [DeviceType.LIGHT]: Led,
+        [DeviceType.TECHNIC_MEDIUM_ANGULAR_MOTOR_GREY]: TachoMotor,
+        [DeviceType.TECHNIC_COLOR_SENSOR]: ColorSensor,
+        [DeviceType.TECHNIC_DISTANCE_SENSOR]: DistanceSensor
     }
 
     /**@implements HUB.HubDevice */
@@ -102,14 +107,14 @@
 
             const buffer = formatMsg(MessageType.PORT_OUTPUT_COMMAND, portId, 0x11, data)
 
-            if (!this.busy)  {
+            if (!this.busy) {
                 this.busy = true
                 await this.sendBuffer(buffer)
             }
             else {
                 this.portCmdQueue.push(buffer)
                 console.log('# Busy ! wait feedback')
-                
+
             }
 
         }
@@ -156,144 +161,6 @@
         }
 
 
-        /**
-         * 
-         * @param {number} portId 
-         * @returns {Promise<Motor>}
-         */
-        getMotor(portId) {
-            return new Promise((resolve, reject) => {
-                const device = this.hubDevices[portId]
-                if (device) {
-                    if (device instanceof Motor) {
-                        resolve(device)
-                    }
-                    else {
-                        reject()
-                    }
-                }
-                else {
-                    this.attachCallbacks.on((device) => {
-                        if (device.portId == portId) {
-                            log(`device on portId ${portId} is ready`)
-                            resolve(device)
-                            return true
-                        }
-                        return false
-                    })
-                }
-            })
-        }
-
-
-        /**
-         * 
-         * @param {number} portId 
-         * @returns {Promise<Motor>}
-         */
-        getTachoMotor(portId) {
-            return new Promise((resolve, reject) => {
-                const device = this.hubDevices[portId]
-                if (device) {
-                    if (device instanceof TachoMotor) {
-                        resolve(device)
-                    }
-                    else {
-                        reject()
-                    }
-                }
-                else {
-                    this.attachCallbacks.on((device) => {
-                        if (device.portId == portId) {
-                            log(`device on portId ${portId} is ready`)
-                            resolve(device)
-                            return true
-                        }
-                        return false
-                    })
-                }
-            })
-        }
-
-
-
-        /**
-         * 
-         * @param {number} portId 
-         * @returns {Promise<TiltSensor>}
-         */
-        getTiltSensor(portId) {
-            return new Promise((resolve, reject) => {
-                const device = this.hubDevices[portId]
-                if (device) {
-                    if (device instanceof TiltSensor) {
-                        resolve(device)
-                    }
-                    else {
-                        reject()
-                    }
-                }
-                else {
-                    this.attachCallbacks.on((device) => {
-                        if (device.portId == portId) {
-                            log(`device on portId ${portId} is ready`)
-                            resolve(device)
-                            return true
-                        }
-                        return false
-                    })
-                }
-            })
-
-        }
-
-        getRgbLed(portId) {
-            return new Promise((resolve, reject) => {
-                const device = this.hubDevices[portId]
-                if (device) {
-                    if (device instanceof RgbLed) {
-                        resolve(device)
-                    }
-                    else {
-                        reject()
-                    }
-                }
-                else {
-                    this.attachCallbacks.on((device) => {
-                        if (device.portId == portId) {
-                            log(`device on portId ${portId} is ready`)
-                            resolve(device)
-                            return true
-                        }
-                        return false
-                    })
-                }
-            })
-        }
-
-        getLed(portId) {
-            return new Promise((resolve, reject) => {
-                const device = this.hubDevices[portId]
-                if (device) {
-                    if (device instanceof Led) {
-                        resolve(device)
-                    }
-                    else {
-                        reject()
-                    }
-                }
-                else {
-                    this.attachCallbacks.on((device) => {
-                        if (device.portId == portId) {
-                            log(`device on portId ${portId} is ready`)
-                            resolve(device)
-                            return true
-                        }
-                        return false
-                    })
-                }
-            })
-        }
         async getDblMotor(portId1, portId2) {
             return new Promise(async (resolve) => {
                 const name = getVirtualPortName(portId1, portId2)
@@ -634,7 +501,7 @@
                 if (device != undefined) {
                     device.handleFeedback(feedback)
                 }
-                
+
                 const buffer = this.portCmdQueue.shift()
                 if (buffer) {
                     console.log('# process queued cmd')
@@ -726,6 +593,23 @@
                 return device instanceof TachoMotor
             }
 
+            /**
+             * 
+             * @param {Device} device 
+             * @returns {boolean}
+             */
+            function isColorSensor(device) {
+                return device instanceof ColorSensor
+            }
+
+            /**
+             * 
+             * @param {Device} device 
+             * @returns {boolean}
+             */
+            function isDistanceSensor(device) {
+                return device instanceof DistanceSensor
+            }
 
             /**
              * 
@@ -760,7 +644,9 @@
                 isMotor,
                 isTachoMotor,
                 isLed,
-                isDoubleMotor
+                isDoubleMotor,
+                isColorSensor,
+                isDistanceSensor
             }
         }
     });

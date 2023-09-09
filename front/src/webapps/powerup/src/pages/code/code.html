@@ -113,9 +113,9 @@
             </value>
         </block>
         <block type="math_on_list">
-            <mutation op="SUM"/>
+            <mutation op="SUM" />
             <field name="OP">SUM</field>
-            </block>
+        </block>
     </category>
     <category name="Text" categorystyle="text_category">
         <block type="text"></block>
@@ -242,6 +242,55 @@
                 <block type="lexical_variable_get">
                     <field name="VAR">device</field>
                 </block>
+            </value>
+        </block>
+        <block type="color_sensor_brightness">
+            <value name="VAR">
+                <block type="lexical_variable_get">
+                    <field name="VAR">sensor</field>
+                </block>
+            </value>
+            <value name="FIRST_SEG">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+            <value name="SEC_SEG">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+            <value name="THIRD_SEG">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+        </block>
+        <block type="distance_sensor_brightness">
+            <value name="VAR">
+                <block type="lexical_variable_get">
+                    <field name="VAR">sensor</field>
+                </block>
+            </value>
+            <value name="TOP_LEFT">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+            <value name="TOP_RIGHT">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+            <value name="BOTTOM_LEFT">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
+            </value>
+            <value name="BOTTOM_RIGHT">
+                <shadow type="math_number">
+                    <field name="NUM">100</field>
+                </shadow>
             </value>
         </block>
     </category>
@@ -382,6 +431,14 @@
     <category name="Hub" colour="355">
         <block type="hub_color"></block>
         <block type="hub_get_tilt"></block>
+        <block type="hub_get_impact_count"></block>
+        <block type="hub_set_impact_count">
+            <value name="VAR">
+                <shadow type="math_number">
+                    <field name="NUM">0</field>
+                </shadow>
+            </value>
+        </block>
         <block type="hub_get_voltage"></block>
     </category>
     <category name="System" colour="355">

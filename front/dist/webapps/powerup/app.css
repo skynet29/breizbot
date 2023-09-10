@@ -116,12 +116,6 @@
   margin-left: 10px;
   width: 80px;
 }
-.info {
-  padding: 5px;
-}
-.info table {
-  margin-top: 10px;
-}
 .hubinfo {
   margin: 5px;
   display: flex;
@@ -138,4 +132,10 @@
 }
 .hubinfo .scrollBar .spanButtons button {
   margin-left: 5px;
+}
+.info {
+  padding: 5px;
+}
+.info table {
+  margin-top: 10px;
 }

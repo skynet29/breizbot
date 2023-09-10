@@ -104,27 +104,6 @@ class TachoMotor extends Motor {
         this.calibrationValue = Math.abs(offset)
     }
 
-    /**
-     * 
-     * @param {DataView} msg 
-     */
-    decodeValue(msg) {
-        let value
-        switch (this.mode) {
-            case DeviceMode.ABSOLUTE:
-                value = msg.getInt16(4, true)
-                break
-            case DeviceMode.ROTATION:
-                value = msg.getInt32(4, true)
-                break
-            case DeviceMode.SPEED:
-                value = msg.getInt8(4)
-                break
-
-        }
-        return value
-    }
-
 }
 
 module.exports = TachoMotor

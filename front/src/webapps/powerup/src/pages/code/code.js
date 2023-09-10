@@ -341,7 +341,7 @@ $$.control.registerControl('code', {
 			const bottomRight = await blocklyInterpretor.evalCode(block.inputs.BOTTOM_RIGHT, localVariables)
 
 			console.log({ device, topLeft, topRight, bottomLeft, bottomRight })
-			return device.setBrightness(topLeft, bottomLeft, topRight, bottomRight)
+			await device.setBrightness(topLeft, bottomLeft, topRight, bottomRight)
 
 		})
 

@@ -187,9 +187,9 @@ router.get('/load', async function (req, res) {
 			const range = req.headers.range;
 			console.log('range', range)
 			if (!range) {
-	console.log(req.headers)
-				res.status(400).send("Requires Range header");
-					return
+				console.log(req.headers)
+				res.sendFile(filePath)
+				return
 			}
 
 			const videoSize = (await getFileInfo(filePath)).size

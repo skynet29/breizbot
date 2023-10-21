@@ -121,7 +121,8 @@ $$.control.registerControl('hubinfo', {
 					const portId = getExternalPortId($(this))
 					const action = $(this).data('action')
 					console.log('onMotorAction', portId, action)
-					const motor = await hubDevice.getTachoMotor(portId)
+					/**@type {HUB.TachoMotor} */
+					const motor = hubDevice.getDevice(portId)
 					switch (action) {
 						case 'reset':
 							motor.resetZero()
@@ -136,20 +137,23 @@ $$.control.registerControl('hubinfo', {
 					const portId = getExternalPortId($(this))
 					const action = $(this).data('action')
 					console.log('onLedAction', portId, action)
-					const led = await hubDevice.getLed(portId)
+					/**@type {HUB.Led} */
+					const led = hubDevice.getDevice(portId)
 					led.setBrightness((action == 'on' ? 100 : 0))
 				},
 				onCalibrate: async function () {
 					const portId = getExternalPortId($(this))
 					console.log('onCalibrate', portId)
-					const motor = await hubDevice.getMotor(portId)
+					/**@type {HUB.TachoMotor} */
+					const motor = hubDevice.getDevice(portId)
 					await motor.calibrate()
 				},
 				onMouseUp: async function () {
 					//console.log('onMouseUp')
 					const action = $(this).data('action')
 					const portId = getExternalPortId($(this))
-					const motor = await hubDevice.getMotor(portId)
+					/**@type {HUB.TachoMotor} */
+					const motor = hubDevice.getDevice(portId)
 					switch (action) {
 						case 'forward':
 							motor.setPower(100)
@@ -162,7 +166,8 @@ $$.control.registerControl('hubinfo', {
 				onMouseDown: async function () {
 					//console.log('onMouseDown')
 					const portId = getExternalPortId($(this))
-					const motor = await hubDevice.getMotor(portId)
+					/**@type {HUB.TachoMotor} */
+					const motor = hubDevice.getDevice(portId)
 					motor.setPower(0)
 				},
 				onInfo: function () {

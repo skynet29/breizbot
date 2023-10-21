@@ -37,19 +37,11 @@ declare namespace HUB {
         getHubDevices(): Device[];
         init(device: BluetoothDevice): Promise<void>;
         shutdown(): Promise<void>;
-        getDevice(portId: PortMap): Device;
+        getDevice(portId: PortMap): Device | Motor | TachoMotor | Led;
         createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<void>;
         getPortInformation(portId: PortMap): Promise<PortInformation>;
 
-        getMotor(portId: number): Promise<Motor>;
-        getTachoMotor(portId: number): Promise<TachoMotor>;
-        getDblMotor(portId1: number, portId2: number): Promise<DoubleMotor>;
-        getRgbLed(portId: number):Promise<RgbLed>;
-        getTiltSensor(portId: number):Promise<TiltSensor>; 
-        getLed(portId: number):Promise<Led>;
-
         writePortCommand(portId: number, ...data):Promise<void>;
-
 
         getPortIdFromName(name: string): number;
         startNotification(): Promise<void>;

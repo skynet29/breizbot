@@ -48,6 +48,19 @@ class TachoMotor extends Motor {
         return this.writePortCommand(waitEnd, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
     }
 
+    async gotoAbsPosition(angle, speed, waitEnd, brakingStyle = BrakingStyle.BRAKE) {
+        const absPos = await this.getAbsolutePosition()
+        console.log('gotoAbsPosition', this.portId, { angle, absPos, speed, waitEnd, brakingStyle })
+
+        let diff = angle - absPos
+        if (diff < 0) {
+            speed = -speed
+        }
+        diff = Math.abs(diff)
+        return this.rotateDegrees(diff, speed, waitEnd, brakingStyle)
+
+    }
+
     setSpeedForTime(speed, time, waitEnd = false, brakingStyle = BrakingStyle.BRAKE) {
 
         console.log('setSpeedForTime', this.portId, { speed, time, waitEnd, brakingStyle })
@@ -67,8 +80,9 @@ class TachoMotor extends Motor {
         return this.getValue(DeviceMode.ROTATION)
     }
 
-    getAbsolutePosition() {
-        return this.getValue(DeviceMode.ABSOLUTE)
+    async getAbsolutePosition() {
+        const angle = await this.getValue(DeviceMode.ABSOLUTE)
+        return (angle < 0) ? angle + 360 : angle
     }
 
     async calibrate() {

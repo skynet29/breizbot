@@ -303,6 +303,28 @@
         }
     };
 
+    Blockly.Blocks['motor_speed_abs_position'] = {
+        init: function () {
+            this.appendValueInput("VAR")
+                .setCheck(null)
+                .appendField("TachoMotor");
+            this.appendValueInput("SPEED")
+                .setCheck("Number")
+                .appendField("Speed");
+            this.appendValueInput("ANGLE")
+                .setCheck("Number")
+                .appendField("Position");
+            this.appendDummyInput()
+                .appendField("Wait")
+                .appendField(new Blockly.FieldCheckbox("TRUE"), "WAIT");
+            this.setPreviousStatement(true, null);
+            this.setNextStatement(true, null);
+            this.setColour(230);
+            this.setTooltip("");
+            this.setHelpUrl("");
+        }
+    };
+
     Blockly.Blocks['motor_reset_position'] = {
         init: function () {
             this.appendValueInput("VAR")

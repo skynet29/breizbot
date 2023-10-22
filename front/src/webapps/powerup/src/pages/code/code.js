@@ -432,9 +432,27 @@ $$.control.registerControl('code', {
 			const angle = await blocklyInterpretor.evalCode(block.inputs.ANGLE, localVariables)
 
 			console.log({ speed, angle, waitEnd })
-			await motor.gotoAngle(angle, speed, waitEnd, hubSrv.BrakingStyle.FLOAT)
+			await motor.gotoAngle(angle, speed, waitEnd, hubSrv.BrakingStyle.BRAKE)
 
 		})
+
+		blocklyInterpretor.addBlockType('motor_speed_abs_position', async (block,  localVariables) => {
+
+			const motor = await getTachoMotor(block, localVariables)
+
+			/**@type {number} */
+			const speed = await blocklyInterpretor.evalCode(block.inputs.SPEED, localVariables)
+
+			const waitEnd = block.fields.WAIT
+
+			/**@type {number} */
+			const angle = await blocklyInterpretor.evalCode(block.inputs.ANGLE, localVariables)
+
+			console.log({ speed, angle, waitEnd })
+			await motor.gotoAbsPosition(angle, speed, waitEnd, hubSrv.BrakingStyle.BRAKE)
+
+		})
+
 
 		blocklyInterpretor.addBlockType('motor_reset_position', async (block,  localVariables) => {
 

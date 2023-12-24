@@ -13,7 +13,7 @@ const websocket = require('./lib/websocket.js')
 
 
 //require('colors')
-require('console-stamp')(console, { pattern: 'dd/mm/yyyy HH:MM:ss.l' })
+//require('console-stamp')(console, { pattern: 'dd/mm/yyyy HH:MM:ss.l' })
 
 const appsPath = path.join(__dirname, '../front/src/webapps')
 const apps = fs.readdirSync(appsPath)

@@ -34,18 +34,8 @@ $$.control.registerControl('filter', {
                     ev.preventDefault()
                     pager.popPage($(this).getFormData())
 
-                },
-                onReset: function () {
-                    //console.log('onReset')
-                    filters = {
-                        author: 'All',
-                        style: 'All',
-                        director: 'All',
-                        franchise: 'All',
-                        year: ''
-                    }
-                    ctrl.setData({ filters }, true)
                 }
+
             }
         })
 

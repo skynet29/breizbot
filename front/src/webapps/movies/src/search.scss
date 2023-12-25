@@ -1,0 +1,16 @@
+.search {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+
+    form {
+
+        display: flex;
+        padding: 10px;
+        align-items: center;
+        label {
+            margin-right: 10px;
+        }
+
+    }
+}

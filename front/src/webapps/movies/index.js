@@ -10,7 +10,11 @@ module.exports = function (ctx, router) {
             filters.$or = [{actor1: filters.actor},{actor2: filters.actor}]
             delete filters.actor
         }
-        //console.log('filters', filters)
+        if (filters.query != undefined) {
+            filters.title = { $regex: `\w*${filters.query}\w*`, $options: 'i' }
+            delete filters.query
+        }
+       
     }
 
     router.post('/getMovies', async function (req, resp) {
@@ -18,6 +22,7 @@ module.exports = function (ctx, router) {
         const { offset, filters } = req.body
 
         buildFilter(filters)
+        console.log('filters', filters)
 
         try {
             const movies = await db.find(filters).sort({ year: -1, title: 1 }).skip(offset).limit(20).toArray()

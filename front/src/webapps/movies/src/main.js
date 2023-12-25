@@ -23,7 +23,8 @@ $$.control.registerControl('rootPage', {
 			year:      'Year:',
 			director:  'Director:',
 			franchise: 'Franchise:',
-			style: 'Style:'
+			style: 'Style:',
+			query: 'Query:'
 		}
 
 		const ctrl = $$.viewController(elt, {
@@ -51,6 +52,20 @@ $$.control.registerControl('rootPage', {
 
 			},
 			events: {
+				onReload: function() {
+					filters = {}
+                    loadMovies()
+
+				},
+				onSearch: function() {
+					pager.pushPage('search', {
+						title: 'Search movies by title',
+						onReturn: function(data) {
+							filters = data
+							loadMovies()
+						}
+					})
+				},	
 				onAction: function(ev) {
 					ev.preventDefault()
 					ev.stopPropagation()

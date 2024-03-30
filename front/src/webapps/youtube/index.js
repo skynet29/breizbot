@@ -47,16 +47,19 @@ module.exports = function (ctx, router) {
 
 		const info = await ytdl.getBasicInfo(url)
 		//console.log('info', JSON.stringify(info.formats, null, 4))
-		//console.log('info', info.formats)
+		console.log('info', info.formats)
 		let formats = info.formats.filter((f) => f.audioChannels != undefined && f.qualityLabel != undefined).map((f) => {
 			const {itag, qualityLabel} = f
 			return {itag, qualityLabel}
 		})
 
 		const audio = info.formats.filter((a) => a.audioQuality == "AUDIO_QUALITY_MEDIUM").map((f) => {
-			const {itag, mimeType} = f
+			const {itag, mimeType, audioTrack} = f
 			const codec = mimeType.match(/codecs="(.*)"/)
-			return {itag, qualityLabel: 'Audio ' + codec[1]}
+			ret = {itag, qualityLabel: 'Audio ' + codec[1]}
+			if (audioTrack && audioTrack.displayName)
+				ret.displayName = audioTrack.displayName
+			return ret
 
 		})
 

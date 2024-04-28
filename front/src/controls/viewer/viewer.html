@@ -26,8 +26,8 @@
 	<audio bn-attr="{src: url}" controls="" controlsList=nodownload></audio>
 </div>
 
-<div bn-if="isVideo" class="video">
-	<video bn-attr="{src: url}" controls="" controlsList=nodownload></video>
+<div bn-if="isVideo" class="video" bn-bind="video">
+	<video bn-attr="{src: url}" controls="" controlsList=nodownload ></video>
 </div>
 
 <div bn-if="isDoc" class="doc" bn-bind="doc" bn-event="click.top: onTop">

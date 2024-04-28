@@ -1,55 +1,79 @@
 //@ts-check
 $$.control.registerControl('breizbot.viewer', {
 
-	template: {gulp_inject: './viewer.html'},
+	template: { gulp_inject: './viewer.html' },
+
+	deps: ['breizbot.files'],
 
 	props: {
 		type: '',
 		url: '#'
 	},
-	
-	init: function(elt) {
+
+	init: function (elt, files) {
 
 		//@ts-ignore
-		let {type, url} = this.props
+		let { type, url } = this.props
 		//console.log('props', this.props)
+
+
+		async function hasSubtitle(fileName) {
+			//console.log({fileName})
+			const { exists } = await files.exists(fileName)
+			//console.log({exists})
+			if (exists) {
+				ctrl.scope.video.find('video').append($('<track>', {
+					label: 'French',
+					kind: 'subtitles',
+					srclang: 'fr',
+					src: files.fileUrl(fileName)
+				}))
+			}
+		}
 
 		const ctrl = $$.viewController(elt, {
 			data: {
 				url,
 				type,
 				language: `language-${type}`,
-				isImage: function() {
+				isImage: function () {
 					return this.type == 'image'
 				},
-				isPdf: function() {
+				isPdf: function () {
 					return this.type == 'pdf'
 				},
-				isAudio: function() {
+				isAudio: function () {
 					return this.type == 'audio'
 				},
-				isVideo: function() {
+				isVideo: function () {
 					return this.type == 'video'
 				},
-				isDoc: function() {
+				isDoc: function () {
 					return this.type == 'hdoc'
 				},
-				isCode: function() {
+				isCode: function () {
 					return ['javascript', 'html'].includes(this.type)
 				}
 
 			},
 			events: {
-				onTop: function() {
+				onTop: function () {
 					console.log('onTop')
 					ctrl.scope.doc.find('.scrollPanel').get(0).scroll(0, 0)
 				}
 			}
 		})
 
+		if (type == 'video') {
+			const { fileName } = $$.url.parseUrlParams('https://www.netos.ovh' + url)
+			//console.log({fileName})
+			const vttFile = fileName.substr(0, fileName.lastIndexOf(".")) + ".vtt";
+			hasSubtitle(vttFile)
+
+		}
 
 		async function readText() {
-			const ret = await fetch(url)			
+			const ret = await fetch(url)
 			return await ret.text()
 		}
 
@@ -77,10 +101,11 @@ $$.control.registerControl('breizbot.viewer', {
 		}
 
 
-		this.setData = function(data) {
+		this.setData = function (data) {
 			console.log('[Viewer] setData', data)
 			if (data.url) {
-				ctrl.setData({url: data.url})
+				ctrl.setData({ url: data.url })
+
 			}
 		}
 

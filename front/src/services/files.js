@@ -11,6 +11,10 @@ $$.service.registerService('breizbot.files', {
 
 
 		return {
+			exists: function(filePath) {
+				return http.post('/exists', { filePath })
+			},
+
 			fileInfo: function (filePath, friendUser, options) {
 				//console.log('[FileService] fileInfo', filePath, friendUser, options)
 

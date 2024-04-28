@@ -35,6 +35,25 @@ router.post('/fileInfo', async function (req, res) {
 	}
 })
 
+router.post('/exists', async function(req,res) {
+	const user = req.session.user
+	const { filePath } = req.body
+	const rootPath = util.getFilePath(user, filePath)
+	fs.access(rootPath, fs.constants.F_OK, (err) => {
+		console.log('\n> Checking if the file exists')
+		if (err) {
+			console.error('File does not exist')
+			res.json({exists: false})
+		}
+		else {
+		  console.log('File does exist')
+		  res.json({exists: true})
+
+		}	
+	})
+
+})
+
 router.post('/list', async function (req, res) {
 	//console.log('list req', req.session.user)
 	//console.log('params', req.body)

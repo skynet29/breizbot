@@ -18,9 +18,9 @@ $$.control.registerControl('breizbot.viewer', {
 
 
 		async function hasSubtitle(fileName) {
-			//console.log({fileName})
+			console.log({fileName})
 			const { exists } = await files.exists(fileName)
-			//console.log({exists})
+			console.log({exists})
 			if (exists) {
 				ctrl.scope.video.find('video').append($('<track>', {
 					label: 'French',

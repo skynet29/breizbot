@@ -14,10 +14,11 @@
 		if (name.endsWith('.hdoc')) {
 			return 'fa fa-file-word w3-text-blue'
 		}
-		if (name.endsWith('.ogg') || name.endsWith('.mp3')) {
+
+		if ((/\.(ogg|mp3)$/i).test(name)) {
 			return 'fa fa-file-audio w3-text-purple'
 		}
-		if (name.endsWith('.mp4') || name.endsWith('.webm') || name.endsWith('.3gp')) {
+		if ((/\.(mp4|webm|3gp)$/i).test(name)) {
 			return 'fa fa-file-video w3-text-orange'
 		}
 		if (name.endsWith('.zip')) {
@@ -29,6 +30,15 @@
 		if (name.endsWith('.html')) {
 			return 'fab fa-html5 w3-text-blue'
 		}	
+		if (name.endsWith('.py')) {
+			return 'fab fa-python w3-text-blue'
+		}	
+		if (name.endsWith('.svg')) {
+			return 'far fa-file-image w3-text-red'
+		}	
+		if ((/\.(cpp|c|h)$/i).test(name)) {
+			return 'fa fa-file-alt w3-text-green'
+		}
 		return 'fa fa-file w3-text-blue-grey'
 	}
 

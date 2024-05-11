@@ -1,27 +1,36 @@
 .rootPage {
   display: flex;
-  flex-direction: column; }
-  .rootPage > .breizbot-files {
-    flex: 1; }
-  .rootPage > .download {
-    margin: 10px;
-    display: flex;
-    flex-direction: column; }
-    .rootPage > .download .downloadItems {
-      margin-top: 10px;
-      margin-left: 20px; }
-    .rootPage > .download progress {
-      width: 100%; }
-  .rootPage > .toolbar {
-    display: flex;
-    justify-content: space-between;
-    background-color: #128C7E;
-    color: white; }
-    .rootPage > .toolbar .left {
-      display: flex; }
-    .rootPage > .toolbar .group {
-      display: flex;
-      align-items: center; }
-      .rootPage > .toolbar .group .separator {
-        border-left: 1px solid white;
-        height: 80%; }
+  flex-direction: column;
+}
+.rootPage > .breizbot-files {
+  flex: 1;
+}
+.rootPage > .download {
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.rootPage > .download .downloadItems {
+  margin-top: 10px;
+  margin-left: 20px;
+}
+.rootPage > .download progress {
+  width: 100%;
+}
+.rootPage > .toolbar {
+  display: flex;
+  justify-content: space-between;
+  background-color: #128C7E;
+  color: white;
+}
+.rootPage > .toolbar .left {
+  display: flex;
+}
+.rootPage > .toolbar .group {
+  display: flex;
+  align-items: center;
+}
+.rootPage > .toolbar .group .separator {
+  border-left: 1px solid white;
+  height: 80%;
+}

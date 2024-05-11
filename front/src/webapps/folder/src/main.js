@@ -27,12 +27,19 @@ $$.control.registerControl('rootPage', {
 			if (fileName.endsWith('.js')) {
 				type = 'javascript'
 			}
+			if (fileName.endsWith('.py')) {
+				type = 'python'
+			}
+			if ((/\.(cpp|c|h)$/i).test(fileName)) {
+				type = 'cpp'
+			}
 			if (fileName.endsWith('.html')) {
 				type = 'html'
 			}
-			if (fileName.endsWith('.svg')) {
+			if ((/\.(svg|webp)$/i).test(fileName)) {
 				type = 'image'
 			}
+
 			return type
 		}
 

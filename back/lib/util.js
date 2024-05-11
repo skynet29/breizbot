@@ -27,7 +27,7 @@ function getFilePath(user, filePath, friendUser) {
  * @returns 
  */
 function isImage(fileName) {
-	return (/\.(gif|jpg|jpeg|png)$/i).test(fileName)
+	return (/\.(gif|jpg|jpeg|png|webp)$/i).test(fileName)
 }
 
 function genThumbnail(filePath, res, size) {

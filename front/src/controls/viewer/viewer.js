@@ -52,7 +52,7 @@ $$.control.registerControl('breizbot.viewer', {
 					return this.type == 'hdoc'
 				},
 				isCode: function () {
-					return ['javascript', 'html'].includes(this.type)
+					return ['javascript', 'html', 'python', 'cpp'].includes(this.type)
 				}
 
 			},

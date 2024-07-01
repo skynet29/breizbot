@@ -211,6 +211,9 @@ $$.control.registerControl('messagePage', {
 			if (encoding.toUpperCase() != 'BASE64') {
 				return false
 			}
+			if (name.endsWith('.hdoc'))
+				return true
+			
 			const type = $$.file.getFileType(name)
 			if (type == undefined) {
 				if (subtype == 'pdf') {

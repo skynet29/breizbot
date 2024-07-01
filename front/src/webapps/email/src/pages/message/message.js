@@ -76,13 +76,13 @@ $$.control.registerControl('messagePage', {
 						//console.log('message', message)
 						waitDlg.hide()
 						const url = $$.url.buildDataURL(type, subtype, message.data)
-						let type = $$.file.getFileType(info.name)
+						let docType = $$.file.getFileType(info.name)
 						if (info.name.endsWith('.hdoc'))
-							type = 'hdoc'
+							docType = 'hdoc'
 						pager.pushPage('breizbot.viewer', {
 							title: info.name,
 							props: {
-								type,
+								type: docType,
 								url
 							},
 							buttons: {

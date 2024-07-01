@@ -76,10 +76,13 @@ $$.control.registerControl('messagePage', {
 						//console.log('message', message)
 						waitDlg.hide()
 						const url = $$.url.buildDataURL(type, subtype, message.data)
+						let type = $$.file.getFileType(info.name)
+						if (info.name.endsWith('.hdoc'))
+							type = 'hdoc'
 						pager.pushPage('breizbot.viewer', {
 							title: info.name,
 							props: {
-								type: $$.file.getFileType(info.name),
+								type,
 								url
 							},
 							buttons: {
@@ -213,7 +216,7 @@ $$.control.registerControl('messagePage', {
 			}
 			if (name.endsWith('.hdoc'))
 				return true
-			
+
 			const type = $$.file.getFileType(name)
 			if (type == undefined) {
 				if (subtype == 'pdf') {

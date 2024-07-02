@@ -242,7 +242,7 @@ router.get('/load', async function (req, res) {
 
 	}
 	catch (e) {
-		res.status(400).send(e)
+		console.log('error', e)
 	}
 })
 

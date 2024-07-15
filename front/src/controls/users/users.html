@@ -20,7 +20,7 @@
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody bn-each="data" bn-event="click.delete: onDelete, click.notif: onNotif">
+        <tbody bn-each="data" bn-event="click.delete: onDelete, click.notif: onNotif, click.resetPwd: onResetPwd">
   			<tr>
 				<td bn-text="$scope.$i.username"></td>
 				<td bn-text="$scope.$i.pseudo"></td>
@@ -43,6 +43,9 @@
 					</button>
 					<button class="notif w3-btn w3-blue" title="Send Notification">
 						<i class="fa fa-bell"></i>
+					</button>
+					<button class="resetPwd w3-btn w3-blue" title="Reset Password">
+						<i class="fa fa-lock"></i>
 					</button>
 				</td>
 			</tr>      	

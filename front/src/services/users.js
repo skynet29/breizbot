@@ -20,6 +20,10 @@ $$.service.registerService('breizbot.users', {
 				return http.post('/', data)
 			},
 
+			resetPwd: function(userName) {
+				return http.post('/resetPwd', {userName})
+			},
+
 			remove: function (user) {
 				return http.delete(`/${user}`)
 			},

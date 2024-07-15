@@ -67,6 +67,12 @@ module.exports = {
 
 	},
 
+	resetPassword: async function(username) {
+		console.log('resetPassword', username)
+		const update = { '$set': { pwd: 'welcome', crypted: false } }
+		await db.updateOne({ username }, update)
+	},
+
 	updateLastLoginDate: async function (username) {
 
 		//console.log(`[DB] updateLastLoginDate`, username)

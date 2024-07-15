@@ -61,6 +61,13 @@ $$.control.registerControl('breizbot.users', {
 				},
 				onUpdate: function () {
 					getUsers()
+				},
+				onResetPwd: function() {
+					const idx = $(this).closest('tr').index()
+					const { username } = ctrl.model.data[idx]
+					$$.ui.showConfirm({ title: 'Reset Password', content: 'Are you sure ?' }, async function () {
+						await users.resetPwd(username)
+					})				
 				}
 
 			}

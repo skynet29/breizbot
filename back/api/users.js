@@ -33,6 +33,21 @@ router.post('/', async function (req, res) {
 	}
 })
 
+router.post('/resetPwd', async function (req, res) {
+	try {
+		if (req.session.user != config.ADMIN_USER) {
+			res.sendStatus(401)
+		}
+		else {
+			await dbUsers.resetPassword(req.body.userName)
+			res.sendStatus(200)
+		}
+	}
+	catch (e) {
+		res.sendStatus(400)
+	}
+})
+
 router.post('/changePwd', async function (req, res) {
 	const { newPwd } = req.body
 	const userName = req.session.user

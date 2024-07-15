@@ -397,6 +397,7 @@ declare namespace Breizbot {
                 remove(user: string):Promise<void>;
                 update(user: string, data: UserInfo):Promise<void>;
                 get(user: string):Promise<UserInfo>;
+                resetPwd(user: string):Promise<void>;
             }
     
             interface Interface {

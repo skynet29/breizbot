@@ -25,8 +25,10 @@ module.exports = function (app) {
 	})
 
 	app.post('/', async function (req, res) {
-		console.log('login', req.body, req.socket.remoteAddress)
 		const { user, pwd } = req.body
+		const remoteAddress = req.socket.remoteAddress
+		console.log('###LOGIN', {user, remoteAddress})
+
 		if (user == undefined || pwd == undefined) {
 			res.sendStatus(403)
 		}

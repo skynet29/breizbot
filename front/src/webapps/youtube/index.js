@@ -1,7 +1,93 @@
-const ytdl = require('ytdl-core');
 
 const path = require('path')
 const fs = require('fs-extra')
+const request = require('request')
+const progress = require('request-progress')
+const ffmpeg = require('fluent-ffmpeg')
+
+function requestAsync(options) {
+    return new Promise((resolve, reject) => {
+        request(options, (err, resp, body) => {
+            if (err) {
+                reject(err)
+            }
+            else {
+                resolve(body)
+            }
+        })
+    })
+}
+
+async function getInfo(videoId) {
+  const apiKey = 'AIzaSyB-63vPrdThhKuerbB2N_l7Kwwcxj6yUAc'
+  const headers = {
+    'X-YouTube-Client-Name': '5',
+    'X-YouTube-Client-Version': '19.09.3',
+    Origin: 'https://www.youtube.com',
+    'User-Agent': 'com.google.ios.youtube/19.09.3 (iPhone14,3; U; CPU iOS 15_6 like Mac OS X)',
+    'content-type': 'application/json'
+  }
+
+  const b = {
+    context: {
+      client: {
+        clientName: 'IOS',
+        clientVersion: '19.09.3',
+        deviceModel: 'iPhone14,3',
+        userAgent: 'com.google.ios.youtube/19.09.3 (iPhone14,3; U; CPU iOS 15_6 like Mac OS X)',
+        hl: 'en',
+        timeZone: 'UTC',
+        utcOffsetMinutes: 0
+      }
+    },
+    videoId,
+    playbackContext: { contentPlaybackContext: { html5Preference: 'HTML5_PREF_WANTS' } },
+    contentCheckOk: true,
+    racyCheckOk: true
+  }
+
+  const json = await requestAsync({ 
+    url: `https://www.youtube.com/youtubei/v1/player?key${apiKey}&prettyPrint=false`,
+    method: 'POST', 
+    body: b, 
+    headers,
+    json: true
+ });
+
+  return json;
+}
+
+function download(url, fileName, wss, srcId) {
+	console.log('download', url, fileName)
+
+	return new Promise((resolve, reject) => {
+		let lastPercent = 0
+
+		wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent: 0 } })
+
+		progress(request(url), {})
+			.on('progress', (state) => {
+				const percent = Math.floor(state.percent * 100)
+				if (percent != lastPercent) {
+					lastPercent = percent
+					//console.log('progress', percent)
+
+					wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
+				}
+			})
+			.on('error', (e) => {
+				console.error(e)
+				wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { error: e.message } })
+				reject(e)
+	  
+			})
+			.on('end', () => {
+				console.log('end')
+				resolve()
+			 })
+			.pipe(fs.createWriteStream(fileName))			
+	})			
+}
 
 module.exports = function (ctx, router) {
 
@@ -43,74 +129,85 @@ module.exports = function (ctx, router) {
 	})
 
 	router.get('/info', async function (req, res) {
-		const { url } = req.query
+		const { videoId } = req.query
 
-		const info = await ytdl.getBasicInfo(url)
-		//console.log('info', JSON.stringify(info.formats, null, 4))
-		console.log('info', info.formats)
-		let formats = info.formats.filter((f) => f.audioChannels != undefined && f.qualityLabel != undefined).map((f) => {
-			const {itag, qualityLabel} = f
-			return {itag, qualityLabel}
-		})
+		const info = await getInfo(videoId)
+		console.log('info', JSON.stringify(info, null, 4))
 
-		const audio = info.formats.filter((a) => a.audioQuality == "AUDIO_QUALITY_MEDIUM").map((f) => {
-			const {itag, mimeType, audioTrack} = f
-			const codec = mimeType.match(/codecs="(.*)"/)
-			ret = {itag, qualityLabel: 'Audio ' + codec[1]}
-			if (audioTrack && audioTrack.displayName)
-				ret.displayName = audioTrack.displayName
-			return ret
 
-		})
+		const formats = info.streamingData.adaptiveFormats;
 
-		formats = formats.concat(audio)
-		const { title, shortDescription, lengthSeconds, thumbnail } = info.player_response.videoDetails
+		const videoFormat = formats.filter(f => f.mimeType.match(/^video\/\w+/))
+			.map(f => ({qualityLabel: f.qualityLabel, itag: f.url}))
+		console.log('videoFormat', videoFormat)
+
+		const { title, shortDescription, lengthSeconds, thumbnail } = info.videoDetails
 		res.json({
 			title,
 			description: shortDescription,
 			length_seconds: lengthSeconds,
 			thumbnail: thumbnail.thumbnails.pop(),
-			formats
+			formats: videoFormat
 		})
 	})
 
-	router.post('/download', function (req, res) {
-		let { url, fileName, srcId, itag } = req.body
+	router.post('/download', async function (req, res) {
+		let { url, fileName, srcId, videoId } = req.body
 		const userName = req.session.user
 		fileName = fileName.replace(/\/|\||:|"|-| /g, '_')
 
-		const video = ytdl(url, {quality: itag})
+		const info = await getInfo(videoId)
+		const formats = info.streamingData.adaptiveFormats;
 
-		let lastPercent = 0
-
-		video.on('error', (e) => {
-			console.log('ytdl Error', e)
-			wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { error: e } })
-		})
-
-		video.on('progress', (chunkLength, totalDownloaded, total) => {
-			const info = { chunkLength, totalDownloaded, total }
-			//console.log('progress', info)
-			//console.log('%', totalDownloaded/total*100)
-			const percent = Math.floor(totalDownloaded / total * 100)
-			if (percent != lastPercent) {
-				lastPercent = percent
-				wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
-			}
-		})
+		const audioFormat = formats.filter(f => f.mimeType.match(/^audio\/\w+/) && f.audioQuality == 'AUDIO_QUALITY_MEDIUM')
+		console.log('audioFormat', audioFormat)
 
 		res.sendStatus(200)
 
-		// video.on('response', (data) => {
-		// })
+
 		const destPath = path.join(config.CLOUD_HOME, userName, 'apps/ytdl')
+
 		fs.lstat(destPath)
 			.catch(function (err) {
 				console.log('lstat', err)
 				return fs.mkdirp(destPath)
 			})
-			.then(() => {
-				video.pipe(fs.createWriteStream(path.join(destPath, fileName)))
+			.then(async () => {
+
+				const videoPath = path.join(destPath, 'video_' + fileName)
+				const audioPath = path.join(destPath, 'audio_' + fileName)
+
+				await download(url, videoPath, wss, srcId)
+				console.log('video downloaded !')
+				if (audioFormat.length > 0) {
+					await download(audioFormat[0].url, audioPath, wss, srcId)
+					console.log('audio downloaded !')
+
+					ffmpeg()
+					.input(videoPath)
+					.input(audioPath)
+					.addOption(['-c:v', 'copy', '-c:a', 'copy', '-map', '0:v:0', '-map', '1:a:0', '-shortest'])
+					.save(path.join(destPath, fileName))
+					.on('start', () => console.log('Merge video with audio'))
+					.on('end', () => {
+						console.log('merge finished!')
+						wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })					  
+						
+						fs.unlinkSync(videoPath)
+						fs.unlinkSync(audioPath)
+
+					})
+					.on('progress', (event) => {
+						const { percent } = event
+						console.log('progress', event)
+						if (percent != undefined)
+							wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
+					})
+				}
+				else { // no audio
+					wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })
+
+				}
 			})
 
 

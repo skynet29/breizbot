@@ -1,59 +1,74 @@
 .infoPage {
   flex: 1;
-  padding: 10px; }
-  .infoPage .wrapper {
-    max-width: 500px;
-    margin-left: auto;
-    margin-right: auto; }
-    .infoPage .wrapper .video {
-      position: relative;
-      width: 100%;
-      overflow: hidden;
-      height: 0; }
-      .infoPage .wrapper .video iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%; }
-  .infoPage .description {
-    margin-top: 10px; }
-  .infoPage .scrollPanel {
-    overflow-y: auto;
-    max-height: 150px; }
-  .infoPage .details {
-    margin-bottom: 10px;
-    display: grid;
-    grid-template-columns: 80px 1fr; }
-    .infoPage .details strong {
-      grid-column: 1 / 2; }
-    .infoPage .details span {
-      grid-column: 2 / 3; }
-
+  padding: 10px;
+}
+.infoPage .wrapper {
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.infoPage .wrapper .video {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  height: 0;
+}
+.infoPage .wrapper .video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+.infoPage .description {
+  margin-top: 10px;
+}
+.infoPage .scrollPanel {
+  overflow-y: auto;
+  max-height: 150px;
+}
+.infoPage .details {
+  margin-bottom: 10px;
+  display: grid;
+  grid-template-columns: 80px 1fr;
+}
+.infoPage .details strong {
+  grid-column: 1/2;
+}
+.infoPage .details span {
+  grid-column: 2/3;
+}
 .rootPage {
   padding: 10px;
   display: flex;
-  flex-direction: column; }
-  .rootPage .breizbot-searchbar {
-    margin-bottom: 10px; }
-  .rootPage .results {
-    flex: 1;
-    overflow-y: auto;
-    padding: 5px;
-    border: 1px solid lightgrey; }
-    .rootPage .results .item {
-      display: flex;
-      margin: 10px;
-      cursor: pointer;
-      padding: 5px;
-      background-color: white; }
-      .rootPage .results .item .imgWrapper {
-        flex: 1;
-        margin: 0 10px 0 0; }
-        .rootPage .results .item .imgWrapper img {
-          max-width: 100%; }
-      .rootPage .results .item .info {
-        flex: 2;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between; }
+  flex-direction: column;
+}
+.rootPage .breizbot-searchbar {
+  margin-bottom: 10px;
+}
+.rootPage .results {
+  flex: 1;
+  overflow-y: auto;
+  padding: 5px;
+  border: 1px solid lightgrey;
+}
+.rootPage .results .item {
+  display: flex;
+  margin: 10px;
+  cursor: pointer;
+  padding: 5px;
+  background-color: white;
+}
+.rootPage .results .item .imgWrapper {
+  flex: 1;
+  margin: 0 10px 0 0;
+}
+.rootPage .results .item .imgWrapper img {
+  max-width: 100%;
+}
+.rootPage .results .item .info {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}

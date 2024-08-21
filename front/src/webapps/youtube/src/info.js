@@ -55,19 +55,18 @@ $$.control.registerControl('infoPage', {
                 return
             }
             //console.log('progress', msg.data)
-            const { percent, error } = msg.data
+            const { percent, error, finish } = msg.data
             if (error) {
                 progressDlg.hide()
                 $$.ui.showAlert({ title: 'Error', content: error })
             }
+            else if (finish == true) {
+                await $$.util.wait(1000)
+                progressDlg.hide()
+            }
             else {
                 progressDlg.setPercentage(percent / 100)
-                if (percent == 100) {
-                    await $$.util.wait(1000)
-                    progressDlg.hide()
-                }
-
-            }
+           }
         })
 
         this.getButtons = function () {
@@ -84,7 +83,7 @@ $$.control.registerControl('infoPage', {
                     onClick: function (cmd) {
                         console.log('onDownload', videoUrl, cmd)
                         const fileName = title + '.mp4'
-                        ytdl.download(videoUrl, fileName, cmd)
+                        ytdl.download(cmd, fileName, videoId)
                         progressDlg.show()
 
                     }

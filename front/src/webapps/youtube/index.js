@@ -6,55 +6,55 @@ const progress = require('request-progress')
 const ffmpeg = require('fluent-ffmpeg')
 
 function requestAsync(options) {
-    return new Promise((resolve, reject) => {
-        request(options, (err, resp, body) => {
-            if (err) {
-                reject(err)
-            }
-            else {
-                resolve(body)
-            }
-        })
-    })
+	return new Promise((resolve, reject) => {
+		request(options, (err, resp, body) => {
+			if (err) {
+				reject(err)
+			}
+			else {
+				resolve(body)
+			}
+		})
+	})
 }
 
 async function getInfo(videoId) {
-  const apiKey = 'AIzaSyB-63vPrdThhKuerbB2N_l7Kwwcxj6yUAc'
-  const headers = {
-    'X-YouTube-Client-Name': '5',
-    'X-YouTube-Client-Version': '19.09.3',
-    Origin: 'https://www.youtube.com',
-    'User-Agent': 'com.google.ios.youtube/19.09.3 (iPhone14,3; U; CPU iOS 15_6 like Mac OS X)',
-    'content-type': 'application/json'
-  }
+	const apiKey = 'AIzaSyB-63vPrdThhKuerbB2N_l7Kwwcxj6yUAc'
+	const headers = {
+		'X-YouTube-Client-Name': '5',
+		'X-YouTube-Client-Version': '19.09.3',
+		Origin: 'https://www.youtube.com',
+		'User-Agent': 'com.google.ios.youtube/19.09.3 (iPhone14,3; U; CPU iOS 15_6 like Mac OS X)',
+		'content-type': 'application/json'
+	}
 
-  const b = {
-    context: {
-      client: {
-        clientName: 'IOS',
-        clientVersion: '19.09.3',
-        deviceModel: 'iPhone14,3',
-        userAgent: 'com.google.ios.youtube/19.09.3 (iPhone14,3; U; CPU iOS 15_6 like Mac OS X)',
-        hl: 'en',
-        timeZone: 'UTC',
-        utcOffsetMinutes: 0
-      }
-    },
-    videoId,
-    playbackContext: { contentPlaybackContext: { html5Preference: 'HTML5_PREF_WANTS' } },
-    contentCheckOk: true,
-    racyCheckOk: true
-  }
+	const b = {
+		context: {
+			client: {
+				clientName: 'IOS',
+				clientVersion: '19.09.3',
+				deviceModel: 'iPhone14,3',
+				userAgent: 'com.google.ios.youtube/19.09.3 (iPhone14,3; U; CPU iOS 15_6 like Mac OS X)',
+				hl: 'en',
+				timeZone: 'UTC',
+				utcOffsetMinutes: 0
+			}
+		},
+		videoId,
+		playbackContext: { contentPlaybackContext: { html5Preference: 'HTML5_PREF_WANTS' } },
+		contentCheckOk: true,
+		racyCheckOk: true
+	}
 
-  const json = await requestAsync({ 
-    url: `https://www.youtube.com/youtubei/v1/player?key${apiKey}&prettyPrint=false`,
-    method: 'POST', 
-    body: b, 
-    headers,
-    json: true
- });
+	const json = await requestAsync({
+		url: `https://www.youtube.com/youtubei/v1/player?key${apiKey}&prettyPrint=false`,
+		method: 'POST',
+		body: b,
+		headers,
+		json: true
+	});
 
-  return json;
+	return json;
 }
 
 function download(url, fileName, wss, srcId) {
@@ -79,14 +79,14 @@ function download(url, fileName, wss, srcId) {
 				console.error(e)
 				wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { error: e.message } })
 				reject(e)
-	  
+
 			})
 			.on('end', () => {
 				console.log('end')
 				resolve()
-			 })
-			.pipe(fs.createWriteStream(fileName))			
-	})			
+			})
+			.pipe(fs.createWriteStream(fileName))
+	})
 }
 
 module.exports = function (ctx, router) {
@@ -132,13 +132,13 @@ module.exports = function (ctx, router) {
 		const { videoId } = req.query
 
 		const info = await getInfo(videoId)
-		console.log('info', JSON.stringify(info, null, 4))
+		//console.log('info', JSON.stringify(info, null, 4))
 
 
 		const formats = info.streamingData.adaptiveFormats;
 
 		const videoFormat = formats.filter(f => f.mimeType.match(/^video\/\w+/))
-			.map(f => ({qualityLabel: f.qualityLabel, itag: f.url}))
+			.map(f => ({ qualityLabel: f.qualityLabel, itag: f.url }))
 		console.log('videoFormat', videoFormat)
 
 		const { title, shortDescription, lengthSeconds, thumbnail } = info.videoDetails
@@ -155,8 +155,23 @@ module.exports = function (ctx, router) {
 		let { url, fileName, srcId, videoId } = req.body
 		const userName = req.session.user
 		fileName = fileName.replace(/\/|\||:|"|-| /g, '_')
+		const destPath = path.join(config.CLOUD_HOME, userName, 'apps/ytdl')
+
 
 		const info = await getInfo(videoId)
+
+		if (info.captions) {
+
+			const captions = info.captions.playerCaptionsTracklistRenderer.captionTracks.filter(f => f.languageCode == 'fr')
+			console.log({ captions })
+			const subtitles = info.captions.playerCaptionsTracklistRenderer.captionTracks.map(f => f.name.runs[0].text)
+			console.log({ subtitles })
+			if (captions.length > 0) {
+				await download(captions[0].baseUrl + '&format=vtt', path.join(destPath, fileName.replace('.mp4', '.vtt')), wss, srcId)
+				console.log('french captions dowloaded!')
+			}
+		}
+
 		const formats = info.streamingData.adaptiveFormats;
 
 		const audioFormat = formats.filter(f => f.mimeType.match(/^audio\/\w+/) && f.audioQuality == 'AUDIO_QUALITY_MEDIUM')
@@ -165,7 +180,6 @@ module.exports = function (ctx, router) {
 		res.sendStatus(200)
 
 
-		const destPath = path.join(config.CLOUD_HOME, userName, 'apps/ytdl')
 
 		fs.lstat(destPath)
 			.catch(function (err) {
@@ -184,25 +198,25 @@ module.exports = function (ctx, router) {
 					console.log('audio downloaded !')
 
 					ffmpeg()
-					.input(videoPath)
-					.input(audioPath)
-					.addOption(['-c:v', 'copy', '-c:a', 'copy', '-map', '0:v:0', '-map', '1:a:0', '-shortest'])
-					.save(path.join(destPath, fileName))
-					.on('start', () => console.log('Merge video with audio'))
-					.on('end', () => {
-						console.log('merge finished!')
-						wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })					  
-						
-						fs.unlinkSync(videoPath)
-						fs.unlinkSync(audioPath)
+						.input(videoPath)
+						.input(audioPath)
+						.addOption(['-c:v', 'copy', '-c:a', 'copy', '-map', '0:v:0', '-map', '1:a:0', '-shortest'])
+						.save(path.join(destPath, fileName))
+						.on('start', () => console.log('Merge video with audio'))
+						.on('end', () => {
+							console.log('merge finished!')
+							wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })
 
-					})
-					.on('progress', (event) => {
-						const { percent } = event
-						console.log('progress', event)
-						if (percent != undefined)
-							wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
-					})
+							fs.unlinkSync(videoPath)
+							fs.unlinkSync(audioPath)
+
+						})
+						.on('progress', (event) => {
+							const { percent } = event
+							console.log('progress', event)
+							if (percent != undefined)
+								wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
+						})
 				}
 				else { // no audio
 					wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })

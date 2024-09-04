@@ -58,7 +58,7 @@ $$.control.registerControl('rootPage', {
 				videoId = videoUrl.replace(url2, '')
 			}
 			//console.log('videoId', videoId)
-			const info = await ytdl.info(videoId)
+			const info = await ytdl.info(videoUrl)
 			console.log('info', info)
 			pager.pushPage('infoPage', {
 				title: info.title,

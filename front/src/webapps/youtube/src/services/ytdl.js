@@ -16,12 +16,12 @@ $$.service.registerService('app.ytdl', {
 		broker.on('ready', (msg) => { srcId = msg.clientId})
 
 		return {
-			info: function(videoId) {
-				return http.get(`/info`, {videoId})
+			info: function(url) {
+				return http.get(`/info`, {url})
 			},
 
-			download: function(url, fileName, videoId) {
-				return http.post(`/download`, {url, fileName, srcId, videoId})
+			download: function(url, itag, fileName) {
+				return http.post(`/download`, {url, itag, fileName, srcId})
 			},
 
 			search: function(query, maxResults = 3)	{

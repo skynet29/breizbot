@@ -83,7 +83,7 @@ $$.control.registerControl('infoPage', {
                     onClick: function (cmd) {
                         console.log('onDownload', videoUrl, cmd)
                         const fileName = title + '.mp4'
-                        ytdl.download(cmd, fileName, videoId)
+                        ytdl.download(videoUrl, cmd, fileName)
                         progressDlg.show()
 
                     }

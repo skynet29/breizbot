@@ -30,6 +30,9 @@ $$.control.registerControl('rootPage', {
 			if (fileName.endsWith('.py')) {
 				type = 'python'
 			}
+			if (fileName.endsWith('.rs')) {
+				type = 'rust'
+			}
 			if ((/\.(cpp|c|h)$/i).test(fileName)) {
 				type = 'cpp'
 			}

@@ -52,7 +52,7 @@ $$.control.registerControl('breizbot.viewer', {
 					return this.type == 'hdoc'
 				},
 				isCode: function () {
-					return ['javascript', 'html', 'python', 'cpp'].includes(this.type)
+					return ['javascript', 'html', 'python', 'cpp', 'rust'].includes(this.type)
 				}
 
 			},
@@ -63,6 +63,7 @@ $$.control.registerControl('breizbot.viewer', {
 				}
 			}
 		})
+
 
 		if (type == 'video') {
 			const { fileName } = $$.url.parseUrlParams('https://www.netos.ovh' + url)
@@ -89,6 +90,7 @@ $$.control.registerControl('breizbot.viewer', {
 			const code = await readText()
 			const codeElt = ctrl.scope.code
 			codeElt.find('code').text(code)
+
 			Prism.highlightAllUnder(codeElt.get(0))
 		}
 

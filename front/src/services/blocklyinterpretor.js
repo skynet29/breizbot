@@ -463,7 +463,7 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
                         newContext[argNames[i]] = value
                     }
 
-                    console.log({ functionName, newContext })
+                    //console.log({ functionName, newContext })
 
                     if (inputs.STACK != undefined) {
                         await evalCode(inputs.STACK, newContext)
@@ -741,14 +741,15 @@ $$.service.registerService('breizbot.blocklyinterpretor', {
                 console.log(procedureName)
             }
 
-            for (const block of codeBlocks) {
-                if (block.type != 'procedures_defnoreturn' &&
-                    block.type != 'procedures_defreturn' &&
-                    block.type != 'global_declaration') {
-                    await evalCode(block, {})
-                }
-            }
+            // for (const block of codeBlocks) {
+            //     if (block.type != 'procedures_defnoreturn' &&
+            //         block.type != 'procedures_defreturn' &&
+            //         block.type != 'global_declaration') {
+            //         await evalCode(block, {})
+            //     }
+            // }
             dumpVariables()
+            callFunction('main')
         }
 
         function setLogFunction(fn) {

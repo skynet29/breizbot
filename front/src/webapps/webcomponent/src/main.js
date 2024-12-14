@@ -30,7 +30,7 @@ $$.control.registerControl('rootPage', {
 				const style = document.createElement('style')
 				style.textContent= `
 					label {
-						border: 1px solid black;
+						border: 1px solid red;
 						padding: 5px;
 					}
 				`
@@ -60,7 +60,7 @@ $$.control.registerControl('rootPage', {
 			data: {
 				text: 'Hello',
 				options: {
-					opt1: 'toto',
+					attr1: 'toto',
 					opt2: 10
 				}
 			},

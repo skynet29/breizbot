@@ -189,7 +189,7 @@
          * @param  {ArrayBuffer} buffer 
          */
         async sendBuffer(buffer) {
-            console.log('# sendBuffer', buffer)
+            //console.log('# sendBuffer', buffer)
             await this.charac.writeValueWithoutResponse(buffer)
             // console.log('OK')
             // if (!this.busy) {

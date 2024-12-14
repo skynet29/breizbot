@@ -22,13 +22,13 @@ class DoubleMotor extends Motor {
      * @returns 
      */
     setSpeed(speed1, speed2) {
-        return this.writePortCommand(false, 0x08, speed1, speed2, maxPower, 0)
+        return this.writePortCommand(true, 0x08, speed1, speed2, maxPower, 0)
     }
 
     setSpeedForTime(speed1, speed2, time, waitFeedback = false, brakingStyle = BrakingStyle.BRAKE) {
 
         console.log('setSpeedForTime', this.portId, { speed1, speed2, time, waitFeedback, brakingStyle })
-        return this.writePortCommand(this.portId, waitFeedback, 0x0A, toInt16(time), speed1, speed2, maxPower, brakingStyle)
+        return this.writePortCommand(waitFeedback, 0x0A, toInt16(time), speed1, speed2, maxPower, brakingStyle)
     }
 
     rotateDegrees(degrees, speed1, speed2, waitFeedback, brakingStyle = BrakingStyle.BRAKE) {

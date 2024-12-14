@@ -303,7 +303,7 @@ $$.control.registerControl('code', {
 		async function getPairMotor(block, localVariables) {
 			/**@type {HUB.DoubleMotor} */
 			const motor = await blocklyInterpretor.evalCode(block.inputs.VAR, localVariables)
-			console.log('motor', motor)
+			//console.log('motor', motor)
 			if (!hubSrv.isDoubleMotor(motor)) {
 				throw `input is not of type PairMotor`
 			}
@@ -379,7 +379,7 @@ $$.control.registerControl('code', {
 
 			const motor = await getPairMotor(block, localVariables)
 
-			console.log({ speed1, speed2, motor })
+			console.log('setSpeed', { speed1, speed2 })
 			await motor.setSpeed(speed1, speed2)
 
 		})
@@ -539,6 +539,7 @@ $$.control.registerControl('code', {
 			const time = await blocklyInterpretor.evalCode(block.inputs.TIME, localVariables)
 			console.log({ time })
 			await $$.util.wait(time * 1000)
+			console.log('Timeout')
 		})
 
 		function loadCode(code) {

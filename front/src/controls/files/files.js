@@ -33,6 +33,9 @@
 		if (name.endsWith('.py')) {
 			return 'fab fa-python w3-text-blue'
 		}	
+		if (name.endsWith('.rs')) {
+			return 'fa-brands fa-rust w3-text-orange'
+		}	
 		if (name.endsWith('.svg')) {
 			return 'far fa-file-image w3-text-red'
 		}	

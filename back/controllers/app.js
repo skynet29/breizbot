@@ -28,28 +28,34 @@ module.exports = function (app) {
 			req.query.$appName = app
 			req.query.$id = req.session.userInfo._id.toString()
 
+			try {
+				const appInfo = await apps.getAppInfo(app)
+				let styles = appInfo.styles || []
+				styles = styles.map((fileName) => {
+					return (fileName.startsWith('/')) ? fileName : path.join(appPath, fileName)
+				})
+				let scripts = appInfo.scripts || []
+				scripts = scripts.map((fileName) => {
+					return (fileName.startsWith('/')) ? fileName : path.join(appPath, fileName)
+				})
+	
+				const brainjs = appInfo.brainjs || []
+				getBrainjsLib(brainjs, scripts, styles)
+	
+				res.render('app', {
+					appName: app,
+					title: appInfo.title,
+					pseudo: userInfo.pseudo,
+					styles,
+					scripts,
+					params: JSON.stringify(req.query)
+				})
+			}
+			catch(e) {
+				console.error('fail to load manifest file for app', app)
+				res.sendStatus(404)
+			}
 
-			const appInfo = await apps.getAppInfo(app)
-			let styles = appInfo.styles || []
-			styles = styles.map((fileName) => {
-				return (fileName.startsWith('/')) ? fileName : path.join(appPath, fileName)
-			})
-			let scripts = appInfo.scripts || []
-			scripts = scripts.map((fileName) => {
-				return (fileName.startsWith('/')) ? fileName : path.join(appPath, fileName)
-			})
-
-			const brainjs = appInfo.brainjs || []
-			getBrainjsLib(brainjs, scripts, styles)
-
-			res.render('app', {
-				appName: app,
-				title: appInfo.title,
-				pseudo: userInfo.pseudo,
-				styles,
-				scripts,
-				params: JSON.stringify(req.query)
-			})
 
 		}
 		else {

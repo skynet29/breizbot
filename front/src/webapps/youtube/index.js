@@ -45,7 +45,7 @@ function download(url, itag, fileName, wss, srcId) {
 
 		wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent: 0 } })
 
-		const video = ytdl(url, {quality: itag})
+		const video = ytdl(url, { quality: itag })
 
 		let lastPercent = 0
 
@@ -70,7 +70,7 @@ function download(url, itag, fileName, wss, srcId) {
 				lastPercent = percent
 				wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
 			}
-		})		
+		})
 
 		video.pipe(fs.createWriteStream(fileName))
 
@@ -147,14 +147,13 @@ module.exports = function (ctx, router) {
 		const userName = req.session.user
 		fileName = fileName.replace(/\/|\||:|"|-| /g, '_')
 
-		const {player_response: info} = await ytdl.getBasicInfo(url)
+		const { player_response: info } = await ytdl.getBasicInfo(url)
 		//console.log('info', JSON.stringify(info.formats, null, 4))
 		console.log('info', info)
 		res.sendStatus(200)
 
 
 		const destPath = path.join(config.CLOUD_HOME, userName, 'apps/ytdl')
-
 
 		if (info.captions) {
 
@@ -167,11 +166,11 @@ module.exports = function (ctx, router) {
 				await downloadFile(captions[0].baseUrl + '&format=vtt', path.join(destPath, fileName.replace('.mp4', '.vtt')), wss, srcId)
 				console.log('french captions dowloaded!')
 			}
-		}		
+		}
 		const formats = info.streamingData.adaptiveFormats;
 
 		const audioFormat = formats.filter(f => f.mimeType.match(/^audio\/\w+/) && f.audioQuality == 'AUDIO_QUALITY_MEDIUM')
-		console.log('audioFormat', audioFormat)	
+		console.log('audioFormat', audioFormat)
 
 		fs.lstat(destPath)
 			.catch(function (err) {
@@ -182,39 +181,49 @@ module.exports = function (ctx, router) {
 				const videoPath = path.join(destPath, 'video_' + fileName)
 				const audioPath = path.join(destPath, 'audio_' + fileName)
 
-				await download(url, itag, videoPath, wss, srcId)
+				try {
 
-				console.log('video downloaded !')
-				if (audioFormat.length > 0) {
-					await download(url, audioFormat[0].itag, audioPath, wss, srcId)
-					console.log('audio downloaded !')
+					await download(url, itag, videoPath, wss, srcId)
 
-					ffmpeg()
-						.input(videoPath)
-						.input(audioPath)
-						.addOption(['-c:v', 'copy', '-c:a', 'copy', '-map', '0:v:0', '-map', '1:a:0', '-shortest'])
-						.save(path.join(destPath, fileName))
-						.on('start', () => console.log('Merge video with audio'))
-						.on('end', () => {
-							console.log('merge finished!')
-							wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })
+					console.log('video downloaded !')
+					if (audioFormat.length > 0) {
+						await download(url, audioFormat[0].itag, audioPath, wss, srcId)
+						console.log('audio downloaded !')
 
-							fs.unlinkSync(videoPath)
-							fs.unlinkSync(audioPath)
+						ffmpeg()
+							.input(videoPath)
+							.input(audioPath)
+							.addOption(['-c:v', 'copy', '-c:a', 'copy', '-map', '0:v:0', '-map', '1:a:0', '-shortest'])
+							.save(path.join(destPath, fileName))
+							.on('start', () => console.log('Merge video with audio'))
+							.on('end', () => {
+								console.log('merge finished!')
+								wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })
 
-						})
-						.on('progress', (event) => {
-							const { percent } = event
-							//console.log('progress', event)
-							if (percent != undefined)
-								wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
-						})
+								fs.unlinkSync(videoPath)
+								fs.unlinkSync(audioPath)
+
+							})
+							.on('error', (e) => {
+								wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { error: e.message } })
+							})
+							.on('progress', (event) => {
+								const { percent } = event
+								//console.log('progress', event)
+								if (percent != undefined)
+									wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
+							})
+					}
+					else { // no audio
+						wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })
+
+					}
 				}
-				else { // no audio
-					wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })
-
+				catch (e) {
+					console.log('Error', e)
 				}
 			})
+
 
 
 	})

@@ -1,248 +1,301 @@
 .rootPage {
   display: flex;
-  flex-direction: column; }
-  .rootPage .toolbar {
-    background-color: #128C7E;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-left: 10px; }
-  .rootPage .scrollPanel {
-    flex: 1;
-    overflow-y: auto; }
-    .rootPage .scrollPanel .w3-bar {
-      cursor: pointer; }
-      .rootPage .scrollPanel .w3-bar .w3-bar-item {
-        width: 100%; }
-        .rootPage .scrollPanel .w3-bar .w3-bar-item .info {
-          display: flex;
-          flex-direction: row;
-          justify-content: space-between; }
-        .rootPage .scrollPanel .w3-bar .w3-bar-item .synthesis {
-          margin-top: 10px; }
-          .rootPage .scrollPanel .w3-bar .w3-bar-item .synthesis > div {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between; }
-
+  flex-direction: column;
+}
+.rootPage .toolbar {
+  background-color: #128C7E;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 10px;
+}
+.rootPage .scrollPanel {
+  flex: 1;
+  overflow-y: auto;
+}
+.rootPage .scrollPanel .w3-bar {
+  cursor: pointer;
+}
+.rootPage .scrollPanel .w3-bar .w3-bar-item {
+  width: 100%;
+}
+.rootPage .scrollPanel .w3-bar .w3-bar-item .info {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.rootPage .scrollPanel .w3-bar .w3-bar-item .synthesis {
+  margin-top: 10px;
+}
+.rootPage .scrollPanel .w3-bar .w3-bar-item .synthesis > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
 .addAccount {
   padding: 10px;
   display: flex;
   justify-content: center;
-  flex-direction: row; }
-  .addAccount form {
-    max-width: 400px;
-    display: grid;
-    grid-template-columns: 100px 1fr;
-    gap: 10px; }
-    .addAccount form label {
-      grid-column: 1/2; }
-    .addAccount form input {
-      grid-column: 2/3; }
-
+  flex-direction: row;
+}
+.addAccount form {
+  max-width: 400px;
+  display: grid;
+  grid-template-columns: 100px 1fr;
+  gap: 10px;
+}
+.addAccount form label {
+  grid-column: 1/2;
+}
+.addAccount form input {
+  grid-column: 2/3;
+}
 .addTransaction {
   height: 100%;
-  overflow: hidden; }
-  .addTransaction .scrollPanel {
-    height: 100%;
-    overflow-y: auto;
-    display: flex;
-    justify-content: center; }
-  .addTransaction form {
-    padding-top: 10px;
-    max-width: 300px;
-    min-width: 300px;
-    display: flex;
-    flex-direction: column; }
-    .addTransaction form i {
-      color: #6c757d; }
-    .addTransaction form .group {
-      margin-bottom: 10px; }
-      .addTransaction form .group > label {
-        display: inline-block;
-        margin-bottom: 5px; }
-      .addTransaction form .group .brainjs-radiogroup {
-        display: flex;
-        flex-direction: row;
-        padding-left: 10px;
-        padding-right: 10px; }
-        .addTransaction form .group .brainjs-radiogroup .brainjs-inputgroup {
-          display: flex;
-          flex-direction: row;
-          align-items: center; }
-          .addTransaction form .group .brainjs-radiogroup .brainjs-inputgroup input[type=radio] {
-            margin-right: 5px; }
-          .addTransaction form .group .brainjs-radiogroup .brainjs-inputgroup label {
-            margin-right: 20px; }
-
+  overflow: hidden;
+}
+.addTransaction .scrollPanel {
+  height: 100%;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+}
+.addTransaction form {
+  padding-top: 10px;
+  max-width: 300px;
+  min-width: 300px;
+  display: flex;
+  flex-direction: column;
+}
+.addTransaction form i {
+  color: #6c757d;
+}
+.addTransaction form .group {
+  margin-bottom: 10px;
+}
+.addTransaction form .group > label {
+  display: inline-block;
+  margin-bottom: 5px;
+}
+.addTransaction form .group .brainjs-radiogroup {
+  display: flex;
+  flex-direction: row;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+.addTransaction form .group .brainjs-radiogroup .brainjs-inputgroup {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.addTransaction form .group .brainjs-radiogroup .brainjs-inputgroup input[type=radio] {
+  margin-right: 5px;
+}
+.addTransaction form .group .brainjs-radiogroup .brainjs-inputgroup label {
+  margin-right: 20px;
+}
 .filteredTransactions {
   display: flex;
-  flex-direction: column; }
-  .filteredTransactions .scrollPanel {
-    flex: 1;
-    overflow-y: auto; }
-    .filteredTransactions .scrollPanel table {
-      border: none; }
-      .filteredTransactions .scrollPanel table th {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        background-color: #666;
-        color: white; }
-      .filteredTransactions .scrollPanel table td.amount {
-        text-align: right;
-        padding-right: 10px; }
-
+  flex-direction: column;
+}
+.filteredTransactions .scrollPanel {
+  flex: 1;
+  overflow-y: auto;
+}
+.filteredTransactions .scrollPanel table {
+  border: none;
+}
+.filteredTransactions .scrollPanel table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #666;
+  color: white;
+}
+.filteredTransactions .scrollPanel table td.amount {
+  text-align: right;
+  padding-right: 10px;
+}
 .globalSynthesis .year {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 10px; }
-  .globalSynthesis .year label {
-    margin-right: 10px; }
-
+  padding: 10px;
+}
+.globalSynthesis .year label {
+  margin-right: 10px;
+}
 .globalSynthesis td {
-  text-align: right; }
-
+  text-align: right;
+}
 .globalSynthesis th {
   text-align: center;
   background-color: #666;
-  color: white; }
-
+  color: white;
+}
 .globalSynthesis td:nth-child(1) {
   text-align: left;
-  font-weight: bold; }
-
+  font-weight: bold;
+}
 .recurringTransactions {
   display: flex;
-  flex-direction: column; }
-  .recurringTransactions .scrollPanelTable {
-    flex: 1;
-    overflow-y: auto; }
-    .recurringTransactions .scrollPanelTable table {
-      border: none; }
-      .recurringTransactions .scrollPanelTable table th {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        background-color: #666;
-        color: white; }
-      .recurringTransactions .scrollPanelTable table td.amount {
-        text-align: right;
-        padding-right: 10px; }
-
+  flex-direction: column;
+}
+.recurringTransactions .scrollPanelTable {
+  flex: 1;
+  overflow-y: auto;
+}
+.recurringTransactions .scrollPanelTable table {
+  border: none;
+}
+.recurringTransactions .scrollPanelTable table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #666;
+  color: white;
+}
+.recurringTransactions .scrollPanelTable table td.amount {
+  text-align: right;
+  padding-right: 10px;
+}
 .synthCategories {
   display: flex;
-  flex-direction: column; }
-  .synthCategories .year {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    padding: 10px; }
-    .synthCategories .year label {
-      margin-right: 10px; }
-  .synthCategories .scrollPanel {
-    flex: 1;
-    overflow-y: auto; }
-    .synthCategories .scrollPanel td {
-      text-align: right; }
-    .synthCategories .scrollPanel th {
-      text-align: center;
-      background-color: #666;
-      color: white;
-      position: sticky;
-      top: 0;
-      z-index: 2; }
-    .synthCategories .scrollPanel td:nth-child(1) {
-      text-align: left;
-      font-weight: bold; }
-
+  flex-direction: column;
+}
+.synthCategories .year {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 10px;
+}
+.synthCategories .year label {
+  margin-right: 10px;
+}
+.synthCategories .scrollPanel {
+  flex: 1;
+  overflow-y: auto;
+}
+.synthCategories .scrollPanel td {
+  text-align: right;
+}
+.synthCategories .scrollPanel th {
+  text-align: center;
+  background-color: #666;
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.synthCategories .scrollPanel td:nth-child(1) {
+  text-align: left;
+  font-weight: bold;
+}
 .syntheses .year {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 10px; }
-  .syntheses .year label {
-    margin-right: 10px; }
-
+  padding: 10px;
+}
+.syntheses .year label {
+  margin-right: 10px;
+}
 .syntheses td {
-  text-align: right; }
-
+  text-align: right;
+}
 .syntheses th {
   text-align: center;
   background-color: #666;
-  color: white; }
-
+  color: white;
+}
 .syntheses td:nth-child(1) {
   text-align: left;
-  font-weight: bold; }
-
+  font-weight: bold;
+}
 .transactions {
   display: flex;
-  flex-direction: column; }
-  .transactions .scrollPanel {
-    flex: 1;
-    overflow-y: auto; }
-    .transactions .scrollPanel table {
-      border: none; }
-      .transactions .scrollPanel table th {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        background-color: #666;
-        color: white; }
-      .transactions .scrollPanel table td.amount {
-        text-align: right;
-        padding-right: 10px; }
-
+  flex-direction: column;
+}
+.transactions .scrollPanel {
+  flex: 1;
+  overflow-y: auto;
+}
+.transactions .scrollPanel table {
+  border: none;
+}
+.transactions .scrollPanel table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #666;
+  color: white;
+}
+.transactions .scrollPanel table td.amount {
+  text-align: right;
+  padding-right: 10px;
+}
 .unclearedTransactions {
   display: flex;
-  flex-direction: column; }
-  .unclearedTransactions .inputForm {
-    display: flex;
-    flex-direction: row;
-    margin: 10px 10px;
-    justify-content: space-between;
-    align-items: center;
-    /* Chrome, Safari, Edge, Opera */
-    /* Firefox */ }
-    .unclearedTransactions .inputForm .left {
-      display: flex;
-      flex-direction: row; }
-    .unclearedTransactions .inputForm .difference {
-      display: flex;
-      flex-direction: row;
-      align-items: center; }
-      .unclearedTransactions .inputForm .difference > div {
-        min-width: 80px;
-        margin-left: 10px;
-        text-align: right; }
-    .unclearedTransactions .inputForm input[type=number] {
-      text-align: right;
-      padding: 5px;
-      margin-right: 10px; }
-    .unclearedTransactions .inputForm input::-webkit-outer-spin-button,
-    .unclearedTransactions .inputForm input::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0; }
-    .unclearedTransactions .inputForm input[type=number] {
-      -moz-appearance: textfield; }
-  .unclearedTransactions .scrollPanelTable {
-    flex: 1;
-    overflow-y: auto; }
-    .unclearedTransactions .scrollPanelTable .w3-check {
-      top: 0px; }
-    .unclearedTransactions .scrollPanelTable table {
-      border: none; }
-      .unclearedTransactions .scrollPanelTable table th {
-        position: sticky;
-        top: 0;
-        z-index: 2;
-        background-color: #666;
-        color: white; }
-      .unclearedTransactions .scrollPanelTable table td {
-        vertical-align: middle; }
-      .unclearedTransactions .scrollPanelTable table td.amount {
-        text-align: right;
-        padding-right: 10px; }
+  flex-direction: column;
+}
+.unclearedTransactions .inputForm {
+  display: flex;
+  flex-direction: row;
+  margin: 10px 10px;
+  justify-content: space-between;
+  align-items: center;
+  /* Chrome, Safari, Edge, Opera */
+  /* Firefox */
+}
+.unclearedTransactions .inputForm .left {
+  display: flex;
+  flex-direction: row;
+}
+.unclearedTransactions .inputForm .difference {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.unclearedTransactions .inputForm .difference > div {
+  min-width: 80px;
+  margin-left: 10px;
+  text-align: right;
+}
+.unclearedTransactions .inputForm input[type=number] {
+  text-align: right;
+  padding: 5px;
+  margin-right: 10px;
+}
+.unclearedTransactions .inputForm input::-webkit-outer-spin-button,
+.unclearedTransactions .inputForm input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.unclearedTransactions .inputForm input[type=number] {
+  -moz-appearance: textfield;
+}
+.unclearedTransactions .scrollPanelTable {
+  flex: 1;
+  overflow-y: auto;
+}
+.unclearedTransactions .scrollPanelTable .w3-check {
+  top: 0px;
+}
+.unclearedTransactions .scrollPanelTable table {
+  border: none;
+}
+.unclearedTransactions .scrollPanelTable table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #666;
+  color: white;
+}
+.unclearedTransactions .scrollPanelTable table td {
+  vertical-align: middle;
+}
+.unclearedTransactions .scrollPanelTable table td.amount {
+  text-align: right;
+  padding-right: 10px;
+}

@@ -79,16 +79,15 @@ $$.control.registerControl('addTransaction', {
                         delete data.period
                     }
 
-                    let month = date.getMonth() + 1
-                    if (month < 10) {
-                        month = '0' + month
-                    }
-                    let day = date.getDate()
-                    if (day < 10) {
-                        day = '0' + day
-                    }
-        
-                    data.date = `${date.getFullYear()}-${month}-${day}T00:00:00`
+
+                    const utcDate = new Date(Date.UTC(
+                        date.getFullYear(),
+                        date.getMonth(),
+                        date.getDate()
+                    ))
+
+                   data.date = utcDate.toISOString()
+                   console.log('date', data.date)
 
                     if (isNaN(data.number)) {
                         delete data.number

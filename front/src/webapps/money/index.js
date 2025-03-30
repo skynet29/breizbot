@@ -41,14 +41,15 @@ module.exports = function (ctx, router) {
         }
     })
 
+
     function getMonthDateFilter(year, month) {
-        const daysOfMonth = new Date(year, month + 1, 0).getDate()
-
-        const startDate = new Date(year, month, 1)
-        const endDate = new Date(year, month, daysOfMonth)
-
-        return { $gte: startDate, $lte: endDate }
-
+        const startDate = new Date(Date.UTC(year, month, 1, 0, 0, 0)); // Début du mois en UTC
+        const endDate = new Date(Date.UTC(year, month + 1, 0, 23, 59, 59, 999)); // Fin du mois en UTC
+    
+        console.log("Fixed UTC Start:", startDate);
+        console.log("Fixed UTC End:", endDate);
+    
+        return { $gte: startDate, $lte: endDate };
     }
 
     function getCurrentMonthDateFilter() {

@@ -594,12 +594,12 @@ module.exports = function (ctx, router) {
     function getNextOccurenceDate(date, periodicity) {
         if (periodicity == 'Monthly') {
             if (date.getMonth() == 11) {// décembre
-                return new Date(date.getFullYear() + 1, 0, date.getDate())
+                return new Date(Date.UTC(date.getFullYear() + 1, 0, date.getDate()))
             }
-            return new Date(date.getFullYear(), date.getMonth() + 1, date.getDate())
+            return new Date(Date.UTC(date.getFullYear(), date.getMonth() + 1, date.getDate()))
         }
         else if (periodicity == 'Yearly') {
-            return new Date(date.getFullYear() + 1, date.getMonth(), date.getDate())
+            return new Date(Date.UTC(date.getFullYear() + 1, date.getMonth(), date.getDate()))
         }
     }
 

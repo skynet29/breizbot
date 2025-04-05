@@ -105,21 +105,8 @@ $$.control.registerControl('rootPage', {
 				},
 				onOpenFile: function (ev) {
 					//console.log('onOpenFile')
-					pager.pushPage('breizbot.files', {
-						title: 'Open File',
-						props: {
-							filterExtension: 'hdoc'
-						},
-						events: {
-							fileclick: function (ev, data) {
-								pager.popPage(data)
-							}
-						},
-						onReturn: function (data) {
-							//console.log('onReturn', data)
-							loadFileName(data)
-						}
-					})
+					files.openFile('Open File', {filterExtension: 'hdoc'}, loadFileName)
+
 				}
 			}
 		})

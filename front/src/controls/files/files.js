@@ -71,6 +71,7 @@
 			getMP3Info: false,
 			friendUser: '',
 			mp3Filters: null,
+			rootDir: '/',
 			menuItems: function (data) {
 				return {}
 			}
@@ -110,7 +111,7 @@
 					loading: false,
 					selectionEnabled,
 					folderSelectionEnabled,
-					rootDir: '/',
+					rootDir: this.props.rootDir,
 					files: [],
 					mp3Filters,
 					info: function () {

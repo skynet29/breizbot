@@ -249,6 +249,7 @@ declare namespace Breizbot {
                 saveFile(blob: Blob, saveAsfileName: string, options?: {checkExists?: boolean, destPath?: string}): Promise<boolean>;
                 assetsUrl(fileName: string): string;
                 move(fileName: string, destPath: string):Promise<void>;
+                openFile(title: string, props: Breizbot.Controls.Files.Props, cbk: (data) => {});
             }
     
     
@@ -637,6 +638,7 @@ declare namespace Breizbot {
                 getMP3Info?: boolean;       // default false
                 friendUser?: string;
                 mp3Filters?: Mp3Filter;
+                rootDir?: string;
                 menuItems?: (data: Services.Files.FileInfo) => {};
             }
 

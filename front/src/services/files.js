@@ -1,16 +1,45 @@
 //@ts-check
 $$.service.registerService('breizbot.files', {
 
-	deps: ['brainjs.resource', 'breizbot.params'],
+	deps: ['brainjs.resource', 'breizbot.params', 'breizbot.pager'],
 
-	init: function (config, resource, params) {
+	/**
+	 * 
+	 * @param {*} config 
+	 * @param {*} resource 
+	 * @param {*} params 
+	 * @param {Breizbot.Services.Pager.Interface} pager 
+	 * @returns 
+	 */
+	init: function (config, resource, params, pager) {
 		/**@type {Brainjs.Services.Http.Interface} */
 		const http = resource('/api/files')
 
 		const savingDlg = $$.ui.progressDialog()
 
+		let rootDir = '/'
+
+		function openFile(title, props, cbk) {
+			props.rootDir = rootDir
+			pager.pushPage('breizbot.files', {
+				title,
+				props,
+				events: {
+					fileclick: function (ev, data) {
+						pager.popPage(data)
+					}
+				},
+				onReturn: async function (data) {
+					console.log('onReturn', data)
+					rootDir = data.rootDir
+					cbk(data)
+				}
+			})
+		}
+
 
 		return {
+			openFile,
 			exists: function(filePath) {
 				return http.post('/exists', { filePath })
 			},

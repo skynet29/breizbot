@@ -671,30 +671,20 @@ $$.control.registerControl('breizbot.htmleditor', {
 
 			const range = selObj.getRangeAt(0)
 
-			pager.pushPage('breizbot.files', {
-				title: 'Insert Image',
-				props: {
-					filterExtension: 'jpg,jpeg,png,gif'
-				},
-				events: {
-					fileclick: function (ev, data) {
-						pager.popPage(data)
-					}
-				},
-				onReturn: async function (data) {
-					console.log('onReturn', data)
-					const { fileName, rootDir } = data
-					let url = files.fileUrl(rootDir + fileName)
-					//console.log('url', url)
-					if (useDataUrlForImg) {
-						url = await $$.url.imageUrlToDataUrl(url)
-					}
-					const img = document.createElement('img')
-					img.src = url
-					range.insertNode(img)
-
+			files.openFile('Insert Image', {filterExtension: 'jpg,jpeg,png,gif,webp'}, async (data) => {
+				console.log('onReturn', data)
+				const { fileName, rootDir } = data
+				let url = files.fileUrl(rootDir + fileName)
+				//console.log('url', url)
+				if (useDataUrlForImg) {
+					url = await $$.url.imageUrlToDataUrl(url)
 				}
+				const img = document.createElement('img')
+				img.src = url
+				range.insertNode(img)				
 			})
+
+
 
 
 		}

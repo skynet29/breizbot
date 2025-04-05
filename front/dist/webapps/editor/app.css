@@ -1,22 +1,29 @@
 .rootPage {
   display: flex;
-  flex-direction: column; }
-  .rootPage .breizbot-htmleditor {
-    flex: 1; }
-  .rootPage > .toolbar {
-    display: flex;
-    flex-direction: row;
-    background-color: #128C7E;
-    color: white;
-    border-bottom: 1px solid white; }
-    .rootPage > .toolbar .group {
-      display: flex;
-      align-items: center; }
-      .rootPage > .toolbar .group .separator {
-        border-left: 1px solid white;
-        height: 80%; }
-  .rootPage .titlebar {
-    text-align: center; }
+  flex-direction: column;
+}
+.rootPage .breizbot-htmleditor {
+  flex: 1;
+}
+.rootPage > .toolbar {
+  display: flex;
+  flex-direction: row;
+  background-color: #128C7E;
+  color: white;
+  border-bottom: 1px solid white;
+}
+.rootPage > .toolbar .group {
+  display: flex;
+  align-items: center;
+}
+.rootPage > .toolbar .group .separator {
+  border-left: 1px solid white;
+  height: 80%;
+}
+.rootPage .titlebar {
+  text-align: center;
+}
 
 .openFile .breizbot-files {
-  height: 100%; }
+  height: 100%;
+}

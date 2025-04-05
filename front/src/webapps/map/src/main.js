@@ -68,6 +68,44 @@ $$.control.registerControl('rootPage', {
 					}
 
 				},
+				onAddMarker: function() {
+					console.log('Add Marker')
+					$$.ui.showForm({
+						title: 'Add Marker',
+						fields: {
+							lat: {
+								label: 'Latitude: ',
+								input: 'input',
+								attrs: {
+									type: 'number',
+									step: 'any',
+								}
+							},
+							lng: {
+								label: 'Longitude: ',
+								input: 'input',
+								attrs: {
+									type: 'number',
+									step: 'any'
+								}
+							},
+							label: {
+								label: 'Label:',
+								input: 'input',
+								attrs: {
+									type: 'text'
+								}
+							}
+						}
+					}, (data) => {
+						console.log(data)
+						const {lat, lng, label: tooltip} = data
+						const latlng = {lat, lng}
+						const shapeId = 'ID' + Date.now()
+						addMarker(shapeId, latlng, tooltip)
+						markers[shapeId] = { latlng, tooltip }
+					})
+				},
 				onSearch: function () {
 					//console.log('onSearch')
 					pager.pushPage('searchPage', {

@@ -3,7 +3,7 @@ $$.control.registerControl('transactions', {
 
     template: { gulp_inject: './transactions.html' },
 
-    deps: ['breizbot.pager', 'breizbot.http'],
+    deps: ['breizbot.pager', 'breizbot.http', 'breizbot.files'],
 
     props: {
         accountId: null
@@ -13,8 +13,9 @@ $$.control.registerControl('transactions', {
      * 
      * @param {Breizbot.Services.Pager.Interface} pager 
      * @param {Breizbot.Services.Http.Interface} http 
+     * @param {Breizbot.Services.Files.Interface} fileSrv
      */
-    init: function (elt, pager, http) {
+    init: function (elt, pager, http, fileSrv) {
 
         //@ts-ignore
         const { accountId } = this.props
@@ -111,22 +112,10 @@ $$.control.registerControl('transactions', {
         load()
 
         function importTransactions() {
-            pager.pushPage('breizbot.files', {
-                title: 'Import transactions from QIF file',
-                props: {
-                    filterExtension: 'qif'
-                },
-                events: {
-                    fileclick: function (ev, data) {
-                        pager.popPage(data)
-                    }
-                },
-                onReturn: async function (data) {
-                    //console.log('onReturn', data)
-                    const fileName = data.rootDir + data.fileName
-                    await http.post(`/account/${accountId}/importTransactions`, { fileName })
-                    loadTransactions()
-                }
+            fileSrv.openFile('Import transactions from QIF file', 'qif', async (data) => {
+                const fileName = data.rootDir + data.fileName
+                await http.post(`/account/${accountId}/importTransactions`, { fileName })
+                loadTransactions()
             })
         }
 

@@ -4,7 +4,7 @@ $$.control.registerControl('rootPage', {
 
 	template: { gulp_inject: './main.html' },
 
-	deps: ['breizbot.pager', 'breizbot.http'],
+	deps: ['breizbot.pager', 'breizbot.http', 'breizbot.files'],
 
 	props: {
 	},
@@ -13,8 +13,9 @@ $$.control.registerControl('rootPage', {
 	 * 
 	 * @param {Breizbot.Services.Pager.Interface} pager
 	 * @param {Breizbot.Services.Http.Interface}  http
+	 * @param {Breizbot.Services.Files.Interface} fileSrv
 	 */
-	init: function (elt, pager, http) {
+	init: function (elt, pager, http, fileSrv) {
 
 		let filters = {}
 
@@ -146,28 +147,11 @@ $$.control.registerControl('rootPage', {
 
 				},
 				onImport: function() {
-					pager.pushPage('breizbot.files', {
-						title: 'Import Movies',
-						/**@type {Breizbot.Controls.Files.Props} */
-						props: {
-							selectionEnabled: true,
-							filterExtension: 'json'
-						},
-						events: {
-							fileclick: function(ev, data) {
-								pager.popPage(data)
-							}
-						},
-						/**
-						 * 
-						 * @param {Breizbot.Controls.Files.EventData.FileClick} fileInfo 
-						 */
-						onReturn: async function(fileInfo) {
-							console.log('onReturn', fileInfo)
-							await http.post('/importFile', {filePath: fileInfo.rootDir + fileInfo.fileName})
-							loadMovies()
-						}
-					})
+					fileSrv.openFile('Import Movies', 'json', async (fileInfo) => {
+						console.log('onReturn', fileInfo)
+						await http.post('/importFile', {filePath: fileInfo.rootDir + fileInfo.fileName})
+						loadMovies()
+					})					
 				},
 				onFilter: function () {
 					//console.log('onFilter')

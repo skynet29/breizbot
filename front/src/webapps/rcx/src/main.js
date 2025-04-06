@@ -4,6 +4,13 @@ $$.control.registerControl('rootPage', {
 
 	deps: ['app.rcx', 'breizbot.pager', 'breizbot.files'],
 
+	/**
+	 * 
+	 * @param {*} elt 
+	 * @param {*} rcx 
+	 * @param {*} pager 
+	 * @param {Breizbot.Services.Files.Interface} files 
+	 */
 	init: function (elt, rcx, pager, files) {
 
 
@@ -21,28 +28,12 @@ $$.control.registerControl('rootPage', {
 			events: {
 				onDownloadFirmware: function () {
 					//console.log('onDownloadFirmware')
-					pager.pushPage('breizbot.files', {
-						title: 'Open File',
-						props: {
-							filterExtension: 'lgo'
-						},
-						events: {
-							fileclick: function (ev, data) {
-								pager.popPage(data)
-							}
-						},
-						onReturn: async function (info) {
-							//console.log('onReturn', info)
-							const { fileName, rootDir } = info
-							const url = files.fileUrl(rootDir + fileName)
-							const resp = await fetch(url)
-							const srec = await resp.text()
-							//console.log('srec', srec)
-							await rcx.downloadFirmware(srec, 200)
-
-						}
+					files.openFile('Open File', 'lgo', async (data) => {
+						const resp = await fetch(data.url)
+						const srec = await resp.text()
+						//console.log('srec', srec)
+						await rcx.downloadFirmware(srec, 200)
 					})
-
 				},
 				onConnect: async function () {
 					await rcx.connect()

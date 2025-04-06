@@ -593,20 +593,9 @@ $$.control.registerControl('code', {
 					}
 				},
 				onImport: function() {
-					pager.pushPage('breizbot.files', {
-						title: 'Open File',
-						props: {
-							filterExtension: 'pow'
-						},
-						events: {
-							fileclick: function (ev, data) {
-								pager.popPage(data)
-							}
-						},
-						onReturn: async function (data) {
+					fileSrv.openFile('Open File', 'pow', async (data) => {
 							//console.log('onReturn', data)
-							const url = fileSrv.fileUrl(data.rootDir + data.fileName)
-							const resp = await fetch(url)
+							const resp = await fetch(data.url)
 							const {code, mappings} = await resp.json()
 							console.log({code, mappings})
 							config.code = code
@@ -615,8 +604,6 @@ $$.control.registerControl('code', {
 							ctrl.setData({ currentConfig: '' })
 							config.gamepadMapping = config.mappings[config.gamepadId]
 							loadCode(config.code)
-
-						}
 					})
 				},
 				onStop: async function() {

@@ -249,7 +249,7 @@ declare namespace Breizbot {
                 saveFile(blob: Blob, saveAsfileName: string, options?: {checkExists?: boolean, destPath?: string}): Promise<boolean>;
                 assetsUrl(fileName: string): string;
                 move(fileName: string, destPath: string):Promise<void>;
-                openFile(title: string, props: Breizbot.Controls.Files.Props, cbk: (data) => {});
+                openFile(title: string, props: Breizbot.Controls.Files.Props | string, cbk: ({url: string, fileName: string, rootDir: string}) => void);
             }
     
     

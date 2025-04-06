@@ -1,26 +1,35 @@
 .rootPage {
-  margin: 1em; }
-  .rootPage .notSupported {
-    padding: 1em;
-    background-color: red;
-    color: white; }
-  .rootPage fieldset {
-    margin-top: 10px;
-    margin-bottom: 10px; }
-    .rootPage fieldset label {
-      margin-right: 10px; }
-  .rootPage .beep {
-    display: flex;
-    margin-bottom: 10px;
-    margin-top: 10px;
-    align-items: center; }
-    .rootPage .beep button {
-      margin-right: 30px; }
-  .rootPage .container {
-    padding-top: 10px; }
-  .rootPage .vert_container {
-    padding-top: 10px;
-    display: flex;
-    align-items: center; }
-    .rootPage .vert_container label {
-      width: 60px; }
+  margin: 1em;
+}
+.rootPage .notSupported {
+  padding: 1em;
+  background-color: red;
+  color: white;
+}
+.rootPage fieldset {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.rootPage fieldset label {
+  margin-right: 10px;
+}
+.rootPage .beep {
+  display: flex;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  align-items: center;
+}
+.rootPage .beep button {
+  margin-right: 30px;
+}
+.rootPage .container {
+  padding-top: 10px;
+}
+.rootPage .vert_container {
+  padding-top: 10px;
+  display: flex;
+  align-items: center;
+}
+.rootPage .vert_container label {
+  width: 60px;
+}

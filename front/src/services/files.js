@@ -19,8 +19,15 @@ $$.service.registerService('breizbot.files', {
 
 		let rootDir = '/'
 
+		function fileUrl(fileName, friendUser) {
+			return $$.url.getUrlParams('/api/files/load', { fileName, friendUser })
+		}
+
 		function openFile(title, props, cbk) {
 			props.rootDir = rootDir
+			if (typeof props == 'string') {
+				props = {filterExtension: props}
+			}
 			pager.pushPage('breizbot.files', {
 				title,
 				props,
@@ -32,6 +39,7 @@ $$.service.registerService('breizbot.files', {
 				onReturn: async function (data) {
 					console.log('onReturn', data)
 					rootDir = data.rootDir
+					data.url = fileUrl(data.rootDir + data.fileName)
 					cbk(data)
 				}
 			})
@@ -59,9 +67,7 @@ $$.service.registerService('breizbot.files', {
 				return http.post('/move', { destPath, fileName})
 			},
 
-			fileUrl: function (fileName, friendUser) {
-				return $$.url.getUrlParams('/api/files/load', { fileName, friendUser })
-			},
+			fileUrl,
 
 			fileAppUrl: function(fileName) {
 				fileName = `/apps/${params.$appName}/${fileName}`

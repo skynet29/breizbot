@@ -105,7 +105,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onOpenFile: function (ev) {
 					//console.log('onOpenFile')
-					files.openFile('Open File', {filterExtension: 'hdoc'}, loadFileName)
+					files.openFile('Open File', 'hdoc', loadFileName)
 
 				}
 			}
@@ -135,11 +135,10 @@ $$.control.registerControl('rootPage', {
 
 		/**
 		 * 
-		 * @param {{fileName: string, rootDir: string}} data 
+		 * @param {{fileName: string, rootDir: string, url: string}} data 
 		 */
 		function loadFileName(data) {
-			const { fileName, rootDir } = data
-			const url = files.fileUrl(rootDir + fileName)
+			const { fileName, rootDir, url } = data
 
 			ctrl.setData({ fileName, rootDir })
 			editor.load(url, () => {

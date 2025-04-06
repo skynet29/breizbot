@@ -671,10 +671,9 @@ $$.control.registerControl('breizbot.htmleditor', {
 
 			const range = selObj.getRangeAt(0)
 
-			files.openFile('Insert Image', {filterExtension: 'jpg,jpeg,png,gif,webp'}, async (data) => {
+			files.openFile('Insert Image', 'jpg,jpeg,png,gif,webp', async (data) => {
 				console.log('onReturn', data)
-				const { fileName, rootDir } = data
-				let url = files.fileUrl(rootDir + fileName)
+				let { url } = data
 				//console.log('url', url)
 				if (useDataUrlForImg) {
 					url = await $$.url.imageUrlToDataUrl(url)

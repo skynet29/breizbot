@@ -124,11 +124,8 @@ $$.control.registerControl('breizbot.pdf', {
 			}
 		}
 
-	},
+	}
 
-	$iface: `
-		setData({url})
-	`
 
 
 });

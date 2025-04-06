@@ -166,9 +166,7 @@ $$.control.registerControl('app.media', {
 		})
 
 
-	},
+	}
 
-	$iface: 'update()',
-	$events: 'fileclick'
 
 });

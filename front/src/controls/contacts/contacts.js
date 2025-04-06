@@ -112,12 +112,8 @@ $$.control.registerControl('breizbot.contacts', {
 			return ret
 		}
 
-	},
-	$iface: `
-		getSelection(): [ContactInfo]
-		removeContact(id)
-	`,
-	$events: 'contactclick'
+	}
+
 });
 
 

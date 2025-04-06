@@ -19,9 +19,5 @@ $$.service.registerService('app.media', {
 		}
 	},
 
-	$iface: `
-		drive():Promise;
-		list(driveName, destPath):Promise		
-	`
 
 });

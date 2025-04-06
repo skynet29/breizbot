@@ -107,14 +107,9 @@ $$.control.registerControl('breizbot.friends', {
 
 		this.update()
 
-	},
+	}
 
-	$iface: `
-		getSelection():string;
-		getFriends():[string]
-	`,
 
-	$events: 'friendclick'
 });
 
 

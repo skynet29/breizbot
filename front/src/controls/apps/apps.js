@@ -6,8 +6,6 @@ $$.control.registerControl('breizbot.apps', {
 		items: null
 	},
 
-	$iface: 'setData(data)',
-
 	template: { gulp_inject: './apps.html' },
 
 	init: function (elt) {
@@ -76,9 +74,7 @@ $$.control.registerControl('breizbot.apps', {
 			})
 		}
 
-	},
+	}
 
-	$iface: `setData(data)`,
-	$events: 'appclick;appcontextmenu'
 });
 

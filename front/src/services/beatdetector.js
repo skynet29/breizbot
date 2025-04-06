@@ -51,9 +51,8 @@ $$.service.registerService('breizbot.beatdetector', {
             computeBeatDetection
 		}
 
-	},
+	}
 
-	$iface: `function(prefix):HttpInterface`
 
 });
 

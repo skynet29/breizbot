@@ -32,12 +32,12 @@ $$.control.registerControl('rootPage', {
 		}
 
 		async function flash(symbol, soundOn) {
-			ctrl.setData({ color: 'red' })
+			ctrl.setData({ ledOn: true })
 			if (soundOn) {
 				playBeep(symbol === '.' ? 200 : 600)
 			}
 			await $$.util.wait(symbol === '.' ? 200 : 600); // durée point/tiret
-			ctrl.setData({ color: 'black' })
+			ctrl.setData({ ledOn: false })
 			await $$.util.wait(200); // temps entre symboles
 		}
 
@@ -68,9 +68,9 @@ $$.control.registerControl('rootPage', {
 
 		const ctrl = $$.viewController(elt, {
 			data: {
-				color: 'black',
+				ledOn: false,
 				morseOutput: '',
-				soundOn: true
+				soundOn: false
 			},
 			events: {
 				playMorse: async function (ev) {

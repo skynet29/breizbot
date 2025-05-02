@@ -5,9 +5,14 @@
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  background-color: black;
-  margin: 20px auto;
-  transition: background-color 0.2s;
+  background-color: #333;
+  margin: 30px auto;
+  box-shadow: 0 0 20px #000;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+.rootPage .led.on {
+  background-color: red;
+  box-shadow: 0 0 50px red;
 }
 .rootPage .morseOutput {
   margin-top: 20px;

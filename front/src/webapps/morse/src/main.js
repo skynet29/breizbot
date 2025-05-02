@@ -42,17 +42,6 @@ $$.control.registerControl('rootPage', {
 		}
 
 
-		function getMorse(text) {
-			return text
-				.toLowerCase()
-				.split('')
-				.map(char => {
-					if (char === ' ') return '/';
-					return morseCode[char] || '';
-				})
-				.join(' ');
-		}
-
 		function playBeep(duration = 200, frequency = 600) {
 			const ctx = new AudioContext
 			const oscillator = ctx.createOscillator();
@@ -76,12 +65,19 @@ $$.control.registerControl('rootPage', {
 				playMorse: async function (ev) {
 					ev.preventDefault()
 					const { text } = $(this).getFormData()
-					const {soundOn} = ctrl.model
-					ctrl.setData({ morseOutput: getMorse(text) })
+					const { soundOn } = ctrl.model
+					ctrl.setData({ morseOutput: '' })
 
 					for (let char of text.toLowerCase()) {
+						if (char === ' ') {
+							ctrl.setData({ morseOutput: ctrl.model.morseOutput + ' / ' })
+							await $$.util.wait(1000);
+							continue
+						}
+
 						if (morseCode[char]) {
-							const sequence = morseCode[char];
+							const sequence = morseCode[char]
+							ctrl.setData({ morseOutput: ctrl.model.morseOutput + sequence + ' ' })
 							for (let symbol of sequence) {
 								await flash(symbol, soundOn);
 							}

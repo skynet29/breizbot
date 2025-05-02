@@ -1,0 +1,13 @@
+<h1>Code Morse Visuel</h1>
+<form bn-event="submit: playMorse">
+    <input type="text" placeholder="Entrez un mot" name="text" required/>
+    <button type="submit"">Envoyer</button>
+</form>
+
+
+<div class="led" bn-style="{backgroundColor: color}"></div>
+<div bn-text="morseOutput" class="morseOutput"></div>
+<div class="soundPanel">
+    <label>Sound</label>
+    <div bn-control="brainjs.flipswitch" bn-val="soundOn" bn-update="flipswitchchange"></div>
+</div>

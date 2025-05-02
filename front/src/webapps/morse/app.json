@@ -1,0 +1,7 @@
+{	
+	"colorCls": "w3-green",
+	"title": "Morse",
+	"styles": ["app.css"],
+	"iconUrl": "morse.webp"
+
+}

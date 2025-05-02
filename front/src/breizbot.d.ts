@@ -277,8 +277,8 @@ declare namespace Breizbot {
                 props?: {};
                 onReturn?: (data: any) => void;
                 onBack?: () => void;
-                buttons?: { [buttonName]: ButtonOptions };
-                events?: { [eventName]: (ev: JQuery.TriggeredEvent, ...data) => void};
+                buttons?: { [buttonName: string]: ButtonOptions };
+                events?: { [eventName: string]: (ev: JQuery.TriggeredEvent, ...data) => void};
             }
     
             interface Interface {

@@ -48,6 +48,7 @@ module.exports = function (ctx, router) {
     
         console.log("Fixed UTC Start:", startDate);
         console.log("Fixed UTC End:", endDate);
+
     
         return { $gte: startDate, $lte: endDate };
     }

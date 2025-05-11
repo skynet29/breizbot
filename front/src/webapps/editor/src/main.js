@@ -130,6 +130,7 @@ $$.control.registerControl('rootPage', {
 		}
 
 		if (params.fileName) {
+			params.url  = files.fileUrl(params.rootDir + params.fileName)
 			loadFileName(params)
 		}
 

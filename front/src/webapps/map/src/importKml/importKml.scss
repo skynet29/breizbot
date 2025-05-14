@@ -1,0 +1,22 @@
+.importKml {
+
+    display: flex;
+    flex-direction: column;
+
+    form {
+        margin: 10px;
+    }
+    
+    .scrollPanel {
+        flex: 1;
+        overflow-y: auto;
+
+        table th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
+            background-color: #666;
+            color: white; 
+        }
+    }
+}

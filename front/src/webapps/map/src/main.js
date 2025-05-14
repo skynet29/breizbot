@@ -1,7 +1,7 @@
 //@ts-check
 $$.control.registerControl('rootPage', {
 
-	deps: ['breizbot.broker', 'breizbot.appData', 'breizbot.pager', 'breizbot.radar', 'breizbot.files'],
+	deps: ['breizbot.broker', 'breizbot.appData', 'breizbot.pager', 'breizbot.radar', 'breizbot.files', 'breizbot.http'],
 
 	template: { gulp_inject: './main.html' },
 
@@ -12,12 +12,14 @@ $$.control.registerControl('rootPage', {
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {Breizbot.Services.Radar.Interface} radarSrv
 	 * @param {Breizbot.Services.Files.Interface} filesSrv
+	 * @param {Breizbot.Services.Http.Interface} http
 	 */
-	init: function (elt, broker, appData, pager, radarSrv, filesSrv) {
+	init: function (elt, broker, appData, pager, radarSrv, filesSrv, http) {
 
-		let { zoom, center, markers } = appData.getData()
+		let { zoom, center, markers, layers } = appData.getData()
 		console.log('appData', appData.getData())
 		markers = markers || {}
+		layers = layers || {}
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -106,6 +108,43 @@ $$.control.registerControl('rootPage', {
 						markers[shapeId] = { latlng, tooltip }
 					})
 				},
+				onImportKml: function() {
+					console.log('onInportKml')
+					filesSrv.openFile('Import KML', {filterExtension: 'kml'}, async (data) => {
+						console.log('data', data)
+						try {
+							const kml = await http.post('/importKml', data)
+							console.log('kml', kml)
+							pager.pushPage('importKml', {
+								title: 'Import KML',
+								props: {
+									kml
+								},
+								onReturn: function({indexes, layerLabel}) {
+									console.log({indexes, layerLabel})
+									map.addLayer(layerLabel, {label: layerLabel, visible: true, openPopupOnActivate: true})
+									layers[layerLabel] = []
+
+									for(const idx of indexes) {
+										const {Point, name} = kml[idx]
+										const [lng, lat] = Point.coordinates.split(',').map(a => parseFloat(a))
+										console.log({name, lng, lat})
+
+										const shapeId = 'ID' + Date.now()
+										addMarker(shapeId, {lat, lng}, name, layerLabel)
+										layers[layerLabel].push({lat, lng, label: name})
+									}
+									saveData()
+								}
+							})
+						}
+						catch(e) {
+							console.log('Error', e)
+							$$.ui.showAlert({title: 'Error', content: e})
+						}
+						
+					})
+				},
 				onSearch: function () {
 					//console.log('onSearch')
 					pager.pushPage('searchPage', {
@@ -168,9 +207,18 @@ $$.control.registerControl('rootPage', {
 
 		async function initMarkers() {
 
-			for (let [id, data] of Object.entries(markers)) {
+			for (const [id, data] of Object.entries(markers)) {
 				addMarker(id, data.latlng, data.tooltip)
 			}
+
+			for (const [layerName, markerInfos] of Object.entries(layers)) {
+				map.addLayer(layerName, {label: layerName, visible: false, openPopupOnActivate: true})
+				for(const {lat, lng, label} of markerInfos) {
+					const shapeId = 'ID_' + label.toUpperCase().replaceAll(' ', '_')
+					addMarker(shapeId, {lat, lng}, label, layerName)
+				}				
+			}
+
 
 			const radars = await radarSrv.getRadar()
 			console.log({ radars })
@@ -216,12 +264,12 @@ $$.control.registerControl('rootPage', {
 		 * @param {Brainjs.Controls.Map.LatLng} latlng 
 		 * @param {string} tooltip 
 		 */
-		function addMarker(shapeId, latlng, tooltip) {
+		function addMarker(shapeId, latlng, tooltip, layerId) {
 			//console.log('addMarker', shapeId, latlng, tooltip)
 			/**@type {Brainjs.Controls.Map.Shape.Marker} */
 			const shapeInfo = {
 				type: 'marker',
-				layer: 'markers',
+				layer: (layerId) ? layerId : 'markers',
 				latlng,
 				icon: {
 					type: 'font',
@@ -341,13 +389,18 @@ $$.control.registerControl('rootPage', {
 			}
 		})
 
-		this.onAppExit = function () {
-			//console.log('[map] onAppExit')
+		function saveData() {
 			return appData.saveData({
 				zoom: map.getZoom(),
 				center: map.getCenter(),
-				markers
+				markers,
+				layers
 			})
+		}
+
+		this.onAppExit = function () {
+			//console.log('[map] onAppExit')
+			return saveData()
 		}
 	}
 });

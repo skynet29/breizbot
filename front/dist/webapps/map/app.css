@@ -53,3 +53,21 @@
 .searchPage .scrollPanel .w3-bar {
   cursor: pointer;
 }
+.importKml {
+  display: flex;
+  flex-direction: column;
+}
+.importKml form {
+  margin: 10px;
+}
+.importKml .scrollPanel {
+  flex: 1;
+  overflow-y: auto;
+}
+.importKml .scrollPanel table th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background-color: #666;
+  color: white;
+}

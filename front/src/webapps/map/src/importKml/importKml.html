@@ -1,0 +1,28 @@
+<form bn-event="submit: onSubmit">
+    <label>Layer Name</label>
+    <input type="text" name="text" required>
+    <input type="submit"  value="Submit" hidden bn-bind="submit"> 
+</form>
+<div class="scrollPanel">
+    <table class="w3-table-all w3-small">
+        <thead>
+            <tr>
+                <th>
+                    <input type="checkbox" checked bn-event="click: onSelectChange">
+                </th>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody bn-each="kml">
+            <tr>
+                <td>
+                    <input type="checkbox" checked class="check">
+                </td>
+                <td bn-text="$scope.$i.name"></td>
+                <td bn-text="$scope.$i.description"></td>
+
+            </tr>
+        </tbody>
+    </table>
+</div>

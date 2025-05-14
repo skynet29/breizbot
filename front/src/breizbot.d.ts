@@ -274,7 +274,7 @@ declare namespace Breizbot {
     
             interface PagerOptions {
                 title: string;
-                props?: {};
+                props?: {[field:string]: any};
                 onReturn?: (data: any) => void;
                 onBack?: () => void;
                 buttons?: { [buttonName: string]: ButtonOptions };

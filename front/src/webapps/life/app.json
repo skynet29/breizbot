@@ -1,0 +1,6 @@
+{	
+	"iconUrl": "life.webp",
+	"colorCls": "w3-green",
+	"title": "Life",
+	"styles": ["app.css"]
+}

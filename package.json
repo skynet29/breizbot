@@ -53,6 +53,7 @@
   "devDependencies": {
     "@types/alexa-sdk": "^1.1.2",
     "@types/web-bluetooth": "0.0.14",
+    "@webgpu/types": "^0.1.60",
     "browserify": "^17.0.0",
     "gulp": "^4.0.0",
     "gulp-browserify": "^0.5.1",

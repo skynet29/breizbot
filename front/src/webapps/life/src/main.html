@@ -1,3 +1,12 @@
 <div>
     <canvas width="512" height="512" bn-bind="canvas"></canvas>
+    <div class="info">
+        <button bn-event="click: onStart" bn-show="!running">Start</button>
+        <button bn-event="click: onStop" bn-show="running">Stop</button>
+
+        <div>
+            <label>Generation</label>
+            <span bn-text="step"></span>
+        </div>
+    </div>
 </div>

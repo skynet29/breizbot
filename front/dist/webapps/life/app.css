@@ -1,0 +1,13 @@
+.rootPage {
+  margin: 10px;
+  display: flex;
+  justify-content: center;
+}
+.rootPage canvas {
+  width: 512px;
+  height: 512px;
+}
+.rootPage .info {
+  display: flex;
+  justify-content: space-between;
+}

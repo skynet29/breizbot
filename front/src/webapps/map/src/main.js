@@ -42,14 +42,59 @@ $$.control.registerControl('rootPage', {
 						map.removeShape(id)
 						delete markers[id]
 					}
-					if (cmd == "zoom") {
+					else if (cmd == "zoom") {
 						/**@type {Brainjs.Controls.Map.Shape.Marker} */
 						// @ts-ignore
 						const info = map.getShapeInfo(id)
 						//console.log('info', info)
-						map.flyTo(info.latlng, 13)
+						map.flyTo(info.latlng, 18)
 					}
+					else if (cmd == "edit") {
+						const info = map.getShapeInfo(id)
+						console.log({id, info})
+						// $.extend(info.icon, info.icon, {color: 'red'})
+						// map.updateShape(id, info)
+						$$.ui.showForm({
+							title: 'Edit Marker',
+							fields: {
+								label: {
+									label: 'Label:',
+									input: 'input',
+									value: info.popup.content,
+									attrs: {
+										type: 'text'
+									}
+								},
+								color: {
+									label: 'Color:',
+									input: 'select',
+									value: info.icon.color,
+									items: ['Red', 'Green', 'Blue']
+								}
+							}
+						}, (data) => {
+							console.log(data)
+							const { label, color } = data
+							$.extend(info.icon, info.icon, {color})
+							info.popup.content = label
+							map.updateShape(id, info)
+							if (info.layer == 'markers') {
+								markers[id].tooltip = label
+								markers[id].color = color
+							}
+							else {
+								console.log(layers[info.layer])
+								const saveInfo = layers[info.layer].find(e => e.shapeId == id)
+								console.log({saveInfo})
+								saveInfo.label = label
+								saveInfo.color = color
+							}
 
+							saveData()
+						})
+
+
+					}
 				},
 				/**
 				 * 
@@ -58,19 +103,35 @@ $$.control.registerControl('rootPage', {
 				onMapContextMenu: async function (ev, data) {
 					//console.log('onMapContextMenu', data)
 					const { latlng } = data
-					const tooltip = await $$.ui.showPrompt({
+					$$.ui.showForm({
 						title: 'Add Marker',
-						label: 'Tooltip'
-					})
-					if (tooltip) {
+						fields: {
+							label: {
+								label: 'Label:',
+								input: 'input',
+								attrs: {
+									type: 'text'
+								}
+							},
+							color: {
+								label: 'Color:',
+								input: 'select',
+								items: ['Red', 'Green', 'Blue'],
+								value: 'Green'
+							}
+						}
+					}, (data) => {
+						console.log(data)
+						const { label: tooltip, color } = data
 						const shapeId = 'ID' + Date.now()
-						addMarker(shapeId, latlng, tooltip)
-						markers[shapeId] = { latlng, tooltip }
+						addMarker(shapeId, latlng, tooltip, null, color)
+						markers[shapeId] = { latlng, tooltip, color }
+						saveData()
+					})
 
-					}
 
 				},
-				onAddMarker: function() {
+				onAddMarker: function () {
 					console.log('Add Marker')
 					$$.ui.showForm({
 						title: 'Add Marker',
@@ -97,20 +158,26 @@ $$.control.registerControl('rootPage', {
 								attrs: {
 									type: 'text'
 								}
+							},
+							color: {
+								label: 'Color:',
+								input: 'select',
+								items: ['Red', 'Green', 'Blue'],
+								value: 'Green'
 							}
 						}
 					}, (data) => {
 						console.log(data)
-						const {lat, lng, label: tooltip} = data
-						const latlng = {lat, lng}
-						const shapeId = 'ID' + Date.now()
-						addMarker(shapeId, latlng, tooltip)
-						markers[shapeId] = { latlng, tooltip }
+						// const {lat, lng, label: tooltip} = data
+						// const latlng = {lat, lng}
+						// const shapeId = 'ID' + Date.now()
+						// addMarker(shapeId, latlng, tooltip)
+						// markers[shapeId] = { latlng, tooltip }
 					})
 				},
-				onImportKml: function() {
+				onImportKml: function () {
 					console.log('onInportKml')
-					filesSrv.openFile('Import KML', {filterExtension: 'kml'}, async (data) => {
+					filesSrv.openFile('Import KML', { filterExtension: 'kml' }, async (data) => {
 						console.log('data', data)
 						try {
 							const kml = await http.post('/importKml', data)
@@ -120,29 +187,29 @@ $$.control.registerControl('rootPage', {
 								props: {
 									kml
 								},
-								onReturn: function({indexes, layerLabel}) {
-									console.log({indexes, layerLabel})
-									map.addLayer(layerLabel, {label: layerLabel, visible: true, openPopupOnActivate: true})
+								onReturn: function ({ indexes, layerLabel }) {
+									console.log({ indexes, layerLabel })
+									map.addLayer(layerLabel, { label: layerLabel, visible: true, openPopupOnActivate: true })
 									layers[layerLabel] = []
 
-									for(const idx of indexes) {
-										const {Point, name} = kml[idx]
+									for (const idx of indexes) {
+										const { Point, name } = kml[idx]
 										const [lng, lat] = Point.coordinates.split(',').map(a => parseFloat(a))
-										console.log({name, lng, lat})
+										console.log({ name, lng, lat })
 
 										const shapeId = 'ID' + Date.now()
-										addMarker(shapeId, {lat, lng}, name, layerLabel)
-										layers[layerLabel].push({lat, lng, label: name})
+										addMarker(shapeId, { lat, lng }, name, layerLabel)
+										layers[layerLabel].push({ lat, lng, label: name })
 									}
 									saveData()
 								}
 							})
 						}
-						catch(e) {
+						catch (e) {
 							console.log('Error', e)
-							$$.ui.showAlert({title: 'Error', content: e})
+							$$.ui.showAlert({ title: 'Error', content: e })
 						}
-						
+
 					})
 				},
 				onSearch: function () {
@@ -208,15 +275,17 @@ $$.control.registerControl('rootPage', {
 		async function initMarkers() {
 
 			for (const [id, data] of Object.entries(markers)) {
-				addMarker(id, data.latlng, data.tooltip)
+				addMarker(id, data.latlng, data.tooltip, null, data.color)
 			}
 
 			for (const [layerName, markerInfos] of Object.entries(layers)) {
-				map.addLayer(layerName, {label: layerName, visible: false, openPopupOnActivate: true})
-				for(const {lat, lng, label} of markerInfos) {
+				map.addLayer(layerName, { label: layerName, visible: false, openPopupOnActivate: true })
+				for (const markerInfo of markerInfos) {
+					const { lat, lng, label, color } = markerInfo 
 					const shapeId = 'ID_' + label.toUpperCase().replaceAll(' ', '_')
-					addMarker(shapeId, {lat, lng}, label, layerName)
-				}				
+					addMarker(shapeId, { lat, lng }, label, layerName, color)
+					markerInfo.shapeId = shapeId
+				}
 			}
 
 
@@ -241,9 +310,9 @@ $$.control.registerControl('rootPage', {
 					let ret = []
 					if (feature.properties.route)
 						ret.push(feature.properties.route)
-						
+
 					ret.push(feature.properties.type)
-					const {speed} = feature.properties
+					const { speed } = feature.properties
 					if (typeof speed == 'number') {
 						//ret.push(`Vitesse limitée à ${speed} km`)
 						const speedUrl = filesSrv.assetsUrl(`vitesse-${speed}.png`)
@@ -264,7 +333,7 @@ $$.control.registerControl('rootPage', {
 		 * @param {Brainjs.Controls.Map.LatLng} latlng 
 		 * @param {string} tooltip 
 		 */
-		function addMarker(shapeId, latlng, tooltip, layerId) {
+		function addMarker(shapeId, latlng, tooltip, layerId, color) {
 			//console.log('addMarker', shapeId, latlng, tooltip)
 			/**@type {Brainjs.Controls.Map.Shape.Marker} */
 			const shapeInfo = {
@@ -274,7 +343,7 @@ $$.control.registerControl('rootPage', {
 				icon: {
 					type: 'font',
 					className: 'far fa-dot-circle',
-					color: 'green',
+					color: (color) ? color : 'green',
 					fontSize: 20
 				},
 
@@ -291,6 +360,10 @@ $$.control.registerControl('rootPage', {
 					zoom: {
 						name: 'Zoom',
 						iconCls: 'fas fa-search-plus w3-text-blue'
+					},
+					edit: {
+						name: 'Edit',
+						iconCls: 'fa-solid fa-pen w3-text-blue'
 					}
 				}
 			}

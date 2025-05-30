@@ -339,7 +339,7 @@ $$.control.registerControl('rootPage', {
 			try {
 				let geoData = await http.post('/importOSMObject', { objectId })
 				console.log({ geoData })
-				geoData = geoData.features.filter(e => e.geometry.type == 'Polygon')
+				geoData = geoData.features.filter(e => ['Polygon', 'MultiPolygon'].includes(e.geometry.type))
 				console.log('length', geoData.length)
 				if (geoData.length == 1 && saveToDatabase) {
 					shapes[geoData[0].properties.name] = objectId

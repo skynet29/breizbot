@@ -248,7 +248,7 @@ $$.control.registerControl('rootPage', {
 				},
 				onImportObjectFromDatabase: function() {
 					console.log('onImportObjectFromDatabase')
-					const items = Object.keys(shapes)
+					const items = Object.keys(shapes).sort((a, b) => a.localeCompare(b))
 					if (items.length == 0) {
 						$$.ui.showAlert({content: 'The database is empty!'})
 						return

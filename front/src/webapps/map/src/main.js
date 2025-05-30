@@ -236,6 +236,10 @@ $$.control.registerControl('rootPage', {
 						(data) => {
 							console.log({ data })
 							const {objectId, color} = data
+							if (Object.values(shapes).includes(objectId)) {
+								$$.ui.showAlert({content: 'Object is already in database !'})
+								return
+							}
 
 							addObject(objectId, color, true)
 						}

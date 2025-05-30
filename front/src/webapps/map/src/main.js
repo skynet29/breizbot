@@ -16,10 +16,11 @@ $$.control.registerControl('rootPage', {
 	 */
 	init: function (elt, broker, appData, pager, radarSrv, filesSrv, http) {
 
-		let { zoom, center, markers, layers } = appData.getData()
+		let { zoom, center, markers, layers, shapes } = appData.getData()
 		console.log('appData', appData.getData())
 		markers = markers || {}
 		layers = layers || {}
+		shapes = shapes || {}
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -51,7 +52,7 @@ $$.control.registerControl('rootPage', {
 					}
 					else if (cmd == "edit") {
 						const info = map.getShapeInfo(id)
-						console.log({id, info})
+						console.log({ id, info })
 						// $.extend(info.icon, info.icon, {color: 'red'})
 						// map.updateShape(id, info)
 						$$.ui.showForm({
@@ -75,7 +76,7 @@ $$.control.registerControl('rootPage', {
 						}, (data) => {
 							console.log(data)
 							const { label, color } = data
-							$.extend(info.icon, info.icon, {color})
+							$.extend(info.icon, info.icon, { color })
 							info.popup.content = label
 							map.updateShape(id, info)
 							if (info.layer == 'markers') {
@@ -85,7 +86,7 @@ $$.control.registerControl('rootPage', {
 							else {
 								console.log(layers[info.layer])
 								const saveInfo = layers[info.layer].find(e => e.shapeId == id)
-								console.log({saveInfo})
+								console.log({ saveInfo })
 								saveInfo.label = label
 								saveInfo.color = color
 							}
@@ -212,6 +213,66 @@ $$.control.registerControl('rootPage', {
 
 					})
 				},
+				onImportOSMObject: function () {
+					console.log('onImportOSMObject')
+					$$.ui.showForm({
+						title: 'Import OSM Object',
+						fields: {
+							objectId: {
+								label: 'ObjectID',
+								input: 'input',
+								attrs: {
+									type: 'number'
+								}
+							},
+							color: {
+								label: 'Color',
+								input: 'select',
+								value: 'Green',
+								items: ['Red', 'Green', 'Blue']
+							}
+						}
+					},
+						(data) => {
+							console.log({ data })
+							const {objectId, color} = data
+
+							addObject(objectId, color, true)
+						}
+					)
+
+				},
+				onImportObjectFromDatabase: function() {
+					console.log('onImportObjectFromDatabase')
+					const items = Object.keys(shapes)
+					if (items.length == 0) {
+						$$.ui.showAlert({content: 'The database is empty!'})
+						return
+					}
+					$$.ui.showForm({
+						title: 'Import OSM Object',
+						fields: {
+							name: {
+								label: 'Object Name:',
+								input: 'select',
+								items
+							},
+							color: {
+								label: 'Color',
+								input: 'select',
+								value: 'Green',
+								items: ['Red', 'Green', 'Blue']
+							}
+						}
+					},
+						(data) => {
+							console.log({ data })
+							const {name, color} = data
+
+							addObject(shapes[name], color, false)
+						}
+					)
+				},
 				onSearch: function () {
 					//console.log('onSearch')
 					pager.pushPage('searchPage', {
@@ -270,6 +331,31 @@ $$.control.registerControl('rootPage', {
 
 		}
 
+		async function addObject(objectId, color, saveToDatabase = false) {
+			try {
+				let geoData = await http.post('/importOSMObject', { objectId })
+				console.log({ geoData })
+				geoData = geoData.features.filter(e => e.geometry.type == 'Polygon')
+				console.log('length', geoData.length)
+				if (geoData.length == 1 && saveToDatabase) {
+					shapes[geoData[0].properties.name] = objectId
+					console.dir({shapes})
+					await saveData()
+				}
+				map.addGeoData(geoData, 'markers', {
+					style: {
+						color
+					},
+					onPopup: (feature) => {
+						return (feature.properties.name)
+
+					}
+				})
+			}
+			catch (e) {
+				console.error(e)
+			}
+		}
 
 
 		async function initMarkers() {
@@ -281,7 +367,7 @@ $$.control.registerControl('rootPage', {
 			for (const [layerName, markerInfos] of Object.entries(layers)) {
 				map.addLayer(layerName, { label: layerName, visible: false, openPopupOnActivate: true })
 				for (const markerInfo of markerInfos) {
-					const { lat, lng, label, color } = markerInfo 
+					const { lat, lng, label, color } = markerInfo
 					const shapeId = 'ID_' + label.toUpperCase().replaceAll(' ', '_')
 					addMarker(shapeId, { lat, lng }, label, layerName, color)
 					markerInfo.shapeId = shapeId
@@ -467,7 +553,8 @@ $$.control.registerControl('rootPage', {
 				zoom: map.getZoom(),
 				center: map.getCenter(),
 				markers,
-				layers
+				layers,
+				shapes
 			})
 		}
 

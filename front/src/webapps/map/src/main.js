@@ -246,7 +246,7 @@ $$.control.registerControl('rootPage', {
 					let items = await http.get('/osmObject')
 					items = items.map(e => {
 						return { label: e.name, value: e._id }
-					})
+					}).sort((a,b) => a.label.localeCompare(b.label))
 					console.log('onImportObjectFromDatabase', items)
 
 					if (items.length == 0) {

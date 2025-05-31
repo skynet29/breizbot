@@ -16,11 +16,10 @@ $$.control.registerControl('rootPage', {
 	 */
 	init: function (elt, broker, appData, pager, radarSrv, filesSrv, http) {
 
-		let { zoom, center, markers, layers, shapes } = appData.getData()
+		let { zoom, center, markers, layers } = appData.getData()
 		console.log('appData', appData.getData())
 		markers = markers || {}
 		layers = layers || {}
-		shapes = shapes || {}
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -236,14 +235,9 @@ $$.control.registerControl('rootPage', {
 						(data) => {
 							console.log({ data })
 							const { objectId, color } = data
-							// if (Object.values(shapes).includes(objectId)) {
-							// 	$$.ui.showAlert({content: 'Object is already in database !'})
-							// 	return
-							// }
 
 							addObjectToDatabase(objectId, color)
 
-							//addObject(objectId, color, true)
 						}
 					)
 
@@ -255,7 +249,6 @@ $$.control.registerControl('rootPage', {
 					})
 					console.log('onImportObjectFromDatabase', items)
 
-					//const items = Object.keys(shapes).sort((a, b) => a.localeCompare(b))
 					if (items.length == 0) {
 						$$.ui.showAlert({ content: 'The database is empty!' })
 						return
@@ -280,7 +273,6 @@ $$.control.registerControl('rootPage', {
 							console.log({ data })
 							const { id, color } = data
 							addObjectFromDatabase(id, color)
-							//addObject(shapes[name], color, false)
 						}
 					)
 				},
@@ -576,8 +568,7 @@ $$.control.registerControl('rootPage', {
 				zoom: map.getZoom(),
 				center: map.getCenter(),
 				markers,
-				layers,
-				shapes
+				layers
 			})
 		}
 

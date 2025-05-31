@@ -235,28 +235,35 @@ $$.control.registerControl('rootPage', {
 					},
 						(data) => {
 							console.log({ data })
-							const {objectId, color} = data
-							if (Object.values(shapes).includes(objectId)) {
-								$$.ui.showAlert({content: 'Object is already in database !'})
-								return
-							}
+							const { objectId, color } = data
+							// if (Object.values(shapes).includes(objectId)) {
+							// 	$$.ui.showAlert({content: 'Object is already in database !'})
+							// 	return
+							// }
 
-							addObject(objectId, color, true)
+							addObjectToDatabase(objectId, color)
+
+							//addObject(objectId, color, true)
 						}
 					)
 
 				},
-				onImportObjectFromDatabase: function() {
-					console.log('onImportObjectFromDatabase')
-					const items = Object.keys(shapes).sort((a, b) => a.localeCompare(b))
+				onImportObjectFromDatabase: async function () {
+					let items = await http.get('/osmObject')
+					items = items.map(e => {
+						return { label: e.name, value: e._id }
+					})
+					console.log('onImportObjectFromDatabase', items)
+
+					//const items = Object.keys(shapes).sort((a, b) => a.localeCompare(b))
 					if (items.length == 0) {
-						$$.ui.showAlert({content: 'The database is empty!'})
+						$$.ui.showAlert({ content: 'The database is empty!' })
 						return
 					}
 					$$.ui.showForm({
 						title: 'Import OSM Object',
 						fields: {
-							name: {
+							id: {
 								label: 'Object Name:',
 								input: 'select',
 								items
@@ -271,9 +278,9 @@ $$.control.registerControl('rootPage', {
 					},
 						(data) => {
 							console.log({ data })
-							const {name, color} = data
-
-							addObject(shapes[name], color, false)
+							const { id, color } = data
+							addObjectFromDatabase(id, color)
+							//addObject(shapes[name], color, false)
 						}
 					)
 				},
@@ -335,17 +342,29 @@ $$.control.registerControl('rootPage', {
 
 		}
 
-		async function addObject(objectId, color, saveToDatabase = false) {
+		async function addObjectToDatabase(objectId, color) {
 			try {
 				let geoData = await http.post('/importOSMObject', { objectId })
 				console.log({ geoData })
-				geoData = geoData.features.filter(e => ['Polygon', 'MultiPolygon'].includes(e.geometry.type))
-				console.log('length', geoData.length)
-				if (geoData.length == 1 && saveToDatabase) {
-					shapes[geoData[0].properties.name] = objectId
-					console.dir({shapes})
-					await saveData()
-				}
+				map.addGeoData(geoData, 'markers', {
+					style: {
+						color
+					},
+					onPopup: (feature) => {
+						return (feature.properties.name)
+
+					}
+				})
+			}
+			catch (e) {
+				console.error(e)
+			}
+		}
+
+		async function addObjectFromDatabase(id, color) {
+			try {
+				let { geoData } = await http.get(`/osmObject/${id}`)
+				console.log({ geoData })
 				map.addGeoData(geoData, 'markers', {
 					style: {
 						color

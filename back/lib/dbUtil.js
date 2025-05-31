@@ -28,12 +28,12 @@ class DbWrapper {
 		return this.collection.distinct(fieldName, filter)
 	}
 
-	find(filter) {
+	find(filter, proj) {
 		filter = filter || {}
 		filter.userName = this.userName
-		//console.log('[DBWRAPPER] find', filter)
+		console.log('[DBWRAPPER] find', filter, proj)
 
-		return this.collection.find(filter)
+		return this.collection.find(filter, proj)
 	}
 
 	findOne(filter) {

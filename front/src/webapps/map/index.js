@@ -6,7 +6,9 @@ const { DOMParser } = require('xmldom')
 
 module.exports = function (ctx, router) {
 
-    const { util } = ctx
+    const { util, db } = ctx
+    const { buildDbId } = db.constructor
+
 
     router.post('/importKml', async (req, res) => {
 
@@ -28,6 +30,16 @@ module.exports = function (ctx, router) {
 
     })
 
+    router.get('/osmObject', async (req, res) => {
+        const ret = await db.find({ type: 'osmObject' }, { projection: { name: 1 } }).toArray()
+        res.json(ret)
+    })
+
+    router.get('/osmObject/:id', async (req, res) => {
+        const { id } = req.params
+        const ret = await db.findOne(buildDbId(id))
+        res.json(ret)
+    })
 
     router.post('/importOSMObject', async (req, res) => {
         const { objectId } = req.body
@@ -36,17 +48,22 @@ module.exports = function (ctx, router) {
             const response = await fetch(url)
             const osmData = await response.text()
             console.log('length', osmData.length)
-    
-            console.dir({osmData})
+
+            console.dir({ osmData })
             const parser = new DOMParser();
             const xmlDoc = parser.parseFromString(osmData, "application/xml");
-    
+
             const geojsonData = osmtogeojson(xmlDoc)
-            console.log({geojsonData})
-    
-            res.json(geojsonData)
+            console.log({ geojsonData })
+            const geoData = geojsonData.features.filter(e => ['Polygon', 'MultiPolygon'].includes(e.geometry.type))
+            if (geoData.length == 1) {
+                const name = geoData[0].properties.name
+                await db.insertOne({ name, objectId, geoData, type: 'osmObject' })
+            }
+
+            res.json(geoData)
         }
-        catch(e) {
+        catch (e) {
             console.error(e)
             res.status(400).send(e.message)
         }

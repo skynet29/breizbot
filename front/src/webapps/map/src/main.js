@@ -224,6 +224,12 @@ $$.control.registerControl('rootPage', {
 									type: 'number'
 								}
 							},
+							type: {
+								label: 'Type',
+								input: 'select',
+								value: 'relation',
+								items: ['relation', 'way']
+							},
 							color: {
 								label: 'Color',
 								input: 'select',
@@ -234,9 +240,9 @@ $$.control.registerControl('rootPage', {
 					},
 						(data) => {
 							console.log({ data })
-							const { objectId, color } = data
+							const { objectId, color, type } = data
 
-							addObjectToDatabase(objectId, color)
+							addObjectToDatabase(objectId, type, color)
 
 						}
 					)
@@ -246,7 +252,7 @@ $$.control.registerControl('rootPage', {
 					let items = await http.get('/osmObject')
 					items = items.map(e => {
 						return { label: e.name, value: e._id }
-					}).sort((a,b) => a.label.localeCompare(b.label))
+					}).sort((a, b) => a.label.localeCompare(b.label))
 					console.log('onImportObjectFromDatabase', items)
 
 					if (items.length == 0) {
@@ -334,9 +340,10 @@ $$.control.registerControl('rootPage', {
 
 		}
 
-		async function addObjectToDatabase(objectId, color) {
+		async function addObjectToDatabase(objectId, type, color) {
+			console.log('addObjectToDatabase', {objectId, type})
 			try {
-				let geoData = await http.post('/importOSMObject', { objectId })
+				let geoData = await http.post('/importOSMObject', { objectId, type })
 				console.log({ geoData })
 				map.addGeoData(geoData, 'markers', {
 					style: {

@@ -42,8 +42,8 @@ module.exports = function (ctx, router) {
     })
 
     router.post('/importOSMObject', async (req, res) => {
-        const { objectId } = req.body
-        const url = `https://www.openstreetmap.org/api/0.6/relation/${objectId}/full`
+        const { objectId, type } = req.body
+        const url = `https://www.openstreetmap.org/api/0.6/${type}/${objectId}/full`
         try {
             const response = await fetch(url)
             const osmData = await response.text()

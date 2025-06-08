@@ -350,7 +350,7 @@ $$.control.registerControl('rootPage', {
 						color
 					},
 					onPopup: (feature) => {
-						return (feature.properties.name)
+						return (feature.properties['name:fr'] || feature.properties.name)
 
 					}
 				})
@@ -369,7 +369,7 @@ $$.control.registerControl('rootPage', {
 						color
 					},
 					onPopup: (feature) => {
-						return (feature.properties.name)
+						return (feature.properties['name:fr'] || feature.properties.name)
 
 					}
 				})

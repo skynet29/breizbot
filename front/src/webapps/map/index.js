@@ -58,7 +58,7 @@ module.exports = function (ctx, router) {
             let geoData = geojsonData.features.filter(e => ['Polygon', 'MultiPolygon'].includes(e.geometry.type))
             if (geoData.length > 0) {
                 geoData = geoData.slice(0, 1)
-                const name = geoData[0].properties.name
+                const name = geoData[0].properties['name:fr'] || geoData[0].properties.name
                 await db.insertOne({ name, objectId, geoData, type: 'osmObject' })
             }
 

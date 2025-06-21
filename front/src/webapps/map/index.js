@@ -55,10 +55,10 @@ module.exports = function (ctx, router) {
 
             const geojsonData = osmtogeojson(xmlDoc)
             console.log({ geojsonData })
-            let geoData = geojsonData.features.filter(e => ['Polygon', 'MultiPolygon'].includes(e.geometry.type))
+            let geoData = geojsonData.features.filter(e => ['Polygon', 'MultiPolygon', 'LineString'].includes(e.geometry.type))
             if (geoData.length > 0) {
-                geoData = geoData.slice(0, 1)
-                const name = geoData[0].properties['name:fr'] || geoData[0].properties.name
+                //geoData = geoData.slice(0, 1)
+                const name = geoData[0].properties.name
                 await db.insertOne({ name, objectId, geoData, type: 'osmObject' })
             }
 

@@ -38,14 +38,16 @@ function downloadFile(url, fileName, wss, srcId) {
 	})
 }
 
-function download(url, itag, fileName, wss, srcId) {
-	console.log('download', itag, fileName)
+function download(info, idx, fileName, wss, srcId) {
+	console.log('download', idx, fileName)
+	const format = info.formats[idx]
+	console.log({format})
 
 	return new Promise((resolve, reject) => {
 
 		wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent: 0 } })
 
-		const video = ytdl(url, { quality: itag })
+		const video = ytdl.downloadFromInfo(info, { format })
 
 		let lastPercent = 0
 
@@ -121,56 +123,95 @@ module.exports = function (ctx, router) {
 	router.get('/info', async function (req, res) {
 		const { url } = req.query
 
-		const info = await ytdl.getBasicInfo(url)
+		const info = await ytdl.getInfo(url)
 		//console.log('info', JSON.stringify(info.formats, null, 4))
-		console.log('info', info.player_response)
-		const formats = info.player_response.streamingData.adaptiveFormats;
+		console.log('info', info)
+		const formats = info.formats
+		//const formats = info.player_response.streamingData.adaptiveFormats
 
-		const videoFormat = formats.filter(f => f.mimeType.startsWith('video/mp4; codecs="avc1'))
-			.map(f => ({ qualityLabel: f.qualityLabel, itag: f.itag, mimeType: f.mimeType }))
+		const videoFormat = []
+		const audioFormat = []
+
+		for (const [idx, { qualityLabel, mimeType, audioQuality, hasAudio, hasVideo, itag, audioTrack }] of formats.entries()) {
+			if (hasVideo &&
+				!hasAudio &&
+				mimeType.startsWith('video/mp4; codecs="avc1') &&
+				videoFormat.findIndex(f => f.itag == itag) < 0) {
+				videoFormat.push({ idx, qualityLabel, itag })
+			}
+			else if (hasAudio &&
+				!hasVideo &&
+				mimeType.startsWith('audio/mp4') &&
+				audioQuality == 'AUDIO_QUALITY_MEDIUM' &&
+				audioTrack == undefined &&
+				audioFormat.findIndex(f => f.itag == itag) < 0) {
+				audioFormat.push({ idx, itag, label: 'Audio ' + audioFormat.length+1 })
+			}
+			else if (hasAudio &&
+				!hasVideo &&
+				mimeType.startsWith('audio/mp4') &&
+				audioQuality == 'AUDIO_QUALITY_MEDIUM' &&
+				audioTrack != undefined &&
+				audioFormat.findIndex(f => f.label == audioTrack.displayName) < 0) {
+				audioFormat.push({ idx, itag, label: audioTrack.displayName })
+			}
+		}
+
 		console.log('videoFormat', videoFormat)
+		console.log('audioFormat', audioFormat)
 
-		const { title, shortDescription, lengthSeconds, thumbnail } = info.player_response.videoDetails
+		const { title, description, lengthSeconds, thumbnails } = info.videoDetails
 		res.json({
 			title,
-			description: shortDescription,
+			description,
 			length_seconds: lengthSeconds,
-			thumbnail: thumbnail.thumbnails.pop(),
-			formats: videoFormat
+			thumbnail: thumbnails.pop(),
+			videoFormat,
+			audioFormat
 		})
 
 
 	})
 
 	router.post('/download', async function (req, res) {
-		let { url, fileName, srcId, itag } = req.body
+		let { url, fileName, srcId, videoIdx, audioIdx } = req.body
 		const userName = req.session.user
 		fileName = fileName.replace(/\/|\||:|"|-| /g, '_')
 
-		const { player_response: info } = await ytdl.getBasicInfo(url)
-		//console.log('info', JSON.stringify(info.formats, null, 4))
-		console.log('info', info)
-		res.sendStatus(200)
+		let info = null
+		try {
+			info = await ytdl.getInfo(url)
+			//console.log('info', JSON.stringify(info.formats, null, 4))
+			console.log('info', info)
+			res.sendStatus(200)
+		}
+		catch(e) {
+			console.log('Error', e)
+			res.status(400).send(e.message)
+			return
+		}
+
 
 
 		const destPath = path.join(config.CLOUD_HOME, userName, 'apps/ytdl')
 
-		if (info.captions) {
+		// if (info.captions) {
 
-			const captions = info.captions.playerCaptionsTracklistRenderer.captionTracks.filter(f => f.languageCode == 'fr')
-			console.log({ captions })
-			const subtitles = info.captions.playerCaptionsTracklistRenderer.captionTracks.map(f => f.name.simpleText)
-			console.log({ subtitles })
-			if (captions.length > 0) {
-				console.log(captions[0])
-				await downloadFile(captions[0].baseUrl + '&format=vtt', path.join(destPath, fileName.replace('.mp4', '.vtt')), wss, srcId)
-				console.log('french captions dowloaded!')
-			}
-		}
-		const formats = info.streamingData.adaptiveFormats;
+		// 	const captions = info.captions.playerCaptionsTracklistRenderer.captionTracks.filter(f => f.languageCode == 'fr')
+		// 	console.log({ captions })
+		// 	const subtitles = info.captions.playerCaptionsTracklistRenderer.captionTracks.map(f => f.name.simpleText)
+		// 	console.log({ subtitles })
+		// 	if (captions.length > 0) {
+		// 		console.log(captions[0])
+		// 		await downloadFile(captions[0].baseUrl + '&format=vtt', path.join(destPath, fileName.replace('.mp4', '.vtt')), wss, srcId)
+		// 		console.log('french captions dowloaded!')
+		// 	}
+		// }
+		// const formats = info.streamingData.adaptiveFormats;
 
-		const audioFormat = formats.filter(f => f.mimeType.match(/^audio\/\w+/) && f.audioQuality == 'AUDIO_QUALITY_MEDIUM')
-		console.log('audioFormat', audioFormat)
+		// const audioFormat = formats.filter(f => f.mimeType.match(/^audio\/\w+/) && f.audioQuality == 'AUDIO_QUALITY_MEDIUM')
+		// console.log('audioFormat', audioFormat)
+
 
 		fs.lstat(destPath)
 			.catch(function (err) {
@@ -183,11 +224,11 @@ module.exports = function (ctx, router) {
 
 				try {
 
-					await download(url, itag, videoPath, wss, srcId)
+					await download(info, videoIdx, videoPath, wss, srcId)
 
 					console.log('video downloaded !')
-					if (audioFormat.length > 0) {
-						await download(url, audioFormat[0].itag, audioPath, wss, srcId)
+					if (audioIdx > 0) {
+						await download(info, audioIdx, audioPath, wss, srcId)
 						console.log('audio downloaded !')
 
 						ffmpeg()

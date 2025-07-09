@@ -1,6 +1,14 @@
+
+/**
+ * 
+ * @param {*} ctx 
+ * @param {import('express').Router} router 
+ */
 module.exports = function (ctx, router) {
 
-    const { db, util } = ctx
+    /** @type {import('../../../../back/lib/dbUtil').DbWrapper} */
+
+    const db = ctx.db
     const { buildDbId } = db.constructor
 
 

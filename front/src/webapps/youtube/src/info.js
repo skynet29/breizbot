@@ -22,9 +22,9 @@ $$.control.registerControl('infoPage', {
         const props = this.props
 
         const progressDlg = $$.ui.progressDialog('Downloading...')
-        const {videoUrl, videoId} = props
+        const { videoUrl, videoId } = props
 
-        const { title, thumbnail, description, length_seconds, formats } = props.info
+        const { title, thumbnail, description, length_seconds, videoFormat, audioFormat } = props.info
 
         const { width, height } = thumbnail
         const ctrl = $$.viewController(elt, {
@@ -66,25 +66,46 @@ $$.control.registerControl('infoPage', {
             }
             else {
                 progressDlg.setPercentage(percent / 100)
-           }
+            }
         })
 
         this.getButtons = function () {
-            let items = {}
-            formats.forEach((f) => {
-                items[f.itag] = {name: f.qualityLabel}
-            })
-            console.log('getButtons items', items)
+
             return {
                 download: {
                     title: 'Download',
                     icon: 'fa fa-download',
-                    items,
                     onClick: function (cmd) {
-                        console.log('onDownload', videoUrl, cmd)
-                        const fileName = title + '.mp4'
-                        ytdl.download(videoUrl, cmd, fileName)
-                        progressDlg.show()
+                        console.log('onDownload', videoUrl)
+                        $$.ui.showForm({
+                            title: 'Choose Format',
+                            fields: {
+                                video: {
+                                    input: 'select',
+                                    label: 'Video',
+                                    value: videoFormat[0].idx,
+                                    items: videoFormat.map(v => {
+                                        return { label: v.qualityLabel, value: v.idx }
+                                    })
+                                },
+                                audio: {
+                                    input: 'select',
+                                    label: 'Audio',
+                                    value: audioFormat[0].idx,
+                                    items: audioFormat.map(v => {
+                                        return { label: v.label, value: v.idx }
+                                    })
+                                }
+                            }
+                        },
+                            (data) => {
+                                console.log({ data })
+                                const fileName = title + '.mp4'
+                                ytdl.download(videoUrl, data.video, data.audio, fileName)
+                                progressDlg.show()
+                            }
+                        )
+
 
                     }
                 }

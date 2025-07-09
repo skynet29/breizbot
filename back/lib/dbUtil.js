@@ -108,6 +108,11 @@ class DbWrapper {
 		return util.getFilePath(this.userName, filePath, friendUser)
 	}
 
+	/**
+	 * 
+	 * @param {string | string[]} ids 
+	 * @returns 
+	 */
 	static buildDbId(ids) {
 		if (Array.isArray(ids)) {
 			return { _id: { $in: ids.map((id) => new ObjectID(id)) } }

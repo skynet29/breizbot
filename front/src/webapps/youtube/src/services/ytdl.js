@@ -20,8 +20,8 @@ $$.service.registerService('app.ytdl', {
 				return http.get(`/info`, {url})
 			},
 
-			download: function(url, itag, fileName) {
-				return http.post(`/download`, {url, itag, fileName, srcId})
+			download: function(url, videoIdx, audioIdx, fileName) {
+				return http.post(`/download`, {url, videoIdx, audioIdx, fileName, srcId})
 			},
 
 			search: function(query, maxResults = 3)	{

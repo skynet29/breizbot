@@ -23,10 +23,10 @@ $$.service.registerService('breizbot.files', {
 			return $$.url.getUrlParams('/api/files/load', { fileName, friendUser })
 		}
 
-		function openFile(title, props, cbk) {
-			props.rootDir = rootDir
-			if (typeof props == 'string') {
-				props = {filterExtension: props}
+		function openFile(title, filterExtension, cbk) {
+			const props = { rootDir }
+			if (typeof filterExtension == 'string') {
+				props.filterExtension = filterExtension
 			}
 			pager.pushPage('breizbot.files', {
 				title,
@@ -48,7 +48,7 @@ $$.service.registerService('breizbot.files', {
 
 		return {
 			openFile,
-			exists: function(filePath) {
+			exists: function (filePath) {
 				return http.post('/exists', { filePath })
 			},
 
@@ -63,13 +63,13 @@ $$.service.registerService('breizbot.files', {
 				return http.post('/list', { destPath, options, friendUser })
 			},
 
-			move: function(fileName, destPath) {
-				return http.post('/move', { destPath, fileName})
+			move: function (fileName, destPath) {
+				return http.post('/move', { destPath, fileName })
 			},
 
 			fileUrl,
 
-			fileAppUrl: function(fileName) {
+			fileAppUrl: function (fileName) {
 				fileName = `/apps/${params.$appName}/${fileName}`
 				return $$.url.getUrlParams('/api/files/load', { fileName })
 			},
@@ -83,8 +83,8 @@ $$.service.registerService('breizbot.files', {
 				return $$.url.getUrlParams('/api/files/loadThumbnail', { fileName, size })
 			},
 
-			assetsUrl: function(fileName)  {
-				return  `/webapps/${params.$appName}/assets/${fileName}`
+			assetsUrl: function (fileName) {
+				return `/webapps/${params.$appName}/assets/${fileName}`
 			},
 
 			/**
@@ -107,7 +107,7 @@ $$.service.registerService('breizbot.files', {
 						await this.fileInfo(destPath + '/' + saveAsfileName)
 						return Promise.reject('File already exists')
 					}
-					catch(e) {
+					catch (e) {
 					}
 				}
 				const fd = new FormData()
@@ -121,7 +121,7 @@ $$.service.registerService('breizbot.files', {
 
 			saveFile: async function (blob, saveAsfileName, options) {
 				options = options || {}
-				const destPath  = options.destPath || `/apps/${params.$appName}`
+				const destPath = options.destPath || `/apps/${params.$appName}`
 				try {
 					savingDlg.setPercentage(0)
 					savingDlg.show()

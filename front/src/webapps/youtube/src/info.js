@@ -83,17 +83,17 @@ $$.control.registerControl('infoPage', {
                                 video: {
                                     input: 'select',
                                     label: 'Video',
-                                    value: videoFormat[0].idx,
+                                    value: videoFormat[0].url,
                                     items: videoFormat.map(v => {
-                                        return { label: v.qualityLabel, value: v.idx }
+                                        return { label: v.label, value: v.url }
                                     })
                                 },
                                 audio: {
                                     input: 'select',
                                     label: 'Audio',
-                                    value: audioFormat[0].idx,
+                                    value: audioFormat[0].url,
                                     items: audioFormat.map(v => {
-                                        return { label: v.label, value: v.idx }
+                                        return { label: v.label, value: v.url }
                                     })
                                 }
                             }
@@ -101,7 +101,7 @@ $$.control.registerControl('infoPage', {
                             (data) => {
                                 console.log({ data })
                                 const fileName = title + '.mp4'
-                                ytdl.download(videoUrl, data.video, data.audio, fileName)
+                                ytdl.download(data.video, data.audio, fileName)
                                 progressDlg.show()
                             }
                         )

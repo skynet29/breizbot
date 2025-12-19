@@ -24,6 +24,63 @@ $$.control.registerControl('messagePage', {
 
 		const waitDlg = $$.ui.waitDialog('Loading ...')
 
+		function quotedPrintableToUint8Array(qp) {
+			console.log('quotedPrintableToUint8Array')
+
+			// Supprime les soft line breaks (= à fin de ligne)
+			qp = qp.replace(/=\r?\n/g, '');
+
+			const bytes = [];
+			for (let i = 0; i < qp.length; i++) {
+				const c = qp[i];
+
+				if (c === '=') {
+					const hex = qp.substr(i + 1, 2);
+					bytes.push(parseInt(hex, 16));
+					i += 2;
+				} else {
+					bytes.push(c.charCodeAt(0));
+				}
+			}
+
+			return new Uint8Array(bytes);
+		}
+
+		function base64ToUint8Array(base64) {
+			console.log('base64ToUint8Array')
+			const binary = atob(base64);
+			const len = binary.length;
+			const bytes = new Uint8Array(len);
+
+			for (let i = 0; i < len; i++) {
+				bytes[i] = binary.charCodeAt(i);
+			}
+			return bytes;
+		}
+
+
+		/**
+		 * 
+		 * @param {*} data 
+		 * @param {*} encoding 
+		 * @returns URL
+		 */
+		function getAttachmentUrl(data, encoding, type, subtype) {
+			let bytes;
+			if (encoding.toUpperCase() == 'BASE64') {
+				bytes = base64ToUint8Array(data)
+			}
+			else {
+				bytes = quotedPrintableToUint8Array(data)
+			}
+
+			const blob = new Blob([bytes], { type: `${type}/${subtype}` });
+			console.log({ blob })
+			const url = URL.createObjectURL(blob);
+			return { blob, url }
+
+		}
+
 
 		const ctrl = $$.viewController(elt, {
 			data: {
@@ -66,16 +123,19 @@ $$.control.registerControl('messagePage', {
 					ev.preventDefault()
 					const idx = $(this).closest('li').index()
 					const info = ctrl.model.attachments[idx]
-					const { partID, type, subtype } = info
+					let { partID, type, subtype, name, encoding } = info
 
 					console.log('openAttachments', info)
+					if (name.endsWith('.pdf')) {
+						subtype = 'pdf'
+					}
 
 					if (info.canOpen) {
 						waitDlg.show()
 						const message = await srvMail.openAttachment(currentAccount, mailboxName, item.seqno, partID)
 						//console.log('message', message)
 						waitDlg.hide()
-						const url = $$.url.buildDataURL(type, subtype, message.data)
+						const { url, blob } = getAttachmentUrl(message.data, encoding, type, subtype)
 						let docType = $$.file.getFileType(info.name)
 						if (info.name.endsWith('.hdoc'))
 							docType = 'hdoc'
@@ -85,13 +145,16 @@ $$.control.registerControl('messagePage', {
 								type: docType,
 								url
 							},
+							onBack: () => {
+								//console.log('onBack')
+								URL.revokeObjectURL(url)
+							},
 							buttons: {
 								save: {
 									title: 'Save',
 									icon: 'fa fa-save',
 									onClick: async function () {
-										const blob = $$.url.dataURLtoBlob(url)
-										await srvFiles.saveFile(blob, info.name)
+										await srvFiles.saveFile(blob, name)
 									}
 								}
 							}
@@ -174,7 +237,7 @@ $$.control.registerControl('messagePage', {
 						props: {
 							info: from
 						},
-						onReturn: function(info) {
+						onReturn: function (info) {
 							//console.log('onReturn', info)
 							this.addContact(info.data)
 						}
@@ -211,13 +274,14 @@ $$.control.registerControl('messagePage', {
 
 		function canOpen(info) {
 			const { encoding, name, subtype } = info
-			if (encoding.toUpperCase() != 'BASE64') {
+			if (encoding.toUpperCase() != 'BASE64' && encoding.toUpperCase() != 'QUOTED-PRINTABLE') {
 				return false
 			}
 			if (name.endsWith('.hdoc'))
 				return true
 
 			const type = $$.file.getFileType(name)
+			console.log({ type })
 			if (type == undefined) {
 				if (subtype == 'pdf') {
 					info.name += '.pdf'

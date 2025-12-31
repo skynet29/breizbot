@@ -4,10 +4,18 @@ const WebSocket = require('ws')
 const url = require('url')
 const cookie = require('cookie')
 
+/**@type Array<{wss: WebSocket.Server, startPath: string, onConnect: (ws: WebSocket, name?: string) => void, findUserFromSid: boolean, checkPing: boolean}> */
 const servers = []
 const pingInterval = 30 * 1000 // 30 sec
 
-
+/**
+ * 
+ * @param {string} startPath 
+ * @param {boolean} findUserFromSid 
+ * @param {boolean} checkPing 
+ * @param {(ws: WebSocket, name?: string) => void} onConnect 
+ * @returns 
+ */
 function addServer(startPath, findUserFromSid, checkPing, onConnect) {
     console.log('add ws server', startPath)
     const wss = new WebSocket.Server({ noServer: true })
@@ -24,7 +32,7 @@ function findUser(client, store) {
         //console.log('onConnect', path)
 
         if (headers.cookie == undefined) {
-            reject('Missing cookie')
+            return reject('Missing cookie')
         }
 
         const cookies = cookie.parse(headers.cookie)
@@ -32,7 +40,7 @@ function findUser(client, store) {
 
         let sid = cookies['connect.sid']
         if (sid == undefined) {
-            reject('Missing sid')
+            return reject('Missing sid')
         }
 
         sid = sid.split(/[:.]+/)[1]
@@ -42,7 +50,7 @@ function findUser(client, store) {
             //console.log('err', err)
             //console.log('session', session)
             if (err != null || session == null) {
-                reject('Unknown session')
+                return reject('Unknown session')
             }
             client.sessionId = sid
             resolve(session.user)

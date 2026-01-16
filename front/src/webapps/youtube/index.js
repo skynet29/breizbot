@@ -139,7 +139,7 @@ module.exports = function (ctx, router) {
 		console.log({audioFormats})
 
 		for (const { audioTrack, url, itag } of audioFormats) {
-			if (audioFormat.findIndex(f => f.itag == itag) >= 0) 
+			if (audioFormat.findIndex(f => f.url == url) >= 0) 
 				continue
 
 			if (audioTrack == undefined) {

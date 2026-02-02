@@ -23,6 +23,7 @@ class Device {
         this.mode = undefined
         this.waitEnd = false
         this.notificationEnabled = false
+        this.waitStale = false
 
     }
 
@@ -47,6 +48,10 @@ class Device {
                 this.feedbackCallback()
             }
             else if (feedback == 10 && this.waitEnd) {
+                this.feedbackCallback()
+            }
+            else if (feedback == 44 && this.waitStale) {
+                this.waitStale  = false
                 this.feedbackCallback()
             }
             
@@ -84,6 +89,7 @@ class Device {
     async readInfo() {
         let info = deviceInfo[this.type]
         if (info == undefined) {
+            console.log('readInfo', this.portId)
             info = await this.hubDevice.getPortInformation(this.portId)
             deviceInfo[this.type] = info
         }
@@ -96,6 +102,7 @@ class Device {
      */
     decodeValue(msg) {
         const info = deviceInfo[this.type]
+        //console.log('decodeValue', this.type, deviceInfo)
         if (info != undefined) {
             const { VALUE_FORMAT, RAW, SI } = info.modes[this.mode]
             const range = $$.util.mapRange(RAW.min, RAW.max, SI.min, SI.max)
@@ -103,6 +110,7 @@ class Device {
             const ret = []
             let offset = 4
             let val
+            console.log('decodeValue', {RAW, SI, dataType, numValues})
             for (let idx = 0; idx < numValues; idx++) {
                 switch (dataType) {
                     case '16bit':
@@ -123,7 +131,7 @@ class Device {
                         break;
 
                 }
-                log('val', val)
+                console.log('val', val)
                 ret.push(Math.trunc(range(val)))
             }
             if (ret.length == 1) {
@@ -132,14 +140,17 @@ class Device {
             return ret
 
         }
+        else {
+            console.error('No info for this port')
+        }
     }
     /**
      * 
      * @param {DataView} msg 
      */
     handleValue(msg) {
-        log('handleValue', this.portId, msg)
-        let value = this.decodeValue(msg)
+        const value = this.decodeValue(msg)
+        //console.log('handleValue', this.portId, value, typeof this.valueCallback)
 
         if (value != undefined && typeof this.valueCallback == 'function') {
             this.valueCallback(value)
@@ -176,19 +187,22 @@ class Device {
     async waitTestValue(mode, testFn) {
         await this.setMode(mode, true)
 
-        await new Promise(async (resolve) => {
+        const ret = await new Promise(async (resolve) => {
             this.valueCallback = async (value) => {
-                log('waitTestValue', value)
-                const ret = await testFn(value)
+                //console.log('waitTestValue', value)
+                const ret = testFn(value)
                 if (ret) {
                     log('waitTestValue OK')
                     //await this.setMode(mode, false)
-                    resolve()
+                    resolve(value)
                 }
             }
 
         })
-        return this.setMode(mode, false)
+
+        this.valueCallback = null
+        await this.setMode(mode, false)
+        return ret
     }
 
     async subscribe(mode, cbk, deltaInterval = 1) {

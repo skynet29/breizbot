@@ -133,6 +133,9 @@
 .hubinfo .scrollBar .spanButtons button {
   margin-left: 5px;
 }
+.hubinfo .scrollBar .input-name {
+  width: 100px;
+}
 .info {
   padding: 5px;
 }

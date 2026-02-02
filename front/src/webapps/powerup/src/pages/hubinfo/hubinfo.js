@@ -1,4 +1,57 @@
 // @ts-check
+$$.control.registerControl('input-label', {
+	props: {
+		val: 10
+	},
+	init: function (elt) {
+		console.log('props', this.props)
+		const { val } = this.props
+		const span = $('<span>').appendTo(elt)
+			.text(val)
+			.click(function () {
+				const label = this
+				console.log('onClick', this.textContent)
+
+				const originalValue = $(this).text();
+				let validated = false;
+
+				const input = document.createElement("input");
+				input.type = "text";
+				input.value = originalValue;
+				input.className = "input-edit";
+
+				label.replaceWith(input);
+				input.focus();
+
+				// Validation uniquement avec Enter
+				input.addEventListener("keydown", (e) => {
+					if (e.key === "Enter") {
+						label.textContent = input.value;
+						elt.trigger('input-label-change', input.value)
+						validated = true;
+						input.replaceWith(label);
+
+					}
+
+					// Optionnel : Escape pour annuler
+					if (e.key === "Escape") {
+						validated = true;
+						input.replaceWith(label);
+					}
+				});
+
+				// Perte de focus = annulation
+				input.addEventListener("blur", () => {
+					if (validated) return
+					input.replaceWith(label);
+				});
+			})
+
+		this.getValue = function() {
+			return span.text()
+		}
+	}
+})
 
 $$.control.registerControl('hubinfo', {
 
@@ -30,9 +83,10 @@ $$.control.registerControl('hubinfo', {
 
 			for (const device of devices) {
 				//await device.readInfo()
-				const { portId, type, name } = device
+				let { portId, type, name, calibrated } = device
+				if (calibrated == undefined) calibrated = false
 				if (portId < 50) {
-					const info = { name, portId, type }
+					const info = { name, portId, type, calibrated }
 					externalDevices.push(info)
 				}
 				else {
@@ -117,7 +171,16 @@ $$.control.registerControl('hubinfo', {
 				}
 			},
 			events: {
-				onMotorAction: async function () {
+				onPowerChange: function(ev, data) {
+					console.log('onPowerChange', data)
+				},
+				onNameChange: function (ev, newName) {
+					console.log('onNameChange', newName)
+					const portId = getExternalPortId($(this))
+					const device = hubDevice.getDevice(portId)
+					device.name = newName
+				},
+				onMotorAction: async function (ev) {
 					const portId = getExternalPortId($(this))
 					const action = $(this).data('action')
 					console.log('onMotorAction', portId, action)
@@ -129,6 +192,34 @@ $$.control.registerControl('hubinfo', {
 							break
 						case 'gozero':
 							motor.gotoAngle(0, 50, false)
+							break
+						case 'calibrate':
+							$(this).removeClass('w3-grey')
+							$(this).addClass('w3-yellow')
+
+							await motor.calibrate()
+							$(this).removeClass('w3-yellow')
+							$(this).addClass('w3-green')
+
+							$(this).closest('tr').find('button.goto').prop('disabled', false)
+							break
+						case 'gotoLeft':
+							motor.gotoLeft()
+							break
+						case 'gotoRight':
+							motor.gotoRight()
+							break
+						case 'gotoCenter':
+							motor.gotoCenter()
+							break
+						case 'gotoAngle':
+							{
+								const angle = parseInt($(this).closest('tr').find('input.angle').val())
+								console.log({ angle })
+								await motor.gotoAngle(angle, 100, true)
+							}
+
+							break
 
 					}
 
@@ -141,25 +232,20 @@ $$.control.registerControl('hubinfo', {
 					const led = hubDevice.getDevice(portId)
 					led.setBrightness((action == 'on' ? 100 : 0))
 				},
-				onCalibrate: async function () {
-					const portId = getExternalPortId($(this))
-					console.log('onCalibrate', portId)
-					/**@type {HUB.TachoMotor} */
-					const motor = hubDevice.getDevice(portId)
-					await motor.calibrate()
-				},
 				onMouseUp: async function () {
 					//console.log('onMouseUp')
 					const action = $(this).data('action')
 					const portId = getExternalPortId($(this))
 					/**@type {HUB.TachoMotor} */
 					const motor = hubDevice.getDevice(portId)
+					const power = parseInt($(this).closest('tr').find('.power').getValue())
+					console.log({ power })
 					switch (action) {
 						case 'forward':
-							motor.setPower(100)
+							motor.setPower(power)
 							break
 						case 'backward':
-							motor.setPower(-100)
+							motor.setPower(-power)
 							break
 					}
 				},

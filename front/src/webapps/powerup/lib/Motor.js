@@ -16,9 +16,19 @@ class Motor extends Device {
         super(hubDevice, portId, type)
     }
 
-    setPower(power) {
-        console.log('setPower', this.portId, { power })
-        return this.writeDirectMode(DeviceMode.POWER, power)
+    async setPower(power, waitStale = false) {
+        console.log('setPower', this.portId, { power, waitStale })
+        await this.writeDirectMode(DeviceMode.POWER, power)
+
+        this.waitStale = true
+
+        if (waitStale) {
+            await new Promise(async (resolve) => {
+                this.feedbackCallback = resolve
+            })  
+        }
+
+
     }
 
 

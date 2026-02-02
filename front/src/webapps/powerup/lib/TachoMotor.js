@@ -1,10 +1,11 @@
 //@ts-check
 
 const Motor = require('./Motor')
-const {PortMapNames, DeviceMode, BrakingStyle} = require('./Const')
-const {toInt32, toInt16} = require('./Util')
+const { PortMapNames, DeviceMode, BrakingStyle } = require('./Const')
+const { toInt32, toInt16 } = require('./Util')
 
 const maxPower = 100
+
 
 class TachoMotor extends Motor {
 
@@ -15,6 +16,9 @@ class TachoMotor extends Motor {
      */
     constructor(hubDevice, portId, type) {
         super(hubDevice, portId, type)
+        this.calibrated = false
+        this.minAngle = 0
+        this.maxAngle = 0
     }
 
     setSpeed(speed) {
@@ -40,10 +44,6 @@ class TachoMotor extends Motor {
      */
     gotoAngle(angle, speed, waitEnd, brakingStyle = BrakingStyle.BRAKE) {
         console.log('gotoAngle', this.portId, { angle, speed, waitEnd, brakingStyle })
-
-        if (this.calibrationValue) {
-            angle *= this.calibrationValue
-        }
 
         return this.writePortCommand(waitEnd, 0x0D, toInt32(angle), speed, maxPower, brakingStyle)
     }
@@ -85,7 +85,90 @@ class TachoMotor extends Motor {
         return (angle < 0) ? angle + 360 : angle
     }
 
-    async calibrate() {
+
+    async calibrate(power = 30) {
+        console.log('calibrate')
+        await this.readInfo()
+
+        await this.setPower(-power, true)
+
+        await $$.util.wait(1000)
+
+        this.minAngle = await this.getValue(DeviceMode.ROTATION);
+
+        //await this.setPower(0)
+
+
+        await this.setPower(power, true)
+
+        await $$.util.wait(1000)
+
+        this.maxAngle = await this.getValue(DeviceMode.ROTATION);
+        console.log({ minAngle: this.minAngle, maxAngle: this.maxAngle })
+
+        this.calibrated = true
+        this.gotoCenter()
+
+        //await this.setPower(0)
+
+    }
+
+    async gotoCenter() {
+        if (this.calibrated) {
+            const middleAngle = (this.maxAngle + this.minAngle) / 2
+            await this.gotoAngle(middleAngle, 10, true)
+        }
+        else {
+            console.error('Motor not calibrated')
+        }
+
+    }
+
+    async gotoLeft() {
+        if (this.calibrated) {
+            await this.gotoAngle(this.maxAngle, 10, true)
+        }
+        else {
+            console.error('Motor not calibrated')
+        }
+    }
+
+    async gotoRight() {
+        if (this.calibrated) {
+            await this.gotoAngle(this.minAngle, 10, true)
+        }
+        else {
+            console.error('Motor not calibrated')
+        }
+    }
+
+    async calibrate3(power = 30) {
+        console.log('calibrate')
+        await this.setPower(-power)
+
+        const minAngle = await this.waitTestValue(
+            DeviceMode.ROTATION,
+            makeStallDetector()
+        )
+
+
+        await this.setPower(0)
+        console.log({ minAngle })
+
+
+        await this.setPower(power)
+
+        const maxAngle = await this.waitTestValue(
+            DeviceMode.ROTATION,
+            makeStallDetector()
+        )
+
+        await this.setPower(0)
+        console.log({ minAngle, maxAngle })
+
+    }
+
+    async calibrate2() {
 
         console.log('calibrate', this.portId)
         this.setPower(50)

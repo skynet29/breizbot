@@ -361,7 +361,7 @@
             const portId = msg.getUint8(3)
             const msgLen = msg.getUint8(0)
             const device = this.hubDevices[portId]
-            log('handlePortValueSingle', { msgLen, portId })
+            console.log('handlePortValueSingle', { msgLen, portId })
             device.handleValue(msg)
         }
 

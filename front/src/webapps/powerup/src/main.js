@@ -40,6 +40,17 @@ $$.control.registerControl('rootPage', {
 
 			},
 			events: {
+				onSetName: async function() {
+					console.log('onSetName')
+					const name = await $$.ui.showPrompt({label: 'Name: ', attrs: {maxlength: 14}})
+					const idx = $(this).closest('tr').index()
+					const hubDesc = ctrl.model.hubDevices[idx]
+					const hubDevice = hubDevices[hubDesc.UUID]
+					await hubDevice.setName(name)
+					hubDesc.name = name
+					ctrl.update()
+
+				},
 				onCode: function () {
 					//console.log('onCode')
 					pager.pushPage('code', {
@@ -96,6 +107,9 @@ $$.control.registerControl('rootPage', {
 				onConnect: async function () {
 					const hubDevice = await hub.connect()
 					const id = UUID++
+					const name = await hubDevice.getName()
+					const address = await hubDevice.getPrimaryMACAddress()
+					console.log('onConnect', {name, address})
 
 					hubDevices[id] = hubDevice
 
@@ -106,7 +120,7 @@ $$.control.registerControl('rootPage', {
 					const nbHubs = ctrl.model.hubDevices.length
 					const hubId = `HUB${nbHubs + 1}`
 					hubDevice.name = hubId
-					ctrl.model.hubDevices.push({ UUID: id, hubId, batteryLevel: 0, address: 'Unknown' })
+					ctrl.model.hubDevices.push({ UUID: id, hubId, batteryLevel: 0, address, name })
 					ctrl.update()
 
 					hubDevice.on('batteryLevel', (data) => {
@@ -116,12 +130,6 @@ $$.control.registerControl('rootPage', {
 						ctrl.update()
 					})
 
-					hubDevice.on('address', (data) => {
-						console.log('address', data)
-						const hubDesc = ctrl.model.hubDevices.find((e) => e.UUID == id)
-						hubDesc.address = data.address
-						ctrl.update()
-					})
 
 					await hubDevice.startNotification()
 

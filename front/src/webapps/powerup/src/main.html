@@ -14,19 +14,22 @@
     <table class="w3-table-all">
         <thead>
             <tr>
-                <th>Hub</th>
+                <th>Name</th>
+                <th>HubId</th>
                 <th>Actions</th>
                 <th>Battery Level</th>
                 <th>Address</th>
             </tr>
         </thead>
-        <tbody bn-each="hubDevices" bn-event="click.btnShutdown: onShutDown, click.btnInfo: onInfo, comboboxchange.combo: onHubChange">
+        <tbody bn-each="hubDevices" bn-event="click.btnSetName: onSetName, click.btnShutdown: onShutDown, click.btnInfo: onInfo, comboboxchange.combo: onHubChange">
             <tr>
+                <td bn-text="$scope.$i.name"></td>
                 <td>
                     <div bn-control="brainjs.combobox" bn-data="{items: hubs}" bn-val="$scope.$i.hubId" class="combo"></div>
                 </td>
                 <td>
                     <button class="btnShutdown">Shutdown</button>
+                    <button class="btnSetName">SetName</button>
                     <button class="btnInfo">Info</button>
                 </td>
                 <td bn-text="$scope.$i.batteryLevel"></td>

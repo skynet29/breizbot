@@ -98,6 +98,7 @@
             this.busy = false
             this.attachCallbacks = new CallbackEmitter()
             this.portCmdQueue = []
+            this.hubPropertyCallback = null
 
         }
 
@@ -152,11 +153,34 @@
         async startNotification() {
             await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.BATTERY_VOLTAGE, 0x02)
             await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.SYSTEM_TYPE_ID, 0x05)
-            await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.PRIMARY_MAC_ADDRESS, 0x05)
+            //await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.PRIMARY_MAC_ADDRESS, 0x05)
+            //await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.ADVERTISING_NAME, 0x05)
+            // const name = await this.getName()
+            // const address = await this.getPrimaryMACAddress()
+            // console.log('startNotification', {name, address})
+
             await this.sendMsg(MessageType.HUB_ALERTS, 0x01, 0x01)
             // await this.sendMsg(MessageType.HUB_ALERTS, 0x02, 0x01)
             // await this.sendMsg(MessageType.HUB_ALERTS, 0x03, 0x01)
             // await this.sendMsg(MessageType.HUB_ALERTS, 0x04, 0x01)
+
+        }
+
+        async getName() {
+            const name = await new Promise(async (resolve) => {
+                this.hubPropertyCallback = resolve
+                await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.ADVERTISING_NAME, 0x05)
+            })
+            return name
+
+        }
+
+        async getPrimaryMACAddress() {
+            const address = await new Promise(async (resolve) => {
+                this.hubPropertyCallback = resolve
+                await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.PRIMARY_MAC_ADDRESS, 0x05)
+            })
+            return address
 
         }
 
@@ -217,6 +241,16 @@
         sendMsg(msgType, ...data) {
             log('sendMsg', MessageTypeNames[msgType], data)
             return this.sendBuffer(formatMsg(msgType, data))
+        }
+
+        /**
+         * 
+         * @param {string} name 
+         */
+        setName(name) {
+            const data = Array.from(name).map(c => c.charCodeAt(0))
+            log('name', data)
+            this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.ADVERTISING_NAME, 0x01, data)
         }
 
         /**
@@ -436,7 +470,9 @@
          */
         handleHubPropertyResponse(msg) {
             const property = msg.getUint8(3)
-            log({ property: HubPropertyPayloadNames[property] })
+            const propType = msg.getUint8(4)
+            const msgLen = msg.getUint8(0)
+            console.log('handleHubPropertyResponse', { property: HubPropertyPayloadNames[property], msgLen, propType })
             if (property == HubPropertyPayload.BATTERY_VOLTAGE) {
                 const batteryLevel = msg.getUint8(5)
                 log({ batteryLevel })
@@ -458,7 +494,20 @@
                     bytes.push(msg.getUint8(5 + i).toString(16).toLocaleUpperCase().padStart(2, '0'))
                 }
                 log({ bytes })
-                this.emit('address', { address: bytes.join(':') })
+                //this.emit('address', { address: bytes.join(':') })
+                this.hubPropertyCallback(bytes.join(':'))
+            }
+            else if (property == HubPropertyPayload.ADVERTISING_NAME) {
+                if (this.hubPropertyCallback != null) {
+                    const nameLength = msgLen - 5
+                    const bytes = []
+                    for (let i = 0; i < nameLength; i++) {
+                        bytes.push(msg.getUint8(5 + i))
+                    }
+                    const name = String.fromCharCode(...bytes)
+                    log({name})
+                    this.hubPropertyCallback(name)
+                }
             }
         }
         /**

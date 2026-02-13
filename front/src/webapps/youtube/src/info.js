@@ -50,7 +50,7 @@ $$.control.registerControl('infoPage', {
             }
         })
 
-        broker.onTopic('breizbot.ytdl.progress', async (msg) => {
+        async function onProgress(msg) {
             if (msg.hist == true) {
                 return
             }
@@ -67,7 +67,15 @@ $$.control.registerControl('infoPage', {
             else {
                 progressDlg.setPercentage(percent / 100)
             }
-        })
+        }
+
+        broker.onTopic('breizbot.ytdl.progress', onProgress)
+
+        this.dispose = function() {
+            console.log('dispose')
+            broker.offTopic('breizbot.ytdl.progress', onProgress)
+
+        }
 
         this.getButtons = function () {
 

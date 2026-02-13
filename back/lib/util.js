@@ -11,6 +11,9 @@ const ExifImage = require('exif').ExifImage
 const fetch = require('node-fetch')
 const querystring = require('querystring')
 
+const https = require('https');
+const { pipeline } = require('stream/promises');
+
 const cloudPath = config.CLOUD_HOME
 
 function getFilePath(user, filePath, friendUser) {
@@ -204,6 +207,39 @@ function mergeArray(a, b) {
 	return [...new Set([...a, ...b])] 
 }
 
+async function downloadFile(url, outputPath, onProgress = () => { }) {
+	const response = await new Promise((resolve, reject) => {
+		https.get(url, (res) => {
+			if (res.statusCode !== 200) {
+				reject(new Error(`HTTP ${res.statusCode}`));
+			} else {
+				resolve(res);
+			}
+		}).on('error', reject);
+	});
+
+	const totalSize = parseInt(response.headers['content-length'], 10) || null;
+	let downloaded = 0;
+
+	response.on('data', (chunk) => {
+		downloaded += chunk.length;
+
+		onProgress({
+			downloaded,
+			total: totalSize,
+			percent: totalSize
+				? (downloaded / totalSize) * 100
+				: null
+		});
+	});
+
+	await pipeline(
+		response,
+		fs.createWriteStream(outputPath)
+	);
+}
+
+
 
 module.exports = {
 	isImage,
@@ -211,5 +247,6 @@ module.exports = {
 	getFileInfo,
 	getFilePath,
 	search,
-	mergeArray
+	mergeArray,
+	downloadFile
 }

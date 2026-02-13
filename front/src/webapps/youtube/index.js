@@ -1,84 +1,66 @@
 
 const path = require('path')
 const fs = require('fs-extra')
-const request = require('request')
-const progress = require('request-progress')
 const ffmpeg = require('fluent-ffmpeg')
 const fetch = require("node-fetch");
 
 
-async function getInfo(videoId) {
-	console.log('getInfo', { videoId })
-	const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
-
-	let response = await fetch(videoUrl);
-	const html = await response.text();
-
-	const apiKeyMatch = html.match(/"INNERTUBE_API_KEY":"([^"]+)"/);
-	const apiKey = apiKeyMatch ? apiKeyMatch[1] : null;
-	console.log({ apiKey })
-
-	const endpoint = `https://www.youtube.com/youtubei/v1/player?key=${apiKey}`;
-
-	const body = {
-		context: {
-			client: {
-				clientName: "ANDROID",
-				clientVersion: "20.10.38",
-			},
-		},
-		videoId
-	};
-
-	response = await fetch(endpoint, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify(body),
-	});
-
-	const ret = await response.json();
-
-	console.log({ ret })
-
-	return ret
-
-}
-
-function download(url, fileName, wss, srcId) {
-	//console.log('download', url, fileName)
-
-	return new Promise((resolve, reject) => {
-		let lastPercent = 0
-
-		wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent: 0 } })
-
-		progress(request(url), {})
-			.on('progress', (state) => {
-				const percent = Math.floor(state.percent * 100)
-				if (percent != lastPercent) {
-					lastPercent = percent
-					//console.log('progress', percent)
-
-					wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
-				}
-			})
-			.on('error', (e) => {
-				console.error(e)
-				wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { error: e.message } })
-				reject(e)
-
-			})
-			.on('end', () => {
-				console.log('end')
-				resolve()
-			})
-			.pipe(fs.createWriteStream(fileName))
-	})
-}
 
 module.exports = function (ctx, router) {
 
 	const { wss, config, util } = ctx
+
+	async function getInfo(videoId) {
+		console.log('getInfo', { videoId })
+		const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+
+		let response = await fetch(videoUrl);
+		const html = await response.text();
+
+		const apiKeyMatch = html.match(/"INNERTUBE_API_KEY":"([^"]+)"/);
+		const apiKey = apiKeyMatch ? apiKeyMatch[1] : null;
+		console.log({ apiKey })
+
+		const endpoint = `https://www.youtube.com/youtubei/v1/player?key=${apiKey}`;
+
+		const body = {
+			context: {
+				client: {
+					clientName: "ANDROID",
+					clientVersion: "20.10.38",
+				},
+			},
+			videoId
+		};
+
+		response = await fetch(endpoint, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(body),
+		});
+
+		const ret = await response.json();
+
+		console.log({ ret })
+
+		return ret
+
+	}
+
+	async function download(url, fileName, wss, srcId) {
+		//console.log('download', url, fileName)
+
+		try {
+			await util.downloadFile(url, fileName, (progress) => {
+				//console.log('progress', progress)
+				wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent: progress.percent } })
+			})
+		}
+		catch (e) {
+			wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { error: e.message } })
+			throw e
+		}
+	}
 
 
 	router.post('/search', async function (req, res) {
@@ -136,10 +118,10 @@ module.exports = function (ctx, router) {
 
 		const audioFormats = formats
 			.filter(f => f.mimeType.startsWith('audio/mp4') && f.audioQuality == 'AUDIO_QUALITY_MEDIUM')
-		console.log({audioFormats})
+		console.log({ audioFormats })
 
 		for (const { audioTrack, url, itag } of audioFormats) {
-			if (audioFormat.findIndex(f => f.url == url) >= 0) 
+			if (audioFormat.findIndex(f => f.url == url) >= 0)
 				continue
 
 			if (audioTrack == undefined) {
@@ -205,32 +187,39 @@ module.exports = function (ctx, router) {
 				const videoPath = path.join(destPath, 'video_' + fileName)
 				const audioPath = path.join(destPath, 'audio_' + fileName)
 
-				await download(audioUrl, audioPath, wss, srcId)
-				console.log('audio downloaded !')
-				await download(videoUrl, videoPath, wss, srcId)
-				console.log('video downloaded !')
+				try {
+					await download(audioUrl, audioPath, wss, srcId)
+					console.log('audio downloaded !')
+					await download(videoUrl, videoPath, wss, srcId)
+					console.log('video downloaded !')
 
 
-				ffmpeg()
-					.input(videoPath)
-					.input(audioPath)
-					.addOption(['-c:v', 'copy', '-c:a', 'copy', '-map', '0:v:0', '-map', '1:a:0', '-shortest'])
-					.save(path.join(destPath, fileName))
-					.on('start', () => console.log('Merge video with audio'))
-					.on('end', () => {
-						console.log('merge finished!')
-						wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })
+					ffmpeg()
+						.input(videoPath)
+						.input(audioPath)
+						.addOption(['-c:v', 'copy', '-c:a', 'copy', '-map', '0:v:0', '-map', '1:a:0', '-shortest'])
+						.save(path.join(destPath, fileName))
+						.on('start', () => console.log('Merge video with audio'))
+						.on('end', () => {
+							console.log('merge finished!')
+							wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })
 
-						fs.unlinkSync(videoPath)
-						fs.unlinkSync(audioPath)
+							fs.unlinkSync(videoPath)
+							fs.unlinkSync(audioPath)
 
-					})
-					.on('progress', (event) => {
-						const { percent } = event
-						console.log('progress', event)
-						if (percent != undefined)
-							wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
-					})
+						})
+						.on('progress', (event) => {
+							const { percent } = event
+							console.log('progress', event)
+							if (percent != undefined)
+								wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
+						})
+				}
+				catch (e) {
+					console.error(e.message)
+				}
+
+
 
 			})
 

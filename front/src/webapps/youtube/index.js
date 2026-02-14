@@ -4,11 +4,156 @@ const fs = require('fs-extra')
 const ffmpeg = require('fluent-ffmpeg')
 const fetch = require("node-fetch");
 
+const { spawn } = require('child_process');
+const { finished } = require('stream');
+
+
+function download(videoId, destinationPath, onProgress) {
+	console.log('download', { videoId, destinationPath })
+	return new Promise((resolve, reject) => {
+		const url = `https://www.youtube.com/watch?v=${videoId}`;
+
+		const outputTemplate = path.join(destinationPath, "%(title)s.%(ext)s");
+
+		const yt = spawn("python3", [
+			`${config.SCRIPT_PATH}/yt-dlp`,
+			"--print", "progress",
+			"--newline",
+			"-t", "mp4",
+			"-o", outputTemplate,
+			url
+		]);
+
+		let finalFilename = null;
+
+		yt.stdout.on("data", (data) => {
+			const lines = data.toString().trim().split("\n");
+
+			for (const line of lines) {
+				try {
+					const json = JSON.parse(line);
+
+					if (json.status === "downloading") {
+						const percent = json.total_bytes
+							? (json.downloaded_bytes / json.total_bytes) * 100
+							: null;
+
+						onProgress({
+							percent,
+							downloaded: json.downloaded_bytes,
+							total: json.total_bytes,
+							speed: json.speed,
+							eta: json.eta
+						});
+					}
+
+					if (json.status === "finished") {
+						finalFilename = json.filename;
+						onProgress({ percent: 100 });
+					}
+
+				} catch {
+					// ignore non-json lines
+				}
+			}
+		});
+
+		yt.stderr.on("data", (data) => {
+			console.error(data.toString());
+		});
+
+		yt.on("error", reject);
+
+		yt.on("close", (code) => {
+			if (code === 0) {
+				resolve({
+					success: true,
+					file: finalFilename
+				});
+			} else {
+				reject(new Error(`yt-dlp exited with code ${code}`));
+			}
+		});
+	});
+}
 
 
 module.exports = function (ctx, router) {
 
 	const { wss, config, util } = ctx
+	console.log('config', config)
+
+	function download(videoId, destinationPath, onProgress) {
+		console.log('download', { videoId, destinationPath })
+		return new Promise((resolve, reject) => {
+			const url = `https://www.youtube.com/watch?v=${videoId}`;
+
+			const outputTemplate = path.join(destinationPath, "%(title)s.%(ext)s");
+
+			const yt = spawn("python3", [
+				path.join(config.scriptPath, 'yt-dlp'),
+				"--progress-template", "%(progress)j",
+				"-t", "mp4",
+				"-o", outputTemplate,
+				url
+			]);
+
+			let finalFilename = null;
+
+			yt.stdout.on("data", (data) => {
+				//console.log('data', data.toString())
+				const lines = data.toString().trim().split("\n");
+
+				for (const line of lines) {
+					try {
+						const json = JSON.parse(line);
+						//console.log('json', json)
+
+						if (json.status === "downloading") {
+							const percent = json.total_bytes
+								? (json.downloaded_bytes / json.total_bytes) * 100
+								: null;
+
+							console.log({percent})
+
+							onProgress({
+								percent,
+								downloaded: json.downloaded_bytes,
+								total: json.total_bytes,
+								speed: json.speed,
+								eta: json.eta
+							});
+						}
+
+						if (json.status === "finished") {
+							finalFilename = json.filename;
+							onProgress({ percent: 100 });
+						}
+
+					} catch {
+						// ignore non-json lines
+					}
+				}
+			});
+
+			yt.stderr.on("data", (data) => {
+				console.error(data.toString());
+			});
+
+			yt.on("error", reject);
+
+			yt.on("close", (code) => {
+				if (code === 0) {
+					resolve({
+						success: true,
+						file: finalFilename
+					});
+				} else {
+					reject(new Error(`yt-dlp exited with code ${code}`));
+				}
+			});
+		});
+	}
 
 	async function getInfo(videoId) {
 		console.log('getInfo', { videoId })
@@ -23,9 +168,20 @@ module.exports = function (ctx, router) {
 
 		const endpoint = `https://www.youtube.com/youtubei/v1/player?key=${apiKey}`;
 
+
+
 		const body = {
 			context: {
 				client: {
+					// 'clientName': 'ANDROID_VR',
+					// 'clientVersion': '1.62.27',
+					// 'deviceMake': 'Oculus',
+					// 'deviceModel': 'Quest 3',
+					// 'androidSdkVersion': 32,
+					// 'userAgent': 'com.google.android.apps.youtube.vr.oculus/1.62.27 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
+					// 'osName': 'Android',
+					// 'osVersion': '12L',
+
 					clientName: "ANDROID",
 					clientVersion: "20.10.38",
 				},
@@ -47,20 +203,6 @@ module.exports = function (ctx, router) {
 
 	}
 
-	async function download(url, fileName, wss, srcId) {
-		//console.log('download', url, fileName)
-
-		try {
-			await util.downloadFile(url, fileName, (progress) => {
-				//console.log('progress', progress)
-				wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent: progress.percent } })
-			})
-		}
-		catch (e) {
-			wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { error: e.message } })
-			throw e
-		}
-	}
 
 
 	router.post('/search', async function (req, res) {
@@ -148,9 +290,8 @@ module.exports = function (ctx, router) {
 	})
 
 	router.post('/download', async function (req, res) {
-		let { fileName, srcId, videoUrl, audioUrl } = req.body
+		let { srcId, videoId } = req.body
 		const userName = req.session.user
-		fileName = fileName.replace(/\/|\||:|"|-| /g, '_')
 		const destPath = path.join(config.CLOUD_HOME, userName, 'apps/ytdl')
 
 
@@ -175,8 +316,6 @@ module.exports = function (ctx, router) {
 
 		res.sendStatus(200)
 
-
-
 		fs.lstat(destPath)
 			.catch(function (err) {
 				console.log('lstat', err)
@@ -184,39 +323,16 @@ module.exports = function (ctx, router) {
 			})
 			.then(async () => {
 
-				const videoPath = path.join(destPath, 'video_' + fileName)
-				const audioPath = path.join(destPath, 'audio_' + fileName)
-
 				try {
-					await download(audioUrl, audioPath, wss, srcId)
-					console.log('audio downloaded !')
-					await download(videoUrl, videoPath, wss, srcId)
+					await download(videoId, destPath, ({ percent }) => {
+						wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
+					})
+					wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })
 					console.log('video downloaded !')
-
-
-					ffmpeg()
-						.input(videoPath)
-						.input(audioPath)
-						.addOption(['-c:v', 'copy', '-c:a', 'copy', '-map', '0:v:0', '-map', '1:a:0', '-shortest'])
-						.save(path.join(destPath, fileName))
-						.on('start', () => console.log('Merge video with audio'))
-						.on('end', () => {
-							console.log('merge finished!')
-							wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { finish: true } })
-
-							fs.unlinkSync(videoPath)
-							fs.unlinkSync(audioPath)
-
-						})
-						.on('progress', (event) => {
-							const { percent } = event
-							console.log('progress', event)
-							if (percent != undefined)
-								wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { percent } })
-						})
 				}
 				catch (e) {
 					console.error(e.message)
+					wss.sendToClient(srcId, { topic: 'breizbot.ytdl.progress', data: { error: e.message } })
 				}
 
 

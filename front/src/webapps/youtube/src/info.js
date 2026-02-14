@@ -20,6 +20,7 @@ $$.control.registerControl('infoPage', {
 
         /**@type AppYoutube.Controls.InfoPage.Props */
         const props = this.props
+        console.log('props', props)
 
         const progressDlg = $$.ui.progressDialog('Downloading...')
         const { videoUrl, videoId } = props
@@ -61,7 +62,7 @@ $$.control.registerControl('infoPage', {
                 $$.ui.showAlert({ title: 'Error', content: error })
             }
             else if (finish == true) {
-                await $$.util.wait(1000)
+                await $$.util.wait(200)
                 progressDlg.hide()
             }
             else {
@@ -85,35 +86,8 @@ $$.control.registerControl('infoPage', {
                     icon: 'fa fa-download',
                     onClick: function (cmd) {
                         console.log('onDownload', videoUrl)
-                        $$.ui.showForm({
-                            title: 'Choose Format',
-                            fields: {
-                                video: {
-                                    input: 'select',
-                                    label: 'Video',
-                                    value: videoFormat[0].url,
-                                    items: videoFormat.map(v => {
-                                        return { label: v.label, value: v.url }
-                                    })
-                                },
-                                audio: {
-                                    input: 'select',
-                                    label: 'Audio',
-                                    value: audioFormat[0].url,
-                                    items: audioFormat.map(v => {
-                                        return { label: v.label, value: v.url }
-                                    })
-                                }
-                            }
-                        },
-                            (data) => {
-                                console.log({ data })
-                                const fileName = title + '.mp4'
-                                ytdl.download(data.video, data.audio, fileName)
-                                progressDlg.show()
-                            }
-                        )
-
+                        ytdl.download(videoId)
+                        progressDlg.show()
 
                     }
                 }

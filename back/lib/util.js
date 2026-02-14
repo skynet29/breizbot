@@ -207,7 +207,7 @@ function mergeArray(a, b) {
 	return [...new Set([...a, ...b])] 
 }
 
-async function downloadFile(url, outputPath, onProgress = () => { }) {
+async function downloadFile(url, outputPath, onProgress) {
 	const response = await new Promise((resolve, reject) => {
 		https.get(url, (res) => {
 			if (res.statusCode !== 200) {

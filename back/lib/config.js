@@ -59,6 +59,12 @@ if (domain == undefined) {
 	process.exit(1)
 }
 
+const scriptPath = process.env.SCRIPT_PATH
+if (scriptPath == undefined) {
+	console.log('Missing SCRIPT_PATH env var !')
+	process.exit(1)
+}
+
 
 
 module.exports = {
@@ -74,5 +80,6 @@ module.exports = {
 	domain,
 	email: 'marc.delomez@free.com',
 	dbUrl: 'mongodb://localhost:27017',
-	dbName: 'breizbot'
+	dbName: 'breizbot',
+	scriptPath
 }

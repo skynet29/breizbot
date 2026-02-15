@@ -159,7 +159,7 @@ module.exports = function (modulePath) {
 			.pipe(replace('form', ctrlName))
 			.pipe(replace('main.html', ctrlName + '.html'))
 			.pipe(rename(ctrlName + '.js'))
-			.pipe(gulp.dest('src'))
+			.pipe(gulp.dest('src/controls/'))
 	}
 
 	function replaceFormTemplateSCSS() {
@@ -167,14 +167,14 @@ module.exports = function (modulePath) {
 		return gulp.src(['../../templates/form.scss'])
 			.pipe(replace('formCtrl', ctrlName))
 			.pipe(rename(ctrlName + '.scss'))
-			.pipe(gulp.dest('src'))
+			.pipe(gulp.dest('src/controls/'))
 	}
 
 	function replaceFormTemplateHTML() {
 		const ctrlName = arg.name
 		return gulp.src(['../../templates/form.html'])
 			.pipe(rename(ctrlName + '.html'))
-			.pipe(gulp.dest('src'))
+			.pipe(gulp.dest('src/controls/'))
 	}
 
 	function copyIndexJS() {

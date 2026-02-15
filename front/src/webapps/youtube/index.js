@@ -74,52 +74,43 @@ module.exports = function (ctx, router) {
 		});
 	}
 
-	async function getInfo(videoId) {
-		console.log('getInfo', { videoId })
-		const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
+	function getInfo(videoId) {
+		return new Promise((resolve, reject) => {
+			const url = `https://www.youtube.com/watch?v=${videoId}`;
 
-		let response = await fetch(videoUrl);
-		const html = await response.text();
+			const yt = spawn("yt-dlp", [
+				"-J",        // dump json
+				"--no-warnings",
+				"--no-playlist",
+				url
+			]);
 
-		const apiKeyMatch = html.match(/"INNERTUBE_API_KEY":"([^"]+)"/);
-		const apiKey = apiKeyMatch ? apiKeyMatch[1] : null;
-		console.log({ apiKey })
+			let data = "";
 
-		const endpoint = `https://www.youtube.com/youtubei/v1/player?key=${apiKey}`;
+			yt.stdout.on("data", chunk => {
+				data += chunk.toString();
+			});
 
+			yt.stderr.on("data", err => {
+				console.error(err.toString());
+				reject(new Error(err.toString()))
+			});
 
+			yt.on("error", reject);
 
-		const body = {
-			context: {
-				client: {
-					// 'clientName': 'ANDROID_VR',
-					// 'clientVersion': '1.62.27',
-					// 'deviceMake': 'Oculus',
-					// 'deviceModel': 'Quest 3',
-					// 'androidSdkVersion': 32,
-					// 'userAgent': 'com.google.android.apps.youtube.vr.oculus/1.62.27 (Linux; U; Android 12L; eureka-user Build/SQ3A.220605.009.A1) gzip',
-					// 'osName': 'Android',
-					// 'osVersion': '12L',
+			yt.on("close", code => {
+				if (code !== 0) {
+					return reject(new Error(`yt-dlp exited with code ${code}`));
+				}
 
-					clientName: "ANDROID",
-					clientVersion: "20.10.38",
-				},
-			},
-			videoId
-		};
-
-		response = await fetch(endpoint, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(body),
+				try {
+					const json = JSON.parse(data);
+					resolve(json);
+				} catch (e) {
+					reject(e);
+				}
+			});
 		});
-
-		const ret = await response.json();
-
-		console.log({ ret })
-
-		return ret
-
 	}
 
 
@@ -161,17 +152,25 @@ module.exports = function (ctx, router) {
 	router.get('/info', async function (req, res) {
 		const { videoId } = req.query
 
-		const info = await getInfo(videoId)
-		//console.log('info', JSON.stringify(info, null, 4))
+		try {
+			const info = await getInfo(videoId)
+			//console.log('info', JSON.stringify(info, null, 4))
+			console.log('info', Object.keys(info))
 
 
-		const { title, shortDescription, lengthSeconds, thumbnail } = info.videoDetails
-		res.json({
-			title,
-			description: shortDescription,
-			length_seconds: lengthSeconds,
-			thumbnail: thumbnail.thumbnails.pop()
-		})
+			const { title, description, duration, width, height } = info
+			res.json({
+				title,
+				description,
+				length_seconds: duration,
+				width,
+				height
+			})
+		}
+		catch(e) {
+			res.json({error: e.message})
+		}
+
 	})
 
 	router.post('/download', async function (req, res) {

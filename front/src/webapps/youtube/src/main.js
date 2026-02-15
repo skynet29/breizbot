@@ -60,15 +60,23 @@ $$.control.registerControl('rootPage', {
 			//console.log('videoId', videoId)
 			const info = await ytdl.info(videoId)
 			console.log('info', info)
-			pager.pushPage('infoPage', {
-				title: info.title,
-				/**@type AppYoutube.Controls.InfoPage.Props */
-				props: {
-					info,
-					videoUrl,
-					videoId
-				}
-			})
+
+			if (info.error) {
+				$$.ui.showAlert({ content: info.error })
+			}
+
+			else {
+				pager.pushPage('infoPage', {
+					title: info.title,
+					/**@type AppYoutube.Controls.InfoPage.Props */
+					props: {
+						info,
+						videoUrl,
+						videoId
+					}
+				})
+
+			}
 
 		}
 

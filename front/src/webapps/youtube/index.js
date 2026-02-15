@@ -1,87 +1,14 @@
 
 const path = require('path')
 const fs = require('fs-extra')
-const ffmpeg = require('fluent-ffmpeg')
 const fetch = require("node-fetch");
 
 const { spawn } = require('child_process');
-const { finished } = require('stream');
-
-
-function download(videoId, destinationPath, onProgress) {
-	console.log('download', { videoId, destinationPath })
-	return new Promise((resolve, reject) => {
-		const url = `https://www.youtube.com/watch?v=${videoId}`;
-
-		const outputTemplate = path.join(destinationPath, "%(title)s.%(ext)s");
-
-		const yt = spawn("python3", [
-			`${config.SCRIPT_PATH}/yt-dlp`,
-			"--print", "progress",
-			"--newline",
-			"-t", "mp4",
-			"-o", outputTemplate,
-			url
-		]);
-
-		let finalFilename = null;
-
-		yt.stdout.on("data", (data) => {
-			const lines = data.toString().trim().split("\n");
-
-			for (const line of lines) {
-				try {
-					const json = JSON.parse(line);
-
-					if (json.status === "downloading") {
-						const percent = json.total_bytes
-							? (json.downloaded_bytes / json.total_bytes) * 100
-							: null;
-
-						onProgress({
-							percent,
-							downloaded: json.downloaded_bytes,
-							total: json.total_bytes,
-							speed: json.speed,
-							eta: json.eta
-						});
-					}
-
-					if (json.status === "finished") {
-						finalFilename = json.filename;
-						onProgress({ percent: 100 });
-					}
-
-				} catch {
-					// ignore non-json lines
-				}
-			}
-		});
-
-		yt.stderr.on("data", (data) => {
-			console.error(data.toString());
-		});
-
-		yt.on("error", reject);
-
-		yt.on("close", (code) => {
-			if (code === 0) {
-				resolve({
-					success: true,
-					file: finalFilename
-				});
-			} else {
-				reject(new Error(`yt-dlp exited with code ${code}`));
-			}
-		});
-	});
-}
 
 
 module.exports = function (ctx, router) {
 
 	const { wss, config, util } = ctx
-	console.log('config', config)
 
 	function download(videoId, destinationPath, onProgress) {
 		console.log('download', { videoId, destinationPath })
@@ -98,8 +25,6 @@ module.exports = function (ctx, router) {
 				url
 			]);
 
-			let finalFilename = null;
-
 			yt.stdout.on("data", (data) => {
 				//console.log('data', data.toString())
 				const lines = data.toString().trim().split("\n");
@@ -110,11 +35,9 @@ module.exports = function (ctx, router) {
 						//console.log('json', json)
 
 						if (json.status === "downloading") {
-							const percent = json.total_bytes
-								? (json.downloaded_bytes / json.total_bytes) * 100
-								: null;
+							const percent = (json.downloaded_bytes / json.total_bytes) * 100
 
-							console.log({percent})
+							//console.log({percent})
 
 							onProgress({
 								percent,
@@ -126,7 +49,6 @@ module.exports = function (ctx, router) {
 						}
 
 						if (json.status === "finished") {
-							finalFilename = json.filename;
 							onProgress({ percent: 100 });
 						}
 
@@ -144,10 +66,7 @@ module.exports = function (ctx, router) {
 
 			yt.on("close", (code) => {
 				if (code === 0) {
-					resolve({
-						success: true,
-						file: finalFilename
-					});
+					resolve();
 				} else {
 					reject(new Error(`yt-dlp exited with code ${code}`));
 				}
@@ -246,46 +165,12 @@ module.exports = function (ctx, router) {
 		//console.log('info', JSON.stringify(info, null, 4))
 
 
-		const formats = info.streamingData.adaptiveFormats;
-
-		const videoFormat = formats.filter(f => f.mimeType.startsWith('video/mp4; codecs="avc1'))
-			.map(f => ({ label: f.qualityLabel, url: f.url }))
-		console.log('videoFormat', videoFormat)
-
-		// const audioFormat = formats
-		// 	.filter(f => f.mimeType.startsWith('audio/mp4') && f.audioQuality == 'AUDIO_QUALITY_MEDIUM')
-		// 	.map(f => ({ label: 'Audio1', url: f.url }))
-
-		const audioFormat = []
-
-		const audioFormats = formats
-			.filter(f => f.mimeType.startsWith('audio/mp4') && f.audioQuality == 'AUDIO_QUALITY_MEDIUM')
-		console.log({ audioFormats })
-
-		for (const { audioTrack, url, itag } of audioFormats) {
-			if (audioFormat.findIndex(f => f.url == url) >= 0)
-				continue
-
-			if (audioTrack == undefined) {
-				audioFormat.push({ url, itag, label: `Audio ${audioFormat.length + 1}` })
-			}
-			else if (audioTrack != undefined &&
-				audioFormat.findIndex(f => f.label == audioTrack.displayName) < 0) {
-				audioFormat.push({ url, itag, label: audioTrack.displayName })
-			}
-		}
-
-		console.log('audioFormat', audioFormat)
-
-
 		const { title, shortDescription, lengthSeconds, thumbnail } = info.videoDetails
 		res.json({
 			title,
 			description: shortDescription,
 			length_seconds: lengthSeconds,
-			thumbnail: thumbnail.thumbnails.pop(),
-			videoFormat,
-			audioFormat
+			thumbnail: thumbnail.thumbnails.pop()
 		})
 	})
 

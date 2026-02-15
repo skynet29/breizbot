@@ -25,7 +25,7 @@ $$.control.registerControl('infoPage', {
         const progressDlg = $$.ui.progressDialog('Downloading...')
         const { videoUrl, videoId } = props
 
-        const { title, thumbnail, description, length_seconds, videoFormat, audioFormat } = props.info
+        const { title, thumbnail, description, length_seconds } = props.info
 
         const { width, height } = thumbnail
         const ctrl = $$.viewController(elt, {

@@ -74,44 +74,82 @@ module.exports = function (ctx, router) {
 		});
 	}
 
-	function getInfo(videoId) {
-		return new Promise((resolve, reject) => {
-			const url = `https://www.youtube.com/watch?v=${videoId}`;
+	async function getInfo(videoId) {
+		console.log('getInfo', { videoId })
+		const videoUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
-			const yt = spawn("yt-dlp", [
-				"-J",        // dump json
-				"--no-warnings",
-				"--no-playlist",
-				url
-			]);
+		let response = await fetch(videoUrl);
+		const html = await response.text();
 
-			let data = "";
+		const apiKeyMatch = html.match(/"INNERTUBE_API_KEY":"([^"]+)"/);
+		const apiKey = apiKeyMatch ? apiKeyMatch[1] : null;
+		console.log({ apiKey })
 
-			yt.stdout.on("data", chunk => {
-				data += chunk.toString();
-			});
+		const endpoint = `https://www.youtube.com/youtubei/v1/player?key=${apiKey}`;
 
-			yt.stderr.on("data", err => {
-				console.error(err.toString());
-				reject(new Error(err.toString()))
-			});
+		const body = {
+			context: {
+				client: {
+					clientName: "ANDROID",
+					clientVersion: "20.10.38",
+				},
+			},
+			videoId
+		};
 
-			yt.on("error", reject);
-
-			yt.on("close", code => {
-				if (code !== 0) {
-					return reject(new Error(`yt-dlp exited with code ${code}`));
-				}
-
-				try {
-					const json = JSON.parse(data);
-					resolve(json);
-				} catch (e) {
-					reject(e);
-				}
-			});
+		response = await fetch(endpoint, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(body),
 		});
+
+		const ret = await response.json();
+
+		console.log({ ret })
+
+		return ret
+
 	}
+
+
+	// function getInfo(videoId) {
+	// 	return new Promise((resolve, reject) => {
+	// 		const url = `https://www.youtube.com/watch?v=${videoId}`;
+
+	// 		const yt = spawn("yt-dlp", [
+	// 			"-J",        // dump json
+	// 			"--no-warnings",
+	// 			"--no-playlist",
+	// 			url
+	// 		]);
+
+	// 		let data = "";
+
+	// 		yt.stdout.on("data", chunk => {
+	// 			data += chunk.toString();
+	// 		});
+
+	// 		yt.stderr.on("data", err => {
+	// 			console.error(err.toString());
+	// 			reject(new Error(err.toString()))
+	// 		});
+
+	// 		yt.on("error", reject);
+
+	// 		yt.on("close", code => {
+	// 			if (code !== 0) {
+	// 				return reject(new Error(`yt-dlp exited with code ${code}`));
+	// 			}
+
+	// 			try {
+	// 				const json = JSON.parse(data);
+	// 				resolve(json);
+	// 			} catch (e) {
+	// 				reject(e);
+	// 			}
+	// 		});
+	// 	});
+	// }
 
 
 
@@ -158,17 +196,27 @@ module.exports = function (ctx, router) {
 			console.log('info', Object.keys(info))
 
 
-			const { title, description, duration, width, height } = info
+			// const { title, description, duration, width, height } = info
+			// res.json({
+			// 	title,
+			// 	description,
+			// 	length_seconds: duration,
+			// 	width,
+			// 	height
+			// })
+
+			const { title, shortDescription, lengthSeconds, thumbnail } = info.videoDetails
+			console.log('videoDetails', info.videoDetails)
 			res.json({
 				title,
-				description,
-				length_seconds: duration,
-				width,
-				height
+				description: shortDescription,
+				length_seconds: lengthSeconds,
+				width: 480, height: 360
+
 			})
 		}
-		catch(e) {
-			res.json({error: e.message})
+		catch (e) {
+			res.json({ error: e.message })
 		}
 
 	})

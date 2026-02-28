@@ -1,0 +1,19 @@
+<div>
+
+    <table>
+        <tbody bn-each="actions" bn-event="click.btnAction: onBtnAction">
+            <tr>
+                <td bn-text="$scope.$i.hubName"></td>
+                <td bn-text="$scope.$i.name"></td>
+                <td bn-each="$scope.$i.devActions" bn-iter="devAction">
+                    <button bn-text="$scope.devAction.label" 
+                    bn-data="{cmd: $scope.devAction.action}"
+                    bn-prop="{disabled: !$scope.devAction.isActionEnabled}" 
+                    class="btnAction w3-btn w3-green"></button>
+                </td>
+
+            </tr>
+
+        </tbody>
+    </table>
+</div>

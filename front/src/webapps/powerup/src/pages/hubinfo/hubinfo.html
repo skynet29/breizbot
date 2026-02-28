@@ -29,26 +29,10 @@
                                 Power
                             </label>
                             <!-- <input type="number" min="1" max="100" value="20" class="power"> -->
-                            <span bn-control="input-label" data-val="10" class="power"></span>
+                            <span bn-control="input-label" bn-data="{val: $scope.$i.power}" class="power"></span>
                         </span>
                     </span>
-                    <span bn-if="isTachoMotor" class="spanButtons">
-                        <!-- <button class="w3-btn w3-green motorAction" data-action="reset">RESET</button>
-                        <button class="w3-btn w3-green motorAction" data-action="gozero">GO ZERO</button> -->
-                        <button class="w3-btn motorAction" bn-class="{w3-grey: !$scope.$i.calibrated, w3-green: $scope.$i.calibrated}" data-action="calibrate">Calibrate</button>
 
-                        <button class="w3-btn w3-green motorAction goto" data-action="gotoLeft" bn-prop="{disabled: !$scope.$i.calibrated}">LEFT</button>
-                        <button class="w3-btn w3-green motorAction goto" data-action="gotoCenter" bn-prop="{disabled: !$scope.$i.calibrated}">CENTER</button>
-                        <button class="w3-btn w3-green motorAction goto" data-action="gotoRight" bn-prop="{disabled: !$scope.$i.calibrated}">RIGHT</button>
-
-                        <!-- <button class="w3-btn w3-green motorAction" data-action="gotoAngle">Angle</button>
-                        <span>
-                            <label>
-                                Angle
-                            </label>
-                            <input type="number" min="-360" max="360" value="0" class="angle">
-                        </span> -->
-                    </span>
                     <span bn-if="isLed" class="spanButtons">
                         <button class="w3-btn w3-green ledAction" data-action="on">ON</button>
                         <button class="w3-btn w3-green ledAction" data-action="off">OFF</button>

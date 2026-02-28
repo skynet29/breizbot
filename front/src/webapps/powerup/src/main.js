@@ -35,19 +35,25 @@ $$.control.registerControl('rootPage', {
 			data: {
 				currentConfig: '',
 				gamepadConnected: false,
-				hubDevices: [],
-				hubs: ['HUB1', 'HUB2']
+				hubDevices: []
 
 			},
 			events: {
-				onSetName: async function() {
-					console.log('onSetName')
-					const name = await $$.ui.showPrompt({label: 'Name: ', attrs: {maxlength: 14}})
+				onActions: function() {
+					pager.pushPage('actions', {
+						title: 'Actions',
+						props: {
+							hubDevices: Object.values(hubDevices)
+						}
+					})
+				},
+				onSetName: async function(ev, newName) {
+					console.log('onSetName', newName)
 					const idx = $(this).closest('tr').index()
 					const hubDesc = ctrl.model.hubDevices[idx]
 					const hubDevice = hubDevices[hubDesc.UUID]
-					await hubDevice.setName(name)
-					hubDesc.name = name
+					await hubDevice.setName(newName)
+					hubDesc.name = newName
 					ctrl.update()
 
 				},
@@ -66,17 +72,7 @@ $$.control.registerControl('rootPage', {
 					})
 				},
 
-				onHubChange: function () {
-					const idx = $(this).closest('tr').index()
 
-					const hubId = $(this).getValue()
-					//console.log('onHubChange', idx, hubId)
-
-					const hubDevice = hubDevices[ctrl.model.hubDevices[idx].UUID]
-					console.log('hubDevice', hubDevice)
-					hubDevice.name = hubId
-					ctrl.model.hubDevices[idx].hubId = hubId
-				},
 				onShutDown: function () {
 					const idx = $(this).closest('tr').index()
 					//console.log('onShutDown', idx)
@@ -95,7 +91,7 @@ $$.control.registerControl('rootPage', {
 					console.log('hubDevice', hubDevice)
 
 					pager.pushPage('hubinfo', {
-						title: hubDesc.hubId,
+						title: hubDevice.name,
 						props: {
 							hubDevice
 						}
@@ -117,10 +113,8 @@ $$.control.registerControl('rootPage', {
 						console.log(data)
 					})
 
-					const nbHubs = ctrl.model.hubDevices.length
-					const hubId = `HUB${nbHubs + 1}`
-					hubDevice.name = hubId
-					ctrl.model.hubDevices.push({ UUID: id, hubId, batteryLevel: 0, address, name })
+
+					ctrl.model.hubDevices.push({ UUID: id, batteryLevel: 0, address, name })
 					ctrl.update()
 
 					hubDevice.on('batteryLevel', (data) => {

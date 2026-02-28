@@ -19,6 +19,31 @@ class TachoMotor extends Motor {
         this.calibrated = false
         this.minAngle = 0
         this.maxAngle = 0
+        this.availableActions.push(...['CALIBRATE', 'RIGHT', 'CENTER', 'LEFT'])
+    }
+
+    execAction(actionName) {
+        switch (actionName) {
+            case 'CALIBRATE':
+                return this.calibrate()
+            case 'RIGHT':
+                return this.gotoRight()
+            case 'LEFT':
+                return this.gotoLeft()
+            case 'CENTER':
+                return this.gotoCenter()
+            default:
+                return super.execAction(actionName)
+        }
+
+    }
+
+    isActionEnabled(actionName) {
+        if (['RIGHT', 'LEFT', 'CENTER'].includes(actionName)) {
+            return this.calibrated
+        }
+
+        return super.isActionEnabled(actionName)
     }
 
     setSpeed(speed) {

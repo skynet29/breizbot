@@ -1,0 +1,48 @@
+.addAction {
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    form {
+
+        max-width: 400px;
+        width: 400px;
+
+        div {
+            margin: 10px 0px;
+        }
+
+        label {
+            width: 100px;
+            display: inline-block;
+        }
+
+        input,
+        select {
+            width: 200px;
+            padding: 5px;
+        }
+    }
+
+
+    // form {
+
+    //     max-width: 400px;
+    //     width: 400px;
+    //     display: grid;
+    //     grid-template-columns: 70px 1fr;
+    //     gap: 10px;
+
+    //     label {
+    //         grid-column: 1/2;
+    //     }
+
+    //     input,
+    //     select {
+    //         grid-column: 2/3;
+    //         width: 200px;
+    //         padding: 5px;
+    //     }
+    // }
+}

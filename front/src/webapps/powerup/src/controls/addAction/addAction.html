@@ -1,0 +1,30 @@
+<div>
+    <form bn-event="submit: onSubmit, change.hub: onHubChange, change.port: onPortChange">
+
+        <div>
+            <label>Label</label>
+            <input type="text" required name="label"> 
+        </div>
+
+        <div>
+            <label>HUB</label>
+            <select bn-items="hubs" name="hub" class="hub" required></select>
+        </div>
+
+
+        <div bn-show="hasDevice">
+            <label>Port</label>
+            <select bn-items="devices" name="port" class="port" required ></select>
+        </div>
+
+
+        <div bn-show="hasActions">
+            <label>Action</label>
+            <select bn-items="actions" name="action" class="action" required></select>
+        </div>
+
+
+
+        <input type="submit" hidden bn-bind="submit">
+    </form>
+</div>

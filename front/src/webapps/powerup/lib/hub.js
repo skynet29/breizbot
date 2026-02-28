@@ -167,11 +167,11 @@
         }
 
         async getName() {
-            const name = await new Promise(async (resolve) => {
+            this.name = await new Promise(async (resolve) => {
                 this.hubPropertyCallback = resolve
                 await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.ADVERTISING_NAME, 0x05)
             })
-            return name
+            return this.name
 
         }
 
@@ -247,10 +247,11 @@
          * 
          * @param {string} name 
          */
-        setName(name) {
+        async setName(name) {
             const data = Array.from(name).map(c => c.charCodeAt(0))
             log('name', data)
-            this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.ADVERTISING_NAME, 0x01, data)
+            await this.sendMsg(MessageType.HUB_PROPERTIES, HubPropertyPayload.ADVERTISING_NAME, 0x01, data)
+            this.name = name
         }
 
         /**

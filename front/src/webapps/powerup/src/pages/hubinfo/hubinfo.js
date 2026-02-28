@@ -1,57 +1,5 @@
 // @ts-check
-$$.control.registerControl('input-label', {
-	props: {
-		val: 10
-	},
-	init: function (elt) {
-		console.log('props', this.props)
-		const { val } = this.props
-		const span = $('<span>').appendTo(elt)
-			.text(val)
-			.click(function () {
-				const label = this
-				console.log('onClick', this.textContent)
 
-				const originalValue = $(this).text();
-				let validated = false;
-
-				const input = document.createElement("input");
-				input.type = "text";
-				input.value = originalValue;
-				input.className = "input-edit";
-
-				label.replaceWith(input);
-				input.focus();
-
-				// Validation uniquement avec Enter
-				input.addEventListener("keydown", (e) => {
-					if (e.key === "Enter") {
-						label.textContent = input.value;
-						elt.trigger('input-label-change', input.value)
-						validated = true;
-						input.replaceWith(label);
-
-					}
-
-					// Optionnel : Escape pour annuler
-					if (e.key === "Escape") {
-						validated = true;
-						input.replaceWith(label);
-					}
-				});
-
-				// Perte de focus = annulation
-				input.addEventListener("blur", () => {
-					if (validated) return
-					input.replaceWith(label);
-				});
-			})
-
-		this.getValue = function() {
-			return span.text()
-		}
-	}
-})
 
 $$.control.registerControl('hubinfo', {
 
@@ -83,10 +31,10 @@ $$.control.registerControl('hubinfo', {
 
 			for (const device of devices) {
 				//await device.readInfo()
-				let { portId, type, name, calibrated } = device
+				let { portId, type, name, calibrated, power } = device
 				if (calibrated == undefined) calibrated = false
 				if (portId < 50) {
-					const info = { name, portId, type, calibrated }
+					const info = { name, portId, type, calibrated, power }
 					externalDevices.push(info)
 				}
 				else {
@@ -171,8 +119,11 @@ $$.control.registerControl('hubinfo', {
 				}
 			},
 			events: {
-				onPowerChange: function(ev, data) {
-					console.log('onPowerChange', data)
+				onPowerChange: function (ev, newPower) {
+					console.log('onPowerChange', newPower)
+					const portId = getExternalPortId($(this))
+					const device = hubDevice.getDevice(portId)
+					device.power = newPower
 				},
 				onNameChange: function (ev, newName) {
 					console.log('onNameChange', newName)
@@ -238,7 +189,7 @@ $$.control.registerControl('hubinfo', {
 					const portId = getExternalPortId($(this))
 					/**@type {HUB.TachoMotor} */
 					const motor = hubDevice.getDevice(portId)
-					const power = parseInt($(this).closest('tr').find('.power').getValue())
+					const power = motor.power
 					console.log({ power })
 					switch (action) {
 						case 'forward':

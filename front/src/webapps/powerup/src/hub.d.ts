@@ -40,6 +40,7 @@ declare namespace HUB {
         getDevice(portId: PortMap): Device | Motor | TachoMotor | Led;
         createVirtualPort(portId1: PortMap, portId2: PortMap): Promise<void>;
         getPortInformation(portId: PortMap): Promise<PortInformation>;
+        setName(newName: string):Promise<void>;
 
         writePortCommand(portId: number, ...data):Promise<void>;
 
@@ -48,10 +49,18 @@ declare namespace HUB {
         
     }
 
+    interface DeviceAction {
+        label: string;
+        action: string;
+        isActionEnabled: boolean;
+    }
+
     interface Device {
         name: string;
         type: string;
         portId: number;
+        actions: Array<DeviceAction>;
+        availableActions: Array<string>;
 
         getValue(mode: DeviceMode):Promise<number>;
         waitTestValue(mode: DeviceMode, testFn: (value: number) => boolean):Promise<void>;
@@ -59,6 +68,8 @@ declare namespace HUB {
         subscribe(mode: DeviceMode, cbk: (value) => Promise<void>, deltaInterval?: number):Promise<void>;
         readInfo():Promise<PortInformation>;
         unsubscribe():Promise<void>;
+        execAction(actionName: string):Promise<void>;
+        isActionEnabled(actionName: string): boolean;
     }
 
     interface TiltSensor extends Device {

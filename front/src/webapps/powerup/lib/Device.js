@@ -24,7 +24,17 @@ class Device {
         this.waitEnd = false
         this.notificationEnabled = false
         this.waitStale = false
+        this.actions = []
+        this.availableActions = []
 
+    }
+
+    execAction(actionName) {
+        console.error(`action ${actionName} is not implemented`)
+    }
+
+    isActionEnabled(actionName) {
+        return true
     }
 
     /**

@@ -44,28 +44,6 @@
 .rootPage .toolbar .mode > div {
   margin-left: 20px;
 }
-.addAction {
-  padding: 10px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-}
-.addAction form {
-  max-width: 400px;
-  width: 400px;
-}
-.addAction form div {
-  margin: 10px 0px;
-}
-.addAction form label {
-  width: 100px;
-  display: inline-block;
-}
-.addAction form input,
-.addAction form select {
-  width: 200px;
-  padding: 5px;
-}
 .actions .btnAction {
   margin: 0px 5px;
 }
@@ -166,4 +144,26 @@
 }
 .info table {
   margin-top: 10px;
+}
+.addAction {
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.addAction form {
+  max-width: 400px;
+  width: 400px;
+}
+.addAction form div {
+  margin: 10px 0px;
+}
+.addAction form label {
+  width: 100px;
+  display: inline-block;
+}
+.addAction form input,
+.addAction form select {
+  width: 200px;
+  padding: 5px;
 }

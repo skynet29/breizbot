@@ -21,6 +21,7 @@ $$.control.registerControl('addAction', {
         /**@type {Array<HUB.HubDevice>} */
 
         const hubDevices = this.props.hubDevices
+        console.log('hubDevices', hubDevices)
 
         /**@type HUB.HubDevice */
         let selectedHub = null

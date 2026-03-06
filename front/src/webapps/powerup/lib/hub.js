@@ -473,7 +473,7 @@
             const property = msg.getUint8(3)
             const propType = msg.getUint8(4)
             const msgLen = msg.getUint8(0)
-            console.log('handleHubPropertyResponse', { property: HubPropertyPayloadNames[property], msgLen, propType })
+            log('handleHubPropertyResponse', { property: HubPropertyPayloadNames[property], msgLen, propType })
             if (property == HubPropertyPayload.BATTERY_VOLTAGE) {
                 const batteryLevel = msg.getUint8(5)
                 log({ batteryLevel })

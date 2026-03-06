@@ -36,10 +36,10 @@ $$.control.registerControl('breizbot.pager', {
 				onAction: function (ev) {
 					const cmd = $(this).data('cmd')
 					const pageCtrlIface = curInfo.ctrl.iface()
-					//console.log('onAction', cmd)
+					console.log('onAction', cmd)
 					const fn = curInfo.buttons[cmd].onClick
 					if (typeof fn == 'function') {
-						fn.call(pageCtrlIface)
+						fn.call(pageCtrlIface, $(this))
 					}
 				},
 				onContextMenu: function (ev, data) {

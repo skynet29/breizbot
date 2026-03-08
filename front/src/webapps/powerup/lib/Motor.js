@@ -18,15 +18,20 @@ class Motor extends Device {
         this.availableActions = ['FWD', 'BKD', 'STOP']
 
         this.power = 50
+        this.curAction = 'NONE'
+
     }
 
     execAction(actionName) {
         switch (actionName) {
             case 'FWD':
+                this.curAction = actionName
                 return this.setPower(this.power)
             case 'BKD':
+                this.curAction = actionName
                 return this.setPower(-this.power)
             case 'STOP':
+                this.curAction = 'NONE'
                 return this.setPower(0)
             default:
                 return super.execAction(actionName)

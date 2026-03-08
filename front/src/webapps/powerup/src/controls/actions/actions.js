@@ -23,10 +23,9 @@ $$.control.registerControl('actions', {
 	 * 
 	 * @param {Breizbot.Services.Pager.Interface} pager 
 	 * @param {Breizbot.Services.Files.Interface} fileSrv
-	 * @param {Brainjs.Services.Http.Interface} httpSrv
 	 * 
 	 */
-	init: function (elt, pager, fileSrv, httpSrv) {
+	init: function (elt, pager, fileSrv) {
 
 		/**@type Array<HUB.HubDevice> */
 		const hubDevices = this.props.hubDevices
@@ -40,9 +39,10 @@ $$.control.registerControl('actions', {
 				const hubName = hub.name
 				const devices = hub.getHubDevices()
 				for (const device of devices) {
-					const { portId, name, actions: devActions } = device
+					const { portId, name, curAction, actions: devActions } = device
 					for (const devAction of devActions) {
 						devAction.isActionEnabled = device.isActionEnabled(devAction.action)
+						devAction.color = (curAction == devAction.action) ? 'w3-green' : 'w3-blue'
 					}
 
 					if (devActions.length > 0)
@@ -53,9 +53,17 @@ $$.control.registerControl('actions', {
 			return actions
 		}
 
+		function update() {
+			ctrl.model.actions = getActions()
+			ctrl.update()
+		}
+
 		const ctrl = $$.viewController(elt, {
 			data: {
-				actions: getActions()
+				actions: getActions(),
+				getClass: function (scope) {
+					return 'btnAction w3-btn ' + scope.devAction.color
+				}
 			},
 			events: {
 				onBtnAction: async function () {
@@ -72,23 +80,23 @@ $$.control.registerControl('actions', {
 							const actionIdx = device.actions.findIndex(a => a.action == cmd)
 							if (actionIdx >= 0) {
 								device.actions.splice(actionIdx, 1)
-								ctrl.model.actions = getActions()
-								ctrl.update()
+								update()
 							}
 
 
 						}
 						else {
 							if (cmd == 'CALIBRATE') {
-								$(this).removeClass('w3-green')
+								$(this).removeClass('w3-blue')
 								$(this).addClass('w3-yellow')
 
 								await device.execAction(cmd)
 								$(this).removeClass('w3-yellow')
-								$(this).addClass('w3-green')
+								$(this).addClass('w3-blue')
 							}
 							else {
 								device.execAction(cmd)
+								update()
 							}
 						}
 
@@ -119,12 +127,15 @@ $$.control.registerControl('actions', {
 				const hubName = hub.name
 				const devices = hub.getHubDevices()
 				const hubInfo = { hubName, devices: [] }
-				data.push(hubInfo)
+
 				for (const device of devices) {
 					const { portId, name, type, power, actions: devActions } = device
 
 					if (devActions.length > 0)
 						hubInfo.devices.push({ portId, name, type, power, devActions })
+				}
+				if (hubInfo.devices.length > 0) {
+					data.push(hubInfo)
 				}
 			}
 			console.log('data', data)
@@ -154,13 +165,11 @@ $$.control.registerControl('actions', {
 					}
 
 				}
-
-				ctrl.model.actions = getActions()
-				ctrl.update()
+				update()
 			}
 			catch (e) {
 				console.error(e.message)
-				$$.ui.showAlert({content: e.message})
+				$$.ui.showAlert({ content: e.message })
 			}
 
 
@@ -184,8 +193,7 @@ $$.control.registerControl('actions', {
 								const { hub, port, action, label } = data
 								const device = getDevice(hub, port)
 								device.actions.push({ action, label })
-								ctrl.model.actions = getActions()
-								ctrl.update()
+								update()
 							}
 						})
 					}
@@ -204,7 +212,7 @@ $$.control.registerControl('actions', {
 					onClick: function () {
 						console.log('open')
 						fileSrv.openFile('Open file', 'powerup', async (data) => {
-							const response = await httpSrv.fetch(data.url)
+							const response = await fetch(data.url)
 							const jsonData = await response.json()
 							console.log('jsonData', jsonData)
 							loadData(jsonData)

@@ -47,6 +47,25 @@
 .actions .btnAction {
   margin: 0px 5px;
 }
+.code {
+  display: flex;
+  flex-direction: column;
+}
+.code #blocklyDiv {
+  flex: 1;
+}
+.code .toolbar {
+  padding: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.code .logPanel {
+  height: 100px;
+  overflow-y: auto;
+  border: 1px solid lightgray;
+  padding: 5px;
+}
 .addAction {
   padding: 10px;
   display: flex;
@@ -67,25 +86,6 @@
 .addAction form input,
 .addAction form select {
   width: 200px;
-  padding: 5px;
-}
-.code {
-  display: flex;
-  flex-direction: column;
-}
-.code #blocklyDiv {
-  flex: 1;
-}
-.code .toolbar {
-  padding: 5px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.code .logPanel {
-  height: 100px;
-  overflow-y: auto;
-  border: 1px solid lightgray;
   padding: 5px;
 }
 .configCtrl {
